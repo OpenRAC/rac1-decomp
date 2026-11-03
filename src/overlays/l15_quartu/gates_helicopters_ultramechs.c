@@ -839,7 +839,6 @@ extern float SpringTurn(float *vel, float cur, float target, float k, float d, f
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
-extern void spawn_proximity_gated_bolts(void *);
 extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern int quartu_moby_groups[];

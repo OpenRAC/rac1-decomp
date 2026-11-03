@@ -430,10 +430,6 @@ extern float vec_distance_xy(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void set_camera_rotation(void *);
-
-extern void set_camera_position(void *);
-
 extern int HeroL06_TrySetMoveState(int, int);
 extern void spawn_moby_breakup_effect(char *, int);
 
@@ -897,8 +893,6 @@ extern int memcard_Save(int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
 
 extern float vec_distance_xy(void *, void *);
@@ -1455,9 +1449,6 @@ extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
 extern void MusicRequestTrack(int, int);
 
 extern float vec_distance_xy(void *, void *);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern int update_shuttle_path_ride(char *, int);
 
@@ -2682,8 +2673,6 @@ extern struct UsageStat help_records[];
 extern s32 gameplay_event_frame_count MACRO_ADDR;
 extern u8 item_available_14[];
 
-extern int count_active_moby_group_members(int, int);
-
 /* Level 6 help hints: shows the help messages for the area and records how often and when each was due.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/vendor/003083b0.c, FUN_L06_003083b0. */
 void update_level06_help_hints(struct Moby *moby) {
@@ -3027,7 +3016,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern float blarg_zero_vec[] MACRO_ADDR;
 extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern void spawn_proximity_gated_bolts(void *);
+
 void func_0020D678_0B248(struct Obj *obj) __asm__("func_0020D678");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay_vendor_003083b0.c, FUN_L06_00309e08. */

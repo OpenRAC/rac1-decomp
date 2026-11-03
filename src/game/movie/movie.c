@@ -6,6 +6,7 @@
 #include "game/system/pad.h"
 #include "asm_functions/executable.h"
 #include "game/system/stub.h"
+#include "core/sound/989snd.h"
 
 extern int decoder_buffer_address MACRO_ADDR;
 extern int movie_play_step MACRO_ADDR;
@@ -67,8 +68,6 @@ extern int videoDecFlush(char *);
 extern int videoDecIsFlushed(char *);
 extern void endDisplay(void);
 extern void audioDecReset(char *);
-extern void snd_SetMasterVolume(int, int);
-extern void snd_FlushSoundCommands(void);
 
 /* No recovered name. Playback loop: feeds file data (*file bytes) through the
  * read buffer at `rb` into the video decoder `vd`, starts audio and display once

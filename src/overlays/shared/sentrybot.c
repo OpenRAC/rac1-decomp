@@ -27,6 +27,7 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "callees.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -1700,17 +1701,11 @@ extern char *quartu_coll_sphere_moby_hits[];
 extern char quartu_player_camera[];
 extern void EffectQueue_Add(void *, int, float, float, void *, int, int, float, int);
 
-extern float vec_length(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-
-extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
-                                      float w, float pw);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
-
-extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
@@ -2324,8 +2319,7 @@ void update_charged_blast(Moby29FF90 *moby) {
     d->active = 0;
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *vel, int color, unsigned char life,
-                                                           unsigned char b, int mode, float scale);
+
 extern void draw_group_moby_effect_quads(char *);
 extern void MobySphereHitDirectional_m(void *, void *, int, float, float, float, int, int,
                                        int) __asm__("func_L00_0025A8E8");

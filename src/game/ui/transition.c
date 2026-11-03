@@ -14,6 +14,7 @@
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
+#include "core/sound/989snd.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -155,8 +156,6 @@ typedef struct {
     int x0;
     unsigned char *x4;
 } S160E9EC8;
-
-extern void FastMemZero16(void *, int);
 
 extern void SetBackgroundColor(int, int, int);
 
@@ -1288,7 +1287,7 @@ extern void func_002032D0(void);
 extern s32 func_00122598(s32);
 extern s32 scale_frames_BB48(s32) __asm__("func_001F98C0");
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
-extern s32 func_0012DDC0(void);
+
 extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
 extern void vu1_send_chain_BB48(void) __asm__("func_002349B8");
 extern void swap_chain_BB48(void) __asm__("func_00234948");

@@ -1564,7 +1564,6 @@ typedef struct {
 } RestoreCardState;
 extern RestoreCardState memory_card_state_c __asm__("D_0013D390");
 extern int memcard_restore_mismatch_count SDATA(memcard_restore_mismatch_count); /* mismatch count */
-extern int libc_memcmp(const void *, const void *, int); /* memcmp */
 
 /* memcard_RestoreData: unpack the save blocks after buf's 8-byte header
    into the table entries with the same id (slot selects the element),

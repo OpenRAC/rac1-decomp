@@ -23,6 +23,7 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -1158,7 +1159,7 @@ typedef int w128 __attribute__((mode(TI)));
 
 extern float vec_length_xy(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
-extern unsigned char *spawn_random_size_rotated_particle(char *a, char *b, int c, float f);
+
 extern float CubicInterpolate(float, float, float, float, float);
 extern int truncate_float_to_s32(float);
 extern void clear_homing_shot_trail_and_spawn_end_effects(unsigned char *, int);
@@ -2124,7 +2125,6 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 
-extern float vec_length(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 typedef struct {
@@ -2404,7 +2404,6 @@ void replenish_hero_drones(void) {
         }
     }
 }
-extern int spawn_moby_point_attached_particle(void *, int, float, float, unsigned, unsigned);
 
 /* Spawn the drone's two joint-attached glow particles if they are missing. */
 void ensure_drone_attached_particles(char *m) {

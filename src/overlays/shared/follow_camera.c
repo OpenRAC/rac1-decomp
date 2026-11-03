@@ -305,7 +305,8 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
 extern float g_debug_camera[];
 
 extern int func_001FA898(float);
-extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
+extern unsigned char *PartType59Spawn_v(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s,
+                                        int mode) __asm__("func_L00_00273E08");
 
 typedef struct {
     char pad[0x10];
@@ -347,7 +348,7 @@ void emit_moby_color_cycling_particles(char *p) {
         g = g / (float)scale_ticks(255);
         c = FastTweenColor(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - g));
         k = truncate_float_to_s32(*a++);
-        PartType59Spawn(m->c[j], v, c, k, 0x35, 1, 2, 0);
+        PartType59Spawn_v(m->c[j], v, c, k, 0x35, 1, 2, 0);
         j++;
         FastVecAdd(v, v, &v[4]);
     }

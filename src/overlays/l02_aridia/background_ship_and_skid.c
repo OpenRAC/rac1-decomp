@@ -26,6 +26,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -89,8 +90,6 @@ extern int memcard_Save(int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
 
 extern float vec_length_xy(void *);
@@ -809,7 +808,7 @@ extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern void fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-extern u8 *func_L00_00272158(void *, void *, s32, s32, s32, s32, f32, f32, f32, f32, f32);
+
 extern void rand_vec_r(void *, f32, f32) __asm__("func_L00_00258DB0");
 
 /* Shard debris update: drifts along its velocity, sheds particle trails and expires when its timer runs out.

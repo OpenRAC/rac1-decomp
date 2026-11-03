@@ -1015,7 +1015,7 @@ extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
-extern void func_L01_0026F090(int, int);
+
 extern void func_L05_0029CCB8(float, float, float, void *, void *, int, int);
 extern void func_L00_00272770(float, float, void *, void *, void *);
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
@@ -1191,8 +1191,6 @@ extern f32 ApproachWithVelocity_r(f32 *, f32 *, f32, f32, f32, f32) __asm__("fun
 
 extern f32 vec_distance_xy(void *, void *);
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern void lift_camera_view_r(void *, void *, void *) __asm__("func_L05_003173A8");
 extern void place_marker_ring_r(void *) __asm__("func_L05_00317438");

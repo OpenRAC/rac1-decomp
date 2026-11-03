@@ -24,8 +24,6 @@ extern unsigned char gSpecialItems[];
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
 
-extern int func_0012EFE8(void);
-
 /* snd_StreamSafeCdBreak returns int (989snd.c): with the result in $v0, the
    constant goes to the register retail uses. */
 void request_audio_stream_break(void) {
@@ -59,7 +57,6 @@ int Stream_SubmitRead(int arg0, int arg1, int arg2) {
 }
 
 extern char load_file_start_failed_string[];
-extern int snd_StreamSafeCdRead(int, int, int, void *);
 
 /* Start a stream: refuse if one is already running (+0x8) or the length
    is zero, otherwise hand the request to snd_StreamSafeCdRead with the header
@@ -89,8 +86,6 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
 
 extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-
-extern void snd_FlushSoundCommands(void);
 
 /*
  * Close, not exact (15/124), same size so inert. Semantics confirmed:
@@ -170,8 +165,6 @@ short update_audio_stream_until_idle(int arg0) {
         return d->read_state;
     }
 }
-
-extern int snd_StreamSafeCdGetError(void);
 
 /* CD read callback: mark the music stream read finished, or done if more data is ready. */
 void finish_audio_stream_read(int callback_value) {

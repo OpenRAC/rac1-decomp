@@ -198,8 +198,6 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
-void sceVu0Normalize(void *, void *);
-
 void vec_scale_to_length(void *, void *, f32);
 
 void func_L00_00233D50_40968(void *, void *, f32) __asm__("func_L00_00233D50");

@@ -61,7 +61,6 @@ void assign_moby_class_data(int id) {
 
 LINKER_REMNANT("asm/remnants/text", func_00213C70);
 
-extern void refresh_moby_spatial_bounds(void *);
 extern void *visible_moby_list MACRO_ADDR;
 
 void update_visible_resident_objects(void) {

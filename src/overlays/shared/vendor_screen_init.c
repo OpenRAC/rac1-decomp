@@ -36,8 +36,6 @@ extern int relocated_address_base MACRO_ADDR;
 extern int novalis_white_fade_level SDATA(novalis_white_fade_level);
 extern char novalis_vendor_screen_anchor_offset;
 
-extern void snd_FlushSoundCommands(void);
-
 extern void Hero_SetMoveState(int, int);
 
 extern int sce_gs_sync_v(int);

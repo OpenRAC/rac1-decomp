@@ -2,8 +2,8 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/sound/989snd.h"
 
-extern int snd_init_movie_sound(int, int, int, int, int, int);
 extern char *movie_adpcm_staging_buf MACRO_ADDR;
 /* Clears the header, sets buffer parameters, and acquires the sound transport handle. */
 int audioDecCreate(char *dec, void *buffer, int size, char *staging) {
@@ -48,15 +48,12 @@ typedef struct AudioDec {
     int f5C;            /* 0x5C */
 } AudioDec;
 
-extern int snd_close_movie_sound(void);
-
 /* audioDecDelete(_AudioDec *) -- calls snd_close_movie_sound and returns 1. */
 int audioDecDelete(AudioDec *dec) {
     snd_close_movie_sound();
     return 1;
 }
 LINKER_REMNANT("asm/remnants/text", func_0023C080);
-extern void snd_StartMovieSound(int, int, int, int, int);   /* snd_StartMovieSound */
 
 /* audioDecStart -- starts the movie sound with the decoder's parameters (size rounded down to
  * 0x400) and marks the decoder as started. */
@@ -64,7 +61,6 @@ void audioDecStart(AudioDec *dec) {
     snd_StartMovieSound(dec->f48, dec->f4C / 0x400 * 0x400, dec->f5C, dec->f14, dec->f18);
     dec->pending = 2;
 }
-extern void snd_ResetMovieSound(void);
 
 /* audioDecReset(_AudioDec *) */
 void audioDecReset(volatile int *dec) {
@@ -151,8 +147,6 @@ typedef struct {
     int mode;
 } SpuDma;
 
-extern int snd_UpdateMovieADPCM(int, int);
-
 /* sendToSPU(_AudioDec *, unsigned char *, int, int) -- queues one transfer of len bytes to the
  * address in the decoder at 0x48, waits for it to finish, then calls snd_UpdateMovieADPCM(len, flag). */
 void sendToSPU(AudioDec *dec, unsigned char *src, int len, int flag) {
@@ -184,7 +178,6 @@ typedef struct AdpcmDec_0023C390 {
     char pad54[0xC];
     int pos;            /* 0x60 */
 } AdpcmDec_0023C390;
-extern int snd_GetMovieNAX(void);
 
 /* sendADPCM(_AudioDec *) */
 void sendADPCM(AudioDec *dec) {

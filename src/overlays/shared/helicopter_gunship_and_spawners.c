@@ -24,6 +24,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "callees.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -1580,7 +1582,7 @@ void handle_blarg_helicopter_hits(char *m) {
     ((Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, &d->color_fade);
 }
-extern void spawn_proximity_gated_bolts(void *);
+
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 /* Statue update: wait for a hit, then play a sound, drop bolts, break into three pieces and delete. */
 void statue_update(Moby *m) {
@@ -2106,7 +2108,6 @@ void update_falling_moby(Moby *moby) {
     }
 }
 extern int kerwan_camera_descriptors MACRO_ADDR;
-extern void raise_kernel_trap(void);
 
 typedef struct {
     char pad0[0x40];

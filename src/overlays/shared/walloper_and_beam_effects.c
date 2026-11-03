@@ -22,6 +22,7 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "game/render/vuchain.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -166,7 +167,6 @@ extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm_
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 
-extern unsigned char *PartType53Spawn(void *, int, float, float, int, int, int, float *, float);
 #define hero43 (*(Hero43 *)g_hero)
 
 typedef struct {
@@ -1794,7 +1794,7 @@ extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern void PartType53Spawn_r(void *, int, int, int, int, void *, float, float, float) __asm__("func_L00_00272F00");
 extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern void func_L00_002767B0(void *, int, int, int, int, void *, Moby *, float, float);
+
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
 /* Tesla claw arc: bends the twelve-point beam toward the target, builds the two side rails and the ring of

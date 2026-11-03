@@ -30,6 +30,7 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -1515,8 +1516,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
-
 struct VersatargetPvars {
     u8 pad_00[0x30];
     s32 unk30; /* 0x30: row index into the flag table help_stats_base, -1 when free */
@@ -1640,8 +1639,6 @@ extern int memcard_Save(int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
 
 typedef int u128_002EB648 __attribute__((mode(TI)));
@@ -1828,7 +1825,6 @@ extern int fast_dec_timer(int *);
 
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 
 /* Animates a moby's four sprite layers (emit_moby_sprite_effect_particles lifted by 0.5 instead of 0.1). */
 void update_collectible_sprite_effect(char *m) {
@@ -2442,8 +2438,6 @@ void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
         }
     }
 }
-
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Update for a moby that waits for a float flag on a nearby object then runs a delete sequence. */
 void white_flower_update(char *m) {

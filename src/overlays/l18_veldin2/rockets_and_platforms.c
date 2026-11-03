@@ -26,6 +26,8 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
@@ -211,8 +213,6 @@ extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int
 
 extern void rand_vec(float *, float, float);
 
-extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
-                                      float w, float pw);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
@@ -2029,7 +2029,7 @@ void process_expanding_ring_collisions(char *moby) {
 extern int FastBSphereCheck(char *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
+
 extern float expanding_ring_cull_margin SDATA(expanding_ring_cull_margin);
 extern float expanding_ring_particle_chance SDATA(expanding_ring_particle_chance);
 extern int expanding_ring_particle_color_b SDATA(expanding_ring_particle_color_b);
@@ -2237,9 +2237,6 @@ void draw_class_274_ring_effect(void *moby_v) {
     }
 }
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern int veldin2_position_transition_flag;
 extern float veldin2_screen_fade MACRO_ADDR;
@@ -2549,7 +2546,7 @@ void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
             break;
     }
 }
-extern void set_moby_list_state(char *arg, int val);
+
 /* Sets the state of every moby in list index arg to 2. */
 void set_moby_group_state_two(char *arg) {
     set_moby_list_state(arg, 0x2);

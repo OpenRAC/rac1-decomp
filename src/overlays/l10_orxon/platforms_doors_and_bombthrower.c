@@ -28,6 +28,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -543,9 +544,9 @@ extern float vec_distance_xy(void *, void *);
 #define func_L00_001FF240_2BFBB8 ((void (*)(void *, void *, void *))func_L00_001FF240)
 extern void vec_scale_to_length(void *, void *, float);
 #define func_L00_001FF4B0_2BFBB8 ((void (*)(void *, void *, float))func_L00_001FF4B0)
-extern void *PartType53Spawn(void *, int, float, float, int, int, int, void *, float);
+
 #define func_L00_00272F00_2BFBB8 func_L00_00272F00
-extern void *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
+
 #define func_L00_00272488_2BFBB8 func_L00_00272488
 #define func_0022ED80_2BFBB8 ((int (*)(int, int, int))func_0022ED80)
 #define func_L00_00217718_2BFBB8 func_L00_00217718
@@ -556,7 +557,7 @@ extern int truncate_float_to_s32(float);
 
 #define func_001FA8A8_2BFBB8 func_001FA8A8
 #define func_001F9908_2BFBB8 ((int (*)(int *))func_001F9908)
-extern void follow_camera_set_lateral_spring(float, float);
+
 #define func_L00_002E9A40_2BFBB8 func_L00_002E9A40
 
 #define func_L00_002E9B30_2BFBB8 func_L00_002E9B30
@@ -1804,7 +1805,7 @@ extern char data_processor_no_link_fmt[];
 extern char data_processor_strand_order[];
 extern void render_data_processor_linked_effect(unsigned char *);
 extern float data_processor_fade_seconds SDATA(data_processor_fade_seconds);
-extern float vec_length(float);
+
 extern int FastBSphereCheck(void *, float);
 
 typedef struct DataProcessorVars {

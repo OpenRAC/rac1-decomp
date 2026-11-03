@@ -31,6 +31,9 @@
 #include "game/ui/hud.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/follow_camera.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -223,8 +226,6 @@ extern float nanotech_spark_size_b SDATA(nanotech_spark_size_b);
 
 extern void build_look_at_matrix_v(void *, void *, float, void *) __asm__("func_002156E0");
 
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
-
 /* Build a direction to the target, scale it and emit two effect pieces from the moby's position. */
 void spawn_nanotech_ball_collection_effect_pair(Moby *m) {
     Vx a;
@@ -277,8 +278,6 @@ extern f32 nanotech_ring_heights SDATA(nanotech_ring_heights);
 void vec_scale_to_length(void *, void *, f32);
 
 s32 truncate_float_to_s32(f32);
-
-u8 *PartType59Spawn(void *, s32, u8, s32, s32, s32, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002d8510. */
 s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
@@ -462,7 +461,7 @@ extern void AddDrawCallback_r(void (*)(void), int) __asm__("func_001F49B0");
 extern void draw_nanotech_ball_r(void) __asm__("func_L00_002DACC0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void compute_nanotech_ball_slot_position_r(void *, void *, int) __asm__("func_L00_002D9D00");
-extern Part *func_L00_002745A8(void *, int, int);
+
 extern void spawn_nanotech_ball_collection_effect_pair_r(void *) __asm__("func_L00_002D98C8");
 extern int update_nanotech_ball_collection_effects_r(void *) __asm__("func_L00_002D99C0");
 extern void update_nanotech_ball_grounding_and_fall_r(void *) __asm__("func_L00_002D9668");
@@ -3331,21 +3330,19 @@ extern float D_L00_0015F4FC MACRO_ADDR;
 extern float D_L00_00161C84 MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern char g_debug_camera_r3[] __asm__("D_L00_00166EC0");
-extern void func_L00_002E1660(Moby *);
+
 extern int Moby_PlaySound_r2(int, int, Moby *) __asm__("func_0022ED80");
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
 
-extern int func_L00_002E1790(Moby *);
 extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern void func_L00_002E17F0(Moby *);
+
 extern float func_00214D28(float *, float, float);
 extern float func_00214D88(float *, float *, float, float, float, float);
-extern void func_L00_002EBE88(void *);
-extern void func_L00_002EBEE0(void *);
+
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
 extern float FastSubRots_r2(float, float) __asm__("func_001FA790");

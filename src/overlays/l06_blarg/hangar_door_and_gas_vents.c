@@ -29,6 +29,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -1114,11 +1116,6 @@ extern void record_moby_hit(void *, void *);
 
 extern char *MobyGetHitMessage(void *, int, int);
 
-extern void sce_vu0_mul_matrix(void *, void *, void *);
-
-extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *, char *, int, unsigned char, unsigned char,
-                                                                     int, float);
-
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
 extern float beam_barrier_strand_length SDATA(beam_barrier_strand_length);
@@ -1381,7 +1378,6 @@ void update_beam_barrier(char *m) {
 #undef FLD
 typedef u32 u128_F8200 __attribute__((mode(TI), aligned(16)));
 
-extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern int GetEffectTex(int);
 
 extern unsigned int FastTweenColor_r(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
@@ -1597,7 +1593,7 @@ typedef struct {
 extern void update_alien_snapper_hit_response_and_targeting_r(Moby *) __asm__("func_L06_002FA618");
 extern void Manipulator_ApplyScale_r(float, Moby *, int, void *) __asm__("func_L00_00264B40");
 extern void set_ground_height_band_r(Moby *) __asm__("func_L00_0025B178");
-extern void func_L01_0026E8E0(void *);
+
 extern void MobyBlendAnimation_r(Moby *, int, int, int) __asm__("func_00213DE0");
 extern void transition_moby_group_state_1_to_2_r(Moby *) __asm__("func_L06_002FAAC8");
 extern float func_L00_0025BC48(void *, void *, void *, float, float);
@@ -2745,8 +2741,6 @@ extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
 
-extern void euler_rotation_basis(void *, void *);
-
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 
 extern void start_alien_queen_first_recovery(char *);
@@ -2929,9 +2923,6 @@ void activate_listed_state_15_mobys_at_raised_positions(char *moby) {
 extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
-
 // sets up a camera-like aim from a moby toward its orbit point and releases the slot
 void start_alien_queen_intro(char *moby) {
     float v0[4], m[4], v1[4];
@@ -2956,8 +2947,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void lerp_vector(void *, void *, void *, float);
 
 extern float vec_distance_xy(void *, void *);
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern short g_frame_time_sq_s __asm__("D_0015EE70");
 /* Aims the camera at a moby, blending toward its orbit; returns nonzero when finished. */
@@ -3106,8 +3095,6 @@ typedef u32 u128_FD3E0 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-
-extern void set_moby_list_state(int, int);
 
 extern float blarg_slide_pair_open_a SDATA(blarg_slide_pair_open_a);
 extern float blarg_slide_pair_open_b SDATA(blarg_slide_pair_open_b);

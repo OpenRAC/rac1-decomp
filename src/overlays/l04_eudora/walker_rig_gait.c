@@ -11,6 +11,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/system/stub.h"
+#include "callees.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
@@ -107,7 +108,6 @@ typedef struct {
 extern char invalid_animation_message[];
 extern char rig_size_message[];
 
-extern void raise_kernel_trap(void);
 extern float animation_start(int, int);
 extern float animation_end(int, int);
 
@@ -395,7 +395,6 @@ extern void MobyTransformScaledVertex_r(struct Moby *, int, float *) __asm__("fu
 
 extern float SpringTurn(float, float, float *, float, float, float);
 
-extern void multiply_quaternions(float *, float *, float *);
 extern f32 frame_scale MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/runtime/dma/002922d0.c, FUN_L04_00292d48. */

@@ -33,6 +33,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -726,8 +727,7 @@ extern void vec_add_313D00(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_sub_313D00(void *, void *, void *) __asm__("func_001F9BF0");
 extern void euler_matrix_313D00(void *, void *) __asm__("func_001FA1F8");
 extern void apply_313D00(void *, void *, void *) __asm__("func_001F9EC0");
-extern void func_L00_002EBE88(void *);
-extern void func_L00_002EBEE0(void *);
+
 extern float approach_313D00(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern float cosine_313D00(float) __asm__("func_001F9FA8");
 extern float sine_313D00(float) __asm__("func_001F9F90");
@@ -1536,7 +1536,7 @@ extern void Manipulator_ApplyScale(struct Moby *, int, void *, float);
 extern float vec_distance_xy();
 extern void set_ground_height_band(struct Moby *);
 extern int truncate_float_to_s32(float);
-extern void MoveCtl_Init(void *);
+
 extern int func_001160D8(void);
 
 extern int IsPointInPolygon(void *, void *, int);
@@ -3154,7 +3154,8 @@ void spawn_moby_radial_spark(char *m) {
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
+extern unsigned char *PartType59Spawn_v(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s,
+                                        int mode) __asm__("func_L00_00273E08");
 extern short energy_sphere_glow_color_b, energy_sphere_glow_color_a;
 
 // Spawns four particles around the moby, each rotated a step further around the offset vector.
@@ -3176,7 +3177,7 @@ void spawn_energy_sphere_particles(char *moby) {
         unsigned char c;
         q[0] += q[4];
         c = truncate_float_to_s32_r((float)q[0]);
-        PartType59Spawn(data->glow * IntToFloat(q[8]) * 0.025f, v0, a, c, 0x35, 1, 2, 0);
+        PartType59Spawn_v(data->glow * IntToFloat(q[8]) * 0.025f, v0, a, c, 0x35, 1, 2, 0);
         q++;
         FastVecAdd(v0, v0, v1);
     }
@@ -3502,7 +3503,7 @@ char *activate_listed_blarg_ship(int idx) {
     } while (*p++ >= 0);
     return 0;
 }
-extern int count_active_moby_group_members(int, int);
+
 extern void PlayBankSound(int, int, int);
 
 /* Moby update that deletes itself or shows a banner depending on its data. */
@@ -3612,8 +3613,6 @@ extern int bubble_splash_color_a SDATA(bubble_splash_color_a);
 extern int bubble_splash_color_b SDATA(bubble_splash_color_b);
 extern int rand_range(int, int);
 
-extern char *func_L00_00272770(void *, void *, void *, float, float);
-
 /* Bursts n1 sparks and n2 smoke puffs at the moby, the puffs sitting on the ground height. */
 void spawn_bubble_surface_effects(char *m, float *ground, int n1, int n2) {
     float v[4];
@@ -3680,8 +3679,6 @@ void spawn_bubble_spark(char *m) {
     PartType02Spawn(m + 0x10, v1, v2, c0, c1, c2, c3, c4, -1);
 }
 extern char *MobyGetHitMessage(void *, int, int);
-
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Moby update for a breakable object that plays effects when hit. */
 void Pokitaru_BreakOnHitUpdate(char *m) {

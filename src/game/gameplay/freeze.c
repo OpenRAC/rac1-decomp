@@ -30,7 +30,6 @@ extern int space_load_in_progress MACRO_ADDR;
 
 extern int GetEffectTex(int);
 
-extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
 extern int msg_string(int);
 
@@ -676,8 +675,6 @@ extern void memcard_Save(int, int);
 extern void Profile_Mark_v(void) __asm__("func_001E9768");
 
 extern void Music_QueueTrack(int, int);
-
-extern int snd_FlushSoundCommands(void);
 
 #define R (*(Freeze *)D_00193400)
 #define PAD (D_0013CBE4[0])

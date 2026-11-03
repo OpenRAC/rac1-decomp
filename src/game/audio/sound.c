@@ -8,6 +8,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
+#include "core/sound/989snd.h"
 
 /*
  * sound.cpp in the original source; text 0x22D8C0-0x22F128.
@@ -145,12 +146,7 @@ typedef struct {
 extern int playback_mode MACRO_ADDR;
 extern int music_volume MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
-extern void snd_StartSoundSystem(void);
-extern void snd_SetPlaybackMode(int);
-extern void snd_set_mixer_mode(int, int);
-extern void snd_PreAllocReverbWorkArea(int, int);
-extern void snd_SetGroupVoiceRange(int, int, int);
-extern void snd_SetMasterVolume(int, int);
+
 extern void reset_music(void);
 
 /* Reset the voice pool, set up the sound library, voices and volumes, and reset music. */
@@ -265,18 +261,12 @@ extern s32 D_0015F6C8 MACRO_ADDR;
 extern s32 D_0015F6F0 MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 
-extern int func_0012F2E0(int);
-
 extern void snd_ReadGlobalTableEntry_DD68(void) __asm__("func_0012EC30");
 extern s32 snd_FlushSoundCommands_DD68(void) __asm__("func_0012DDC0");
 extern void snd_SetMasterVolume_DD68(s32, s32) __asm__("func_0012E348");
-extern void func_0012E448();
-extern void func_0012E4A8(s32);
-extern void func_0012E588();
-extern void func_0012E600();
+
 extern void snd_ResetStateAndFlush_DD68() __asm__("func_0012EC40");
-extern void func_0012F0A8(s32, s32, s32, s32, s32);
-extern void func_0012F120(s32, s32, s32, s32);
+
 extern void FastVecAdd_DD68(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_DD68(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_DD68(void *, void *, f32) __asm__("func_001F9C30");
@@ -646,10 +636,6 @@ s32 func_0022DD68_r(void) {
 }
 
 extern void sce_cd_sync_s(int);
-extern int snd_BankLoadByLoc(void *, int);
-extern int snd_StreamSafeCheckCDIdle(int);
-extern void snd_StreamSafeCdSync(int);
-extern void snd_ResolveBankXREFS(void);
 
 /* Reentrancy-guarded: base+0x44 is held at 1 for the duration. The
    return value is snd_BankLoadByLoc's, captured in the delay slot of the

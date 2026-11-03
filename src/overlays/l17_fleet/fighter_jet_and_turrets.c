@@ -702,9 +702,9 @@ typedef int u128_2D8CC8 __attribute__((mode(TI)));
 
 extern int func_001160D8(void);
 
-extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *vel, int color,
-                                                                     unsigned char life, unsigned char b, int mode,
-                                                                     float scale);
+extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle_v(float *pos, char *vel, int color,
+                                                                       unsigned char life, unsigned char b, int mode,
+                                                                       float scale) __asm__("func_L00_00273F80");
 extern float fleet_ring_spin_rate_deg SDATA(fleet_ring_spin_rate_deg);
 extern float fleet_ring_angle_offset_deg SDATA(fleet_ring_angle_offset_deg);
 extern float fleet_ring_arc_deg SDATA(fleet_ring_arc_deg);
@@ -829,7 +829,7 @@ void update_fleet_rotating_radial_effect(Moby *m) {
                                 f20 = g_frame_time;
                                 f20 *= 10.0f;
                                 vec_scale_to_length(spF0, spF0, random_float_between(f20, len / IntToFloat(c * 4)));
-                                spawn_moving_hero_relative_alpha_fade_particle(
+                                spawn_moving_hero_relative_alpha_fade_particle_v(
                                     (float *)spE0, (char *)spF0, fleet_ring_spark_color, c & 0xFF,
                                     random_integer_below(0xFF) & 0xFF, 0, fleet_ring_spark_scale);
                             }
@@ -1287,8 +1287,8 @@ void update_drone_flight_and_sparks(Moby *moby) {
             float x = random_float_between(g_frame_time + g_frame_time, g_frame_time * 10.0f);
             float y = random_float_between(-3.1415927f, 3.1415927f);
             BuildSphericalOffset(a, x, y, random_float_between(-3.1415927f, 3.1415927f));
-            spawn_moving_hero_relative_alpha_fade_particle(&moby->pos.x, (char *)a, 0x60FF3020, 0xF,
-                                                           random_integer_below(0xFF), 0, 3.0f);
+            spawn_moving_hero_relative_alpha_fade_particle_v(&moby->pos.x, (char *)a, 0x60FF3020, 0xF,
+                                                             random_integer_below(0xFF), 0, 3.0f);
             if (fast_dec_timer(&d->timer) != 0) {
                 DeleteMoby(moby);
             }
@@ -1937,9 +1937,6 @@ void try_fire_fighter_jet_rocket(char *moby, char *ship_vars) {
 void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *b);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern float SpringAngle(char *, char *, int, float, float, float, float);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern void DrawFleetHud();
 extern float fleet_view_tan_half_fov;

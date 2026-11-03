@@ -37,6 +37,7 @@
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
+#include "core/sound/989snd.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -341,7 +342,6 @@ extern void music_Pause(int);
 
 extern void start_cutscene_chunk_read(int);
 
-extern void sound_update(void);
 extern void Music_ContinueStreamIfReady(void);
 extern int update_audio_stream_until_idle(int);
 extern void update_world_object_animation(void);
@@ -926,7 +926,6 @@ extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short
 extern int sceGsExecLoadImage(void *, void *);
 extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
-extern void raise_kernel_trap(void);
 typedef struct {
     int sector;
     int size;
@@ -1049,8 +1048,6 @@ void movie_exit_to_gameplay(void) {
     }
 }
 
-extern int snd_StreamSafeCdSync(int);
-
 extern void Movie_Play(int, int, int, int, int);
 extern int sce_cd_sync_s(int);
 extern void movie_exit_to_gameplay(void);
@@ -1133,7 +1130,7 @@ void end_slideshow(void) {
     calculate_dma_transfer_address();
 }
 extern void end_slideshow(void);
-extern void sound_update(void);
+
 extern int slideshow_slide_durations[];
 #define IST (((short *)D_L00_0015F700)[0])
 #define IIDX (((short *)D_L00_0015F700)[1])

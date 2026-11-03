@@ -37,6 +37,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -1848,7 +1850,7 @@ extern int truncate_float_to_s32(float);
 #define sweep_p func_L00_001EFFF0
 #define rndint_p func_L00_00258BC8
 #define rndf_p func_002140F8
-extern int PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
+
 #define trail_p func_L00_00272158
 
 #define desc_p func_L00_0025A8C0
@@ -2603,7 +2605,7 @@ typedef struct {
 extern void update_blarg_space_commando_damage_targeting_and_ground_motion(struct Moby *);
 extern void Manipulator_ApplyScale(float, struct Moby *, int, void *);
 extern void set_ground_height_band(void *);
-extern void MoveCtl_Init(void *);
+
 extern void SteerAngleWithVelocity(float *, float, float *, float, float, float);
 
 extern int move_w(struct Moby *, void *, void *, void *, float);
@@ -3351,7 +3353,7 @@ extern void RescaleFloatTable(float);
 extern void RippleSimClock(void *, int);
 extern void pool_ripple(float, float, float, float, void *, int);
 extern void RippleDisturb(float, float, float, float, void *, int, int);
-extern int check_scaled_vector_bsphere(float, void *);
+extern int check_scaled_vector_bsphere_v(float, void *) __asm__("func_L01_00276680");
 extern void render_level13_water_grids(void);
 extern void initialize_gemlik_pool_tile_neighbors(int);
 
@@ -3457,7 +3459,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
     if (bobbing_platform_vars->idx >= 0) {
         height_half_span_or_tile_enabled = 0.0f;
         (Tiles_9e88_r + bobbing_platform_vars->idx)->z = moby->pos.z;
-        if (check_scaled_vector_bsphere(48.0f, moby) != -1)
+        if (check_scaled_vector_bsphere_v(48.0f, moby) != -1)
             height_half_span_or_tile_enabled = 1.0f;
         if (height_half_span_or_tile_enabled == 0.0f)
             Tiles_9e88_r[bobbing_platform_vars->idx].c1E = 0;
@@ -3534,8 +3536,6 @@ void initialize_gemlik_pool_tile_neighbors(int arg) {
 }
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_lift_mount_transform(char *moby, float *p, float *q);
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern int HeroEnterMoveState(int, int);
 

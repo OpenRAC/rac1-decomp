@@ -29,6 +29,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -164,9 +166,6 @@ typedef struct Tex {
 extern char *MobyGetHitMessage(void *, int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
-                                      float w, float pw);
 
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 
@@ -2578,7 +2577,6 @@ extern void get_first_moby_in_group(char **, int, int, int);
 extern void get_next_moby_in_group(char **, char *, int, int);
 extern void set_moby_color(void *, int, int, int);
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
-extern void set_moby_list_state(int, int);
 
 extern char linked_switch_group_opened_debug_format[];
 extern char linked_switch_group_hit_timeout_debug_format[];

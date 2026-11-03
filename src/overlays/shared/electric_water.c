@@ -25,6 +25,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -609,7 +611,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void func_L00_00272F00(void *, int, float, float, int, int, int, void *, float);
 extern char hero_globals_base[];
 extern char hero_gravity_dir_r[] __asm__("D_0013F6E0");
 extern float electric_water_bolt_wave_point_phase SDATA(electric_water_bolt_wave_point_phase);
@@ -1044,7 +1045,6 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
 
-extern void set_moby_list_state(int list, int state);
 extern char quartu_collected_flags_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int quartu_moby_killed[];

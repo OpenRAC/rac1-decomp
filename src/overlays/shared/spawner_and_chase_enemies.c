@@ -17,6 +17,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -1392,7 +1393,6 @@ void process_spawner_hit_record(char *moby, char *d) {
     ((unsigned char *)moby)[0xA4] = 0xFF;
     StepColorFade(moby, d + 0x60);
 }
-extern int count_active_moby_group_members(int, int);
 
 /* Counts the live level-0x75E mobys among the 20 slots at +0xB0 and returns the last slot not counted. */
 int refresh_spawner_population_and_find_free_slot(int unused, char *m) {

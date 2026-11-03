@@ -31,6 +31,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -297,8 +298,6 @@ extern float vec_distance_xy(void *, void *);
 extern float SpringAngle_spark(void *, void *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
@@ -736,7 +735,6 @@ extern int fast_dec_timer(int *);
 
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 
 /* Emit four camera-facing glow particles at the moby, cycling their spin and colour timers. */
 void emit_moby_sprite_effect_particles(char *m) {
@@ -2617,8 +2615,6 @@ extern int fast_dec_timer(int *);
 
 extern void activate_test_dummy_group(int);
 extern void compute_triggered_scene_path_pose(char *, void *, float *);
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
@@ -2754,8 +2750,6 @@ void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
     out2[2] = ((Moby *)moby)->rot.z;
 }
 extern char *MobyGetHitMessage(void *, int, int);
-
-extern void spawn_proximity_gated_bolts(void *);
 
 // Update moby 800: waits for a trigger value, then plays an effect and deletes itself.
 void update_moby_hit_triggered_removal(char *moby) {

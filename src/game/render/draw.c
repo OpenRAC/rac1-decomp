@@ -1135,8 +1135,6 @@ extern struct {
     s32 y;
 } D_001DEAC0;
 
-extern f32 fast_arc_tan(f32, f32);
-
 #define fast_cos func_001F9F90
 
 #define set_tfrag_dists func_00234380

@@ -7,8 +7,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "asm_functions/executable.h"
-
-extern float update_follow_camera_angle_blend_from_direction(char *, float *, float);
+#include "overlays/shared/follow_camera.h"
 
 /* Blend the follow camera angle toward the direction from its target to position arg. */
 void update_follow_camera_angle_blend_from_position(char *moby, int arg, float f) {

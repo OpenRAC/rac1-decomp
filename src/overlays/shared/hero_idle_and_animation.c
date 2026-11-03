@@ -33,6 +33,7 @@
 #include "game/system/stub.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -727,7 +728,6 @@ void update_hero_bolt_exclamation_hud(void) {
     }
 }
 
-extern void spawn_texture_indexed_rotated_particle(float *, float, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
 // place a marker effect at the player's aim point while state 12 is active
@@ -2349,9 +2349,6 @@ void pack_pose(int *joints, PackedPose *pose, unsigned char *model, int padding,
     pose->unk0 = 0;
 }
 
-extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *pos, int b, int color, float f,
-                                                                               float g);
-
 // Bump a counter; once it passes the limit spawn a random-offset particle and reset the counter.
 int emit_hero_periodic_surface_effect(char *a, int b) {
     struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -2369,8 +2366,6 @@ int emit_hero_periodic_surface_effect(char *a, int b) {
         *cnt = random_integer_below((int)a);
     }
 }
-
-extern void spawn_splash(void *, void *, void *, float, float);
 
 // Emits a pair of sparks from the player's position each time the counter passes its limit. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209638.
 void fast_sin_cf(int seed, int limit) {

@@ -27,6 +27,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -156,7 +157,6 @@ extern int coll_line(void *, void *, int, void *, void *);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
 extern s32 truncate_float_to_s32(f32);
-extern void MoveCtl_Init(char *p);
 
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
@@ -1626,8 +1626,6 @@ finish:
 extern short orxon_vent_puff_color_a, orxon_vent_puff_color_b, orxon_vent_puff_speed_max, orxon_vent_puff_speed_min,
     directional_particle_gravity_gp, orxon_vent_spark_percent;
 
-extern int spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
-
 typedef struct {
     f32 size; /* 0x00 */
     f32 amount; /* 0x04 */
@@ -2588,8 +2586,6 @@ void update_level_mode_dispatcher(char *m) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Update for moby class 1855: waits, arms, then fires an effect and deletes itself. */
 void Moby1855Update(char *m) {

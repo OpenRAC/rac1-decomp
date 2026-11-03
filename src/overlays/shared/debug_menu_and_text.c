@@ -13,6 +13,7 @@
 #include "game/ui/hud.h"
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
+#include "overlays/shared/follow_camera.h"
 extern Hero g_hero;
 extern int frame_size;
 extern char gold_weapon_purchased[];
@@ -143,7 +144,6 @@ extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540"
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
-extern void func_L00_002E80A8(void *);
 
 /* Free-camera controls (debug camera): pad buttons move the camera (in the free-look matrix when the hero's
    camera mode is 2, else on the ground plane), turn it about three axes with eased speeds, and when the camera

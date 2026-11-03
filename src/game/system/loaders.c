@@ -13,6 +13,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/ui/hud.h"
+#include "core/sound/989snd.h"
 
 /*
  * loaders.cpp in the original source; text 0x202AA8-0x205520.
@@ -1515,10 +1516,7 @@ extern s32 D_0015EFBC MACRO_ADDR;
 extern s32 D_0015EFC0 MACRO_ADDR;
 extern u8 D_1FF8000_04C60[] __asm__("D_1FF8000");
 extern void func_0022F090();
-extern s32 func_0012DDC0();
-extern void func_0012E1C8(s32, s32, u64);
-extern void func_0012E2E8();
-extern s32 func_0012E318(s32);
+
 extern void func_0012E4F8();
 extern s32 Stream_SubmitRead_r(void *, u32, u32) __asm__("func_002175C8");
 extern s32 func_001219C8();

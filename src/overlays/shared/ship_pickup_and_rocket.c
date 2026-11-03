@@ -12,6 +12,8 @@
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "callees.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 
 /* Ship rocket: homes in on a target. Same layout as Rocket below (defined after use). */
 struct ShipRocketVars {
@@ -143,8 +145,6 @@ extern int gemlik_coll_hit_moby __attribute__((section(".data")));
 extern int fast_dec_timer(void *);
 
 extern int coll_sphere(float, void *, int, void *);
-
-extern float vec_length(float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -372,8 +372,6 @@ extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern unsigned char *func_L00_00272158(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
-                                        float w, float pw);
 
 extern unsigned char *func_L00_0026DA50(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");

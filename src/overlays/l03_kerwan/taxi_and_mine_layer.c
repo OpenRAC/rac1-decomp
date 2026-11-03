@@ -136,7 +136,6 @@ char *spawn_mine_layer_projectile(char *p, void *pos, float *dir);
 
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
-extern void MoveCtl_Init(void *);
 extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_00213DE0");
 
 extern void MobySpringTurn(f32, f32, f32, f32, struct Moby *, void *);
@@ -2679,8 +2678,6 @@ void update_kerwan_cutscene_effects(char *m) {
             break;
     }
 }
-
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Lightpost update: on a hit it plays a sound, drops bolts, breaks apart and spawns its remains. */
 void lightpost_update(char *m) {

@@ -115,7 +115,6 @@ struct FighterJetHudVars {
     s32 tex_index; /* 0x104 */
 };
 
-extern void set_moby_list_state(int list, int state);
 extern unsigned char hero_globals_base[];
 extern char *D_L13_00160058 MACRO_ADDR;
 extern char volume_trigger_bad_target_msg[];
@@ -285,9 +284,6 @@ void update_moby_volume_trigger(Moby *moby) {
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern int HeroEnterMoveState(int, int);
 
@@ -923,7 +919,7 @@ extern void set_ground_height_band(void *);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern int func_001160D8(void);
 extern void InitKnockback(float, void *, void *, int, int, int);
-extern void MoveCtl_Init(char *p);
+
 extern int select_point_index_by_distance(void *, void *, float);
 extern float vec_length_xy(void *);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");

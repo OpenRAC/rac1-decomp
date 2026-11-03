@@ -12,6 +12,7 @@
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
+#include "core/sound/989snd.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -36,8 +37,6 @@ extern Globals137C80 disc_table_g __asm__("D_00137C80");
 extern char voice_pool[];
 extern char memory_card_state[];
 extern char level_resource_buffers[];
-
-extern void snd_StreamSafeCdSync(int);
 
 extern void Movie_Play(int, int, int, int, int);
 extern void sce_cd_sync_s(int);
@@ -172,7 +171,6 @@ extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
 extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 
-extern void func_0012E2E8(void);
 extern s32 func_001EBB48(void);
 extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
 extern void sceGsResetGraph_r(s16, s16, s16, s16) __asm__("func_00121B78");

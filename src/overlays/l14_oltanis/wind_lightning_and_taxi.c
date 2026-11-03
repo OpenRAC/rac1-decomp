@@ -33,6 +33,8 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/follow_camera.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -1614,8 +1616,6 @@ void draw_branched_lightning_arc(void) {
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
 
-extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel,
-                                      float f2);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float lightning_spark_speed_min SDATA(lightning_spark_speed_min);
 extern float lightning_spark_speed_max SDATA(lightning_spark_speed_max);
@@ -2151,7 +2151,6 @@ extern void prepare_taxi_route(char *);
 extern void request_taxi_stop_prompt(char *);
 extern Moby *find_group_moby_by_tag(char *, int);
 
-extern void Cam_SetDistanceGoal(float x, float y, int flag);
 extern float func_00214D88(float, float, float, float, float *, float *);
 extern void SamplePathAt_r(int *, int, void *, float *, int, float) __asm__("func_00215CA8");
 extern void SamplePathAt_r2(float, int *, int, void *, float *, int) __asm__("func_00215CA8");

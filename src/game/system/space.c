@@ -50,15 +50,11 @@ extern int func_001160D8(void);
 
 extern void sce_gs_sync_v(int);
 
-extern void snd_FlushSoundCommands(void);
-
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
 extern char camera_position[];
 
 extern void sce_cd_sync_s(int);
-
-extern void snd_ResolveBankXREFS(void);
 
 extern char render_sequence_c[] __asm__("D_0018CC20");
 extern float view_tan_half_fov;
@@ -585,10 +581,6 @@ extern LevelFrame_u128 sky_shell_scroll_dirs[] NOT_SDA;
 extern f32 sky_shell_base_rot_z_by_mode[] NOT_SDA;
 extern f32 cam_mode_min_fov[] NOT_SDA;
 extern u8 level_available[20] NOT_SDA;
-
-extern void snd_play_sound_vol_pan_pmpb(s32, s32, s32, s32, s32, s32, s32, void *);
-
-extern void refresh_moby_spatial_bounds(void *);
 
 void update_level_gameplay_frame(void) {
     LevelFrame_V4 first_position;
@@ -1899,9 +1891,7 @@ extern void register_moby_class(s32 moby, s32 arg1, s32 arg2, s32 oclass);
 extern void unpack_point_records(s32 src, s32 count);
 extern void ParseParticleTexs(s32 hdr, s32 base, s32 src, s32 count);
 extern s32 upload_mip_texture(s32, void *);
-extern void FastMemZero16(void *, s32);
 
-extern void snd_BankLoadFromEE_CB(s32 cmd, void *arg, s64 data);
 extern void SoundBank_StoreHandle();
 #define sequence (*(f32 *)&D_0015F53C)
 #define D_001413D0 ((s32 *)&D_001414D0)
@@ -2470,13 +2460,11 @@ extern short D_0015EF48_m SDATA(D_0015EF48);
 extern int level_archive_load_busy_i __asm__("D_0015EF4A") MACRO_ADDR;
 extern char unloaded_sound_bank_format[];
 extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
-extern int func_0012EF48(int);
+
 extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
 
-extern void snd_set_reverb_ex(int, int, int, int, int);
-
 extern void music_Stop(void);
-extern void snd_UnloadBank(int);
+
 extern void SetBackgroundColor(int, int, int);
 extern int load_level_chunk_from_disc(void);
 

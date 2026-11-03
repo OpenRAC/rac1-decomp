@@ -28,6 +28,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
+#include "overlays/shared/follow_camera.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -3382,12 +3383,6 @@ extern short muzzle_light_color_component_z;
 #define D_L14_00161A54 (*(float *)&D_L14_00161B24)
 #define D_L14_00161A58 (*(float *)&D_L14_00161B28)
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
-
-extern void sce_vu0_mul_matrix(void *, void *, void *);
-
-extern void quat_nlerp(void *, void *, void *, float);
-extern void register_beam_slot(struct Moby *, int, int);
-extern int set_beam_origin_transform_and_endpoint(struct Moby *, void *, void *);
 
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 

@@ -18,6 +18,8 @@
 #include "game/audio/sound.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "callees.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -170,7 +172,7 @@ extern void resolve_point_path_segment_xy_clearance(s32, void *, void *, f32);
 extern void Manipulator_ApplyScale(struct Moby *, s32, void *, f32);
 extern void SpawnBreakFragment_r(struct Moby *, s32, void *, void *, s32, s32, f32, f32 *, f32 *,
                                  f32 *) __asm__("func_L00_00265050");
-extern void MoveCtl_Init(MoveCtl *);
+
 extern void process_blarg_space_commando_hits();
 extern void initialize_blarg_space_commando_beam_r(struct Moby *) __asm__("func_L06_00300530");
 
@@ -1056,7 +1058,6 @@ typedef struct {
     float uv[8];
     long tag[4];
 } Pkt89B8 __attribute__((aligned(16)));
-extern void euler_rotation_basis(void *, void *);
 
 extern void draw_world_quad(void *, void *, int);
 extern char referencePosition[];
@@ -1352,7 +1353,7 @@ void bot_door_lock_update(Moby *moby) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void spawn_proximity_gated_bolts(void *);
+
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern float blarg_zero_vec[] MACRO_ADDR;

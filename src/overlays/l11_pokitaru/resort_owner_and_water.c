@@ -37,6 +37,7 @@
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/follow_camera.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -904,7 +905,6 @@ void set_resort_owner_state(struct Moby *moby, unsigned char state) {
     }
 }
 
-extern int follow_path(int *, int, int, void *, void *, void *, float);
 extern int *path_table[];
 
 struct TgtData {
@@ -1704,7 +1704,7 @@ extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern float vec_length_xy_r3(void *) __asm__("func_001F9CE8");
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
-extern void func_L00_002E9900(float, float, int);
+
 extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 extern int is_pokitaru_boat_target_group_clear_r(void *) __asm__("func_L11_0030BC20");
@@ -2045,8 +2045,6 @@ extern float ApproachValue(float *, float, float);
 extern void Moby_PlaySound_u(int, int, void *) __asm__("func_0022ED80");
 extern float ApproachWithVelocity_f(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern void lerp_vector(void *, void *, void *, float);
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern Moby *child_set0_mobys[6];
 extern Moby *pokitaru_class_481_mobys[4] MACRO_ADDR;
@@ -2277,7 +2275,6 @@ extern short attached_child_source_axis1_offset_length_gp;
 extern short attached_child_rotation_y_degrees_gp;
 extern short child_sets_slider_height;
 extern void vec_scale_to_length(void *out, void *a, float len);
-extern void euler_rotation_basis(void *, void *);
 
 #define D_L11_001DA9E0_p D_L11_001DA9E0
 #define D_L11_00161FB0_p D_L11_00161FB0
@@ -2726,11 +2723,11 @@ extern float pokitaru_camera_pos_z;
 
 extern void RescaleFloatTable(float);
 extern void RipplePatch_ToFixedPoint(void *, void *);
-extern void set_moby_list_state(int, int);
+
 extern void Group_CopyZToTableSlots(struct Moby *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
-extern int check_scaled_vector_bsphere(struct Moby *, float);
+
 extern void RippleSimClock(void *, int);
 extern void render_level_11_water_grids(void);
 extern void populate_water_tile_neighbor_indices(int);
@@ -3168,7 +3165,7 @@ extern int coll_sphere(float, void *, int, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern int sync_ship_pickup_child_pose(char *owner, char *data);
-extern float vec_length(float);
+
 extern void jet_animate(void *, float);
 extern struct Moby *pokitaru_coll_hit_moby __attribute__((section(".data")));
 

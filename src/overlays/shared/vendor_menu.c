@@ -30,6 +30,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
+#include "callees.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -241,15 +242,11 @@ extern char hero_globals_base[];
 extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
 extern s32 vendor_auxiliary_moby_load_pending MACRO_ADDR;
 
-extern void snd_PauseAllSoundsInGroup(s32);
 extern void music_Pause(s32);
-extern int snd_FlushSoundCommands(void);
+
 extern void build_vendor_menu_rows(s32);
 
 extern s32 HeroEnterMoveState(s32, s32);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern short vendor_camera_eye_local_offset;
 extern f32 vendor_camera_eye_local_offset_z MACRO_ADDR;
@@ -379,7 +376,6 @@ void open_vendor_menu(VendorMoby_pv *m) {
 
 extern int HeroEnterMoveState(int, int);
 
-extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode SDATA(cinematic_mode);
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
@@ -452,7 +448,7 @@ extern s32 skip_frame MACRO_ADDR;
 extern s32 lvl_vu_chain_buffer_size MACRO_ADDR;
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero;
-extern void sound_update(void);
+
 typedef struct {
     char pad[0x30];
     int x30;
@@ -521,8 +517,6 @@ struct T_29ad08 {
 extern struct T_29ad08 item_defs_r[] __asm__("D_L00_00179BC0");
 
 extern float ProbeGroundHeight_v(float, void *, s32) __asm__("func_00214358");
-
-extern void euler_rotation_basis(void *, void *);
 
 extern void Music_ContinueStreamIfReady(void);
 extern void sce_gs_sync_v(s32);
@@ -1228,8 +1222,7 @@ extern void start_vendor_exit_cutscene();
 extern void close_vendor_menu();
 
 extern void draw_vendor_inset_quads();
-extern void set_camera_position();
-extern void set_camera_rotation();
+
 extern void UpdateAllPointLights();
 extern void decompress_and_relocate_vendor_moby_assets();
 extern void handle_vendor_auxiliary_moby_event();
@@ -1244,10 +1237,6 @@ extern void update_vendor_purchase();
 extern void initialize_vendor_selected_item_mobys();
 
 extern void restore_hero_after_vendor_exit_cutscene();
-extern void sceVu0UnitMatrix();
-extern void sceVu0RotMatrixX();
-extern void sceVu0RotMatrixY();
-extern void sceVu0RotMatrixZ();
 
 #define vendor_menu_r (*(VMenuD *)&D_L00_001CA7C0)
 #define pad_state D_0013CA40

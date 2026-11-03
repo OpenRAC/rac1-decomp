@@ -671,7 +671,7 @@ extern SifRpcData sif_rpc_data_d __asm__("D_00156900");
 extern int disable_interrupts(void); /* DI */
 extern void enable_interrupts(void); /* EI */
 extern void sceSifInitCmd(void); /* sceSifInitCmd */
-extern int sce_sif_get_reg(int); /* sceSifGetReg */
+
 extern int sce_sif_set_reg(int, int); /* sceSifSetReg */
 extern void sif_rpc_request_end(char *);
 extern void sif_rpc_request_bind(void *, void *);

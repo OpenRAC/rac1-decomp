@@ -602,7 +602,6 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 
-extern void MoveCtl_Init(char *p);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
@@ -3164,11 +3163,6 @@ extern float novalis_falling_rock_cam_distance SDATA(novalis_falling_rock_cam_di
 extern float novalis_falling_rock_cam_height SDATA(novalis_falling_rock_cam_height);
 extern float novalis_falling_rock_cam_eye_offset SDATA(novalis_falling_rock_cam_eye_offset);
 extern float novalis_falling_rock_cam_blend_speed SDATA(novalis_falling_rock_cam_blend_speed);
-
-extern void set_follow_camera_angle_blend_from_direction(void *a, float x, float y);
-extern void Cam_SetDistanceGoal(float x, float y, int flag);
-
-extern void Cam_SetEyeOffset(int, float, float);
 
 typedef struct {
     u8 pad_00[0x80];

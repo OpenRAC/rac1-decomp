@@ -35,6 +35,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -674,8 +675,6 @@ void attach_cutscene_fixed_scale_manipulator(void) {
     }
 }
 
-extern void set_camera_position();
-extern void set_camera_rotation();
 extern void attach_cutscene_fixed_scale_manipulator_m(char *) __asm__("func_L01_002FC890");
 extern char cutscene_trigger_error_fmt[];
 extern LevelState novalis_checkpoint_level_state_s __asm__("D_L01_001BB9C0");
@@ -1491,7 +1490,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int fast_dec_timer(void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 
 /* Draws the moby's four pulsing glow rings between it and the camera, fading with distance. */
 void update_gold_bolt_glow_rings(char *m) {
@@ -1543,9 +1541,6 @@ void update_gold_bolt_glow_rings(char *m) {
 }
 
 extern void lerp_vector(void *, void *, void *, float);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern char *camera_points MACRO_ADDR;
 
@@ -1602,7 +1597,6 @@ extern int gold_bolt_trail_color SDATA(gold_bolt_trail_color);
 extern float gold_bolt_trail_size SDATA(gold_bolt_trail_size);
 
 extern void rand_vec(float *, float, float);
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
 
 /* builds three jittered offsets and fires the same effect at each accumulated point */
 void spawn_gold_bolt_particles(char *m) {
@@ -1632,7 +1626,7 @@ void spawn_gold_bolt_particles(char *m) {
                                                        random_integer_below(0xFF) & 0xFF, 0, gold_bolt_trail_size);
     }
 }
-extern void set_moby_list_state(char *arg, int val);
+
 extern unsigned char help_stats_base[] NOT_SDA;
 
 // marks the moby's flag bit in two bitsets and starts its state change
@@ -2718,8 +2712,6 @@ extern f32 sandmouse_dust_size_max SDATA(sandmouse_dust_size_max);
 extern int sandmouse_dust_alpha SDATA(sandmouse_dust_alpha);
 extern f32 sandmouse_dust_accel SDATA(sandmouse_dust_accel);
 
-extern void MoveCtl_Init(void *);
-
 extern void MobySpringTurn(void *, f32, void *, f32, f32, f32);
 extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void jet_animate(void *, f32);
@@ -2729,7 +2721,6 @@ extern void set_hero_animation_v(f32, int, int) __asm__("func_L00_00232C10");
 
 extern void add_random_offset_to_vector_xyz(void *, f32);
 extern int func_001160D8(void);
-extern void *PartType53Spawn(void *, int, f32, f32, int, int, int, void *, f32);
 
 extern Moby *sandmouse_grab_moby;
 extern int g_current_level_index MACRO_ADDR;

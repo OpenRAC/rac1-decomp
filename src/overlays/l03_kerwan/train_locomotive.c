@@ -1356,7 +1356,7 @@ extern int FastBSphereCheck(void *, float);
 extern int truncate_float_to_s32(float);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
-extern int check_scaled_vector_bsphere(char *, float);
+
 extern int select_point_index_by_distance(void *, void *, float);
 extern int resolve_path_node_index(void *, int);
 extern int advance_path_node_index(char *);
@@ -1979,7 +1979,7 @@ extern int can_release_linked_robot_dog(unsigned char *);
 extern int fast_dec_timer(int *);
 extern void *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void MobyGroup_SetByteBC(int, int);
+
 extern void trooper_set_knockback(float *, float, float);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
@@ -2243,7 +2243,7 @@ extern void FindNearestTargetMoby(void *, void *, float);
 
 extern void update_kerwan_path_enemy_hit_reaction(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern void MoveCtl_Init(char *p);
+
 extern int is_point_inside_clip_volume_cf(int);
 
 extern void is_value_within_interpolated_window_cf(void *);

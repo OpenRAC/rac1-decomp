@@ -119,7 +119,6 @@ extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void Group_CopyZToTableSlots(char *moby);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
-extern int check_scaled_vector_bsphere(char *vec, float scale);
 
 extern void RippleSimClock(char *p, int n);
 
@@ -337,8 +336,6 @@ void initialize_level_12_slot_grid_neighbors(int arg) {
         }
     }
 }
-
-extern void MobyGroup_SetByteBC(int, int);
 
 extern int func_L00_002DCDA8(void *, void *, void *);
 /* Suck cannon suction for a group moby: marks its group and sets state 8 while held. */
@@ -1133,8 +1130,6 @@ extern s32 g_hero_moby;
 
 extern s32 fast_dec_timer(s32 *);
 
-extern s32 count_active_moby_group_members(s32, s32);
-extern void MobyGroup_SetByteBC(s32, s32);
 extern void PostHitMessage_r2(struct Moby *, s32, s32, Vec4f *, f32 *, f32) __asm__("func_L00_0025AC00");
 extern TrollHit *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern void ComputeHitResponse_r(struct Moby *, TrollHit *, f32 *, s32, s32 *, f32 *, s32,
@@ -1361,7 +1356,6 @@ typedef struct {
 
 extern Moby *D_L12_00160058 MACRO_ADDR;
 extern Path *hoven_paths_r2[] __asm__("D_L12_001B0C30");
-extern int count_active_moby_group_members(int, int);
 
 extern void steer_platform_toward_target_r(void *, void *, void *, int, int) __asm__("func_L12_002E4F18");
 
@@ -1816,7 +1810,7 @@ extern char *hoven_nearby_mobys[];
 
 extern void process_blarg_trooper_damage_and_alerts(char *moby);
 extern void FindNearestTargetMoby(char *, float *, float);
-extern void MoveCtl_Init(void *);
+
 extern int func_001160D8(void);
 
 extern int test_point_within_moby_limits(void *, void *, float, float, float);
@@ -2284,8 +2278,6 @@ tail:
 #undef M_F
 #undef M_P
 #undef COPY4
-
-extern int count_active_moby_group_members(int, int);
 
 extern void remove_blarg_trooper_and_attachment();
 extern char *MobyGetHitMessage(void *, int, int);

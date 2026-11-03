@@ -27,6 +27,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char level_moby_killed[];
 extern unsigned char saved_mission_state[];
 extern Hero g_hero;
@@ -258,8 +260,6 @@ extern int blarg_gadgebot_container_alpha_fix SDATA(blarg_gadgebot_container_alp
 extern int blarg_gadgebot_container_texture SDATA(blarg_gadgebot_container_texture);
 extern int blarg_gadgebot_container_color SDATA(blarg_gadgebot_container_color);
 extern float blarg_gadgebot_container_normal_scale SDATA(blarg_gadgebot_container_normal_scale);
-
-extern float vec_length(float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1342,10 +1342,8 @@ extern void handle_gadgebot_hit_knockback(void *);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
-extern int compute_clear_path_point_mask(float, int *, int, int, void *);
 extern void update_gadgebot_glow_effects(char *);
 
-extern int follow_path(int *, int, int, void *, void *, void *, float);
 extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
 
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
@@ -1361,7 +1359,7 @@ extern void select_nearest_gadgebot_interaction_target(void *);
 extern char *spawn_source_attached_fading_effect_particle(float, char *, int, int, int);
 extern int mine_fall(void *, void *);
 
-extern void PartType53Spawn(void *, int, float, float, int, int, int, float, void *);
+extern void PartType53Spawn_v(void *, int, float, float, int, int, int, float, void *) __asm__("func_L00_00272F00");
 extern int process_gadgebot_interactions(void *, int);
 
 extern void Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -1956,8 +1954,8 @@ void GadgebotUpdate(Moby *moby) {
                     ga = (cg << 8) | 0x7F000000;
                     fa = s * 0.07f;
                     fb = s * 0.7f;
-                    PartType53Spawn(v50, t, fa, fb, (cb << 16) | ga | cr, 0, random_integer_below(2) ? 1 : -1,
-                                    g_frame_time_sq * 15.0f, v40);
+                    PartType53Spawn_v(v50, t, fa, fb, (cb << 16) | ga | cr, 0, random_integer_below(2) ? 1 : -1,
+                                      g_frame_time_sq * 15.0f, v40);
                 }
                 return;
             }
@@ -2465,8 +2463,8 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 vB[2] = f0;
                 r2 = scale_ticks(rand_range(0xF, 0x1E));
                 gc = (r17 << 8) | 0x7F000000;
-                PartType53Spawn(vA, r2, f21 * 0.07f, f21 * 0.7f, (r16 << 16) | gc | r18, 0,
-                                random_integer_below(2) ? 1 : -1, g_frame_time_sq * 15.0f, vB);
+                PartType53Spawn_v(vA, r2, f21 * 0.07f, f21 * 0.7f, (r16 << 16) | gc | r18, 0,
+                                  random_integer_below(2) ? 1 : -1, g_frame_time_sq * 15.0f, vB);
             }
 
             g = level_mobys_q_r2 + (*(int *)st << 8);
@@ -2499,8 +2497,8 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 vA[2] = f0;
                 r2 = scale_ticks(rand_range(0xF, 0x1E));
                 gc = (r17 << 8) | 0x7F000000;
-                PartType53Spawn(vC, r2, f21 * 0.07f, f21 * 0.7f, (r16 << 16) | gc | r18, 0,
-                                random_integer_below(2) ? 1 : -1, g_frame_time_sq * 15.0f, vA);
+                PartType53Spawn_v(vC, r2, f21 * 0.07f, f21 * 0.7f, (r16 << 16) | gc | r18, 0,
+                                  random_integer_below(2) ? 1 : -1, g_frame_time_sq * 15.0f, vA);
             }
 
             *(char *)(ctx + 0x20) = 4;
@@ -3028,7 +3026,7 @@ extern short blarg_holder_beam_color_a, blarg_holder_beam_color_b, energy_sphere
 extern int blarg_holder_spark_life_ticks SDATA(blarg_holder_spark_life_ticks);
 
 extern int truncate_float_to_s32_g(float) __asm__("func_001FA898");
-extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
+
 extern void spawn_moving_hero_relative_alpha_fade_particle_g(void *, void *, int, int, int, int,
                                                              float) __asm__("func_L00_00273F80");
 
@@ -3198,7 +3196,8 @@ void energy_sphere_update(char *m) {
     }
 }
 
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, float, void *, int, int, int, int);
+extern void spawn_moving_hero_relative_alpha_fade_particle_v(void *, float, void *, int, int, int,
+                                                             int) __asm__("func_L00_00273F80");
 extern float blarg_energy_sphere_debris_speed_min SDATA(blarg_energy_sphere_debris_speed_min);
 extern float blarg_energy_sphere_debris_speed_max SDATA(blarg_energy_sphere_debris_speed_max);
 extern float blarg_energy_sphere_debris_scale_min SDATA(blarg_energy_sphere_debris_scale_min);
@@ -3230,6 +3229,6 @@ void spawn_energy_sphere_destruction_particles(char *m) {
         }
         c = blarg_energy_sphere_debris_life;
         v = random_integer_below(0xFF);
-        spawn_moving_hero_relative_alpha_fade_particle(m + 0x10, f, buf, r, c, (unsigned char)v, 0);
+        spawn_moving_hero_relative_alpha_fade_particle_v(m + 0x10, f, buf, r, c, (unsigned char)v, 0);
     }
 }

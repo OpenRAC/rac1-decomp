@@ -560,7 +560,6 @@ extern void queue_movie_with_game_language(int);
 extern void queue_language_zero_movie(int);
 extern void StartCutscene(int);
 
-extern int snd_FlushSoundCommands(void);
 extern int sound_update(void); /* sound update: ends in `return 0`, so it returns a value */
 extern void initialize_pause_menu(void);
 

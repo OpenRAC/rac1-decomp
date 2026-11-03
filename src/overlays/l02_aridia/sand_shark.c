@@ -32,6 +32,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -229,7 +230,6 @@ extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 extern void set_ground_height_band(void *);
 extern void handle_sand_shark_damage_and_targeting(unsigned char *moby);
 
-extern void MoveCtl_Init(char *p);
 extern int func_001160D8(void);
 
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
@@ -1348,7 +1348,7 @@ extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 extern void set_ground_height_band(void *);
 extern void handle_level02_bot_damage_and_retargeting(void *);
 extern int func_001160D8(void);
-extern void MoveCtl_Init(char *p);
+
 extern void reset_shot_tracking(char *moby);
 /* The angle before the pointer: argument moves follow the parameter order, and retail loads $f12 before $a1 in state
    11. */
@@ -2515,9 +2515,6 @@ typedef struct {
 extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
 extern void SamplePathAt(void *, int, void *, void *, int, float);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern void PartType41Spawn(void *, void *, int, int, int, int, int, float);
 extern void HeroL02_SetMoveState(int, int);

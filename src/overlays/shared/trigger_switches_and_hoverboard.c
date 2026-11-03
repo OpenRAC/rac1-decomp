@@ -23,6 +23,8 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
@@ -1041,8 +1043,7 @@ void transform_moby_vector_table_to_world_space(Moby *a) {
     }
 }
 extern int FastBSphereCheck(char *, float);
-extern unsigned char *spawn_mode_controlled_orbiting_trail_particle(float f0, float f1, int a0, void *pos, int timer,
-                                                                    int flag, int col, float *vel);
+
 extern char rilgar_zero_vec[] MACRO_ADDR;
 
 // Moby update: wakes up, then bursts particles when the player is near.
@@ -1113,9 +1114,7 @@ extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001
 extern char *MobyGetHitMessage(struct Moby *, s32, s32);
 
 extern struct Moby *SpawnBreakFragment(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *, void *);
-extern void spawn_proximity_gated_bolts(struct Moby *);
 
-extern void PartType53Spawn(void *, s32, f32, f32, s32, s32, s32, void *, f32);
 extern struct Spark_c8e0 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, s32);
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");

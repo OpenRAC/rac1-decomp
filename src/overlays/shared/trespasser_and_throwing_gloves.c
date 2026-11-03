@@ -1064,8 +1064,6 @@ extern CollisionHit_C39D0 coll_hit_result_r2 __asm__("D_L00_00173F40");
 extern Vec4 g_debug_camera_r2 __asm__("D_L00_00166EC0");
 extern Vec4 player_camera[3];
 
-extern f32 vec_length(f32);
-
 extern s32 fast_dec_timer(s32 *);
 extern s32 coll_line_r2(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 
@@ -1476,8 +1474,6 @@ extern unsigned char *moby_get_ride_transform(int);
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
 
-extern float vec_length(float);
-
 extern char D_00173F60_alias[] __asm__("D_L00_00173F60");
 extern struct {
     float pad[10];
@@ -1762,7 +1758,6 @@ void destroy_decoy_on_selected_materials(void *m) {
 /* Thrown-object moby update (the state byte at moby+0x20 picks: 0 init, 1 held (killed if the hero lets go), 2 flying (gravity, push-apart from other mobys, sphere collision with bounce/stick), 3 and 4 landed/rolling (hit detection against the nearest hurt, damage and explosion when the vars+0x48 health drops below 0; 4 times out into 5), 5/6 fade and kill). Written from the asm with the NTSC decomp draft as the guide; PAL adds the hero-state 0x31 pull toward the hero before the hit test. Not checkable by real calls (not called before level 1). */
 extern int coll_sphere(float, void *, int, void *);
 
-extern float vec_length(float);
 extern void destroy_decoy_on_selected_materials(void *);
 
 extern void add_random_offset_to_vector_xyz(float, void *);

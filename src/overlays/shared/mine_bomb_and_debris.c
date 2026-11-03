@@ -25,6 +25,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -222,7 +223,6 @@ extern f32 vec_distance_xy(void *, void *);
 extern int MoveKeepingOverGround_v(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
 
-extern void spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
 extern int DefaultVtbl_DeleteMoby_v(int, int, float) __asm__("func_L00_00237B70");
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
@@ -2917,7 +2917,6 @@ typedef struct {
 float random_float_between(float, float);
 void vec_scale_to_length(void *, void *, float);
 
-void PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern V_2b1af0_B30C8 hero_basis_2;
 void build_look_at_matrix(void *, void *, void *, float);

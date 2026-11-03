@@ -231,7 +231,6 @@ void resolve_level_asset_block_pointers(char *p) {
 }
 
 extern int truncate_float_to_s32(float);
-extern int func_00120778(float);
 
 extern char moby_class_size_format[];
 

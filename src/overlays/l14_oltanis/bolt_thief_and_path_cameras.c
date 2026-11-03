@@ -1164,7 +1164,8 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
 
-extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
+extern unsigned char *PartType59Spawn_v(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s,
+                                        int mode) __asm__("func_L00_00273E08");
 
 typedef struct {
     float pad[2];
@@ -1209,7 +1210,7 @@ void update_morphoray_particles(char *p) {
         g = g / (float)scale_ticks(255);
         c = FastTweenColor(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - g));
         k = truncate_float_to_s32_r(*a++);
-        PartType59Spawn(m->c[j], v, c, k, 0x35, 1, 2, 0);
+        PartType59Spawn_v(m->c[j], v, c, k, 0x35, 1, 2, 0);
         j++;
         FastVecAdd(v, v, &v[4]);
     }

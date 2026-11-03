@@ -25,6 +25,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -708,7 +709,6 @@ void reset_moby_from_class_defaults(struct Moby *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void set_moby_list_state(int list, int state);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
@@ -1246,7 +1246,7 @@ extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern void func_L00_002A5158(void *, int, int, float, float, float, float);
 extern int is_point_inside_clip_volume_r2(void *, int) __asm__("func_00215570");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern int func_L01_00276680(void *, float);
+
 extern void func_L01_002B9198(void *, int);
 extern void render_level07_water_grids_r(void) __asm__("func_L07_0030E100");
 
@@ -2611,7 +2611,7 @@ found:
 extern void Manipulator_ApplyScale(void *, int, void *, float);
 
 extern float resolve_camera_surface_height(void *, int);
-extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
+
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 #define func_L00_002592B0_t(m, a, v, k, d, x) \
     ((void (*)(char *, float, float *, float, float, float))func_L00_002592B0)(m, a, v, k, d, x)
@@ -3653,8 +3653,7 @@ extern int coll_line_r4(void *, void *, int, void *, int) __asm__("func_L00_001E
 
 extern int func_001160D8_313800(void) __asm__("func_001160D8");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void *func_L00_00273868(float *pos, unsigned char a1, unsigned char a2, unsigned char a3, unsigned char a4,
-                               unsigned char a5, void *a6, float f0, float f1);
+
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
 extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
 extern int umbris_frame_count_r __asm__("D_L07_0015F6B0") MACRO_ADDR;

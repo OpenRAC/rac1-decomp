@@ -24,6 +24,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -1537,8 +1538,6 @@ extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
-
-extern void MoveCtl_Init(char *p);
 
 extern float compute_circular_saw_flock_steering(void *, void *, float);
 

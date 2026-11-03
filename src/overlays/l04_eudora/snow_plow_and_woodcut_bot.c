@@ -25,6 +25,7 @@
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -1825,7 +1826,6 @@ typedef struct {
 } L10SpriteData;
 extern int fast_dec_timer(int *);
 
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 extern int eudora_game_mode MACRO_ADDR;
 
@@ -2317,7 +2317,6 @@ void dispatch_mode_selected_slot(struct Moby *m) {
             break;
     }
 }
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL04_Update(char *m) {

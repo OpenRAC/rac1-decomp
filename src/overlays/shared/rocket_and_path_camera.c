@@ -19,6 +19,7 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
@@ -49,7 +50,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int fast_dec_timer(int *);
 
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 extern char orxon_camera_pos[];
 

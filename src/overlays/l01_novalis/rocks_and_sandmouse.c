@@ -1240,7 +1240,6 @@ typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) SV4;
 extern char *MobyGetHitMessage(void *, int, int);
-extern void spawn_proximity_gated_bolts(void *);
 
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
                                 float scale, float *v12);
@@ -1853,7 +1852,7 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern int hero_max_health MACRO_ADDR;
 
 extern int is_moby_in_state_one(void *);
-extern int check_scaled_vector_bsphere(float, void *);
+extern int check_scaled_vector_bsphere_v(float, void *) __asm__("func_L01_00276680");
 /* Shows Novalis tutorial help messages based on what the player has used so far. */
 void update_level01_tutorial_hints(Moby *moby) {
     s32 *data;
@@ -1977,7 +1976,7 @@ void update_level01_tutorial_hints(Moby *moby) {
                         usage_stats[13].level_mask =
                             usage_stats[13].level_mask | (1 << g_current_level_index_r2) | 0x80000000;
                         Help_Request(1, 1);
-                    } else if (check_scaled_vector_bsphere(255.0f, m2) != 0) {
+                    } else if (check_scaled_vector_bsphere_v(255.0f, m2) != 0) {
                         Help_Request(2, 2);
                     }
                 }
@@ -2144,7 +2143,7 @@ char *SpawnDebrisMoby(char *src, void *dir, float scale) {
 extern u128_D568 fx_prev_pos MACRO_ADDR;
 
 extern int truncate_float_to_s32(float);
-extern char *spawn_splash(float, float, void *, void *, void *);
+extern char *spawn_splash_v(float, float, void *, void *, void *) __asm__("func_L00_00272770");
 extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
@@ -2195,9 +2194,10 @@ void update_level01_cutscene_effects(struct Moby *moby) {
                     if (fx_cutscene_D568.frame >= scale_ticks(472) && fx_cutscene_D568.frame <= scale_ticks(537) &&
                         fx_cutscene_D568.slot[0] != 0) {
                         Moby_GetJointWorldPos(fx_cutscene_D568.slot[0], 1, &effect_position_or_motion_delta);
-                        splash = spawn_splash(random_float_between(0.5f, 2.0f), random_integer_below(2) ? 2.0f : -2.0f,
-                                              &effect_position_or_motion_delta, (char *)novalis_zero_vec,
-                                              &effect_position_or_motion_delta.f[2]);
+                        splash =
+                            spawn_splash_v(random_float_between(0.5f, 2.0f), random_integer_below(2) ? 2.0f : -2.0f,
+                                           &effect_position_or_motion_delta, (char *)novalis_zero_vec,
+                                           &effect_position_or_motion_delta.f[2]);
                         if (splash != 0) {
                             *(s16 *)(splash + 0xA) = scale_ticks(60);
                         }

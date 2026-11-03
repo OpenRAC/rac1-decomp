@@ -1028,8 +1028,6 @@ void cancel_hero_item_animation(void) {
     }
 }
 
-extern void euler_rotation_basis(void *, void *);
-
 #define HB(o) (*(unsigned char *)(g + (o)))
 
 /* Hero animation slots: keeps each of the two slot objects (hero +0xD08) animated for the
@@ -3102,8 +3100,6 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
 
-void sceVu0Normalize(void *, void *);
-
 void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
 
 void vec_scale_to_length(void *, void *, f32);
@@ -3813,8 +3809,6 @@ void steer_hero_planar_velocity(float step) {
         }
     }
 }
-
-extern float vec_length(float);
 
 typedef struct {
     float f;

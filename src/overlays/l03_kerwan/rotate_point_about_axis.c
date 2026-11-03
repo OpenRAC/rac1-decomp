@@ -10,7 +10,6 @@
 typedef unsigned int Q __attribute__((mode(TI), aligned(16)));
 
 typedef unsigned int Q_50B88 __attribute__((mode(TI), aligned(16)));
-extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 /* Rotates a point (in place) about a unit axis by angle using a Rodrigues-style matrix: skew = cross-product matrix of
    axis, sin_part = sin*skew, cos_part = (1-cos)*skew^2; cos_part is then reused as the identity matrix.

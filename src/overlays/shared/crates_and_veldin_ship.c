@@ -28,6 +28,8 @@
 #include "game/render/vuchain.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
+#include "callees.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -190,7 +192,7 @@ extern s32 GetFlaggedPvarWord_r(M_2cfcb8 *) __asm__("func_L00_00261448");
 extern int get_first_moby_in_group(M_2cfcb8 **, s32, s32, s32);
 extern int get_next_moby_in_group(M_2cfcb8 **, M_2cfcb8 *, s32, s32);
 extern void FastVecAdd_r(V_2cfcb8 *, V_2cfcb8 *, void *) __asm__("func_001F9BD8");
-extern void raise_kernel_trap(void);
+
 extern f32 FastVecDist_r(V_2cfcb8 *, V_2cfcb8 *) __asm__("func_001F9D10");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/veldin_ship.c, FUN_L00_002cfcb8. */
@@ -555,8 +557,6 @@ extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 extern int is_moby_in_class_range_500_to_540(void *);
 
 extern int truncate_float_to_s32(float);
-
-extern void euler_rotation_basis(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1001,7 +1001,6 @@ extern s32 fast_dec_timer(s32 *);
 #define XFORM(a, b, c) func_001F9EE8((Vec4f *)(a), (Vec4f *)(b), (c))
 extern void vec_scale_to_length(void *, void *, f32);
 
-extern f32 vec_length(f32);
 extern void draw_world_quad(void *, s32, s32);
 
 /* Draw the Veldin ship's glow quads from its vertices when the camera is near or it is active. */
@@ -3351,7 +3350,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int fast_dec_timer(int *);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode, float f);
 
 /* Draws four drifting, colour-cycling sprites around a moby, stepping each one's phase and fade timer. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d6cd0. */
 void update_infobot_particle_effect(char *o) {

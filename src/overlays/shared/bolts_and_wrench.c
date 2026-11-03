@@ -96,7 +96,6 @@ LINKER_REMNANT("asm/overlays", func_L00_002A5138);
 /* Pokes a round ripple into the level water height grids: each 0x1190-byte patch holds
  * two 23x16 height buffers (current/previous frame, indices water_grid_cur_index / water_grid_prev_index);
  * rows 16-22 mirror the eight neighbours' edges, so border cells are copied out to them. */
-extern float vec_length(float);
 
 extern float water_ripple_grid_params[];
 extern short water_grid_cur_index;
@@ -490,7 +489,6 @@ extern float light_beam_corner_uvs[][2];
 extern int light_beam_corner_colors[];
 extern int light_beam_quad_corner_indices[][4];
 
-extern void euler_rotation_basis(void *, void *);
 extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
@@ -1733,7 +1731,7 @@ int should_trigger_wrench_hit_reaction(void) {
     return 0;
 }
 
-extern void PartType53Spawn(void *, int, int, int, int, void *, float, float, float);
+extern void PartType53Spawn_v(void *, int, int, int, int, void *, float, float, float) __asm__("func_L00_00272F00");
 
 /* Emits N pairs of particles at POS with a random velocity, jittering POS each time. */
 void emit_randomized_sparkle_pairs(float *pos, int n) {
@@ -1755,9 +1753,9 @@ void emit_randomized_sparkle_pairs(float *pos, int n) {
         pos[0] += randf_sym(0.0f, 0.15f);
         pos[1] += randf_sym(0.0f, 0.15f);
         pos[2] += randf_sym(0.0f, 0.15f);
-        PartType53Spawn(pos, scale_ticks(30), 0x7F207F7F, 0, k, v, speed * 0.1f, speed, 0.0030f);
+        PartType53Spawn_v(pos, scale_ticks(30), 0x7F207F7F, 0, k, v, speed * 0.1f, speed, 0.0030f);
         k = -k;
-        PartType53Spawn(pos, scale_ticks(30), 0x7F7F7F7F, 1, k, v, speed * 0.07f, speed * 0.7f, 0.0030f);
+        PartType53Spawn_v(pos, scale_ticks(30), 0x7F7F7F7F, 1, k, v, speed * 0.07f, speed * 0.7f, 0.0030f);
     }
 }
 typedef float V[4] __attribute__((aligned(16)));

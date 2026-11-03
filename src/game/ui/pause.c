@@ -99,7 +99,7 @@ extern char pause_menu_screen_optional[];
 extern int selected_level_index;
 extern int pause_entry_cleared_word;
 extern int update_mission_list_i(void) __asm__("func_0020C7A0");
-extern int func_0012DDC0(void);
+
 extern void update_skill_point_and_gold_weapon_menu_entries(void);
 extern char menu_system[] NOT_SDA;
 extern int g_game_mode MACRO_ADDR;

@@ -20,6 +20,9 @@
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
 #include "overlays/shared/sound_playback.h"
+#include "callees.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -485,8 +488,7 @@ extern void func_L00_001FF328(void *, void *, float);
 extern void func_L08_00307FF0(char *, int);
 extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
-extern void func_L00_002EBE88(void *);
-extern void func_L00_002EBEE0(void *);
+
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern float func_001F9CE8(void *);
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
@@ -1895,13 +1897,11 @@ extern void build_axis_roll_matrix(void *, void *, float);
 
 extern float step_angle_toward_target_v(float *, float, float, int) __asm__("func_L00_0025CC58");
 extern void rand_vec(void *, float, float);
-extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel,
-                                      float f2);
+
 extern void initialize_bolt_counter_hud_r(void) __asm__("func_L00_0023A658");
 extern void update_bolt_counter_hud_animation_and_visibility_r(void) __asm__("func_L00_0023A690");
 extern void draw_bolt_counter_hud_panel_r(void) __asm__("func_L00_0023A788");
 
-extern void multiply_matrix3x3(void *, void *, void *);
 extern int coll_sphere(float, void *, int, void *);
 
 extern int batalia_bolt_sound_frame SDATA(batalia_bolt_sound_frame);

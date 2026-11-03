@@ -125,7 +125,7 @@ extern float plasmabot_beam_length SDATA(plasmabot_beam_length);
 extern float plasmabot_beam_origin_offset SDATA(plasmabot_beam_origin_offset);
 
 extern void Manipulator_ApplyScale(float, char *, int, char *);
-extern int release_beam_slot_by_id(char *);
+
 extern void SetDeathBits(void *, int, int);
 void process_plasmabot_hit_reaction(char *m);
 void update_plasmabot_target(char *moby);
@@ -152,14 +152,13 @@ void scale_and_apply_plasmabot_planar_velocity(char *moby);
 float update_plasmabot_aim_quaternion(char *moby, int flag, float x);
 void update_plasmabot_aim_joint_rotation(char *a, float x);
 int count_listed_plasmabots_preparing_or_sweeping_beam(int index);
-extern int register_beam_slot(void *, int, int);
 
 void Group_ResetClass28Timers(int idx);
 
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int coll_line(void *, void *, int, void *, void *);
-extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
+
 extern int mine_fall(void *, void *);
 
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
@@ -854,7 +853,6 @@ extern float plasmabot_knockback_lift_factor SDATA(plasmabot_knockback_lift_fact
 extern void StepColorFade(void *, void *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern int release_beam_slot_by_id(char *);
 
 extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
 extern int truncate_float_to_s32(float);
@@ -1908,7 +1906,7 @@ extern float floating_mine_glow_phase_step_gp SDATA(floating_mine_glow_phase_ste
 extern float ProbeGroundHeight_v(float, void *, int) __asm__("func_00214358");
 extern void Spring_r(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
 extern MobyHit *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
-extern void FastMemZero16(void *, int);
+
 extern int ComputeHitResponse_r(struct Moby *, MobyHit *, HitInfo *, int, int *, int, int,
                                 int) __asm__("func_L00_0025B4D0");
 

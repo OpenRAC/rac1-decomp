@@ -29,6 +29,8 @@
 #include "game/audio/sound.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -472,21 +474,21 @@ void add_random_xy_offset(float *out, float value) {
     out[1] += random_float_between(neg, value);
 }
 extern void *collect_snagglebeast_navigation_ids(void *, void *, void *);
-extern int follow_path(void *, void *, int, float, void *, void *, void *);
+extern int follow_path_v(void *, void *, int, float, void *, void *, void *) __asm__("func_L01_00277FD8");
 extern int select_point_index_by_distance(void *, void *, float);
 
 /* Finds where a path leaves the object's current segment and copies the point out. */
 void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
     float v[8];
     void *r = collect_snagglebeast_navigation_ids(m, a, v);
-    if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos, b, c))
+    if (follow_path_v(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos, b, c))
         return;
     {
         int i = select_point_index_by_distance(b, umbris_paths[*(int *)(a + 0x290)], 0.0f);
         int j = select_point_index_by_distance(umbris_paths[*(int *)(a + 0x290)] + (i * 16 + 0x10),
                                                umbris_paths[*(int *)(a + 0x188)], 0.0f);
-        if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos,
-                        umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c))
+        if (follow_path_v(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos,
+                          umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c))
             return;
         i = select_point_index_by_distance(&((Moby *)m)->pos, umbris_paths[*(int *)(a + 0x188)], 0.0f);
         qcopy(c, umbris_paths[*(int *)(a + 0x188)] + i * 16 + 0x10);
@@ -692,7 +694,6 @@ extern void rumble_by_distance(char *);
 
 extern void update_snagglebeast_chase_speed(void *, void *, float, float, float);
 
-extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 extern void RerollEffectCounter(void *, short *);
 
 extern void SetDeathBits(void *, int, int);
@@ -2421,7 +2422,7 @@ extern int ComputeHitResponse(struct Moby *, char *, void *, int, int *, int, in
 #define snd_p func_L00_002584A8
 #define scale_ticks_p func_001F9850
 #define add_rot_p func_001FA748
-extern void set_moby_list_state(int, int);
+
 #define voice_p func_L01_0026F090
 #define anim_p func_00213DE0
 #define tick_p func_001F9908

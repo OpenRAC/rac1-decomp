@@ -32,6 +32,7 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -2583,8 +2584,6 @@ void set_drek_boss_relative_aim_yaw(char *source, char *dest, L18Vector *from, L
 }
 extern void SetTableEntryFlagIfKind18(char *moby);
 
-extern void Cam_SetDistanceGoal(float x, float y, int flag);
-
 extern float ApproachWithVelocity_p(float *, float, float *, float, float, float) __asm__("func_00214D88");
 
 extern char *veldin2_camera_descriptors MACRO_ADDR;
@@ -2718,8 +2717,6 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
 
-extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
-                                      float w, float pw);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern int drek_boss_fire_puff_color SDATA(drek_boss_fire_puff_color);
 extern int drek_boss_fire_puff_end_color SDATA(drek_boss_fire_puff_end_color);

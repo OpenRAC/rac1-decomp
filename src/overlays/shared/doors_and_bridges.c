@@ -9,6 +9,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -74,7 +75,6 @@ void AmbientStreamL07Update(unsigned char *moby) {
 extern int D_0015EE84_30D370 SDATA(D_0015EE84);
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 
-extern void func_L01_0026F090(int list, int state);
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern float func_001F9D48(void *, void *);

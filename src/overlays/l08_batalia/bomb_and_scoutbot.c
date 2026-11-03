@@ -23,6 +23,8 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "game/ui/hud.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -1384,7 +1386,7 @@ extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void PartType35Spawn_r(void *, void *, int, int) __asm__("func_L00_002703E8");
 extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern unsigned char *func_L00_00272770(void *, void *, void *, float, float);
+
 extern float multiply_global_factor_r2(float) __asm__("func_001F9878");
 extern s32 truncate_float_to_s32_r3(f32) __asm__("func_001FA898");
 
@@ -1555,7 +1557,7 @@ extern void set_ground_height_band(void *);
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 extern void InitKnockback(void *, void *, float, int, int, int);
 extern int FindNearestTargetMoby(void *, float, void *);
-extern void MoveCtl_Init(char *p);
+
 extern float MobyGetFrameValue_x(Moby *) __asm__("func_0020D830");
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern int mine_fall(void *, void *);

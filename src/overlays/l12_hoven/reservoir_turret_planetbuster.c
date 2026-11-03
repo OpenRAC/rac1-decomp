@@ -434,7 +434,7 @@ void HovenShotUpdate(struct Moby *moby) {
 extern unsigned char gHaveHeliPack_e[] __asm__("D_0013D5CA") NOT_SDA;
 extern int pad_globals_base_e[] __asm__("D_0013A5E0") NOT_SDA;
 extern int gameplay_event_frame_count_e __asm__("D_0015EFA4") MACRO_ADDR;
-extern int count_active_moby_group_members(int, int);
+
 extern void PlayBankSound(int, int, int);
 
 /* Hoven challenge tracker: unlocks the area once, records the time and run flags for two skill points and
@@ -810,9 +810,6 @@ void update_oscillating_target_link(Moby *moby) {
 }
 extern void set_level_state_flag_88(void *);
 
-extern void set_camera_position(void *);
-
-extern void set_camera_rotation(void *);
 extern char hoven_turret_camera_offset;
 
 // Builds a rotated/translated matrix from a moby and its data, then sets a rotation from an angle.
@@ -2506,7 +2503,7 @@ void update_homing_mine_spawner_target(char *m) {
 }
 
 extern s32 g_current_level_index SDATA(g_current_level_index);
-extern int check_scaled_vector_bsphere(void *, float);
+
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern unsigned char *hoven_mobys MACRO_ADDR;
 
@@ -2633,8 +2630,6 @@ void emit_phase_selected_moby_effects(Moby *moby) {
             break;
     }
 }
-
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Moby update for a breakable. */
 void BreakableUpdate(char *m) {

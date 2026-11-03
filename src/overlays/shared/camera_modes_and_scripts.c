@@ -30,10 +30,9 @@ extern int vendor_stock[] MACRO_ADDR;
 extern short follow_cam_setting_values;
 extern float follow_cam_setting_value SDATA(follow_cam_setting_value);
 extern void apply_follow_camera_translation();
-extern void follow_camera_apply_overrides(void *);
+
 extern void Profile_Mark();
-extern void follow_camera_springs(void *);
-extern void update_follow_camera_pose(void *);
+
 extern void follow_camera_approach(void *);
 /* Update for the camera moby. */
 void follow_camera_update(char *m) {
@@ -1425,22 +1424,9 @@ extern float camera_view_field_a4;
 #define pad_held_r ((s32 *)(&pad_held))
 #define controller_state (*(PadSt *)(&g_controller_state))
 
-extern int try_select_follow_camera_volume(void *);
-extern void clear_follow_camera_volume_if_current(void *);
-
 extern void vec_scale_to_length(void *, void *, f32);
 
-extern void set_follow_camera_angle_blend_from_direction(void *, f32, f32);
-
-extern void set_follow_camera_flag_226(void);
-
-extern void Cam_SetDistanceGoal(s32, f32, f32);
-extern void set_follow_camera_float_22c(f32);
-extern void follow_camera_set_height(f32, f32);
-extern void Cam_SetEyeOffset(s32, f32, f32);
-extern void set_follow_camera_angle_1cc(f32);
-
-extern void follow_camera_set_lateral_spring(f32, f32);
+extern void Cam_SetDistanceGoal_v(s32, f32, f32) __asm__("func_L00_002E9900");
 
 /* Camera-swing script update. */
 void volume_camera_swing(char *arg) {
@@ -1589,10 +1575,10 @@ void volume_camera_swing(char *arg) {
     }
     if (params->distance != 0.0f) {
         if (params->type == 6 || params->type == 8) {
-            Cam_SetDistanceGoal(0, params->distance, 0.002f);
+            Cam_SetDistanceGoal_v(0, params->distance, 0.002f);
             set_follow_camera_float_22c(params->distance + 1.36f);
         } else {
-            Cam_SetDistanceGoal(0, params->distance, 0.003f);
+            Cam_SetDistanceGoal_v(0, params->distance, 0.003f);
             set_follow_camera_flag_226();
         }
     }
@@ -2003,7 +1989,7 @@ run:
         params->timer = scale_ticks(200);
     }
     if (params->distance != 0.0f) {
-        Cam_SetDistanceGoal(0, params->distance, 0.003f);
+        Cam_SetDistanceGoal_v(0, params->distance, 0.003f);
         set_follow_camera_flag_226();
     }
     if (params->height != 0.0f) {

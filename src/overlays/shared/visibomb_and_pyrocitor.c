@@ -28,6 +28,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -1612,7 +1613,7 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb) {
 }
 
 extern int hero_control_mode_11_flag NOT_SDA;
-extern void select_camera_mode_by_hero_alignment_and_distance(int);
+
 extern void HeroEnterMoveState(int, int);
 extern void moby_restore_globals_state(int, int);
 
@@ -1796,7 +1797,7 @@ extern float D_L00_00161578_2B7430 SDATA(D_L00_00161578);
 extern void jet_camera_mode_r(void) __asm__("func_L00_00204130");
 extern int force_help_message_r(int, int) __asm__("func_00216028");
 extern int scale_ticks_r4(int) __asm__("func_001F9850");
-extern int func_L00_002ECAF8(void *, void *);
+
 extern void Moby_RestoreGlobalsState_r(void *, int) __asm__("func_L00_002B6AE0");
 extern void update_attached_moby_transform_r(void *, void *) __asm__("func_L00_002B6E90");
 extern void terminate_visibomb_missile_r(void *, void *) __asm__("func_L00_002B6E10");
@@ -2475,9 +2476,6 @@ extern void coll_sphere_mobys(void *, float, int, void *, void *);
 
 extern int truncate_float_to_s32(float);
 extern void spawn_color_decaying_effect_particle(void *, void *, int);
-
-extern void euler_rotation_basis(void *, void *);
-extern void multiply_matrix3x3(void *, void *, void *);
 
 extern void update_pyrocitor_flame_effect_slots(char *);
 

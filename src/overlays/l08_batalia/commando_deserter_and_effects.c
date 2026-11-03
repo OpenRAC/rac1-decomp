@@ -753,8 +753,6 @@ extern int D_L08_0015F4F8 MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern Sound45 batalia_lights[];
 
-extern float vec_length(float);
-
 extern int truncate_float_to_s32(float);
 extern int GetEffectTex(int);
 
@@ -2159,8 +2157,6 @@ void update_batalia_textured_effect(unsigned char *moby) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-
-extern void spawn_proximity_gated_bolts(void *);
 
 // Moby state machine: wait, check hit on first probe, then clean up and delete.
 void update_moby_hit_removal_state(char *m) {

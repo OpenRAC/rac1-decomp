@@ -26,6 +26,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern int g_screen_extent[];
 extern char help_records[];
@@ -397,7 +398,7 @@ typedef struct {
 } Missile;
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
+
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,

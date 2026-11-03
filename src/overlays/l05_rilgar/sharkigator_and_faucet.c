@@ -29,6 +29,9 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "callees.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -237,8 +240,6 @@ extern int fast_dec_timer(int *arg0);
 
 extern float vec_distance_xy(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
-extern void euler_rotation_basis(void *, void *);
 
 extern void spawn_sharkigator_surface_effects(char *moby);
 extern void spawn_sharkigator_splash_effects(int unused, char *p);
@@ -455,8 +456,6 @@ state_three: {
 }
 }
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
-
-extern unsigned char *spawn_splash(void *, void *, void *, float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float rilgar_water_surface_z_m __asm__("D_L05_001613A8") MACRO_ADDR;
@@ -914,7 +913,6 @@ extern char hero_globals_base[];
 extern void handle_amoeboid_hits(unsigned char *m);
 extern void spawn_amoeboid_particles(unsigned char *moby);
 
-extern void MoveCtl_Init(char *p);
 extern int truncate_float_to_s32(float);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -1099,7 +1097,6 @@ extern void set_ground_height_band(void *);
 void handle_extermibot_hits_and_update_targeting(Moby *m);
 void move_extermibot_along_path(struct Moby *m, s32 node, f32 side);
 
-extern s32 follow_path(void *, s32, s32, void *, s32, void *, f32);
 extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);
 
 extern f32 ApproachValue(f32 *, f32, f32);
@@ -1793,7 +1790,6 @@ typedef struct {
     s32 stuck_timer; /* 0x2D4 */
 } PathWalkerVars;
 extern float sharkigator_scale SDATA(sharkigator_scale);
-extern s32 follow_path(void *, s32, s32, void *, s32, void *, f32);
 
 extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 SteerAngleWithVelocity_r(f32 *angle, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025CE58");
@@ -3152,11 +3148,11 @@ extern float rilgar_water_gate_max_speed SDATA(rilgar_water_gate_max_speed);
 extern void RescaleFloatTable(float);
 extern void RipplePatch_ToFixedPoint(float *, int *);
 extern void record_grid_entry_neighbor_indices(int);
-extern void set_moby_list_state(int, int);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void synchronize_group_water_heights(char *);
 extern void RippleDisturb(void *, int, int, float, float, float, float);
-extern int check_scaled_vector_bsphere(char *, float);
+
 extern void RippleSimClock(char *, int);
 extern void DrawRipplePatches(void);
 

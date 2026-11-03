@@ -16,6 +16,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -486,7 +487,7 @@ void update_scene_moby_effect_bursts(struct Moby *m) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void spawn_proximity_gated_bolts(void *);
+
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 /* Level moby state machine: wait, detect proximity, then emit effects, spawn a replacement and delete itself. */

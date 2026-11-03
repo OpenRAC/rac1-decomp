@@ -671,9 +671,6 @@ void DrawLightRing(char *moby) {
     }
 }
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -1000,7 +997,6 @@ extern int PlayBankSound(int, int, int);
 
 extern void HeroL17_SetMoveState(int, int);
 
-extern void set_follow_camera_angle_blend_from_position(int a, float x, float y);
 extern int fast_dec_timer_i(int *) __asm__("func_001F9908");
 
 extern char *fleet_mobys MACRO_ADDR;
@@ -1746,7 +1742,6 @@ char *try_activate_blarg_ship_from_list(int list) {
     return 0;
 }
 extern void SetDeathBits(void *, int, int);
-extern void spawn_proximity_gated_bolts(void *);
 
 /* UpdateMoby 1873: wait for a target, then play two effects and delete itself. */
 void Moby1873Update(unsigned char *m) {

@@ -99,8 +99,6 @@ extern int FastBSphereCheck(char *, float);
 extern void set_scale_matrix_v(float, void *) __asm__("func_001FA1C0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
-extern void sce_vu0_mul_matrix(void *, void *, void *);
-
 extern void restore_view_after_textured_grid(void *);
 extern int textured_grid_view_settings_mode MACRO_ADDR;
 extern u64 gaspar_grid_tex0 MACRO_ADDR;
@@ -2567,15 +2565,12 @@ extern TurretShake gaspar_camera;
 extern TurretBeam gaspar_colored_effect_slots[];
 extern struct Moby *spawn_class_4ea_projectile(void *, void *, void *, int);
 extern void set_level_state_flag_88(void);
-extern void FastMemZero16(void *, int);
 
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 
 extern float vec_length_xy(void *);
 extern void divide_vector_xyz(void *, void *, float);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 extern void EffectQueue_Add(void *, int, int, int, int, int, float, float, float);
 #define hero D_0013F450
 #define D_0015EED0_c D_0015EEDC

@@ -23,6 +23,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -1206,7 +1207,6 @@ extern void sound302618(float, void *, int, void *) __asm__("func_L00_00264B40")
 extern void wake302618(void *) __asm__("func_L00_0025B178");
 extern int hero_anim302618(int) __asm__("func_002140B0");
 
-extern void func_L01_0026E8E0(void *);
 extern int func_L01_0028C2D8(void *, void *, float);
 extern void func_L00_0025A060(void *, void *, void *, void *);
 extern int range302618(int, int) __asm__("func_L00_00258BC8");

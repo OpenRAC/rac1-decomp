@@ -16,6 +16,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
 
 extern void lerp_vector(void *, void *, void *, float);
@@ -2528,9 +2529,6 @@ extern V collision_hit_point;
 extern int coll_hit_result[];
 
 extern int coll_line(void *, void *, int, int, int);
-
-extern void spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
-extern void spawn_random_planar_drift_particle(void *, int, float, float);
 
 /* Moves a particle by its velocity according to its mode, bouncing or killing it on contact. */
 void update_ballistic_effect_particle_with_contact_spawns(struct PartBase *p) {
