@@ -19,6 +19,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -171,8 +172,6 @@ extern void *libc_memset(void *, int, unsigned int);
 extern float IntToFloat(int);
 
 extern float vec_distance_xy(float *, float *);
-
-extern char *CreateMoby(int);
 
 extern void update_moby_movement_with_sphere_collision(f32, struct PMoby *, void *, void *);
 extern struct Path5BD0 *eudora_paths[];
@@ -525,8 +524,6 @@ extern void set_ground_height_band(void *);
 extern void FindNearestTargetMoby(char *, float *, float);
 extern float vec_distance_xy(float *, float *);
 
-extern float MobyGetFrameValue(void *);
-
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
@@ -538,7 +535,6 @@ extern void trooper_set_knockback(float *p, float a, float b);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void SetDeathBits(void *, int, int);
 
-extern void AttachManipulator(char *, int, void *);
 extern void *libc_memset(void *, int, unsigned int);
 
 extern float SpringTurn(float cur, float target, float *vel, float k, float d, float max);
@@ -548,12 +544,10 @@ extern void leg_walker_update(void *, void *, float, float, float);
 extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
 
 extern int mine_fall(void *, void *);
-extern void DeleteMoby(void *);
+
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void StepColorFade(void *, void *);
 extern void fast_dec_timer(int *arg0);
-
-extern void MobyTransformScaledVertex(char *, int, char *);
 
 extern void *spawn_axe_moby(void *, void *);
 
@@ -1542,7 +1536,7 @@ extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
-extern void DeleteMoby(void *);
+
 extern void MoveCtl_Init(char *p);
 
 extern float compute_circular_saw_flock_steering(void *, void *, float);
@@ -2226,7 +2220,6 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
     vel.f[2] = random_float_between(0.01f, 0.03f);
     PartType21Spawn(to, &vel, 0x4F007FFF, 0x1FFFFFFF, rand_range(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
 }
-extern void DeleteMoby(void *);
 
 /* Destroy a Blarg trooper: delete its linked moby, spawn a puff, then delete it. */
 void destroy_blarg_trooper(char *arg) {
@@ -2876,7 +2869,7 @@ extern u8 D_L04_00198040[];
 extern struct MobyClass *D_L04_00197780[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void MobyBlendAnimation_r(struct Moby *, s32, s32, s32) __asm__("func_00213DE0");
-extern void func_0020D6D0(struct Moby *);
+
 extern s32 Sound_IsPlaying_r2(struct Moby *, s32) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r2(s32, s32, struct Moby *) __asm__("func_0022ED80");
 struct Moby;

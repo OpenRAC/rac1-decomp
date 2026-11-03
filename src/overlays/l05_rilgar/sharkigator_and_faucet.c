@@ -23,6 +23,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -223,8 +224,6 @@ struct BoxVars {
     Vec4A rel_rot; /* 0x70 */
     s32 attach_moby; /* 0x80: -1 when none */
 };
-
-extern void DeleteMoby(void *);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern void vec_scale_to_length(float *, float *, float);
@@ -915,7 +914,6 @@ extern char hero_globals_base[];
 extern void handle_amoeboid_hits(unsigned char *m);
 extern void spawn_amoeboid_particles(unsigned char *moby);
 
-extern void DeleteMoby(void *);
 extern void MoveCtl_Init(char *p);
 extern int truncate_float_to_s32(float);
 
@@ -1081,7 +1079,6 @@ void spawn_amoeboid_hit_sparks(void *m, void *dir) {
         }
     }
 }
-extern char *CreateMoby(int);
 
 /* Spawns a Hoverboard moby at the owner's position; returns it, or 0 if the pool is full. */
 char *spawn_racer_child(char *owner) {
@@ -1108,8 +1105,6 @@ extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);
 extern int SegmentCrossPolyline(int, void *, void *, void *);
 
 extern f32 ApproachValue(f32 *, f32, f32);
-
-extern float MobyGetFrameValue(void *);
 
 extern int mine_fall(void *, void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
@@ -1981,7 +1976,6 @@ f32 push_point_from_path(s32 path_index, void *input, void *output, f32 distance
 void handle_extermitank_hits_and_sync_children(char *moby);
 void process_extermitank_particle_hits(char *m);
 extern void set_ground_height_band(void *);
-extern void AttachManipulator(char *, int, unsigned char *);
 
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 
@@ -2625,8 +2619,6 @@ void blend_racer_and_child_animations(char *moby, int a1, int a2, int a3) {
     }
 }
 extern void blend_racer_and_child_animations(char *, int, int, int);
-
-extern float MobyGetFrameValue(void *);
 
 /* Lines a moby up on its target: aims, counts down a timer, and sets its speed scale. */
 void update_racer_jump_animations(unsigned char *moby) {

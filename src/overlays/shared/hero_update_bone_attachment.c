@@ -19,6 +19,8 @@
 #include "enums/hero_state.h"
 #include "structs/collision.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -27,7 +29,7 @@ extern unsigned char gHaveMorphORay[];
 extern int quartu_frame_count MACRO_ADDR;
 
 extern float quartu_hero_bones_28_scale, quartu_hero_bones_30_scale;
-extern void advance_hero_animation(void);
+
 extern void hero_update(void);
 extern void Hero_UpdateAimFlags(void);
 extern void HeroL15_UpdateStateTransitions(void);
@@ -198,9 +200,8 @@ void update_hero_bobbing_and_target_position(void) {
 }
 extern int quartu_game_mode MACRO_ADDR;
 
-extern void DeleteMoby(void *);
 extern void release_and_clear_hero_voice_slots(void);
-extern void clear_hero_queued_animation(void);
+
 extern void HeroQuartu_TrySetMoveState(int, int);
 
 /* Reset the help prompt state and show the default message unless the level is in a special phase. */
@@ -296,7 +297,7 @@ void update_hero_smoothing_parameters(void) {
 
 extern char quartu_coll_hit_type[];
 extern char quartu_coll_hit[];
-extern float gravity_length_xy(float *v);
+
 extern float vec_length_xy(void *);
 
 extern int coll_line(void *, void *, int, int, int);
@@ -385,11 +386,10 @@ s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
 void sceVu0Normalize(void *, void *);
-f32 compute_gravity_relative_vector_inclination(void *);
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
-void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+
 f32 FastAbsF(f32);
 extern Hero g_hero_r __asm__("D_0013F450");
 extern struct CollisionHit quartu_coll_hit_r __asm__("D_L15_001744C0");
@@ -583,12 +583,9 @@ extern s32 fast_dec_timer(s32 *);
 extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
 
 extern s32 pad_pressed_within(s32, s32, s32);
-extern struct Moby *CreateMoby(s32);
 
 extern void enter_hero_vehicle_mode(s32, s32, struct Moby *);
-extern f32 gravity_z(void *);
 
-extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 extern void Hero_OnKilled(void);
 
 /* Per-frame hero upkeep: tick the hero timers, spawn the respawn marker, track sinking, and set the camera follow

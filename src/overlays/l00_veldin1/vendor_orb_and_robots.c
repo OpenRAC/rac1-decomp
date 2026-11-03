@@ -13,6 +13,7 @@
 #include "game/system/space.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char usage_stats[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -279,16 +280,13 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
 extern int register_beam_slot(void *, int, int);
 
-extern void MobyTransformScaledVertex(char *, int, char *);
-
-extern float MobyGetFrameValue(void *);
 extern int coll_line(void *, void *, int, int, int);
 extern int release_beam_slot_by_id(void *);
 extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
 extern int mine_fall(void *, void *);
 
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern void DeleteMoby(void *);
+
 extern void update_veldin_robot_effects(char *);
 
 /* Vendor (level 0) update: walks a path, turns toward the player, attacks and self-destructs.

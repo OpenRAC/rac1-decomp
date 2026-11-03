@@ -19,6 +19,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -974,7 +975,7 @@ extern int fast_dec_timer(void *);
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
 extern void SpawnExplosionFx_v(void *, void *, float, float, int) __asm__("func_L00_00260108");
 extern void Moby_PlaySound(int, int, void *);
-extern void DeleteMoby(void *);
+
 extern void spawn_moby_point_offset_particle(void *, float, int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002e4380. */
@@ -1009,7 +1010,6 @@ void update_spinning_projectile(unsigned char *m) {
     if (quartu_frame_count % 3 == 0)
         spawn_moby_point_offset_particle(m, 30000.0f, 0, 0.1f);
 }
-extern char *CreateMoby(int);
 
 extern float vec_length_xy(void *);
 

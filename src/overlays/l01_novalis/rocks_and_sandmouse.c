@@ -19,6 +19,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -80,7 +81,7 @@ extern int rand_range(int, int);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern void SetDeathBits(void *, int, int);
-extern void DeleteMoby(void *);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Moby_PlaySound(int, int, int);
 extern void spawn_debris_moby(void *, void *, u32, s32, f32, f32, f32, f32, s32);
@@ -250,8 +251,6 @@ typedef struct {
 extern BurstLevelState novalis_checkpoint_level_state;
 extern BurstColors bridge_piece_debris_colors;
 
-extern void DeleteMoby(void *);
-
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern int rand_range(int lo, int hi);
@@ -315,7 +314,6 @@ void bridge_piece_1_update(BurstMoby *self) {
 typedef struct {
     int a[4];
 } Vy __attribute__((aligned(16)));
-extern char *CreateMoby(int);
 
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 extern void moby_build_matrix_v(void *, int) __asm__("func_L00_00251E30");
@@ -465,7 +463,7 @@ extern char novalis_coll_hit_point[];
 extern float vec_distance_xy(void *, void *);
 extern int fast_dec_timer(int *arg0);
 extern int coll_line(void *, void *, int, void *, void *);
-extern void DeleteMoby(void *);
+
 extern void spawn_explosion_effects(void *, void *, int, float, float);
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 
@@ -662,7 +660,6 @@ extern int novalis_game_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G fx_cutscene;
 extern unsigned char novalis_big_head_cheat_manipulator[];
-extern void AttachManipulator(char *, int, void *);
 
 /* Arms the 0x32B mobys' marker record once, while the level flag is 2. */
 void apply_cutscene_big_head_cheat(void) {
@@ -1795,7 +1792,6 @@ char *initialize_beehive_spawn_moby(char *owner) {
     return (char *)destination_moby;
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void DeleteMoby(void *);
 
 /* Deletes the mushroom underside when it takes a hit. */
 void mushroom_underside_update(void *arg) {

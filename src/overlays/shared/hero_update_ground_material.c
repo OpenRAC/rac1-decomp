@@ -21,6 +21,8 @@
 #include "structs/hit_message.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -75,7 +77,6 @@ extern float novalis_lean_state_30_scale;
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 
-extern void advance_hero_animation(void);
 extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
 extern void HeroL01_UpdateStateTransitions(void);
@@ -208,7 +209,7 @@ void hero_frame_update(void) {
 
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
-extern void advance_hero_animation(void);
+
 extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
 extern void update_hero_ledge_probe(void);
@@ -769,11 +770,11 @@ extern unsigned char hero_globals_base[] NOT_SDA;
 extern void cancel_hero_item_animation(void);
 extern void hero_update_items();
 extern void clear_moby_transform_history(char *o);
-extern void HeroSetObjectFlags(void);
+
 extern void release_and_clear_hero_voice_slots(void);
 extern void reset_hero_easing_records(void);
 extern void HeroSetCollisionSize(void);
-extern void clear_hero_queued_animation(void);
+
 extern void Hero_SetMoveState(int, int);
 
 /* Starts a level scene: resets the player state, takes the new moby and sets up its flags. */
@@ -808,7 +809,7 @@ void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     }
     Hero_SetMoveState(b, 1);
 }
-extern void DeleteMoby(void *);
+
 extern void Hero_SetMoveState(int, int);
 extern int novalis_game_mode MACRO_ADDR;
 
@@ -1060,7 +1061,7 @@ void hero_speed_from_table(void) {
         }
     }
 }
-extern float gravity_length_xy(float *v);
+
 extern float vec_length_xy(void *);
 
 extern int coll_line(void *, void *, int, int, int);
@@ -1160,11 +1161,10 @@ s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
 void sceVu0Normalize(void *, void *);
-f32 compute_gravity_relative_vector_inclination(void *);
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
-void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+
 f32 FastAbsF(f32);
 extern struct CollisionHit novalis_coll_hit_r3 __asm__("D_L01_00174340");
 
@@ -1344,10 +1344,6 @@ d1:
 extern char novalis_coll_resolved_pos[];
 extern float frame_scale SDATA(frame_scale);
 
-extern void Hero_ConstrainToPath(void);
-extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
-extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 /* Checks that the hero capsule passes: sweeps the capsule toward the target, and clamps the remaining offset. */
@@ -1435,8 +1431,6 @@ int resolve_hero_position_with_collision_queries(int a0) {
 typedef int u128_34970 __attribute__((mode(TI)));
 
 extern float forward_component(void *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern void add_hero_forward_offset(void *, void *, float);
 
 // Accelerates the hero's air velocity toward the stick direction, clamped to the step.
 void air_accel(float step) {
@@ -1539,13 +1533,11 @@ extern s32 fast_dec_timer(s32 *);
 extern void exit_hero_vehicle_mode_and_restore_moby(void);
 
 extern s32 pad_pressed_within(s32, s32, s32);
-extern struct Moby *CreateMoby(s32);
 
 extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
-extern f32 gravity_z(void *);
+
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
-extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 extern void Hero_OnKilled(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0023c710. */
@@ -1687,8 +1679,7 @@ void request_hero_idle_state_for_vehicle_mode(void) {
     }
 }
 extern int hl_next(int, int) __asm__("func_L01_0023D688");
-extern void set_hero_animation(int, int, float);
-extern void hero_queue_sequence(int bank, int seq);
+
 extern void ClampVectorLength(void *a, float x);
 extern int get_hero_idle_animation_index(int a);
 extern int novalis_hero_run_step1_start_frame MACRO_ADDR;

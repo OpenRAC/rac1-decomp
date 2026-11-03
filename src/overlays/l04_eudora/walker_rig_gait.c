@@ -9,6 +9,7 @@
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
@@ -109,10 +110,6 @@ extern void raise_kernel_trap(void);
 extern float animation_start(int, int);
 extern float animation_end(int, int);
 
-extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
-extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
-
-extern void AttachManipulator(struct Moby *m, int slot, void *manip);
 /* Sets up a two-legged rig on a moby. */
 void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
     int joints[6];
@@ -458,7 +455,7 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
         mask <<= 2;
     }
 }
-extern float MobyGetFrameValue(struct Moby *);
+
 extern float IntToFloat(int);
 extern int rig_pick_mode_r(char *, char *, float) __asm__("func_L04_00293990");
 extern void rig_animate_r(char *, char *, int, float) __asm__("func_L04_00293F08");
@@ -685,11 +682,7 @@ typedef struct {
     /* 0x0F0 */ LegRigLeg legs[2];
 } LegRig;
 extern u8 eudora_leg_rig_anim_b7_values[13][4];
-extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
-extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
-extern void AttachManipulator(struct Moby *m, int slot, void *manip);
 
-extern float MobyGetFrameValue(struct Moby *);
 extern float IntToFloat(int);
 extern float animation_start(int, int);
 

@@ -19,6 +19,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -137,7 +138,6 @@ struct PathSparkEffectVars {
 };
 
 extern int STUB_printf();
-extern void DeleteMoby(void *);
 
 extern int fast_dec_timer(int *);
 extern int Moby_PlaySound(int, int, int);
@@ -1131,7 +1131,6 @@ void update_height_adjusted_projectile(struct Moby *moby) {
         moby->pos.y > 510.0f || moby->pos.z > 510.0f || vec_distance_xy(&moby->pos, &orxon_camera_pos) > 80.0f)
         DeleteMoby(moby);
 }
-extern char *CreateMoby(int);
 
 extern float bombthrower_grass_spawn_height SDATA(bombthrower_grass_spawn_height);
 
@@ -2301,7 +2300,6 @@ void block_cave_update(char *m) {
         }
     }
 }
-extern char *CreateMoby(int);
 
 /* Spawns a class 0x462 moby at the owner's position and returns it. */
 char *spawn_fixed_height_destruction_moby(char *owner) {

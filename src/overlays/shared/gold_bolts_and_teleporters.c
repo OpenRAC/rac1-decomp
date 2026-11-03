@@ -28,6 +28,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -289,8 +291,6 @@ extern Cols explosive_spark_colors_b;
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
-
-extern void DeleteMoby(void *);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int Moby_PlaySound(int, int, int);
@@ -650,7 +650,6 @@ extern int novalis_game_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G fx_cutscene;
 extern unsigned char novalis_big_head_cheat_manipulator[];
-extern void AttachManipulator(char *, int, void *);
 
 /* Arms the marker record once for Qwark Rilgar mobys or 0x1BF, while the level flag is 2. */
 void attach_cutscene_fixed_scale_manipulator(void) {
@@ -682,7 +681,6 @@ extern char *camera_points_c __asm__("D_L01_0016016C") MACRO_ADDR;
 extern int g_current_level_index_c __asm__("D_0015EE84") MACRO_ADDR;
 extern char help_stats_base_c[] __asm__("D_0014171B");
 extern int STUB_printf_c(void *, int, int) __asm__("func_001E9730");
-extern void DeleteMoby(void *);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
@@ -1546,7 +1544,6 @@ void update_gold_bolt_glow_rings(char *m) {
         FastVecAdd(dir, dir, step);
     }
 }
-extern float MobyGetFrameValue(void *);
 
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -1666,15 +1663,15 @@ extern float teleporter_pad_open_max_speed SDATA(teleporter_pad_open_max_speed);
 extern int novalis_help_message_selector SDATA(novalis_help_message_selector);
 
 extern void show_teleporter_and_children(char *);
-extern char *CreateMoby(int);
+
 extern void hide_teleporter_and_children(struct Moby *);
 extern void try_set_teleporter_help_message(char *);
 
 extern void draw_moby_radius_ring(char *);
 extern int Moby_PlaySound(int, int, int);
-extern void request_hero_target_pose(float *pos, int arg, float t);
+
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-extern int get_hero_target_pose_status(void);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -2726,7 +2723,7 @@ extern f32 sandmouse_dust_size_min SDATA(sandmouse_dust_size_min);
 extern f32 sandmouse_dust_size_max SDATA(sandmouse_dust_size_max);
 extern int sandmouse_dust_alpha SDATA(sandmouse_dust_alpha);
 extern f32 sandmouse_dust_accel SDATA(sandmouse_dust_accel);
-extern void DetachManipulator(void *, void *);
+
 extern void MoveCtl_Init(void *);
 
 extern void MobySpringTurn(void *, f32, void *, f32, f32, f32);
@@ -2734,7 +2731,7 @@ extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void jet_animate(void *, f32);
 extern void compute_sand_mouse_approach_target(void *, void *);
 extern int Hero_SetMoveState(int, int);
-extern void set_hero_animation(f32, int, int);
+extern void set_hero_animation_v(f32, int, int) __asm__("func_L00_00232C10");
 
 extern void add_random_offset_to_vector_xyz(void *, f32);
 extern int func_001160D8(void);
@@ -2882,7 +2879,7 @@ void sandmouse_update(Moby *m) {
                     }
                     sandmouse_grab_moby = m;
                     Hero_SetMoveState(0x1F, 0);
-                    set_hero_animation((float)scale_ticks(6), 0, 0);
+                    set_hero_animation_v((float)scale_ticks(6), 0, 0);
                     if (p->link != -1) {
                         LNK(p->link)->command = 5;
                         m->state = 2;

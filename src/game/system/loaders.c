@@ -11,6 +11,7 @@
 #include "data/executable.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * loaders.cpp in the original source; text 0x202AA8-0x205520.
@@ -1720,7 +1721,6 @@ extern struct Hero D_0013F450;
 extern int g_game_mode MACRO_ADDR;
 extern int D_00160588[];
 extern int fast_decompress_2(int, int) __asm__("func_0020C468");
-extern struct Moby *func_0020D348(int);
 
 /* update_world_object_animation: relocate the model record loaded for the
    current chunk (render_sequence+0x58) and hook each of its parts to a moby,

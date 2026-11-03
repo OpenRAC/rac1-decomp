@@ -41,8 +41,6 @@ extern void clear_moby_transform_history(char *o);
 
 extern int get_hero_idle_animation_index(int a);
 
-extern void set_hero_animation(int, int, float);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(float, int);
@@ -1561,7 +1559,7 @@ extern HeroSpeedBands aridia_hero_speed_bands;
 extern int HeroL02_TryKnockback(int);
 
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int func_L00_00235790(void);
+
 extern void hud_keep_visible(int, int);
 
 extern int hero_slot_item_id(int);
@@ -1575,16 +1573,11 @@ extern int pad_pressed_within(int, int, int *);
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
-extern void hero_set_attack_ticks(int id);
-
 extern float vec_distance_xy(void *, void *);
 
-extern void gravity_set_z(float *dst, float *src, float z);
 extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern float gravity_z(float *v);
 
 extern void hero_switch_item(int i);
 

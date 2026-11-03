@@ -9,6 +9,7 @@
 #include "data/level_12.h"
 #include "game/math/fastfunc.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 
@@ -43,7 +44,6 @@ int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) 
     }
     return 1;
 }
-extern void MobyTransformScaledVertex(void *, int, void *);
 
 /* Attach child to a bone of parent: copy its position and basis, and mirror the parent's draw flag. */
 void update_moby_bone_attachment(unsigned char *parent, unsigned char *child, int mode) {

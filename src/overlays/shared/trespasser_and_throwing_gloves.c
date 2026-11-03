@@ -18,6 +18,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -189,7 +190,6 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern char *MobyGetHitMessage(void *, int, int);
 extern void STUB_printf(char *);
 
-extern void DeleteMoby(void *);
 extern int fast_dec_timer(int *);
 extern void RotateWithMoby(void *, void *, void *, void *, void *, void *);
 extern u8 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
@@ -673,7 +673,6 @@ float vec_distance_xy(void *, void *);
 float FastAbsF(float);
 
 float ApproachValue(void *, float, float);
-void DeleteMoby(void *);
 
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c1778. */
@@ -772,7 +771,6 @@ extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void MobyTransformScaledVertex(void *, int, void *);
 
 extern int HeroEnterMoveState(int, int);
 extern int fast_dec_timer(int *);
@@ -784,7 +782,6 @@ extern float vec_length_xy(void *);
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern void initialize_moby_motion_at_position(void *, void *, void *);
 
-extern void DeleteMoby(void *);
 extern struct Moby *spawn_mine(void *, void *, void *);
 
 typedef struct {
@@ -1068,8 +1065,7 @@ extern s32 gameplay_event_frame_count MACRO_ADDR;
 extern CollisionHit_C39D0 coll_hit_result_r2 __asm__("D_L00_00173F40");
 extern Vec4 g_debug_camera_r2 __asm__("D_L00_00166EC0");
 extern Vec4 player_camera[3];
-extern void DeleteMoby(void *);
-extern void MobyTransformScaledVertex(void *, int, void *);
+
 extern f32 vec_length(f32);
 
 extern s32 fast_dec_timer(s32 *);
@@ -1380,7 +1376,6 @@ int func_001160D8(void);
 extern void func_L00_0026AA10_C4748(float *, unsigned char, unsigned char, unsigned char, float, float,
                                     int) __asm__("func_L00_0026AA10");
 
-void DeleteMoby(void *);
 extern char decoy_list[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002bffa8.c, FUN_L00_002c3440. */
@@ -2111,7 +2106,6 @@ typedef struct Rec2 {
 } Rec2;
 extern Rec item_defs[] NOT_SDA;
 extern Rec2 item_price_table[];
-extern char *CreateMoby(int);
 
 /* spawns a moby of a class and initialises its data block. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c52a8. */
 char *spawn_on_path(void *pos, int idx, int a2, int a3) {
@@ -2178,7 +2172,6 @@ extern void queue_formatted_dialogue_message(int, int, int);
 
 extern int Sound_PlayClassSound(int, int, int, int);
 
-extern void DeleteMoby(void *);
 typedef struct {
     int amount;
     char pad4[2];
@@ -2567,7 +2560,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern int coll_line_r4(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 extern int func_L00_00205618(int);
-extern void func_L00_00232C10(int, int, float);
+
 extern void draw_swingshot_cable_r(char *) __asm__("func_L00_002C7128");
 
 /* Swingshot update: keeps the hook at the glove, shows the targets, fires the hook to the swing target
@@ -2875,8 +2868,6 @@ unsigned char *spawn_swingshot_hook(unsigned char *src, float f) {
     return m;
 }
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
-
-extern void DeleteMoby(void *);
 
 // Per-frame update for a linked moby: follows its owner's state and keeps its own animation in step.
 void swingshot_hook_update(unsigned char *m) {

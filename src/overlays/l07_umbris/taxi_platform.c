@@ -19,6 +19,7 @@
 #include "enums/hero_state.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -711,7 +712,7 @@ extern void set_moby_list_state(int list, int state);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
-extern void DeleteMoby(void *);
+
 extern void RerollEffectCounter(void *, short *);
 extern void StepColorFade(void *, void *);
 extern int get_first_moby_in_group(int *, int, int, int);
@@ -948,7 +949,7 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
     }
     jet_animate(m, 1.5f);
 }
-extern void *CreateMoby(int);
+
 extern float vec_length_xy(void *);
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
@@ -1012,7 +1013,7 @@ extern void spawn_projectile_expiry_particle_r(void *, void *) __asm__("func_L07
 
 extern char *PartType27Spawn(char *, char *, int c, int d, float f);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void DeleteMoby(void *);
+
 extern Vec4 umbris_coll_hit_point;
 extern char umbris_coll_hit_normal[];
 
@@ -1109,7 +1110,7 @@ struct AnimSeq;
 extern int coll_sphere(float, void *, int, void *);
 extern int coll_line_r2(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void DeleteMoby(void *);
+
 extern char gHeroPos[];
 typedef struct {
     Vec4f vel; /* 0x00 */
@@ -1662,7 +1663,7 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern void SetDeathBits(void *, int, int);
 extern void StepColorFade(void *, void *);
 extern void FindNearestTargetMoby(void *, void *, float);
-extern void AttachManipulator(char *, int, void *);
+
 extern void RerollEffectCounter(void *, short *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
@@ -2021,7 +2022,7 @@ void register_fading_ring_hit(char *a, char *b, char *c) {
         }
     }
 }
-extern void DeleteMoby(void *);
+
 extern void draw_fading_ring_effect(unsigned char *);
 extern char *umbris_moby_list MACRO_ADDR;
 
@@ -2526,7 +2527,7 @@ int update_sharkigator_horizontal_velocity_by_heading(char *moby, char *obj, flo
 }
 extern int debris_target;
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float MobyGetFrameValue(void *);
+
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 
 /* In the given state and animation, when the walker is within range, pushes it along its velocity; a hit on the target

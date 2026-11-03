@@ -8,6 +8,7 @@
 #include "game/audio/stream.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -1122,9 +1123,6 @@ extern s32 truncate_float_to_s32(f32);
 extern s32 append_gif_transfer_packet();
 extern s32 AA_BlurPass();
 extern s32 draw_freeze_message_box();
-extern s32 prune_moby_references();
-extern s32 PatchMobyGifs();
-extern s32 DrawMobys();
 
 extern void render_level_effects_and_screen_sprites();
 extern s32 patch_shrub_gifs();

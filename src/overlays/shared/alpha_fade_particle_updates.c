@@ -13,6 +13,7 @@
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern Hero g_hero;
 extern char g_hero_body_center[];
@@ -1466,7 +1467,7 @@ void update_mode_controlled_orbiting_trail_particle(char *m) {
 }
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void MobyTransformScaledVertex(void *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* part type 68 update: follows its owner, scaling velocity until the owner goes away */

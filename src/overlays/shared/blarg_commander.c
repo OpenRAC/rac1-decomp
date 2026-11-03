@@ -9,6 +9,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 
 /* Blarg commander shot (Blarg Commander): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
@@ -63,7 +64,7 @@ typedef struct {
     char pad46[0x132];
     char *mobys[1];
 } Level12MobyList;
-extern void AttachManipulator(char *, int, unsigned char *);
+
 extern int hoven_cinematic_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern Level12MobyList hoven_cutscene_state;
@@ -97,7 +98,6 @@ void draw_level_12_effects(void) {
     draw_textured_effect_list(hoven_textured_effect_entries, 0x2F, GetEffectTex(0x2C), GetEffectTex(0x2D));
 }
 typedef int u128_8670 __attribute__((mode(TI)));
-extern char *CreateMoby(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_00308670.c, FUN_L12_00308670. */
 char *create_blarg_commander_moby_from_source(char *a0) {
@@ -187,7 +187,6 @@ void start_blarg_commander_knockback(void *unused, struct Moby *m) {
 extern int mine_fall(void *, void *);
 extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int);
-extern void DeleteMoby(void *);
 
 // updates a moby's velocity and either spawns an effect and deletes itself or expires by height
 void blarg_commander_update(char *m) {

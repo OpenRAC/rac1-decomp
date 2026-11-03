@@ -55,12 +55,11 @@ extern HeroAttackRecord rilgar_attack_records[];
 extern HeroSpeedBands rilgar_hero_speed_bands;
 
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int func_L00_00235790(void);
+
 extern void hud_keep_visible(int, int);
 
 extern int hero_slot_item_id(int);
 extern int get_hero_idle_animation_index(int a);
-extern void set_hero_animation(int, int, float);
 
 extern int Hero_TryMoveStateL05(int, int);
 
@@ -72,24 +71,18 @@ extern int pad_pressed_within(int, int, int *);
 
 extern int is_wrench_moby(void *);
 
-extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
-
-extern void hero_set_attack_ticks(int id);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
 extern void allocate_hero_voice_for_entry(int, int);
 
-extern void gravity_set_z(float *dst, float *src, float z);
 extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern float gravity_z(float *v);
 
 extern void apply_hero_item_slot_selection(int i);
 extern void release_and_clear_hero_voice_slots(void);

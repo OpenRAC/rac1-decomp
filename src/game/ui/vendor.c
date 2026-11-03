@@ -11,6 +11,7 @@
 #include "game/ui/hud.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
@@ -22,8 +23,6 @@ extern int measure_text_width_regular(unsigned char *, int);
 
 extern void UpdateViewContext(void);
 
-extern void DrawMobyList(int, int);
-
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
@@ -31,8 +30,6 @@ extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
 extern void truncate_float_to_s32(float);
-
-extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
 
 /* The NTSC decomp's pending C for the same instructions (a draft it has not matched
    yet), carried to PAL's names by OpenRAC's tools/port.py. Never compared with retail's bytes here. */

@@ -18,6 +18,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
@@ -540,7 +541,6 @@ void add_moby_frames_for_group_proximity(char *moby) {
     }
 }
 
-extern void AttachManipulator(char *, int, void *);
 extern void AddDrawCallback(void *, void *);
 
 extern void draw_moby_wobble_quads(unsigned char *m);
@@ -840,7 +840,6 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 
-extern void DeleteMoby(void *);
 extern char rilgar_coll_hit[];
 extern float g_frame_time_sq MACRO_ADDR;
 
@@ -1313,7 +1312,6 @@ void draw_moby_glow_sprite(char *m) {
     }
     draw_world_quad(&pk, 0, 0);
 }
-extern char *CreateMoby(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0031abe0.c, FUN_L05_0031d160. */
 char *spawn_lamp_destroyed_from_source(unsigned char *a0) {

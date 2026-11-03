@@ -22,6 +22,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -380,7 +381,7 @@ int fetch_and_add_global_accumulator(int a) {
     fetch_add_accumulator = t + a;
     return t;
 }
-extern void *CreateMoby(int oClass);
+
 extern void moby_build_matrix(void *);
 
 /* Spawns a Camera Object moby, sets its +0x30 byte and ORs 0x41 into
@@ -644,7 +645,6 @@ void draw_vendor_effects(char *m) {
     }
 }
 
-extern void AttachManipulator(char *, int, void *);
 extern float vec_distance_xy(void *, void *);
 
 extern void AddDrawCallback(void (*)(void), void *);
@@ -1676,8 +1676,6 @@ void draw_wrench_swing_effect(void *op) {
     }
 }
 
-extern void func_0020D6D0(void *);
-
 /* copies a moby's animation selection from the player moby, or starts an animation */
 void update_wrench_animation_from_hero_state(char *m) {
     struct Hero *g = (struct Hero *)g_hero;
@@ -1986,7 +1984,6 @@ extern void compose_target_euler_rotation(char *, float, float, float);
 extern int fast_dec_timer(int *);
 
 extern float ApproachValue(float *, float, float);
-extern void hero_set_attack_ticks(int);
 
 extern int allocate_hero_voice_for_entry(int, int);
 extern void clear_moby_transform_history(char *);
@@ -2538,8 +2535,6 @@ void set_tracked_class_5f3_moby_position(int a, char *pos) {
         }
     }
 }
-
-extern void DeleteMoby(void *);
 
 // Tears down the tracked moby if it is class 0x5F3 and dead, freeing its slot and clearing the pointer.
 void remove_tracked_class_5f3_moby(void) {

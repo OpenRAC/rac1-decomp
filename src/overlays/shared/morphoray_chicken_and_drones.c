@@ -18,6 +18,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -320,7 +322,6 @@ extern void spawn_moby_collision_particles(void *);
 extern int RotateWithMoby(int, char *, char *, void *, char *, void *);
 
 extern char *spawn_doom_bot(int, void *, void *);
-extern void DeleteMoby(void *);
 
 void update_doom_bot_spawner(Moby *m) {
     struct ThrowVars *s;
@@ -579,7 +580,7 @@ extern int Moby_PlaySound_ri(int, int, char *) __asm__("func_0022ED80");
 extern int rand_range(int, int);
 extern float IntToFloat(int);
 extern void SetDeathBits(void *, int, int);
-extern void DeleteMoby(void *);
+
 extern void PartType05Spawn(void *, float, int, int, int, int, float);
 
 extern int morphoray_chicken_slots[];
@@ -1156,8 +1157,6 @@ int GetMobyPvarWord5(struct Moby *m) {
 }
 typedef int w128 __attribute__((mode(TI)));
 
-extern unsigned char *CreateMoby(int);
-
 extern void *PartType27Spawn(void *, void *, unsigned, int, float);
 extern float vec_length_xy(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
@@ -1676,7 +1675,6 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
 }
 
 extern int fast_dec_timer(int *);
-extern void DeleteMoby(void *);
 
 extern float falling_moby_horizontal_velocity_scale SDATA(falling_moby_horizontal_velocity_scale);
 
@@ -2050,7 +2048,6 @@ typedef int u128 __attribute__((mode(TI)));
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V4;
-extern unsigned char *CreateMoby(int);
 
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -2374,8 +2371,6 @@ typedef struct {
 extern S_2cdcc0 item_usage;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-int get_ammo(int);
-void use_ammo(int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8440.c, FUN_L00_002cdcc0. */
 void replenish_hero_drones(void) {
@@ -3027,7 +3022,7 @@ extern void ground_attached_update(struct Moby *);
 extern void create_linked_class_0326_moby(struct Moby *);
 
 extern s32 truncate_float_to_s32(f32);
-extern void update_moby_animation_state(struct Moby *);
+
 extern void break_crate(struct Moby *, int, Contact *);
 
 extern s32 coll_sphere_mobys(f32, void *, s32, void *, void *);

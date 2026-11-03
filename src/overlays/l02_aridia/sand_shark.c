@@ -24,6 +24,8 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -252,7 +254,6 @@ extern void rand_vec(void *, float, float);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern int select_group_sand_shark_nest_moby(void *argp);
-extern void DeleteMoby(void *);
 
 extern char sand_shark_no_path_fmt[];
 extern char sand_shark_empty_path_fmt[];
@@ -1159,7 +1160,7 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern int select_group_sand_shark_nest_moby(void *argp);
 extern void extend_group_sand_shark_timers(char *arg);
-extern void DeleteMoby(void *);
+
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern char *MobyGetHitMessage(void *, int, int);
 extern void InitKnockback(float, void *, void *, int, int, int);
@@ -1300,7 +1301,6 @@ void *handle_sand_shark_suck_cannon_storage(char *moby, void *v) {
 }
 extern int select_group_sand_shark_nest_moby(void *);
 extern void emit_sand_shark_dust_burst(void *);
-extern void DeleteMoby(void *);
 
 struct PrepareSandSharkForRelaunchOrRemoveVars {
     u8 pad_00[0x220];
@@ -2155,7 +2155,6 @@ void bulldozer_update(unsigned char *moby) {
 extern void handle_sand_shark_nest_damage(char *m);
 extern int fast_dec_timer(int *arg0);
 extern char *select_inactive_group_sand_shark_for_nest(char *m);
-extern float MobyGetFrameValue(void *);
 
 void launch_sand_shark(unsigned char *moby, void *position, float *direction);
 extern unsigned char help_stats_base[] NOT_SDA;
@@ -2517,11 +2516,10 @@ typedef struct {
 extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
 extern void SamplePathAt(void *, int, void *, void *, int, float);
-extern char *CreateMoby(int);
+
 extern void Help_Request(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void request_hero_target_pose(void *, int, float);
-extern int get_hero_target_pose_status();
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 

@@ -8,9 +8,9 @@
 #include "data/shared_levels.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern long func_001F4868(int);
-extern void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2);
 
 extern void vec_scale_to_length(void *, void *, float);
 

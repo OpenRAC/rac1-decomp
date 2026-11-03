@@ -18,6 +18,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -66,11 +67,7 @@ extern void apply_hero_ground_material_response(void);
 
 extern void HeroL06_UpdateStateTransitions(void);
 
-extern struct Moby *CreateMoby(s32);
-
 extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void MobyTransformScaledVertex(void *, int, void *);
 
 extern float ApproachValue(float *, float, float);
 
@@ -346,7 +343,6 @@ void update_hero_vehicle_attachments_and_effects(void) {
 }
 extern unsigned char g_hero[];
 extern s32 level_game_mode_q MACRO_ADDR;
-extern void DeleteMoby(void *);
 
 extern void release_and_clear_hero_voice_slots(void);
 
@@ -493,10 +489,6 @@ extern Hero g_hero_r2 __asm__("D_0013F450");
 extern f32 frame_scale MACRO_ADDR;
 extern u128_22a1d0 blarg_coll_resolved_pos[];
 
-extern void Hero_ConstrainToPath(void);
-extern void HeroOffsetAlongViewZ(void *, void *, f32);
-extern void HeroMoveDownAlongNormal(void *, void *, f32);
-
 extern s32 coll_sphere(void *, s32, s32, f32);
 extern s32 coll_capsule_v(void *, s32, f32, s32, f32) __asm__("func_L00_001F1D20");
 extern s32 coll_sphere_hero_groups_v(void *, f32) __asm__("func_L00_001F34F0");
@@ -604,12 +596,8 @@ extern s32 fast_dec_timer(s32 *);
 extern void restore_hero_from_vehicle_mode(void);
 
 extern s32 pad_pressed_within(s32, s32, s32);
-extern struct Moby *CreateMoby(s32);
 
 extern void enter_hero_vehicle_mode_and_set_moby(s32, s32, struct Moby *);
-extern f32 gravity_z(void *);
-
-extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_002348d0. */
 void update_hero_timers_and_spatial_state(void) {

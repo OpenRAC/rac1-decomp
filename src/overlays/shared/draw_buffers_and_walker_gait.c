@@ -9,6 +9,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern void wait_for_graphics_pipeline_idle(int, int);
 
@@ -179,7 +180,7 @@ typedef struct WalkData {
 extern int find_nearest_animation_sequence_entry(char *a, float time);
 
 extern int walker_gait_mask(WalkAnim *a, float t);
-extern float MobyGetFrameValue(void *);
+
 extern int truncate_float_to_s32(float);
 
 extern float vec_distance_xy(void *, void *);

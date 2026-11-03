@@ -27,6 +27,7 @@
 #include "enums/level.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -397,9 +398,9 @@ extern s32 path_lift_board_time MACRO_ADDR;
 extern s32 path_lift_leave_time MACRO_ADDR;
 extern f32 path_lift_hero_pull_speed SDATA(path_lift_hero_pull_speed);
 extern float g_frame_time MACRO_ADDR;
-extern void AttachManipulator(void *, int, void *);
+
 extern void STUB_printf(const char *, short);
-extern void DeleteMoby(void *);
+
 extern void gunship_follow_path(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
@@ -905,7 +906,6 @@ extern f32 looping_path_moby_speed SDATA(looping_path_moby_speed);
 extern f32 looping_path_moby_pulse_speed SDATA(looping_path_moby_pulse_speed);
 extern f32 g_frame_time MACRO_ADDR;
 extern void STUB_printf(const char *, short);
-extern void DeleteMoby(void *);
 
 extern int Spline_AdvanceByDistance_r(void *, float *, int *, float *, int, float) __asm__("func_L00_0025E860");
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -990,7 +990,7 @@ void update_looping_path_moby(struct Moby *m) {
             break;
     }
 }
-extern char *func_0020D348(int);
+
 extern float vec_length_xy(void *);
 
 extern void MobyBlendAnimation(void *, int, int, int);
@@ -2584,7 +2584,7 @@ extern int Npc_TryStartDialog(void *, void *);
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
 extern void mark_elevator_collected(void *);
 extern int memcard_Save(int, int);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -3422,8 +3422,6 @@ extern float fighter921_spring_stiffness SDATA(fighter921_spring_stiffness);
 extern float fighter921_spring_damping SDATA(fighter921_spring_damping);
 extern float fighter921_max_bank SDATA(fighter921_max_bank);
 extern float fighter921_bank_yaw_range SDATA(fighter921_bank_yaw_range);
-
-extern void DeleteMoby(void *);
 
 /* Flies the moby along its path, banking and pitching toward the next point; returns 1 once it is removed at the end.
    */

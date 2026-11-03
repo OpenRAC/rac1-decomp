@@ -48,13 +48,9 @@ void update_hero_stick_target_magnitude(void) {
 typedef int Q_222D18 __attribute__((mode(TI)));
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float gravity_z(float *);
-extern void gravity_set_z(float *, float *, float);
 
 extern void Hero_UpdateGroundContact(void);
 
-extern void gravity_flatten(float *, float *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float vec_length_xy(void *);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
@@ -212,8 +208,6 @@ extern void build_scaled_hero_move_impulse(float, float);
 
 extern void turn_to(int, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-
-extern void add_hero_forward_offset(void *, void *, float);
 
 extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);

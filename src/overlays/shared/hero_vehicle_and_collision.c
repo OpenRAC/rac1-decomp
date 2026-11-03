@@ -18,6 +18,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero[];
 extern char item_usage[];
 extern unsigned int pad_held;
@@ -34,7 +35,7 @@ extern s32 probe_hero_forward_collision(f32 *, f32, f32);
 extern f32 vec_length_xy(void *);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
-extern void transform_hero_local_offset_to_world(Vec4 *, f32, f32, f32);
+
 extern int coll_line_r(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
 
 extern s32 coll_sphere(f32, Vec4 *, s32, s32);
@@ -126,10 +127,9 @@ extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern void func_L00_002111E8(void);
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern s32 pad_pressed_within_r(s32, s32, s32) __asm__("func_L00_00267BA8");
-extern struct Moby *func_0020D348(s32);
 
 extern void func_L00_002110C0(s32, s32, struct Moby *);
-extern f32 func_L00_002342F8(void *);
+
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 
@@ -555,8 +555,6 @@ extern void create_missing_hero_item_slot_animations(int a, int b);
 extern void set_hero_idle_state_for_vehicle_mode(void);
 extern int hero_idle_sequence(int a);
 
-extern void set_hero_animation(int, int, float);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void cancel_hero_item_animation(void);
@@ -585,7 +583,6 @@ extern int Moby_PlaySound(int, int, int);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 extern void help_queue_add(int, int, int);
 
-extern void gravity_set_z(float *dst, float *src, float z);
 extern void spawn_hero_radial_particle_burst(void);
 
 extern int cinematic_mode MACRO_ADDR;
@@ -3651,7 +3648,6 @@ void update_hero_animation_for_movement_speed(void) {
     }
 }
 extern char g_hero[];
-extern void DeleteMoby(void *); /* DeleteMoby */
 
 /* Deletes and clears any moby cached at g_hero+0x1614, then clears
    flag bits 0x41 on the two moby pointers cached at +0x1180 and +0x1184,

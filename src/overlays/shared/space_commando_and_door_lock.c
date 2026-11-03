@@ -14,6 +14,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -150,7 +151,6 @@ extern f32 vec_distance_xy(void *, void *);
 
 extern s32 truncate_float_to_s32(f32);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern f32 MobyGetFrameValue(struct Moby *);
 
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
@@ -937,7 +937,7 @@ void spawn_blarg_space_commando_beam_sparks(char *moby) {
                         s17, *(int *)&beam_spark_lookup_index_and_flags_gp);
     }
 }
-extern void DeleteMoby(void *);
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float spinning_fragment_scale SDATA(spinning_fragment_scale);
 
@@ -1358,7 +1358,6 @@ void bot_door_lock_update(Moby *moby) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern char *CreateMoby(int);
 
 extern float blarg_zero_vec[] MACRO_ADDR;
 
@@ -1408,7 +1407,7 @@ void update_hit_triggered_moby_breakup(Moby *moby) {
             break;
     }
 }
-extern void DeleteMoby(void *);
+
 extern void AddDrawCallback(void *, void *);
 extern void draw_projected_fading_quad(char *);
 

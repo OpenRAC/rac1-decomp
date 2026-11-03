@@ -33,8 +33,6 @@ typedef struct {
 } T2C;
 extern void clear_moby_transform_history(char *o);
 
-extern void set_hero_animation(int, int, float);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(float, int);
@@ -58,8 +56,6 @@ extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int 
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
-
-extern void gravity_set_z(float *dst, float *src, float z);
 
 extern int veldin2_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

@@ -23,6 +23,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -259,7 +260,6 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     restore_view_after_textured_grid(data);
 }
 typedef int uq __attribute__((mode(TI)));
-extern char *CreateMoby(int);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
@@ -362,8 +362,6 @@ extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, in
 extern int rand_range(int, int);
 extern int Moby_PlaySound(int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void DeleteMoby(void *);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 
@@ -776,7 +774,6 @@ Moby *spawn_path_following_asteroid(Moby *owner) {
     }
     return m;
 }
-extern void DeleteMoby(void *); /* DeleteMoby */
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1203,7 +1200,6 @@ void AsteroidBeltUpdate(Moby *m) {
     FastVecAdd(((f32 *)&m->pos), ((f32 *)&m->pos), gaspar_camera_pos);
     FastVecSub(((f32 *)&m->pos), ((f32 *)&m->pos), d->centre);
 }
-extern char *CreateMoby(int);
 
 extern int func_001160D8(void);
 
@@ -1339,7 +1335,7 @@ extern void RerollEffectCounter(void *m, short *p);
 extern int rand_range(int, int);
 extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
 extern char *spawn_class_11c_moby(char *owner, void *position, float angle);
-extern void DeleteMoby(void *);
+
 typedef int xu128 __attribute__((mode(TI)));
 typedef struct {
     float x, y, z, w;
@@ -1386,7 +1382,6 @@ void handle_moby_damage_and_destruction(char *m) {
     }
     moby->hit_slot = 0xFF;
 }
-extern char *CreateMoby(int);
 
 /* Spawns a class 0x11C moby at the given position with the given angle. */
 char *spawn_class_11c_moby(char *owner, void *position, float angle) {
@@ -1684,8 +1679,6 @@ char *spawn_radially_scattered_moby(void *unused, void *origin, void *direction_
     }
     return moby;
 }
-
-extern void DeleteMoby(void *);
 
 /* Moby update for a drifting particle-like moby. */
 void update_drifting_moby(char *moby) {
@@ -2582,13 +2575,10 @@ extern struct Moby *spawn_class_4ea_projectile(void *, void *, void *, int);
 extern void set_level_state_flag_88(void);
 extern void FastMemZero16(void *, int);
 
-extern void AttachManipulator(struct Moby *, int, void *);
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 
 extern float vec_length_xy(void *);
 extern void divide_vector_xyz(void *, void *, float);
-
-extern float MobyGetFrameValue(void *);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
@@ -3229,7 +3219,6 @@ typedef struct {
     u8 padC4[8];
     f32 lag;
 } PathFlyerVars_00309c08;
-extern void AttachManipulator(struct Moby *, s32, void *);
 
 #define frame_time D_0015EE6C
 #define hero (*&g_hero)

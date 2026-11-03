@@ -21,6 +21,8 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -450,7 +452,7 @@ typedef struct {
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int func_L02_0022BE40(int, int);
-extern void func_L00_00232C10(int, int, float);
+
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern void align_hero_to_tresspasser_pad_r(Moby *) __asm__("func_L02_002DA728");
 extern void compute_tresspasser_pad_camera_transform_r(void *, void *, Moby *) __asm__("func_L02_002D9D48");
@@ -1595,7 +1597,7 @@ typedef struct {
     char pad46[0x132];
     char *mobys[1];
 } Level02MobyList;
-extern void AttachManipulator(char *, int, unsigned char *);
+
 extern int aridia_cinematic_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern Level02MobyList talk_camera;
@@ -1635,7 +1637,7 @@ extern void ShowBanner(int, int);
 extern int Help_Request(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int memcard_Save(int, int);
-extern void DeleteMoby(void *);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -1933,7 +1935,6 @@ extern void spawn_background_ship_1_joint_sparks(char *m, void *arg1);
 extern int PlayBankSound(int, int, int);
 extern void ShowBanner(int, int);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern void DeleteMoby(void *);
 
 extern float frame_scale MACRO_ADDR;
 extern float aridia_zero_vec[] MACRO_ADDR;

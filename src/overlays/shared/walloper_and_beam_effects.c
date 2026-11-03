@@ -18,6 +18,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -867,7 +868,6 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
 typedef struct {
     int a[4];
 } Vu __attribute__((aligned(16)));
-extern char *CreateMoby(int);
 
 /* Spawn a class 0xB3 moby linked to src, copying its basis rows; returns the moby or 0. */
 char *spawn_linked_moby_from_basis(char *src) {
@@ -890,7 +890,6 @@ char *spawn_linked_moby_from_basis(char *src) {
     }
     return (char *)m;
 }
-extern void DeleteMoby(void *);
 
 /* Per-frame update of a moby that follows its parent's flag and spins. */
 void update_linked_moby_scale_and_rotation(Moby *m) {
@@ -945,7 +944,7 @@ extern int walloper_effect_fade_out_countdown MACRO_ADDR;
 extern float walloper_effect_alpha_scale MACRO_ADDR;
 extern float walloper_arc_spread SDATA(walloper_arc_spread);
 extern float held_weapon_tesla_walloper_factor;
-extern float MobyGetFrameValue(void *);
+
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float IntToFloat(int);
 

@@ -20,6 +20,7 @@
 #include "structs/anim.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -492,7 +493,7 @@ typedef u32 u128_AD858 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 struct AnimSeq;
 extern void AddDrawCallback(void *, void *);
-extern void DeleteMoby(void *);
+
 void activate_waiting_turrets_in_group(s32 index);
 typedef struct {
     u8 pad0[0x10];
@@ -562,7 +563,6 @@ extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_002
 extern u8 *GetFlaggedPvarWord(struct Moby *);
 extern void set_ground_height_band(void *);
 
-extern void AttachManipulator(void *, s32, void *);
 extern void lerp_vector(void *, void *, void *, float);
 extern void Profile_Mark(void *, float);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
@@ -1595,7 +1595,7 @@ void update_blarg_heavy_interceptor_oscillation_and_patrol_heading(char *moby) {
 
 extern float IntToFloat(int);
 extern int FastBSphereCheck(char *, float);
-extern void MobyTransformScaledVertex(char *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* Checks a flag and a position test, then sets up three vectors in the moby data. */
@@ -2239,10 +2239,10 @@ extern void ease_minibomber_position_and_heading(char *moby, float *target, floa
 extern void update_minibomber_oscillation(char *moby);
 extern void emit_minibomber_exhaust_puffs(char *m);
 extern int STUB_printf();
-extern void DeleteMoby(void *);
+
 extern void initialize_minibomber_path_segment_lengths(char *moby);
 extern void hide_minibomber_and_release_voice(char *moby);
-extern void AttachManipulator(void *, int, void *);
+
 extern void initialize_minibomber_path_following(char *moby);
 extern int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, float *v, float *vel, float f12,
                                          float f13, float f14, float f15, float f16, float f17, float f18);
@@ -3008,7 +3008,6 @@ void update_flying_debris(struct Moby *m) {
     }
 }
 typedef int u128_2BC560 __attribute__((mode(TI)));
-extern struct Moby *func_0020D348(int);
 
 // Spawns moby 0x51 at a position facing away from an owner, with random drift and spin parameters.
 unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
@@ -3046,8 +3045,6 @@ unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
     }
     return m;
 }
-
-extern void DeleteMoby(void *);
 
 /* Release the debris' point light slot and delete the moby. */
 void remove_flying_debris(char *moby) {
@@ -3123,10 +3120,10 @@ extern s32 D_L14_00161AFC_D7250 SDATA(D_L14_00161AFC);
 extern s32 level14_racer_path_follow_initial_timer_frames_gp SDATA(level14_racer_path_follow_initial_timer_frames_gp);
 extern s32 level14_racer_exit_debris_path_initialization_scale_gp
     SDATA(level14_racer_exit_debris_path_initialization_scale_gp);
-extern void AttachManipulator(void *arg0, s32 arg1, void *arg2);
+
 extern int fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 extern void MobySetAnimation_r3(struct Moby *, s32, s32) __asm__("func_00213D28");
-extern f32 MobyGetFrameValue(struct Moby *);
+
 extern unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
 extern void spawn_path_or_ballistic_debris(struct Moby *, s32 *, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,

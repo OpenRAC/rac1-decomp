@@ -17,6 +17,7 @@
 #include "structs/level_records.h"
 #include "structs/pad.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -1618,7 +1619,7 @@ extern void ProfileMarker_Begin_a(void *, int) __asm__("func_001F2560");
 extern void UpdateFog_v(void) __asm__("func_001F2930");
 extern void append_gif_transfer_packet(void);
 extern void BuildViewMatrices(void);
-extern void prune_moby_references(void);
+
 extern void Transition_DrawSky(void);
 extern void DrawTfrag(void);
 extern void append_dma_tag(int);
@@ -1633,7 +1634,6 @@ extern void DrawShrubs(void);
 extern void draw_fogged_fullscreen_sprite(char *);
 extern void draw_debug_font(void);
 extern void dispatch_callback_list_3(void);
-extern void DrawMobys(void);
 
 extern void dispatch_callback_list_1(void);
 extern void draw_lens_flare(void);
@@ -1660,7 +1660,6 @@ extern void copy_render_buffer_pair(void);
 extern void PatchTieGifs(void);
 
 extern void patch_shrub_gifs(void);
-extern void PatchMobyGifs(void);
 
 /* Draws the whole frame: each world layer's DMA chain in order, then the fades and the per-layer profiler bars. Adapted from Lombyte's project (GPL-3.0) for PAL: rendering/draw_debug_profiler.c, draw_debug_profiler. */
 void DrawDebugProfiler(void) {

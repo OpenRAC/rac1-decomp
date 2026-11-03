@@ -504,8 +504,6 @@ extern void DrawTexturedQuad();
 extern void SetupGifPaging();
 extern void DoGifPaging();
 
-extern void DrawMobyList(s32, s32);
-
 extern void BuildViewMatrices(void);
 extern void project_graphics_bounds(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
 extern void configure_graphics_render_target_and_projection(s32, s32, s32, f32);
@@ -3057,7 +3055,6 @@ int set_menu_pause_flag_state(MenuScreen *arg0) {
 }
 
 extern int menu_preview_slot_enabled[];
-extern void DrawMobyList(int, int);
 
 /* Tears down the 24 handles at arg0+0x44, skipping the ones in use.
    The switch's table is jtbl_001E8AD0; `off` before `slots` and a second
@@ -3214,7 +3211,7 @@ int update_item_preview_moby(char *arg0) {
 }
 
 extern char *current_menu_page NOT_SDA;
-extern void DrawMobyList(int, int);
+
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void *msg_string_id(int) __asm__("func_001FE540");
@@ -3443,7 +3440,6 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
 }
 
 extern char *current_menu_page NOT_SDA;
-extern void DrawMobyList(int, int);
 
 /* The entry address is written inline in the index, as in
    draw_item_preview_screen; a `char *e` local swapped the addu. */
@@ -3710,7 +3706,6 @@ extern void font_print_right_large(s32, s32, u64, char *, s32);
 extern void font_print_window_regular_r(struct TextRegion *, u64, char *, s32) __asm__("func_001F7560");
 extern char *msg_string_r3(s32) __asm__("func_001FE540");
 extern void draw_hud_rect_blended_r3(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
-extern void DrawMobyList(s32, s32);
 
 extern void *libc_memset_r(void *, s32, u32) __asm__("func_001153FC");
 extern int sprintf(char *, const char *, ...);
@@ -7406,8 +7401,6 @@ void attachment_update_callback(void) {
 
 extern char item_info_table_a[] __asm__("D_001864D0");
 
-extern void MobyTransformScaledVertex(int, int, void *);
-
 extern void noop_callback_s(void *, void *, int, int, int);
 
 /* The pause-screen mobys these updates drive. */
@@ -7441,8 +7434,6 @@ typedef struct {
 } PauseClassRec;
 
 extern PauseClassRec item_info_table_r_r[] __asm__("D_001864D0");
-extern void DetachManipulator(int, void *);
-extern void AttachManipulator(int, int, void *);
 
 /* Moby update with a per-class record: find the class in item_info_table (0x4C
    bytes each, 0x25 of them), refresh the matrix from the record's bone,
@@ -7743,8 +7734,6 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
    error. */
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
-extern void *func_0020D348(int);
-
 /* Spawns the pickup/marker object for slot arg0, unless the slot is
    disabled (0xFF in resident_class_slot_by_id). A fresh object gets 0xFF/0xFF/1 in the
    0x30 block, is registered, tinted mid-grey, and flagged 0x18 at +0x73
@@ -7774,7 +7763,6 @@ void *create_menu_preview_moby(int arg0) {
 }
 
 extern int world_update_time MACRO_ADDR;
-extern void DeleteMoby(void *); /* DeleteMoby */
 
 /* Deletes moby arg0 (if any) and stamps its +0x38 with world_update_time. Always
    returns 0 so callers can clear their handle with it. */
@@ -8031,8 +8019,6 @@ s32 update_streamed_moby_animation(MobyAnimationStream *stream) {
     }
     return 0;
 }
-
-extern void DrawMobyList(int, int);
 
 /* Draws the 24 moby lists held at arg0+0x44. Returns 4. */
 int draw_moby_entries_from_object(void *arg0) {

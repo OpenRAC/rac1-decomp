@@ -14,6 +14,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -663,7 +664,7 @@ extern void project_2E39E0(Moby *, char *, void *, void *) __asm__("func_L01_002
 extern float sine_2E39E0(float) __asm__("func_001F9F90");
 extern float cosine_2E39E0(float) __asm__("func_001F9FA8");
 extern int func_L00_00259B88(Moby *, int *, void *, void *, float);
-extern float func_0020D830(Moby *);
+
 extern float angle_dist_2E39E0(float, float) __asm__("func_001FA850");
 extern void func_L00_0025AC00(Moby *, Moby *, int, void *, void *, float);
 extern int knock_update_2E39E0(Moby *, void *) __asm__("func_L00_0025D6F0");
@@ -1600,7 +1601,6 @@ void spawner_1885_update(char *moby) {
             return;
     }
 }
-extern void *CreateMoby(int);
 
 /* Spawns a Spawner Egg moby and initialises its data. */
 char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsigned char b) {
@@ -1626,7 +1626,6 @@ char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsign
     }
     return m;
 }
-extern void DeleteMoby(void *);
 
 struct RemoveSpawnerEggVars {};
 

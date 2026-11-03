@@ -22,6 +22,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
@@ -196,8 +197,6 @@ struct DrekMissileVars {
     void *owner; /* 0x16C: the group parent */
 };
 
-extern char *CreateMoby(int);
-
 extern float vec_length_xy(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
@@ -206,7 +205,7 @@ extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float 
 extern int coll_line(void *, void *, int, void *, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void DeleteMoby(void *);
+
 extern void rand_vec(float *, float, float);
 
 extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,

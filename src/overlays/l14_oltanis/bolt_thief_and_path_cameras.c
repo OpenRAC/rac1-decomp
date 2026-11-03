@@ -24,6 +24,7 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -241,7 +242,7 @@ void spawn_moby_offset_puffs(Moby *p) {
     }
 }
 extern char *oltanis_mobys MACRO_ADDR;
-extern void DeleteMoby(void *);
+
 /* deletes the linked moby and then the owner if still active */
 void mark_moby_and_linked_moby_for_removal(Moby *moby) {
     struct LinkedRemovalVars *data = (struct LinkedRemovalVars *)moby->pvars;
@@ -900,7 +901,6 @@ void update_bouncing_spark(Moby *m) {
     speed -= lo;
     m->rot.y = FastAddRots((((speed / (hi - lo)) * 7.0f) + 1.0f) * 0.017453292f, m->rot.y);
 }
-extern char *CreateMoby(int);
 
 extern float oltanis_spark_start_scale SDATA(oltanis_spark_start_scale);
 
@@ -1555,7 +1555,6 @@ extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 extern void initialize_flying_car_path_r(void *) __asm__("func_L14_00308998");
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
 
-extern void func_0020D960(void *, int, void *);
 extern void func_L00_0025E4B0(void *, void *);
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void func_L00_00263BF8(void *, void *, void *, float, float, float);

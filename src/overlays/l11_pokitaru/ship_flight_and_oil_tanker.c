@@ -26,6 +26,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -1550,7 +1551,6 @@ extern void move_4318(struct Moby *, void *, float, float, float, int);
 extern float randf_sym(float, float);
 extern void PartType34Spawn(void *, void *, float, float);
 extern int CarriedMobyUpdate(struct Moby *, void *);
-extern void DeleteMoby(void *);
 
 /* Update for the Puffoid creature: spawns on a path or a carrier moby, wanders, chases and attacks the target, jumps
    between path points, and smokes while it dies.
@@ -2244,7 +2244,6 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
     }
 }
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
-extern float MobyGetFrameValue(char *);
 
 extern int move_w(char *, char *, float *, char *, float);
 extern float g_frame_time_sq MACRO_ADDR;
@@ -2381,7 +2380,6 @@ struct L11GateVars {
     s32 unk10;
 };
 
-extern char *CreateMoby(int);
 extern float vec_distance_xy(float *, float *);
 
 extern void Moby_PlaySound(int, int, int);
@@ -2525,8 +2523,7 @@ extern void distribute_group_blarg_ship_1319_mobys_along_path(void *, int);
 extern void update_oil_tanker_link_path_poses(void *);
 extern void process_oil_tanker_damage_and_destruction(void *);
 extern void update_oil_tanker_front_path_pose(char *moby);
-extern void DeleteMoby(void *);
-extern char *CreateMoby(int);
+
 extern void Moby_PlaySound(int, int, int);
 extern s32 map_data_0015EE84 __asm__("D_0015EE84") MACRO_ADDR;
 extern float oil_tanker_path_step SDATA(oil_tanker_path_step);
@@ -3026,7 +3023,7 @@ void start_oil_tanker_link_destruction(char *m) {
     ((struct OilTankerLinkVars *)link_vars)->spin_b = random_float_between(20.0f, 60.0f) * 0.017453292f * g_frame_time;
 }
 extern void spawn_energy_sphere_particles(char *moby);
-extern void DeleteMoby(void *);
+
 extern void spawn_energy_sphere_spark(char *moby);
 extern int coll_line(void *, void *, int, void *, void *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
@@ -3537,7 +3534,6 @@ extern int bubble_foam_color_b SDATA(bubble_foam_color_b);
 extern void spawn_bubble_spark(char *);
 extern void spawn_bubble_surface_effects(char *, float *, int, int);
 extern char *PartType34Spawn_p(void *, float *, float, float) __asm__("func_L00_0026FF20");
-extern void DeleteMoby(void *);
 
 /* Bubble update: rises to the surface, then pops and fades, drifting with its velocity. */
 void update_bubble_motion_and_scale(char *m) {
@@ -3691,7 +3687,6 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 
-extern void DeleteMoby(void *);
 /* Moby update for a breakable object that plays effects when hit. */
 void Pokitaru_BreakOnHitUpdate(char *m) {
     int hit = 0;

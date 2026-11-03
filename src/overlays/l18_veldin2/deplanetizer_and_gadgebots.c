@@ -12,6 +12,7 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
+#include "game/moby/mobyfunc.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -817,7 +818,6 @@ void update_moby_visibility_and_half_turn(char *moby) {
 }
 extern void FastVecSub(void *, void *, void *);
 extern void update_entity_matrix(char *a, void *b, void *c, void *d);
-extern char *func_0020D348(int);
 
 /* updates a moby that drags a child moby along with it */
 void update_moby_transform_and_child(char *moby) {
@@ -873,8 +873,6 @@ typedef struct {
     char pad0[0x84];
     void *child;
 } Level18VendorData;
-
-extern void DeleteMoby(void *);
 
 /* Remove a vendor moby and any child it owns. */
 void mark_class_0630_moby_and_child_for_removal(Moby *moby) {

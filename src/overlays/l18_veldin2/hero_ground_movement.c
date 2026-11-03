@@ -83,11 +83,7 @@ extern void stick_target(float, int);
 extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
 
-extern void set_hero_animation(int, int, float);
-
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
-extern void HeroMoveDownAlongNormal(float *, float *, float);
 
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
@@ -108,15 +104,11 @@ extern void ClampVectorLength(void *, float);
 
 extern float vec_distance_xy(void *, void *);
 
-extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
-
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern void gravity_set_z(float *, float *, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-extern void offset_hero_position_against_gravity(float *, float *, float);
+
 extern int test_hero_animation_frame_window(float);
 
 extern void initialize_moby_transform_history(int, void *);
@@ -126,13 +118,11 @@ extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 extern int offset_path_index(void *, int, int, int);
 
-extern void gravity_flatten(float *, float *);
 extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
-extern void add_hero_forward_offset(void *, void *, float);
-extern void HeroOffsetAlongViewZ(float *, float *, float);
+
 extern int coll_line(void *, void *, int, int, int);
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
+
 extern int is_moby_in_class_range_500_to_540(int);
 
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);

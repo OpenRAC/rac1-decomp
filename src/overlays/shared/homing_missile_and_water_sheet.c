@@ -20,6 +20,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern int g_screen_extent[];
 extern char help_records[];
@@ -51,7 +52,6 @@ extern char pokitaru_raritanium_acquired_text[];
 extern int proximity_removal_frame_count MACRO_ADDR;
 
 extern int sprintf(void *, void *);
-extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8830.c, FUN_L11_002cb790. */
 void remove_moby_when_near_hero(char *a0) {
@@ -106,7 +106,6 @@ char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, f
     return best;
 }
 
-extern char *CreateMoby();
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float vec_length_xy(void *);
 
@@ -266,7 +265,7 @@ void update_homing_missile(struct Moby *moby) {
             DeleteMoby(moby);
     }
 }
-extern char *CreateMoby(int);
+
 extern int truncate_float_to_s32(float);
 
 extern void vec_scale_to_length(void *, void *, float);

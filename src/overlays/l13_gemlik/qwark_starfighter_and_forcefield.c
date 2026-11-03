@@ -31,6 +31,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -573,7 +574,6 @@ extern void func_L13_002E9F90(void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
-extern void DeleteMoby(void *);
 extern char *spawn_owner_linked_class_160_moby(void *);
 extern void update_moby_joint_attachments(void *, void *);
 extern void emit_gated_moby_joint_effects(void *, void *);
@@ -2612,7 +2612,6 @@ extern void Manipulator_ApplyScale(float, struct Moby *, int, void *);
 extern void set_ground_height_band(void *);
 extern void MoveCtl_Init(void *);
 extern void SteerAngleWithVelocity(float *, float, float *, float, float, float);
-extern float MobyGetFrameValue(struct Moby *);
 
 extern int move_w(struct Moby *, void *, void *, void *, float);
 extern int func_001160D8(void);

@@ -236,8 +236,6 @@ extern char hero_globals_base[];
 extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
 extern s32 vendor_auxiliary_moby_load_pending MACRO_ADDR;
 
-extern VendorMoby_pv *CreateMoby(s32);
-
 extern void snd_PauseAllSoundsInGroup(s32);
 extern void music_Pause(s32);
 extern int snd_FlushSoundCommands(void);
@@ -254,7 +252,6 @@ extern s32 HeroEnterMoveState(s32, s32);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern void AttachManipulator(char *, s32, void *);
 
 extern short vendor_camera_eye_local_offset;
 extern f32 vendor_camera_eye_local_offset_z MACRO_ADDR;
@@ -386,8 +383,6 @@ extern void Hud_SetBarValueById(int, int);
 extern int HeroEnterMoveState(int, int);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern void DeleteMoby(void *);
 
 extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
@@ -735,8 +730,6 @@ extern B vendor_item_slot2_placement[];
 extern short vendor_selected_item_local_offset;
 extern int vendor_selection_changed __attribute__((section(".sdata")));
 extern unsigned char discount_purchase_pricing[] __attribute__((section(".data")));
-
-extern void update_moby_animation_state(void *);
 
 #define GG g
 #define P (GG->obj)
@@ -1242,7 +1235,7 @@ extern void Profile_Mark();
 extern void coordinate_hero_frame_update();
 
 extern s32 Moby_PlaySound();
-extern void DetachManipulator();
+
 extern void start_vendor_exit_cutscene();
 extern void close_vendor_menu();
 extern void update_hud_elements();
@@ -1270,7 +1263,6 @@ extern void sceVu0RotMatrixY();
 extern void sceVu0RotMatrixZ();
 extern f32 IntToFloat();
 
-extern void HeroAttachManipulators();
 extern void initialize_numeric_hud_timer_and_base_dimensions();
 extern void Hud_UpdateCounter();
 extern void draw_weapon_ammo_hud_panel();

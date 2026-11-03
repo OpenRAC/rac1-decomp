@@ -36,8 +36,6 @@ extern void clear_moby_transform_history(char *o);
 
 extern int get_hero_idle_animation_index(int a);
 
-extern void set_hero_animation(int, int, float);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(float, int);
@@ -62,12 +60,9 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 
-extern void gravity_set_z(float *dst, float *src, float z);
 extern int select_point_index_by_distance(void *, void *, float);
 
 extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void gravity_flatten(float *dst, float *src);
 
 extern int kalebo3_game_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

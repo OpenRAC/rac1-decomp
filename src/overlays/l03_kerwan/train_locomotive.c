@@ -19,6 +19,7 @@
 #include "enums/moby_class.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -214,7 +215,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 extern int STUB_printf();
-extern void DeleteMoby(void *);
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char kerwan_train_motion_error_msg[];
@@ -1691,7 +1692,6 @@ extern short kerwan_mobys_r2 __asm__("D_L03_00160058");
 extern char kerwan_moby573_spawn_d0_record;
 
 extern float ApproachValue(float *p, float target, float maxstep);
-extern float MobyGetFrameValue(void *);
 
 extern int func_001160D8(void);
 extern int move_w(void *, void *, void *, void *, float);
@@ -2270,7 +2270,7 @@ extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *
 
 extern unsigned char *moby_get_ride_transform(int);
 extern void RotatePointAboutAxis(void *, void *, float);
-extern void DeleteMoby(void *);
+
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char help_stats_base[];

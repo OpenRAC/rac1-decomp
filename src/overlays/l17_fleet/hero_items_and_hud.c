@@ -60,12 +60,10 @@ extern HeroSpeedBands fleet_hero_speed_bands;
 extern int HeroL17_TryTakeHit(int);
 
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int func_L00_00235790(void);
+
 extern void hud_keep_visible(int, int);
 
 extern int hero_slot_item_id(int);
-
-extern void set_hero_animation(int, int, float);
 
 extern int HeroL17_SetMoveState(int, int);
 
@@ -79,24 +77,18 @@ extern void emit_hero_animation_voice_and_ground_particle(int a0, int a1, int a2
 
 extern int is_wrench_moby(void *);
 
-extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
-
-extern void hero_set_attack_ticks(int id);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
 extern void allocate_hero_voice_for_entry(int, int);
 
-extern void gravity_set_z(float *dst, float *src, float z);
 extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern float gravity_z(float *v);
 
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);

@@ -21,6 +21,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -165,7 +166,6 @@ extern float compute_toxic_crab_group_approach_angle(char *self);
 
 extern int move_w(void *, void *, void *, void *, float);
 
-extern float MobyGetFrameValue(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 
@@ -182,7 +182,6 @@ extern void SetDeathBits(void *, int, int);
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 
-extern void DeleteMoby(void *);
 extern void set_ground_height_band(void *);
 
 /* Update for the toxic crab (moby Toxic Crab): line-of-sight test, then a 13-state walk/chase/attack/death machine. */

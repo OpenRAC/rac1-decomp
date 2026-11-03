@@ -32,8 +32,6 @@ extern void clear_moby_transform_history(char *o);
 
 extern int get_hero_idle_animation_index(int a);
 
-extern void set_hero_animation(int, int, float);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(float, int);
@@ -54,7 +52,6 @@ extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 
-extern void gravity_set_z(float *dst, float *src, float z);
 extern int pokitaru_cinematic_mode MACRO_ADDR;
 extern int pokitaru_pool_draw_tiles MACRO_ADDR;
 extern int pokitaru_pool_draw_count MACRO_ADDR;

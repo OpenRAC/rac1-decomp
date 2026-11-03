@@ -10,6 +10,7 @@
 #include "data/level_18.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
@@ -55,13 +56,10 @@ extern float g_frame_time_sq MACRO_ADDR;
 
 extern float veldin2_zero_vec[] MACRO_ADDR;
 
-extern void DeleteMoby(void *);
-
 extern float g_frame_time MACRO_ADDR;
 extern int Moby_PlaySound(int, int, int);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int veldin2_cinematic_mode MACRO_ADDR;
-extern void AttachManipulator(char *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
@@ -115,10 +113,8 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
 extern float rocket_tank_shot_speed SDATA(rocket_tank_shot_speed);
 extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
-extern char *func_0020D348(int);
 
 extern int IsFrameWithinWindow(char *, float);
-extern float MobyGetFrameValue(void *);
 
 extern char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3);
 

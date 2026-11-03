@@ -121,7 +121,6 @@ int pick_idle_fidget(int *index) {
 
 extern int HeroEnterMoveState(int, int);
 
-extern void set_hero_animation(int, int, float);
 extern void stick_target(int, float);
 extern void ClampVectorLength(void *a, float x);
 extern int hero_idle_sequence(int);

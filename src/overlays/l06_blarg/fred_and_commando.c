@@ -26,6 +26,7 @@
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -633,7 +634,6 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
             enqueue_callback_list_1_ff((int)FUN_L06_00300588_ff, moby);
     }
 }
-extern char *CreateMoby(int);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_spinning_moby_fragment(void *, void *, void *);
@@ -797,7 +797,7 @@ void effect_quad_draw_single(void) {
         draw_world_quad(m, mat, 0);
     }
 }
-extern void DeleteMoby(void *);
+
 extern float IntToFloat(int);
 
 extern int blarg_frame_count MACRO_ADDR;
@@ -2126,7 +2126,6 @@ void break_apart_shuttle_linked_mobys(struct Moby *moby) {
     } while (*list++ >= 0);
     ((struct Moby *)((id << 8) + (int)level_mobys_q))->command = 30;
 }
-extern void DeleteMoby(void *);
 
 struct MarkShuttleLinkedMobysForRemovalVars {
     u8 pad_00[0xCC];

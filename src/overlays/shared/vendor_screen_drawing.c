@@ -7,9 +7,10 @@
 #include "structs/level_records.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 
 extern void *libc_memset(void *, int, int);
-extern void DrawMobyList(int, int);
+
 extern char *msg_string(int);
 extern void font_print_window_small(void *, long, char *, int);
 extern int sprintf(char *str, const char *fmt, ...);
@@ -138,7 +139,6 @@ purchase:
 }
 
 extern float vendor_inset_quad_margins[][4];
-extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -218,7 +218,7 @@ extern void configure_capture_target(int, int, float);
 extern void draw_vendor_purchase_text(void *, int, int);
 extern void render_vendor_capture_texture_overlays_pass(int, float, float);
 extern void begin_draw_frame(void);
-extern void DrawMobyList(int, int);
+
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern long capture_texture_tex0 MACRO_ADDR;
 
@@ -432,7 +432,6 @@ extern void func_001FFFB8(void);
 extern void func_001F4748(void);
 extern void RestoreMobyClassDists_r(void) __asm__("func_0020E098");
 extern void DrawMobysCleanUp_r(void) __asm__("func_0020E200");
-extern void func_0020DD48(void);
 
 /* Vendor screen frame: on the first frame sets up the camera rows, the two preview mobys and the stream read; then
  * draws the vendor mobys, the capture pass and the HUD.

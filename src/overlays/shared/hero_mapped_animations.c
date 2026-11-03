@@ -16,6 +16,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -326,7 +327,6 @@ extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
 extern int SlotTable_Insert(void *);
 
-extern void update_moby_animation_state(void *);
 extern int truncate_float_to_s32(float);
 extern void clear_hero_queued_animation(void);
 extern void blend_hero_slot3_mapped_animation_pair(int, int, float);
@@ -460,7 +460,6 @@ extern f32 hero_anim_blend_curves[][25];
 extern int cinematic_mode MACRO_ADDR;
 extern int Moby_PlaySound(int, int, Moby *);
 
-extern float MobyGetFrameValue(Moby *);
 extern void clear_hero_mapped_moby_animation_state(void);
 
 /* Hero animation frame advance: steps the hero moby's frame position (anim_time) by anim_speed * unkA94 or a
@@ -1459,8 +1458,6 @@ extern Hero g_hero_r2 __asm__("D_0013F450");
 extern s32 cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
-void AttachManipulator(void *, s32, void *);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00234808. */
 void animate_hero_slot4_and_slot5_visuals(void) {
     char *m0, *m1, *m2;
@@ -1601,7 +1598,6 @@ void HeroAttachManipulators(char *obj) {
     *(int *)(obj + 0x90) = FastTweenColor(c1, c0, t * 0.5f + 0.5f);
     update_hero_slot4_and_slot5_mobys((int)obj);
 }
-extern void MobyTransformScaledVertex(int, int, void *);
 
 extern void pack_pose(void *, void *, void *, int, int);
 extern char source_bone4_joints_class1b1[];

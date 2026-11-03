@@ -16,6 +16,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -96,7 +97,6 @@ LINKER_REMNANT("asm/overlays", func_L03_00292B18);
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 
-extern void DeleteMoby(void *);
 extern void fast_add_rotations_cf(void *, void *, float, float, float);
 
 extern float IntToFloat(int);
@@ -1057,8 +1057,6 @@ extern void raise_kernel_trap_r(void) __asm__("func_001F9978");
 
 extern char *spawn_homing_spark_projectile_r(char *, char *, int, int, float) __asm__("func_L03_002D65D0");
 
-extern void func_0020D9D8(void *, void *);
-
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
@@ -1861,7 +1859,7 @@ typedef struct {
     char pad1[0x132];
     char *m[1];
 } G_2DC848;
-extern void AttachManipulator(char *, int, void *);
+
 extern int kerwan_game_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G_2DC848 kerwan_cutscene_state;
@@ -2095,7 +2093,6 @@ INCLUDE_ASM("asm/overlays", func_L03_002DDED8);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int fast_dec_timer(int *arg0);
-extern void DeleteMoby(void *);
 
 /* Falling moby: applies gravity, eases its angles toward the target and fades out until its timer ends. */
 void update_falling_moby(Moby *moby) {

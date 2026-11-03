@@ -22,6 +22,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -165,7 +166,6 @@ extern void mark_moby_killed_and_release_owned_voice(int);
 extern float animation_end(int a, unsigned int b);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern float MobyGetFrameValue(void *);
 extern float IntToFloat(int);
 extern int move_sentrybot_toward_point(char *moby, float *point, float arg);
 extern int begin_sentrybot_turn_toward_heading(unsigned char *, char *, int, int, float);
@@ -176,7 +176,7 @@ extern int can_sentrybot_approach_linked_moby(void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void compute_selected_world_matrices(void *, int, void *, void *);
-extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
+
 extern float vec_length_xy(void *);
 extern char *spawn_class_3a6_moby(char *, float *, char *, char *);
 extern int mine_fall(void *, void *);
@@ -184,7 +184,7 @@ extern int mine_fall(void *, void *);
 extern int Moby_PlaySound(int, int, int);
 
 extern void SetDeathBits(void *, int, int);
-extern void DeleteMoby(void *);
+
 extern void update_sentrybot_joint_aim(void *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);

@@ -27,6 +27,8 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -861,7 +863,7 @@ extern void PostHitMessage_v(float, void *, void *, int, void *, void *) __asm__
 
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_type_14_particle(int, void *);
-extern void DeleteMoby(void *);
+
 extern s32 novalis_shot_trail_mode SDATA(novalis_shot_trail_mode);
 extern f32 novalis_shot_hit_radius SDATA(novalis_shot_hit_radius);
 
@@ -964,7 +966,6 @@ extern void record_moby_context_bytes(void *, int, void *, int, void *);
 
 extern void divide_vector_xyz(void *, void *, float);
 
-extern void set_hero_animation(int, int, float);
 extern void Spring(float *, float *, float, float, float, float);
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 
@@ -1731,7 +1732,6 @@ extern int sand_mouse_fade_particle_color_alpha_gp SDATA(sand_mouse_fade_particl
 extern float sand_mouse_fade_particle_time_squared_coefficient_gp
     SDATA(sand_mouse_fade_particle_time_squared_coefficient_gp);
 extern int STUB_printf();
-extern void DeleteMoby(void *);
 
 extern void MoveCtl_Init(char *p);
 extern void rig_probe_setup(void *, int, int *, float *, float *, int *);
@@ -1739,7 +1739,7 @@ extern int func_001160D8(void);
 extern void MobySpringTurn_r(void *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 extern int Hero_SetMoveState(int, int);
-extern void set_hero_animation(int, int, float);
+
 extern int func_L00_0025A060(void *m, void *p, float *pos, float *v);
 extern int fast_dec_timer(void *);
 extern void update_hover_moby_steering_r(void *, void *) __asm__("func_L01_002E4BA8");
@@ -2025,8 +2025,6 @@ void sand_mouse_update(Moby *moby) {
 
 extern int coll_line(void *, void *, int, int, int);
 
-extern void DeleteMoby(void *);
-
 typedef struct {
     float v[2];
     float f8;
@@ -2122,7 +2120,7 @@ extern int IsFrameWithinWindow(float, void *);
 extern void Moby_PlaySound(int, int, char *);
 
 extern int truncate_float_to_s32(float);
-extern float MobyGetFrameValue(void *);
+
 extern float g_hero_body_center[4];
 extern float novalis_zero_vec[] MACRO_ADDR;
 extern char amoeboid_pvar130_data;

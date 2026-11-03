@@ -16,6 +16,7 @@
 #include "enums/moby_class.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -144,8 +145,6 @@ struct GrindrailBarrierVars {
     s32 sound_slot; /* 0x24 */
 };
 
-extern char *CreateMoby(int);
-
 extern float vec_length_xy(void *);
 
 // Creates a Rocket moby that looks along a direction, copying owner data and position.
@@ -192,7 +191,7 @@ extern int coll_line(void *, void *, int, void *, void *);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void DeleteMoby(void *);
+
 extern char kalebo3_camera_pos[], hero_globals_base[];
 /* Steer a projectile toward its target and emit its impact effects. */
 void HomingProjectileUpdate(char *m) {
@@ -298,7 +297,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern char *spawn_blarg_elite_commando_rocket(char *, float *, char *);
 extern int mine_fall(void *, void *);
 extern int Moby_PlaySound_update(int, int, void *) __asm__("func_0022ED80");
-extern void DeleteMoby(void *);
+
 extern float ApproachValue(float *, float, float);
 
 extern float FastVecDist_update(void *, void *) __asm__("func_001F9D10");
@@ -1004,8 +1003,6 @@ void update_blarg_elite_commando_joint_aim(char *m) {
     EaseManipulatorOffsets(m, (char *)&d->joints[1], 2, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
     EaseManipulatorOffsets(m, (char *)&d->joints[2], 3, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
 }
-
-extern void MobyTransformScaledVertex(void *, int, void *);
 
 extern void rand_vec(float *, float, float);
 

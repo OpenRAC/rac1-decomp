@@ -21,6 +21,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -826,7 +827,7 @@ void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
 }
 typedef u32 u128_10A90 __attribute__((mode(TI), aligned(16)));
 extern void *MobyGetHitMessage(struct Moby *, int, int);
-extern struct Moby *CreateMoby(int);
+
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
 extern void rand_vec(void *, float, float);
@@ -1624,7 +1625,7 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern G rilgar_cutscene_state;
 
 extern int g_breast_growth_count SDATA(g_breast_growth_count);
-extern void AttachManipulator(char *, int, void *);
+
 extern void update_hoverboard_girl_boobs_animation(char *, int);
 
 /* For every moby sharing this one's class: arms the marker record, and notifies it while the level flag is set. */
@@ -1989,7 +1990,6 @@ extern void initialize_moby_grounding(char *);
 extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
-extern void DeleteMoby(void *);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);

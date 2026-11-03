@@ -30,6 +30,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern int g_controller_state_no_direction;
 
 typedef int u128 __attribute__((mode(TI)));
@@ -80,13 +81,8 @@ extern void stick_target(float, int);
 extern void turn_to(float, float, float, int);
 extern int fast_dec_timer(int *);
 
-extern void set_hero_animation(int, int, float);
 extern int get_hero_idle_animation_index(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
-extern void HeroMoveDownAlongNormal(float *, float *, float);
-
-extern unsigned char *CreateMoby(int);
 
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
@@ -109,7 +105,6 @@ extern void ClampVectorLength(void *, float);
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 extern float vec_distance_xy(void *, void *);
 
-extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
@@ -127,9 +122,8 @@ extern int offset_path_index(void *, int, int, int);
 extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
 
-extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
+
 extern int is_moby_in_class_range_500_to_540(int);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);

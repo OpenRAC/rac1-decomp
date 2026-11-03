@@ -11,6 +11,7 @@
 #include "data/level_09.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /* Store in dst the angle scale of the way from a toward b, wrapped. */
 void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
@@ -120,7 +121,6 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 
-extern void DeleteMoby(void *);
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL09_Update(char *m) {
     int hit = 0;

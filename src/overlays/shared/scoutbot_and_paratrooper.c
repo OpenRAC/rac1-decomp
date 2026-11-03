@@ -17,6 +17,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -697,7 +698,6 @@ void draw_scoutbot_glow_quad(char *arg) {
 }
 typedef u32 u128_E9288 __attribute__((mode(TI), aligned(16)));
 extern f32 g_frame_time MACRO_ADDR;
-extern char *CreateMoby(int);
 
 extern float vec_length_xy(void *);
 
@@ -810,7 +810,7 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
 extern int truncate_float_to_s32(float);
 extern int fast_dec_timer(int *);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern void DeleteMoby(void *);
+
 extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void ClampVectorLength(float, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -1649,7 +1649,6 @@ typedef struct {
     char p[0x34];
     unsigned short f34;
 } MF_;
-extern void MobyTransformScaledVertex(char *, int, char *);
 
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(void *, void *, float, int, int, int);
@@ -1853,7 +1852,6 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
             ((Moby *)m)->pos.z = f1;
     }
 }
-extern char *CreateMoby(int);
 
 extern float vec_length_xy(void *);
 
@@ -1886,7 +1884,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void DeleteMoby(void *);
 
 /* Fire bolt: flies along its velocity with a smoke trail (while the level is not underwater), damaging what it hits. */
 void update_fire_bolt(char *m) {

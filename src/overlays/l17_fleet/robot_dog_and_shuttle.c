@@ -25,6 +25,7 @@
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -1751,8 +1752,6 @@ char *try_activate_blarg_ship_from_list(int list) {
 }
 extern void SetDeathBits(void *, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-
-extern void DeleteMoby(void *);
 
 /* UpdateMoby 1873: wait for a target, then play two effects and delete itself. */
 void Moby1873Update(unsigned char *m) {

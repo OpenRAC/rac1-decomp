@@ -28,6 +28,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -1202,7 +1203,7 @@ extern int Npc_TryStartDialog(void *, void *);
 extern void queue_planet_unlock_message(int);
 
 extern int memcard_Save(int, int);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
 
 extern int fast_dec_timer(int *arg0);
@@ -1415,7 +1416,6 @@ extern struct G batalia_cutscene_state;
 extern float batalia_big_head_cutscene_fov_scale MACRO_ADDR;
 extern float batalia_big_head_cutscene_camera_pullback MACRO_ADDR;
 extern unsigned char deserter_scale_manipulator[];
-extern void AttachManipulator(char *, int, void *);
 
 /* triggers objects matching the moby's class */
 void attach_batalia_deserter_class_manipulator(char *moby) {
@@ -1626,8 +1626,6 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
 }
 extern void attach_batalia_plumber_class_manipulator(char *moby);
 extern void request_batalia_cannon_mount(char *arg);
-
-extern void DeleteMoby(void *);
 
 extern int fast_dec_timer(int *arg0);
 
@@ -2171,8 +2169,6 @@ void update_batalia_textured_effect(unsigned char *moby) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-
-extern void DeleteMoby(void *);
 
 // Moby state machine: wait, check hit on first probe, then clean up and delete.
 void update_moby_hit_removal_state(char *m) {

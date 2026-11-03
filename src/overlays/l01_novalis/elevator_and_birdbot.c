@@ -23,6 +23,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -590,7 +591,6 @@ extern float novalis_birdbot_drift_speed SDATA(novalis_birdbot_drift_speed);
 extern float novalis_birdbot_fly_speed SDATA(novalis_birdbot_fly_speed);
 extern float novalis_birdbot_anim8_speed SDATA(novalis_birdbot_anim8_speed);
 
-extern float MobyGetFrameValue(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern int select_birdbot_path_node(void *, int *);
 extern void FindNearestTargetMoby(void *, void *, float);
@@ -625,7 +625,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void SetDeathBits(void *, int, int);
-extern void DeleteMoby(void *);
+
 extern void StepColorFade(void *, void *);
 extern void set_range_centered_on_value(char *arg, float value);
 
@@ -2605,8 +2605,6 @@ typedef struct {
     int kind;
     float len;
 } BeamVars;
-
-extern BeamMoby *func_0020D348(int);
 
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 extern void Moby_PlaySound(int, int, int);

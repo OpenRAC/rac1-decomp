@@ -24,6 +24,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -1116,7 +1117,6 @@ extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *, char *, int, unsigned char, unsigned char,
                                                                      int, float);
-extern void DeleteMoby(void *);
 
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
@@ -3106,7 +3106,7 @@ typedef u32 u128_FD3E0 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern struct Moby *CreateMoby(s32);
+
 extern void set_moby_list_state(int, int);
 
 extern float blarg_slide_pair_open_a SDATA(blarg_slide_pair_open_a);

@@ -21,6 +21,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero[];
 extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
@@ -226,7 +227,7 @@ extern u8 item_available[];
 
 extern void initialize_moby_particle_effect(void *);
 extern void STUB_printf();
-extern void DeleteMoby(void *);
+
 extern void emit_moby_color_cycling_particles_r(void *) __asm__("func_L00_002E1C38");
 extern f32 vec_distance_xy(void *, void *);
 

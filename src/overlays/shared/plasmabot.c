@@ -15,6 +15,7 @@
 #include "enums/level.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -126,7 +127,7 @@ extern void STUB_printf(char *, ...);
 
 void initialize_plasmabot_path_state(char *moby);
 extern int truncate_float_to_s32(float);
-extern void AttachManipulator(char *, int, char *);
+
 void deactivate_plasmabot(char *moby);
 extern float ProbeGroundHeight_v(float, void *, int) __asm__("func_00214358");
 
@@ -136,7 +137,6 @@ extern int check_listed_plasmabots_not_starting_path_traversal(unsigned char *);
 
 void activate_plasmabot(char *moby);
 
-extern float MobyGetFrameValue(char *);
 int follow_plasmabot_path(char *moby);
 
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -152,7 +152,7 @@ extern int test_path_segment_strict_crossing(int, void *, void *);
 void Group_ResetClass28Timers(int idx);
 
 extern float IntToFloat(int);
-extern void MobyTransformScaledVertex(char *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int coll_line(void *, void *, int, void *, void *);
@@ -166,7 +166,7 @@ extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, in
     ((void (*)(char *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, \
                int, int))func_L00_0025F4A8)
 unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mode);
-extern void DeleteMoby(struct Moby *);
+
 #define call_D678 ((void (*)(char *))func_0020D678)
 void update_plasmabot_visual_effects(struct Moby *m);
 
@@ -1348,7 +1348,7 @@ extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, in
                             float, int, int, int, int);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern void *PartType23Spawn(void *, float, float, float, int, void *, float, int);
-extern void DeleteMoby(struct Moby *);
+
 extern float oltanis_zero_vector[] MACRO_ADDR;
 
 /* Moby update for a falling debris particle. */
@@ -1420,7 +1420,6 @@ extern float plasmabot_debris_min_speed SDATA(plasmabot_debris_min_speed);
 extern float plasmabot_debris_max_speed SDATA(plasmabot_debris_max_speed);
 extern float plasmabot_debris_min_spin SDATA(plasmabot_debris_min_spin);
 extern float plasmabot_debris_max_spin SDATA(plasmabot_debris_max_spin);
-extern unsigned char *CreateMoby(int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1916,7 +1915,7 @@ extern int ComputeHitResponse_r(struct Moby *, MobyHit *, HitInfo *, int, int *,
 extern int Moby_PlaySound(int, int, struct Moby *);
 extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                             float, int, int, int, int);
-extern void DeleteMoby(struct Moby *);
+
 extern int FastBSphereCheck_r(float *, float) __asm__("func_L00_00200290");
 
 /* Floating mine: spins and pulses (and bobs in level 16); blows up on a hit and respawns once out of view.

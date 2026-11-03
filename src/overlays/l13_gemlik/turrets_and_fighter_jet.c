@@ -28,6 +28,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -112,7 +113,6 @@ struct FighterJetHudVars {
 };
 
 extern int STUB_printf();
-extern void DeleteMoby(void *);
 
 extern void set_moby_list_state(int list, int state);
 extern unsigned char hero_globals_base[];
@@ -694,7 +694,6 @@ void update_blarg_turret_target_and_state(unsigned char *moby) {
     if (((Moby *)moby)->command >= 4)
         ((Moby *)moby)->state = ((Moby *)moby)->command;
 }
-extern char *CreateMoby(int);
 
 /* Spawns a Blarg Gunner child moby that copies its parent's placement and scale. */
 char *spawn_blarg_turret_child(char *parent) {
@@ -813,7 +812,6 @@ extern int rand_range(int, int);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void DeleteMoby(void *);
 
 /* Updates the gem-lock turret: idle animations, then a burst of particles when destroyed. */
 void blarg_gunner_update(unsigned char *raw) {
@@ -941,7 +939,7 @@ extern float jump_speed_4318(void *, void *, void *, float, float);
 extern int mine_fall(void *, void *);
 
 extern int move_w(void *, void *, void *, void *, float);
-extern float MobyGetFrameValue(void *);
+
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int CarriedMobyUpdate(void *, void *);
 

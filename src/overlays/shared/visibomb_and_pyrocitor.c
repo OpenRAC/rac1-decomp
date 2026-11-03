@@ -22,6 +22,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -177,7 +178,7 @@ extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 extern void func_L00_002B30C8(void *);
 extern void *func_L00_002B0F58(void *, void *, void *, float, float, float, float, float);
 extern float func_L00_002B1238(int);
-extern void func_L00_00232C10(int, int, float);
+
 extern void start_equipped_item_animation_r(void) __asm__("func_L00_0020EB60");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
@@ -541,7 +542,7 @@ void visibomb_update(char *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int fast_dec_timer(int *arg0);
-extern void DeleteMoby(int);
+
 extern int moby_array_start MACRO_ADDR;
 extern int linked_moby_trigger_ticks SDATA(linked_moby_trigger_ticks);
 extern int linked_moby_hit_cooldown SDATA(linked_moby_hit_cooldown);
@@ -641,7 +642,7 @@ extern UV D_L00_001DA3B0[];
 extern float D_L00_001D9770[][4];
 extern P3_2B4918 D_L00_001DAD80[];
 extern int D_L00_001DA9D0[];
-extern void func_0020DB98(void *, int, void *, void *);
+
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
@@ -884,7 +885,7 @@ void emit_beam_trail_particles(X *x) {
     qcopy(&g->v10, &a);
     g->f0C = 1;
 }
-extern char *CreateMoby(int);
+
 /* Spawns a hidden class 0xA7 moby and stores index a in its pvars. */
 char *spawn_indexed_class_a7_moby(int a) {
     char *m = CreateMoby(0xA7);
@@ -1217,7 +1218,7 @@ extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern void BuildSphericalOffset_r2(void *, float, float, float) __asm__("func_00215C00");
 extern float FastCos_r2(float) __asm__("func_001F9F90");
 extern float FastSin_r2(float) __asm__("func_001F9FA8");
-extern void func_L00_00233EE0(void *, float, float, float);
+
 extern void coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void func_L00_002CC3C0(void *, float, float, float, float, void *, void *);
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
@@ -1613,7 +1614,6 @@ extern void select_camera_mode_by_hero_alignment_and_distance(int);
 extern void HeroEnterMoveState(int, int);
 extern void moby_restore_globals_state(int, int);
 
-extern void DeleteMoby(int);
 /* Ends Visibomb control: deletes the missile, restores the camera and the hero's move state. */
 void terminate_visibomb_missile(int a, int *b) {
     int *p = *(int **)(*(char **)b + 0x78);
@@ -2461,7 +2461,6 @@ extern Order_2B8AE8 gold_weapon_purchased;
 
 extern void update_pyrocitor_usage_and_cleanup(unsigned char *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float MobyGetFrameValue(void *);
 
 extern Moby *spawn_linked_moby_from_basis(void *);
 extern void lerp_vector(void *, void *, void *, float);

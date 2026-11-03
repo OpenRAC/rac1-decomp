@@ -16,6 +16,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gold_weapon_purchased[];
 
 extern int func_001160D8(void);
@@ -1543,7 +1544,6 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
     return limit;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025C488);
-extern float MobyGetFrameValue(char *);
 
 extern float ProbeGroundHeight_f(void *, int, float) __asm__("func_00214358");
 

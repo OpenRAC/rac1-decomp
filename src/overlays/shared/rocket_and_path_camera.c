@@ -15,6 +15,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
@@ -83,7 +84,6 @@ void emit_moby_sprite_particles(char *m) {
         FastVecAdd_r(d, d, e);
     }
 }
-extern struct Moby *func_0020D348(int);
 
 extern float vec_length_xy(void *);
 
@@ -144,7 +144,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage_v(float, int, void *, int, void *, void *) __asm__("func_L00_0025AC00");
 
 extern void Sound_PlayClassSound(int, int, void *, int);
-extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
 void rocket_819_update(Moby *m) {

@@ -23,6 +23,7 @@
 #include "enums/level.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -596,10 +597,9 @@ extern u8 level_available[20] NOT_SDA;
 extern void noop_callback_i(void);
 extern void noop_callback_h(void);
 extern void snd_play_sound_vol_pan_pmpb(s32, s32, s32, s32, s32, s32, s32, void *);
-extern void DeleteMoby(void *);
-extern void update_moby_animation_state(void *);
+
 extern void refresh_moby_spatial_bounds(void *);
-extern void MobyTransformScaledVertex();
+
 extern float IntToFloat(int);
 
 void update_level_gameplay_frame(void) {
@@ -827,9 +827,7 @@ extern void DrawTexturedQuad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
 extern s32 func_001FA898(f32);
 extern void append_gif_transfer_packet();
 extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
-extern void prune_moby_references(void);
-extern void PatchMobyGifs();
-extern void DrawMobys(void);
+
 extern void draw_sky_shells();
 extern void build_resident_indexed_texture_warp_meshes(s32);
 extern void draw_resident_textured_quad();
@@ -2713,7 +2711,6 @@ extern u64 GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void fast_dec_timer(s32 *);
 
 extern float IntToFloat(int);
-extern void MobyTransformScaledVertex(EnvironmentMappedObject *, int, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/render_environment_mapped_object.c, render_environment_mapped_object. */
 void render_environment_mapped_object(EnvironmentMappedObject *object) {

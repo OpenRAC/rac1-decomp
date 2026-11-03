@@ -471,7 +471,6 @@ extern void store_current_level_table_value(int, int);
 
 extern void initialize_moby_state_record(char *);
 
-extern void *CreateMoby(int);
 extern void Level_ResetGameplayGlobals(void);
 extern void initialize_hero(void);
 extern void reset_hero_to_idle(void);

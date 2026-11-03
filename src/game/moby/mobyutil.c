@@ -8,6 +8,7 @@
 #include "data/executable.h"
 #include "structs/anim.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -18,7 +19,6 @@
 extern float shadow_light_dir[] NOT_SDA;
 
 extern float FastAbsF(float arg0);
-extern int find_or_allocate_id_slot(int v);
 
 ASM_FUNC("asm/handwritten/text", func_00213A78);
 
@@ -101,8 +101,6 @@ void update_visible_resident_objects(void) {
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00213D10);
-
-extern void func_0020D6D0(void *);
 
 /* Sets moby m's animation to sequence seq at frame (clamped to the
    sequence's last frame), the next frame to frame + 1 (clamped the same
@@ -1082,7 +1080,6 @@ float round_float_to_decimal_places(int arg0, float arg1) {
     return arg1 / scale;
 }
 
-extern float MobyGetFrameValue(char *);
 extern float round_float_to_decimal_places(int, float);
 
 /* Returns 1 if the moby's current anim frame lies inside the one-frame window starting at arg1. */

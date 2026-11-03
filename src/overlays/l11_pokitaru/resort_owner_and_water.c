@@ -27,6 +27,8 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -120,8 +122,6 @@ struct HeroIndexTriggerVars {
     s32 index; /* 0x00: -1 deletes it */
 };
 
-extern void DeleteMoby(void *);
-
 extern float vec_distance_xy(void *, void *);
 extern int memcard_Save(int, int);
 extern int Help_Request(int, int);
@@ -157,7 +157,6 @@ void update_pokitaru_pickup(char *moby) {
             break;
     }
 }
-extern char *CreateMoby(int);
 
 extern float SteerAngleWithVelocity(float *p, float a, float *v, float b, float c, float d);
 extern float g_frame_time_sq MACRO_ADDR;
@@ -1315,9 +1314,9 @@ extern void request_teleporter_help_message(char *);
 extern void draw_teleporter_ring(char *);
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void request_hero_target_pose(float *, int, float);
+
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-extern int get_hero_target_pose_status(void);
+
 extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -1584,7 +1583,6 @@ void restore_teleporter_visibility_and_collision(char *moby) {
         count--;
     } while (count >= 0);
 }
-extern void DeleteMoby(void *);
 
 /* Deletes itself if its pvar is -1; later copies the pvar into the hero's index field. */
 void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
@@ -1917,8 +1915,6 @@ int try_activate_pokitaru_gate(unsigned char *moby) {
     }
     return 1;
 }
-
-extern void AttachManipulator(struct Moby *, int, void *);
 
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, float *) __asm__("func_L00_00250800");
 
@@ -3115,7 +3111,6 @@ void update_link_triggered_moby_turn(char *moby) {
         }
     }
 }
-extern char *CreateMoby(int);
 
 /* Spawns a moby of the given class at a position with a random yaw and stores its vector. */
 char *spawn_moby_with_random_yaw(void *position, void *vector, int id) {
@@ -3418,7 +3413,6 @@ void func_L11_00311318_r(struct Moby *m, unsigned char *d, float *t) {
     StepColorFade_r(m, d + 0x60);
 }
 extern void handle_owner_linked_moby_hits(void *, void *, void *);
-extern float MobyGetFrameValue(void *);
 
 // Per-tick update of moby class 1219: state machine over states 0 to 4.
 void update_owner_linked_moby_state(unsigned char *moby) {

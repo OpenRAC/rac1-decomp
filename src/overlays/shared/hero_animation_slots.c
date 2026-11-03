@@ -22,6 +22,8 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern u8 gHeroPos[];
 extern char g_hero_pos_z[];
 extern char g_hero_rot[];
@@ -309,7 +311,6 @@ void find_grind_rail(void) {
     g_hero_r2.rail_spline_loops = e;
     g_hero_r2.grind_rail = 1;
 }
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
 
 /* OUT = the camera-space point (0.3, 0, 1.34) in world space
    (transform_hero_local_offset_to_world). */
@@ -968,7 +969,6 @@ extern s32 hero_slot_item_id(s32);
 extern u8 *allocate_moby_animation_slot_r(u8 *, s32) __asm__("func_L00_00250060");
 extern void release_moby_animation_slot_r(u8 *, u8 **) __asm__("func_L00_00250120");
 extern void initialize_moby_animation_blend_r(u8 *, u8 *, s32, s32, s32, s32) __asm__("func_L00_00250418");
-extern void set_hero_animation(s32, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_0020e4c8. */
 void start_equipped_item_animation(void) {
@@ -1014,7 +1014,7 @@ void start_equipped_item_animation(void) {
     }
 }
 extern int hero_idle_sequence(int);
-extern void set_hero_animation(int, int, float);
+
 /* Handles the pending flag at g_hero + 0x20A8, then clears it. */
 void cancel_hero_item_animation(void) {
     struct Hero *g = (struct Hero *)((unsigned char *)g_hero);
@@ -1032,7 +1032,6 @@ void cancel_hero_item_animation(void) {
         g_hero[0x20AA] = 0;
     }
 }
-extern int get_ammo(int);
 
 extern void euler_rotation_basis(void *, void *);
 
@@ -1161,7 +1160,6 @@ extern char help_stats_base[] NOT_SDA;
 extern int rendered_frame_count MACRO_ADDR;
 extern int g_game_language[] MACRO_ADDR;
 extern unsigned char gHaveMapOMatic[] NOT_SDA;
-extern struct Moby *CreateMoby(int);
 
 extern void spawn_indexed_class_a7_moby(int);
 
@@ -1504,8 +1502,6 @@ extern u8 D_L00_0017AA60[];
 
 extern void pack_pose(void *, void *, s32, s32, s32);
 
-extern void MobyTransformScaledVertex(void *, s32, void *);
-
 extern s32 truncate_float_to_s32(f32);
 
 void update_hero_item_mobys(void) {
@@ -1687,7 +1683,6 @@ void update_hero_item_mobys(void) {
     }
 }
 extern char hero_globals_base[];
-extern void DeleteMoby(void *);
 
 // Ends slot i: records val, runs the object's 0x74 handler, then deletes its objects.
 void clear_hero_item_slot(int i, int val) {
@@ -1759,7 +1754,7 @@ void set_hero_item_switch_timer_for_item(int id) {
             break;
     }
 }
-extern int get_hero_target_pose_status(void);
+
 extern int cinematic_mode MACRO_ADDR;
 /* Returns 1 when nothing blocks the action, else 0. */
 int Hero_CanUseGadget(void) {
@@ -2173,7 +2168,7 @@ void hero_update_items(void) {
 #undef SLOT
 extern void spawn_hero_item_mobies();
 extern void update_hero_item_mobys();
-extern void animate_hero_slot4_and_slot5_visuals();
+
 extern void update_hero_and_equipped_item_glows();
 extern void hero_update_items();
 
@@ -2207,11 +2202,10 @@ void update_hero_equipped_items(void) {
 }
 extern void cancel_hero_item_animation(void);
 extern void clear_moby_transform_history(char *o);
-extern void HeroSetObjectFlags(void);
+
 extern void release_and_clear_hero_voice_slots();
 
 extern void update_hero_collision_capsule_dimensions();
-extern void clear_hero_queued_animation(void);
 
 extern void HeroEnterMoveState(int, int);
 
@@ -2629,7 +2623,7 @@ void update_hero_collision_capsule_dimensions(void) {
 #include "structs/pad.h"
 extern Hero D_0013F450_211D28 __asm__("D_0013F450");
 extern struct PadState D_0013CA40;
-extern char func_L00_00233CC0(void);
+
 extern float get_capped_hero_stick_magnitude_a(void) __asm__("func_L00_00211EE8");
 extern float vec_length_xy_a(void *) __asm__("func_001F9CE8");
 extern void func_L00_002180F8(void);
@@ -2719,7 +2713,6 @@ extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern float camera_yaw;
 
 extern void divide_vector_xyz(void *, void *, float);
-extern float compute_hero_ground_aligned_heading(void);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -2996,7 +2989,7 @@ void correct_hero_airborne_wall_velocity(void) {
 }
 extern int coll_hit_type;
 extern int coll_hit_result[];
-extern float gravity_length_xy(float *v);
+
 extern int coll_line(void *, void *, int, int, int);
 
 /* Hero ground probe: measures the support under the feet, and slides the velocity off a steep floor Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00212318. */
@@ -3124,13 +3117,12 @@ s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
 
 void sceVu0Normalize(void *, void *);
-f32 compute_gravity_relative_vector_inclination(void *);
 
 void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
-void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+
 f32 FastAbsF(f32);
 extern Hero D_0013F450_12E70 __asm__("D_0013F450");
 extern struct CollisionHit coll_hit_result_r2 __asm__("D_L00_00173F40");
@@ -3430,9 +3422,7 @@ float forward_component(QVec *v) {
     dir[2] = 0.0f;
     return FastVecDot(&p, dir);
 }
-extern void Hero_ConstrainToPath(void);
-extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
-extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
+
 extern int coll_sphere(float, void *, int, void *);
 
 extern char coll_resolved_pos[];
@@ -3571,14 +3561,9 @@ void resolve_hero_collisions_with_history(void) {
 }
 typedef int Q_213F38 __attribute__((mode(TI)));
 
-extern void update_hero_attachment(int, void *, void *);
-extern float gravity_z(float *);
-extern void gravity_set_z(float *, float *, float);
 extern void resolve_hero_collisions_with_history(void);
 extern void update_hero_ground_contact_and_surface_slopes(void);
 extern void correct_hero_ground_penetration(void);
-extern void gravity_flatten(float *, float *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void apply_hero_motion_and_resolve_collisions(void) {
@@ -3750,7 +3735,6 @@ void scale_hero_motion(float s) {
 }
 typedef int Q_14520 __attribute__((mode(TI)));
 
-extern void add_hero_forward_offset(void *, void *, float);
 static inline char *hero_14520(void) {
     return (char *)hero_globals_base + 0xE1D;
 }
@@ -3845,7 +3829,7 @@ void steer_hero_planar_velocity(float step) {
         }
     }
 }
-extern void gravity_set_z(float *dst, float *src, float z);
+
 extern float vec_length(float);
 
 typedef struct {

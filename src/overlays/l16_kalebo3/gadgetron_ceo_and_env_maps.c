@@ -20,6 +20,7 @@
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -416,7 +417,7 @@ void update_two_region_trigger_latch(char *moby) {
 }
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
-extern void DeleteMoby(void *);
+
 extern void initialize_path_walker_group(unsigned char *);
 extern void emit_path_walker_particle(unsigned char *, void *);
 extern void SamplePathAt(void *, float, int, void *, float *, int);

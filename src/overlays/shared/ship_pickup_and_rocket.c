@@ -7,6 +7,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 
 /* Ship rocket: homes in on a target. Same layout as Rocket below (defined after use). */
 struct ShipRocketVars {
@@ -114,7 +115,6 @@ float interpolate_value_with_repeated_squaring(int flag, int n, float x, float b
     }
     return r;
 }
-extern unsigned char *CreateMoby(int);
 
 /* Spawns a ship pickup moby of the given class at position. */
 unsigned char *spawn_ship_pickup(char *position, int moby_class) {
@@ -145,7 +145,7 @@ extern float vec_length(float);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void Moby_PlaySound(int, int, void *);
-extern void DeleteMoby(void *);
+
 extern void update_moby_vertical_oscillation(float, float, void *, void *, void *);
 /* Ship pickup update: waits, homes in on the player ship and gives ammo or health when taken. */
 void ShipPickupUpdate(char *moby) {

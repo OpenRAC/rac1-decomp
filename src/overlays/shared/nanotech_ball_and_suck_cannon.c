@@ -20,6 +20,8 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -65,7 +67,6 @@ typedef struct {
 extern float D_L00_001617AC MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-extern void DeleteMoby(void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -100,7 +101,7 @@ void update_linked_moby_transform_and_lifetime(char *self) {
 int is_moby_in_state_one(unsigned char *m) {
     return m[0x20] == 1;
 }
-extern char *CreateMoby(int);
+
 /* Spawns a Nanotech Ball moby linked to and placed at moby a. */
 char *create_linked_class_0326_moby(char *a) {
     char *m;
@@ -1351,7 +1352,6 @@ extern void HeroEnterMoveState(int, int);
 
 extern int coll_line(void *, void *, int, int, int);
 extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
-extern float MobyGetFrameValue(M40 *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
@@ -3255,7 +3255,6 @@ void quad_moby_update(Moby *a) {
     }
     update_instance_attachment_points_and_lengths(a);
 }
-extern void AttachManipulator(char *, int, void *);
 
 extern float vendor_orb_spin_speed_deg SDATA(vendor_orb_spin_speed_deg);
 
@@ -3344,7 +3343,7 @@ extern int scale_ticks_r3(int) __asm__("func_001F9850");
 extern int func_L00_00267BA8(int, int, int);
 extern int func_L00_002E1790(Moby *);
 extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
-extern void func_L00_00232C10(int, int, float);
+
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");

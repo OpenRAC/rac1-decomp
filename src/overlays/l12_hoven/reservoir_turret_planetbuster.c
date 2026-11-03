@@ -29,6 +29,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -267,7 +268,6 @@ void draw_water_reservoir(Moby *moby) {
         draw_world_quad(&q, m, 0);
     }
 }
-extern char *CreateMoby(int);
 
 extern float vec_length_xy(void *);
 
@@ -339,7 +339,6 @@ extern int hoven_turret_attempts MACRO_ADDR;
 extern char hoven_camera_pos[];
 extern float hoven_zero_vec[] MACRO_ADDR;
 extern char *MobyGetHitMessage(void *, int, int);
-extern void DeleteMoby(void *);
 
 extern int coll_line(void *, void *, int, struct Moby *, int);
 extern int coll_sphere(void *, int, struct Moby *, float);
@@ -971,7 +970,6 @@ extern float hoven_turret_destruction_view_offset_distance_min SDATA(hoven_turre
 extern float hoven_turret_destruction_view_offset_distance_max SDATA(hoven_turret_destruction_view_offset_distance_max);
 extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
 
-extern void AttachManipulator(void *, int, void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float vec_distance_xy(void *, void *);
 
@@ -981,8 +979,6 @@ extern void AddDrawCallback(void *, void *);
 extern void update_hoven_turret_target_alignment_timer(void *);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage(void *, int, int);
-
-extern void DetachManipulator(void *, void *);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachValue(float *, float, float);
@@ -1966,7 +1962,6 @@ void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int
         *speed = g_frame_time_sq * 13.0f;
     }
 }
-extern void DeleteMoby(void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
@@ -2420,7 +2415,7 @@ void spawn_next_linked_moby(char *moby) {
     }
 }
 extern void update_homing_mine_spawner_target(char *m);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
 extern void spawn_next_linked_moby(char *);
 
@@ -2520,7 +2515,7 @@ void update_homing_mine_spawner_target(char *m) {
         }
     }
 }
-void DeleteMoby(void *obj);
+
 extern s32 g_current_level_index SDATA(g_current_level_index);
 extern int check_scaled_vector_bsphere(void *, float);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");

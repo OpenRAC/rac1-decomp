@@ -19,6 +19,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -233,8 +234,6 @@ extern void MobySpringTurn(void *, void *, float, float, float, float);
 extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void AttachManipulator(void *, s32, void *);
 
 extern char *MobyGetHitMessage(void *, s32, s32);
 extern s32 PlayBankSound(s32, s32, s32);
@@ -590,9 +589,6 @@ extern char *eudora_mobys_b __asm__("D_L04_00160058") MACRO_ADDR;
 extern float eudora_floating_platform_spin_rate_deg SDATA(eudora_floating_platform_spin_rate_deg);
 extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE64 MACRO_ADDR;
-extern void DeleteMoby(void *);
-
-extern float MobyGetFrameValue(void *);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -770,11 +766,11 @@ extern void RerollEffectCounter(void *, void *);
 extern void reset_walker_gait_helpers(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void transform_scaled_vertex_batch(void *, int, void *, void *);
+
 extern void coll_line(void *, void *, int, void *, void *);
 
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
-extern void AttachManipulator(void *, int, void *);
+
 extern void initialize_woodcut_bot_movement_data(void *);
 extern void *libc_memset(void *, int, int);
 
@@ -787,7 +783,7 @@ extern int leg_walker_update(void *, void *, float, float, float);
 extern float SpringTurn(float, float, void *, float, float, float);
 extern int mine_fall(void *, void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern void DeleteMoby(void *);
+
 extern void StepColorFade(void *, void *);
 
 extern char eudora_camera_pos[];
@@ -1388,7 +1384,6 @@ void woodcut_bot_update(Moby *m) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern struct Moby *func_0020D348(int);
 
 // Spawns a Axe moby copying fields from another and placing it at a position.
 void *spawn_axe_moby(char *src, char *pos) {
@@ -2331,7 +2326,6 @@ void dispatch_mode_selected_slot(struct Moby *m) {
 }
 extern void spawn_proximity_gated_bolts(void *);
 
-extern void DeleteMoby(void *);
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL04_Update(char *m) {
     int hit = 0;

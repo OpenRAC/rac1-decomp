@@ -13,6 +13,7 @@
 #include "game/math/fastfunc.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
@@ -710,7 +711,6 @@ void initialize_moby_transform_history(int a, struct TransformHistory *b) {
         b->head = 0;
     }
 }
-extern struct Moby *func_0020D348(int);
 
 /* adds a spawned copy of an object to the owner's list (up to 4) */
 void create_moby_transform_history_entry(struct TransformHistory *o, int a, int b) {
@@ -736,7 +736,6 @@ void create_moby_transform_history_entry(struct TransformHistory *o, int a, int 
     }
 }
 extern void clear_moby_transform_history(struct TransformHistory *o);
-extern void func_0020D6D0(void *);
 
 /* Pushes the source object's transforms into an 8-entry ring and replays them into the trailing objects, ending them
    when all faded.
@@ -793,7 +792,6 @@ void update_moby_transform_history(struct TransformHistory *s, int dec) {
             clear_moby_transform_history(s);
     }
 }
-extern void DeleteMoby(int);
 
 /* Deletes every moby in the owner's list and marks it inactive. */
 void clear_moby_transform_history(struct TransformHistory *o) {
@@ -810,8 +808,6 @@ void clear_moby_transform_history(struct TransformHistory *o) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_00263938);
-extern void DetachManipulator(int, void *);
-extern void AttachManipulator(int, int, void *);
 
 extern float SpringAngle(char *, char *, float, float, float, float, int);
 
@@ -1114,7 +1110,6 @@ typedef struct {
     u8 padC[0x14];
     EffectTail tail;
 } Effect;
-extern void MobyTransformScaledVertex(void *, s32, void *);
 
 extern Effect *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, u32);
 extern u8 veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;

@@ -31,8 +31,6 @@ typedef struct {
 } T2C;
 extern void clear_moby_transform_history(char *o);
 
-extern void set_hero_animation(int, int, float);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(float, int);
@@ -53,7 +51,6 @@ extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 
-extern void gravity_set_z(float *dst, float *src, float z);
 extern int hoven_cinematic_mode MACRO_ADDR;
 extern int hoven_water_patches MACRO_ADDR;
 extern int hoven_water_patch_count MACRO_ADDR;

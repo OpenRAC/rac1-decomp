@@ -13,6 +13,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -255,8 +256,6 @@ void update_gemlik_scene_controller(Moby *moby) {
 extern int gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 
-extern void DeleteMoby(void *);
-
 extern int compute_advanced_moby_path_position(void *, void *, void *, int, int, float);
 
 /* Follows its target moby along a path: snaps to the nearest path point, then walks the path segments. */
@@ -343,7 +342,6 @@ void update_cutscene_target_effects(unsigned char *moby) {
     }
 }
 extern int gemlik_moby_array_start MACRO_ADDR;
-void DeleteMoby(void *obj);
 
 /* Records the classes of the tracked mobys, then removes this moby once too few of them are left.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/vendor/003058a8.c, FUN_L13_0030be60. */
@@ -388,7 +386,6 @@ void remove_moby_when_tracked_count_below_threshold(struct Moby *m) {
             DeleteMoby(m);
     }
 }
-extern char *CreateMoby(int);
 
 /* Spawns a class 0x660 moby at position, scaled and owned by owner. */
 char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
@@ -411,7 +408,7 @@ char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
     }
     return moby;
 }
-extern void DeleteMoby(void *);
+
 extern char *MobyGetHitMessage(void *, int, int);
 
 /* updates the moby: deletes it when its owner is gone, else copies the owner's effect data and marks it */

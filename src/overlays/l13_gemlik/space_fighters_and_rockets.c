@@ -24,6 +24,7 @@
 #include "enums/moby_class.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -96,7 +97,6 @@ typedef struct Rocket {
     float maxspeed;
 } Rocket;
 
-extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 
@@ -176,7 +176,7 @@ extern int coll_line(void *, void *, int, void *, int);
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void DeleteMoby(void *);
+
 extern int fast_dec_timer(void *);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -2187,8 +2187,6 @@ extern int Moby_PlaySound_s(int, int, int) __asm__("func_0022ED80");
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
 extern void spawn_explosion_s(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
-
-extern void DeleteMoby(void *);
 
 /* Blob hit: splashes (bigger when the player is near), then splits off one or two smaller blobs while
  * pieces are left, or turns into its pop state / is deleted when none are. */

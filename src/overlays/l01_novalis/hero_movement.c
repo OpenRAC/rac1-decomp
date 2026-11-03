@@ -27,6 +27,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -35,13 +36,9 @@ typedef int Q_2343F8 __attribute__((mode(TI)));
 extern float g_frame_time MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float gravity_z(float *);
-extern void gravity_set_z(float *, float *, float);
 
 extern void HeroGroundProbe(void);
 
-extern void gravity_flatten(float *, float *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float vec_length_xy(void *);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
@@ -197,7 +194,6 @@ extern void build_scaled_hero_move_impulse(float, float);
 
 extern float ApproachValue(float *, float, float);
 
-extern void add_hero_forward_offset(void *, void *, float);
 extern void turn_to(int, float, float, float);
 
 extern int hero_slot_item_id(int);
@@ -350,13 +346,8 @@ extern void stick_target(float, int);
 
 extern int fast_dec_timer(int *);
 
-extern void set_hero_animation(int, int, float);
 extern int get_hero_idle_animation_index(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
-extern void HeroMoveDownAlongNormal(float *, float *, float);
-
-extern unsigned char *CreateMoby(int);
 
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
@@ -376,15 +367,14 @@ extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-extern void offset_hero_position_against_gravity(float *, float *, float);
+
 extern int test_hero_animation_frame_window(float);
 
 extern void initialize_moby_transform_history(int, void *);
 extern void create_moby_transform_history_entry(void *, int, int);
 
-extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
+
 extern int is_moby_in_class_range_500_to_540(int);
 
 extern void update_hero_airborne_planar_motion(void);

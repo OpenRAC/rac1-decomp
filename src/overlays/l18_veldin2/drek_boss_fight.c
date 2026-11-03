@@ -28,6 +28,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -92,7 +93,7 @@ extern void apply_linked_moby_relative_transforms_v(char *, void *, int) __asm__
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern int fast_dec_timer(int *);
 extern void mark_class_0630_moby_and_child_for_removal(void *);
-extern void DeleteMoby(void *);
+
 extern void lerp_vector(void *, void *, void *, float);
 extern int func_001FA898(float);
 
@@ -729,7 +730,6 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern MobyList veldin2_cutscene_state;
 extern char veldin2_big_head_manipulator[];
 extern float veldin2_big_head_scale SDATA(veldin2_big_head_scale);
-extern void AttachManipulator(char *, int, void *);
 
 /* Re-initialize the Drek effect block for each listed moby that has no active effect. */
 void attach_drek_boss_big_head_manipulator(char *moby) {
@@ -2017,8 +2017,6 @@ extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, 
 extern void RerollEffectCounter(void *m, short *p);
 
 extern void StepColorFade(void *, void *);
-extern char *func_0020D348(int);
-extern void MobyTransformScaledVertex(void *, int, void *);
 
 extern int FindNearestEligibleMoby(float a, char *m, char *b, int c, int d, int *e, int f);
 extern int poll_moby_state_and_rearm(char *);

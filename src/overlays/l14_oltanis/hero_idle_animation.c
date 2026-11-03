@@ -31,8 +31,6 @@ typedef struct {
 } T2C;
 extern void clear_moby_transform_history(char *o);
 
-extern void set_hero_animation(int, int, float);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(float, int);

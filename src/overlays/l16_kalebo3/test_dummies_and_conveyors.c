@@ -24,6 +24,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -296,7 +297,6 @@ extern char *PartType44Spawn(void *, void *, int, int, int, int, float, float, f
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
 
-extern void DeleteMoby(void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 /* Advance a homing spark, emit its trail, and test its collision or impact state. */
@@ -396,7 +396,6 @@ void HomingSparkUpdate(Moby *m) {
 
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern void DeleteMoby(void *);
 
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern int Sound_IsPlaying(void *, int);
@@ -641,7 +640,6 @@ void update_thrown_bomb(L16FallingMoby *m) {
     }
     StepColorFade(m, d);
 }
-extern char *func_0020D348(int);
 
 // Spawns a Bomb moby and initialises its data, position and angles.
 unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {
@@ -1042,7 +1040,7 @@ extern void reset_shot_tracking(char *);
 extern int IsFrameWithinWindow(char *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float jump_speed_4318(void *, void *, void *, float, float);
-extern float MobyGetFrameValue(void *);
+
 extern void ClampVectorLength(void *, float);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
@@ -1364,7 +1362,6 @@ void test_dummy_update(unsigned char *moby) {
 extern void update_test_dummy_group_glow_phases(char *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void MobyTransformScaledVertex(char *, int, char *);
 
 /* The hero block as this function reads it (hero_globals_base + 0xE1D). */
 typedef struct {
@@ -2607,7 +2604,7 @@ void refresh_test_dummy_door_timer(char *m) {
     }
     d->timer = scale_ticks(5);
 }
-extern void DeleteMoby(void *);
+
 extern void *set_door_647_group_activation_and_find_nearest(int, int);
 extern void *activate_door_647_group_and_find_nearest(int, int);
 
@@ -2755,7 +2752,6 @@ void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void Moby_PlaySound(int, int, void *);
 extern void spawn_proximity_gated_bolts(void *);
-extern void DeleteMoby(void *);
 
 // Update moby 800: waits for a trigger value, then plays an effect and deletes itself.
 void update_moby_hit_triggered_removal(char *moby) {

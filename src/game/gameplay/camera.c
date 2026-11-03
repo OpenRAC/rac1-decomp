@@ -14,6 +14,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * camera.cpp in the original source; text 0x1EC038-0x1EDFF8.
@@ -92,8 +93,6 @@ float Cam_InterpValues(float from, float to, float *vel, float stiffness, float 
 /* Not a standalone function: single `addiu $sp,$sp,0x50`, no `jr $31` --
    fallthrough fragment, same category as func_00113AD8 in core_text. */
 LINKER_REMNANT("asm/remnants/text", func_001EC208);
-
-extern void DeleteMoby(void *); /* DeleteMoby */
 
 /* Camera_handleCollWithHero: spawns (via noop_callback_l) or deletes the
    moby kept at follow.hero_coll_moby, depending on the camera's id: camera

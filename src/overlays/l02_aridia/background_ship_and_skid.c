@@ -20,6 +20,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -73,7 +74,6 @@ struct ProjectileVars {
 
 extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
-extern char *CreateMoby(int);
 
 extern int Npc_TryStartDialog(void *, void *);
 
@@ -93,9 +93,7 @@ extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
 
-extern void DeleteMoby(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void MobyTransformScaledVertex(void *, int, void *);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");

@@ -24,6 +24,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char level_moby_killed[];
 extern unsigned char saved_mission_state[];
 extern Hero g_hero;
@@ -187,7 +188,6 @@ extern int blarg_frame_count MACRO_ADDR;
 
 extern char *MobyGetHitMessage(void *, int, int);
 
-extern void DeleteMoby(void *);
 extern void destroy_gadgebot_spawn_container(void *, void *);
 extern void draw_gadgebot_spawn_container(char *);
 extern void AddDrawCallback(int, int);
@@ -430,7 +430,7 @@ extern void SetDeathBits(void *, int, int);
 extern int fast_dec_timer(int *);
 
 extern int SegmentCrossPolyline(int, void *, void *, void *);
-extern float MobyGetFrameValue(void *);
+
 extern void collect_mobies_in_sphere_at_moby_point(void *, int, int, float, float, float, int, int, int);
 extern int CarriedMobyUpdate(void *, void *);
 
@@ -1342,9 +1342,8 @@ extern GbStats blarg_gadgebot_command_count_base;
 extern float vec_distance_xy(void *, void *);
 
 extern void handle_gadgebot_hit_knockback(void *);
-extern void AttachManipulator(char *, int, void *);
+
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void DetachManipulator(void *, void *);
 
 extern int compute_clear_path_point_mask(float, int *, int, int, void *);
 extern void update_gadgebot_glow_effects(char *);
@@ -1359,7 +1358,6 @@ extern void assign_gadgebot_attack_targets(void);
 
 extern int test_path_segment_strict_crossing(int, void *, void *);
 
-extern float MobyGetFrameValue(void *);
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 
 extern int fast_dec_timer(int *);

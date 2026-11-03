@@ -20,12 +20,12 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
 extern void initialize_moby_grounding(char *);
 extern int DialogRequest_Init(void *, void *);
-extern void DeleteMoby(void *);
 
 extern int Npc_TryStartDialog(void *, void *);
 

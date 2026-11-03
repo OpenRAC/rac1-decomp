@@ -25,6 +25,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -636,7 +637,6 @@ extern int umbris_scene_state MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern L07S umbris_cutscene_state;
 extern unsigned char snagglebeast_big_head_manipulator[];
-extern void AttachManipulator(char *, int, void *);
 
 /* When the level flag is 2, find the moby sharing the caller's class and restart its effect. */
 void apply_snagglebeast_big_head_cheat(char *arg) {
@@ -690,7 +690,7 @@ extern void spawn_white_particle_with_payload(void *, void *);
 extern void rumble_by_distance(char *);
 
 extern void update_snagglebeast_chase_speed(void *, void *, float, float, float);
-extern float MobyGetFrameValue(void *);
+
 extern float IntToFloat(int);
 extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 extern void RerollEffectCounter(void *, short *);
@@ -707,7 +707,6 @@ extern char *spawn_on_path(void *, int, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
-extern void DeleteMoby(void *);
 extern void jet_animate(unsigned char *, float);
 extern void update_timed_point_light_color(char *);
 
@@ -2612,8 +2611,6 @@ void func_L07_0031A410_r(struct Moby *moby) {
 #undef fin_p
 #undef debris_p
 #undef func_L07_0031A410_r
-
-extern void DeleteMoby(void *);
 
 typedef struct SwooperSpawnerVars {
     u8 pad_00[0x84];

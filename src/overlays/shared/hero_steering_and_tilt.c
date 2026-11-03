@@ -18,6 +18,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_mapped_animations.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -32,9 +33,6 @@ extern void speed_step(float, float);
 extern void turn_to(int, float, float, float);
 extern void stick_target(int, float);
 extern float SpringAngle_r(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
-
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern void add_hero_forward_offset(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -765,9 +763,6 @@ void update_hero_tilt(void) {
         }
     }
 }
-extern float gravity_length_xy(float *v);
-extern void gravity_set_z(float *dst, float *src, float z);
-extern void set_gravity_relative_vector_length_xy(float *dst, float *src, float z);
 
 // Bleeds off the hero's momentum vector by amount a, clearing it when it is tiny.
 void reduce_and_apply_hero_planar_velocity_addend(float a) {
@@ -1010,7 +1005,7 @@ extern void clear_moby_transform_history(char *o);
 extern void cancel_hero_item_animation(void);
 
 extern void HeroEnterMoveState(int, int);
-extern void HeroStartSequenceInBank(int bank, int seq);
+
 extern void update_hero_ground_contact_and_surface_slopes(void);
 
 extern void apply_nearest_environment_sample(int);
@@ -1070,12 +1065,11 @@ extern unsigned char coll_hit_result[];
 float func_L00_00234250_178A0(void *) __asm__("func_L00_00234250");
 void func_001F9C30_178A0(void *, float, void *) __asm__("func_001F9C30");
 void func_L00_00234420_178A0(void *, void *, float) __asm__("func_L00_00234420");
-void add_hero_forward_offset(void *, void *, float);
+
 void func_L00_002343A0_178A0(void *, void *, float) __asm__("func_L00_002343A0");
 
-void HeroOffsetAlongViewZ(void *, void *, float);
 int coll_line(void *, void *, int, void *, int);
-float compute_gravity_relative_vector_inclination(void *);
+
 void scale_hero_motion(float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_00217118. */
@@ -1124,7 +1118,6 @@ void stop_hero_motion_without_forward_support(float a, float b) {
     if (r != 0.0f)
         scale_hero_motion(0.0f);
 }
-extern void offset_hero_position_against_gravity(float *dst, float *src, float h);
 
 extern int *coll_sphere_moby_hits[];
 
@@ -1203,9 +1196,6 @@ typedef struct {
 extern f32 player_camera[];
 extern char g_hero_transform_history[];
 extern int is_wrench_moby(void *);
-extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
-
-extern void add_hero_forward_offset(void *, void *, f32);
 
 extern void initialize_moby_transform_history(void *, char *);
 extern void create_moby_transform_history_entry(char *, int, int);

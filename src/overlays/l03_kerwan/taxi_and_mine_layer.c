@@ -23,6 +23,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -696,7 +697,7 @@ void handle_mine_hit(unsigned char *arg) {
     }
     arg[0xA4] = 0xFF;
 }
-extern char *CreateMoby(int);
+
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float vec_length_xy(void *);
 
@@ -808,8 +809,8 @@ extern s32 D_L03_0015F674_D4560 SDATA(D_L03_0015F674);
 extern void set_moby_dialogue_record_value(void *, int);
 extern void PartType41Spawn(void *, struct Moby *, s32, u32, s32, s32, s32, f32);
 
-extern void request_hero_target_pose(void *, float, int);
-extern s32 get_hero_target_pose_status(void);
+extern void request_hero_target_pose_v(void *, float, int) __asm__("func_L00_00234768");
+
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern void DeleteMoby_r3(struct Moby *) __asm__("func_0020D678");
 
@@ -905,7 +906,7 @@ void update_rail_taxi(struct Moby *m) {
             if (g_hero_r.ground_moby == m && g_hero_r.air_frames.s == 0) {
                 request_taxi_return_help_message(m, v->help[m->command]);
                 if ((pad0_pressed & PAD_TRIANGLE) && D_L03_0015F674_D4560 == 8) {
-                    request_hero_target_pose(&m->pos, m->rot.z, 0);
+                    request_hero_target_pose_v(&m->pos, m->rot.z, 0);
                     m->state = 4;
                     v->idx = 1;
                 }
@@ -1266,7 +1267,7 @@ struct G_002DBAD8 {
 extern struct G_002DBAD8 kerwan_cutscene_state;
 extern float helga_big_head_cutscene_adjustment MACRO_ADDR;
 extern unsigned char kerwan_big_head_manipulator[];
-extern void AttachManipulator(char *, int, void *);
+
 extern float kerwan_big_head_scale SDATA(kerwan_big_head_scale);
 
 /* triggers objects matching the moby's class, with per-segment settings */
@@ -1343,7 +1344,6 @@ extern void initialize_moby_grounding(struct Moby *);
 
 extern void ShowBanner(int, int);
 extern void memcard_Save(int, int);
-extern void DeleteMoby(void *);
 
 #define LINK_HELPER(M, V)                                                  \
     t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058);             \
@@ -2695,7 +2695,6 @@ void update_kerwan_cutscene_effects(char *m) {
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 
-extern void DeleteMoby(void *);
 /* Lightpost update: on a hit it plays a sound, drops bolts, breaks apart and spawns its remains. */
 void lightpost_update(char *m) {
     int hit = 0;

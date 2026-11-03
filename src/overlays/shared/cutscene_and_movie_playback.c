@@ -31,6 +31,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -149,7 +150,7 @@ extern char level_profile_mark_after_camera[];
 extern char level_profile_mark_after_sound[];
 
 extern void update_timed_hud_visibility(void);
-extern int func_L00_00235790(void);
+
 extern void hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
 
@@ -167,7 +168,7 @@ extern void update_glints(void);
 extern void update_debug_camera(void);
 extern void update_hero_from_debug_camera(void);
 extern void UpdateAllPointLights(void);
-extern void update_resident_packed_direction(void);
+
 extern int func_L00_0023B610(int);
 extern void Help_Update(void);
 
@@ -435,7 +436,7 @@ extern void calculate_dma_transfer_address(void);
 
 extern void reset_frame_counters(void);
 extern void UpdateViewContext(void);
-extern void DeleteMoby(void *);
+
 extern int HeroEnterMoveState(int, int);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -761,10 +762,9 @@ extern void Music_ContinueStreamIfReady(void);
 extern s32 update_audio_stream_until_idle(s32);
 extern void update_world_object_animation(void);
 extern void start_cutscene_chunk_read(s32);
-extern void update_moby_animation_state(void *);
+
 extern f32 IntToFloat(s32);
 
-extern void HeroAttachManipulators(void *);
 extern void update_moby_pulsing_glow_effects(void *);
 
 /* Per-frame update while the cutscene in D_L00_0016C860 plays: runs the debug-gated subsystem updates, fades, advances

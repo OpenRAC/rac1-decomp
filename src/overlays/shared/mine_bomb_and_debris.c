@@ -21,6 +21,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -193,8 +194,6 @@ extern unsigned char *GetFlaggedPvarWord(unsigned char *);
 extern unsigned char *moby_get_ride_transform(unsigned char *);
 extern int predict_mine_impact(W910 *, M910 *, int);
 
-extern void MobyTransformScaledVertex(char *, int, char *);
-
 extern float resolve_camera_surface_height(float *, void *);
 
 extern int PartType34Spawn(void *, void *, float, float);
@@ -226,8 +225,6 @@ extern f32 vec_distance_xy(void *, void *);
 
 extern int MoveKeepingOverGround_v(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
-
-extern void DeleteMoby(void *);
 
 extern void spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
 extern int DefaultVtbl_DeleteMoby(int, int, float);
@@ -932,7 +929,6 @@ void mine_update(M910 *m) {
     }
 }
 typedef int q_2adbb0 __attribute__((mode(TI)));
-extern char *CreateMoby(int);
 
 extern float IntToFloat(int);
 
@@ -2068,7 +2064,6 @@ void debris_update(unsigned char *m) {
 }
 extern float crate_debris_spin_min SDATA(crate_debris_spin_min);
 extern float crate_debris_spin_max SDATA(crate_debris_spin_max);
-extern char *CreateMoby(int);
 
 typedef struct {
     unsigned char *o;

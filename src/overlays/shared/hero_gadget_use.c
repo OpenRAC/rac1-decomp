@@ -1113,8 +1113,6 @@ typedef struct {
     int seq;
 } SndPair;
 extern SndPair hoverboard_trick_sounds[];
-extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
-extern void set_hero_animation(int, int, float);
 
 extern int select_hero_hoverboard_animation_variant(void);
 
@@ -1758,7 +1756,7 @@ int Hero_SelectAnimIdByFlag(int arg) {
 }
 extern short hoverboard_trick_min_frames;
 extern float g_frame_time MACRO_ADDR;
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int select_point_index_by_distance(void *, void *, float);

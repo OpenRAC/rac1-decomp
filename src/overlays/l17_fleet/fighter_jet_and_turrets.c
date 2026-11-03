@@ -28,6 +28,7 @@
 #include "enums/moby_class.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -122,7 +123,6 @@ extern int coll_line(void *, void *, int, void *, void *);
 extern void lerp_vector(void *, void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float MobyGetFrameValue(void *);
 
 extern int FastBSphereCheck(char *, float);
 
@@ -384,9 +384,8 @@ void draw_fleet_beam_quad(char *moby) {
 }
 extern void process_dreks_fleet_turret_hits(char *m);
 extern void distribute_class_733_group_mobys_along_path(char *m);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
-extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
 
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
 extern float vec_length_xy(void *);
@@ -1004,7 +1003,7 @@ void update_fleet_bobbing_moby(char *m) {
             break;
     }
 }
-extern void DeleteMoby(void *); /* DeleteMoby */
+
 extern int Sound_IsPlaying(void *, int);
 
 extern char *fleet_mobys MACRO_ADDR;
@@ -1299,7 +1298,6 @@ void update_drone_flight_and_sparks(Moby *moby) {
         }
     }
 }
-extern char *CreateMoby(int);
 
 typedef struct {
     f32 bsphere[4]; /* 0x00 */

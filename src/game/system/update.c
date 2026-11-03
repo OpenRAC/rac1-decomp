@@ -6,6 +6,7 @@
 #include "asm_functions/executable.h"
 #include "data/executable.h"
 #include "game/moby/mobyutil.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * update.cpp in the original source; text 0x238D88-0x239628.
@@ -148,9 +149,6 @@ extern s32 resident_stream_pending MACRO_ADDR;
 extern BossVars vendor_state_r __asm__("D_001E66C0");
 extern s32 vendor_state_dialogue_pick;
 extern Cam resident_cheat_scale_manip;
-
-extern void AttachManipulator(Moby *, s32, Cam *);
-extern void DetachManipulator(Moby *, Cam *);
 
 extern s32 IsFrameWithinWindow(Moby *, f32);
 extern s32 Music_ContinueStreamIfReady(void);

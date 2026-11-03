@@ -22,6 +22,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -574,7 +575,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void PostHitMessage_r(void *, int, int, void *, void *, float) __asm__("func_L00_0025AC00");
 extern int IsPointInPolygon_r(void *, void *, int) __asm__("func_L00_0025A778");
 extern int func_L00_002DDEA0(void *, void *);
-extern float func_0020D830(void *);
+
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void spawn_type_52_particle_near_moby_r(char *) __asm__("func_L10_002E51A8");
 extern void TrollSpawnBurst_r(void *) __asm__("func_L12_002E43A8");
@@ -1363,7 +1364,7 @@ extern int fast_dec_timer(int *arg0);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -2487,7 +2488,6 @@ typedef struct {
 } Level12VendorData;
 
 extern void SetDeathBits(Moby *, int, int);
-extern void DeleteMoby(void *);
 
 /* Release the vendor moby and any child it owns. */
 void remove_blarg_trooper_and_attachment(Moby *moby) {

@@ -25,6 +25,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -363,7 +364,6 @@ extern void VU1_syncChain(int);
 extern void Hud_SendResidentBank(int, int, int);
 extern void apply_group_entry_adjustment(int);
 extern struct HEnt *delete_moby(struct HEnt *);
-extern int show_health_hud(void);
 
 extern int hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
@@ -791,7 +791,6 @@ extern void ResetGsRegisters(void);
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern void VU1_addGSregister(int, long);
 
-extern void DrawMobyList(int, int);
 extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern void configure_graphics_render_target_and_projection(int a, int b, int flag, float f);
@@ -800,7 +799,7 @@ extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
 extern void VU1_syncChain(int);
-extern void PatchMobyGifs(void);
+
 extern void SetupGifPaging(int);
 extern void draw_menu_flashing_panel(int);
 extern void DoGifPaging(void);

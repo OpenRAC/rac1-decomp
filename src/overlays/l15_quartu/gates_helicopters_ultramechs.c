@@ -24,6 +24,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -700,7 +701,7 @@ extern int DefaultVtbl_DeleteMoby(float, int, int);
 
 extern void *mine_debris(void *, void *, int, int, float, int, int);
 extern void SetDeathBits(void *, int, int);
-extern void DeleteMoby(void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, unsigned char);
 
@@ -1334,13 +1335,12 @@ typedef int u128_6950 __attribute__((mode(TI)));
 extern char *create_blarg_commander_moby_from_source(char *a0);
 extern void FindNearestTargetMoby(void *, float *, float);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-extern void AttachManipulator(char *, int, unsigned char *);
 
 extern float IntToFloat(int);
 
 extern char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, float f);
 extern void start_blarg_commander_knockback(void *, struct Moby *);
-extern void DetachManipulator(void *, void *);
+
 extern void set_ground_height_band(void *);
 
 extern void moby_build_matrix_v(void *, void *) __asm__("func_L00_00251E30");
@@ -1953,7 +1953,6 @@ extern char *func_L10_002CD578(void *vel, float scale, void *pos, int a, int b, 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
-extern float MobyGetFrameValue(void *);
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
@@ -2681,7 +2680,6 @@ void SideDriftUpdate(char *moby) {
         update_entity_matrix(data->entity_matrix, &data->drift_x, &m->rot, &m->rot);
     }
 }
-extern char *CreateMoby(int);
 
 extern void moby_build_matrix_v(void *, void *) __asm__("func_L00_00251E30");
 
@@ -2826,7 +2824,7 @@ void PoisonVesselUpdate(Moby *moby) {
     }
 }
 extern void initialize_moby_particle_effect(char *);
-extern void DeleteMoby(void *);
+
 extern void emit_moby_sprite_particles(char *);
 
 extern void ShowBanner(int, int);

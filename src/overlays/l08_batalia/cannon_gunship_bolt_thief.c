@@ -12,6 +12,7 @@
 #include "structs/swarm.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -925,8 +926,6 @@ typedef struct {
     int v[2];
 } Pair;
 
-extern void DeleteMoby(void *);
-
 extern void func_L00_0026B890(void *, void *, int, int, int, int, int, int, float, float);
 
 extern int truncate_float_to_s32(float);
@@ -1036,7 +1035,7 @@ void update_falling_debris(Moby *m) {
             break;
     }
 }
-extern void *CreateMoby(int);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 // Spawns a moby of a class, copies the parent's position, and aims it at the parent's attach point.
@@ -1325,7 +1324,6 @@ extern SwarmPath *batalia_path_table[];
 extern struct Moby *batalia_mobys_r2 __asm__("D_L08_00160058") MACRO_ADDR;
 extern s32 Sound_IsPlaying(struct Moby *, s32);
 extern s32 Moby_PlaySound(s32, s32, struct Moby *);
-extern void DeleteMoby(void *);
 
 extern s32 truncate_float_to_s32(f32);
 
@@ -1590,7 +1588,6 @@ extern int begin_bolt_attraction(void *, int, float, float);
 
 extern int mine_fall(void *, void *);
 
-extern void DeleteMoby(void *);
 extern void StepColorFade(void *, void *);
 
 /* Bolt thief update: waits for the hero, runs its path, pulls bolts in and grabs them, flees along the side path, dies
