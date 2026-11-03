@@ -103,6 +103,13 @@ class SplitTest(unittest.TestCase):
             self.assertEqual(me.split_shared_statements(text), (text, 0))
 
 
+class VariantNamesTest(unittest.TestCase):
+    def test_both_spellings_get_one_name(self):
+        fake = type("F", (), {"aliases": {"func_00205A50": {"find_id"}, "find_id": {"func_00205A50"}}})
+        self.assertEqual(me.variant_names(fake, "func_00205A50"),
+                         {"func_00205A50": "find_id_v", "find_id": "find_id_v"})
+
+
 class OldStyleTest(unittest.TestCase):
     def test_an_old_style_definition_is_found(self):
         self.assertEqual(me.OLD_STYLE.findall("void f(p, q)\n    char *p;\n    int q;\n{\n}\n"), ["f"])
