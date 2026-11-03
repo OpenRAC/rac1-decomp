@@ -1,10 +1,7 @@
 # Errors clang finds in C that GCC 2.95 accepts (tools/check_syntax.py): file, then the error.
 # Fix one, then run --update. A new one fails the check.
-src/game/movie/movie.c	conflicting types for 'func_001E9730'
 src/game/render/draw.c	redeclaration of 'D_0015F120'
 src/overlays/l08_batalia/commando_deserter_and_effects.c	redeclaration of 'D_L08_00160058'
-src/overlays/l08_batalia/commando_deserter_and_effects.c	redefinition of 'func_00214D28'
-src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	conflicting types for 'func_L00_001F2BE8'
 src/overlays/l14_oltanis/wind_lightning_and_taxi.c	cannot apply asm label to variable after its first use
 src/overlays/l14_oltanis/wind_lightning_and_taxi.c	redeclaration of 'D_L14_00161D40'
 src/overlays/l14_oltanis/wind_lightning_and_taxi.c	redeclaration of 'D_L14_001E0350'
