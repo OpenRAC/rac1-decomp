@@ -16,6 +16,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/audio/sound.h"
 extern char g_hero[];
 extern u8 gHeroPos[];
 extern PadState g_controller_state;
@@ -349,7 +350,6 @@ typedef struct {
 } S;
 extern S player_camera;
 extern void reset_hero_aligned_camera(char *);
-extern void Moby_PlaySound(int, int, int);
 
 /* ActivateCamera_4, the first-person camera's init: the camera it gets is handed on to the
    state reset (reset_hero_aligned_camera), which builds the camera's rows. */

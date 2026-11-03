@@ -24,6 +24,9 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -677,7 +680,6 @@ extern void ClampVectorLength(void *a, float x);
 
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 // Steer the camera yaw toward a target angle, clamped to a per-frame limit.
 void align_hero_to_tresspasser_pad(struct Moby *moby) {
@@ -1632,7 +1634,6 @@ extern void initialize_collectible_sprite_state(char *moby);
 extern void update_collectible_sprite_effect(char *m);
 extern float vec_distance_xy(void *, void *);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int memcard_Save(int, int);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
@@ -1884,7 +1885,6 @@ void draw_background_ship_1_joint_billboards(char *self) {
         get_next_moby_in_group((int *)&cur, (int)cur, 0, 0);
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Refreshes a moby's three sub-objects, packs its colour bytes, and queues a redraw when the global changed. */
 void prepare_background_ship_1_joint_billboards(char *moby) {
@@ -2443,7 +2443,7 @@ void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
         }
     }
 }
-extern void Moby_PlaySound(int, int, int);
+
 extern void spawn_proximity_gated_bolts(void *);
 
 /* Update for a moby that waits for a float flag on a nearby object then runs a delete sequence. */

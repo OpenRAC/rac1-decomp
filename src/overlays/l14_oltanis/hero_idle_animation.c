@@ -34,8 +34,6 @@ typedef struct {
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 extern int truncate_float_to_s32(float);
 
 extern void *MobyGetHitMessage(void *, int, int);

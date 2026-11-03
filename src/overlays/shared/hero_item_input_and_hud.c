@@ -24,6 +24,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 
 typedef struct {
     char p0[0x160];
@@ -75,8 +76,6 @@ extern int truncate_float_to_s32(float);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
-
-extern void allocate_hero_voice_for_entry(int, int);
 
 extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);

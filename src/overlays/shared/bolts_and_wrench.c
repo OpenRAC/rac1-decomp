@@ -25,6 +25,10 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -1360,7 +1364,6 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
 }
 extern short bolt_attract_sound_frame;
 extern short bolt_attract_max_spin_deg;
-extern int Moby_PlaySound(int, int, int);
 
 // Starts the moby's tumble: picks default spin rates, builds its basis and launches it.
 int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
@@ -1763,7 +1766,6 @@ extern V g_debug_camera;
 extern int coll_hit_result[];
 extern float vec_length_xy(void *);
 
-extern void spawn_two_point_effect_particle(void *, void *);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 /* Spawns a burst of particles around collision_hit_point aimed along the line from g_debug_camera. */
@@ -1970,7 +1972,6 @@ extern unsigned char voice_pool[];
 extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
 extern void draw_wrench_swing_effect(void *);
 extern int coll_line(void *, void *, int, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_set_length_xy(void *, void *, float);
 
@@ -1980,8 +1981,6 @@ extern int HeroEnterMoveState(int, int);
 extern int fast_dec_timer(int *);
 
 extern float ApproachValue(float *, float, float);
-
-extern int allocate_hero_voice_for_entry(int, int);
 
 extern int is_moby_in_class_range_500_to_540(int);
 

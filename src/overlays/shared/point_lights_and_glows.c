@@ -10,6 +10,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 extern long func_001F4868(int);
 
@@ -159,7 +160,7 @@ void glow_quads_draw(char *moby) {
 }
 typedef int ti_23e008 __attribute__((mode(TI)));
 extern float D_0015EE60 MACRO_ADDR;
-extern void func_L00_00250800(void *, int, void *);
+
 extern float rndf_23e008(float, float) __asm__("func_002140F8");
 extern int rndi_23e008(int) __asm__("func_002140B0");
 

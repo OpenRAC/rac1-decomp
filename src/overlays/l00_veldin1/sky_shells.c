@@ -13,6 +13,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "game/render/draw.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 extern void VU1_addGSregister(int, long);
 extern int D_0015EE84 MACRO_ADDR;
@@ -110,9 +111,8 @@ typedef struct {
     Moby *unk188;
 } VeldinLevelState;
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
+extern void spawn_effect_particle_with_target_scalar_v(void *, void *, int, int, int,
+                                                       float) __asm__("func_L00_0026DD70");
 
 extern void render_environment_mapped_object();
 extern void glow_quads_draw();
@@ -160,8 +160,8 @@ void apply_level_specific_cutscene_moby_effects(void) {
                 b = random_angle_radians();
                 BuildSphericalOffset(v, random_float_between(g_frame_time * 0.7f, g_frame_time * 2.2f), a, b);
                 r = scale_ticks(0xC);
-                spawn_effect_particle_with_target_scalar(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)),
-                                                         147000.0f);
+                spawn_effect_particle_with_target_scalar_v(buf, v, 0x80808080, 0x808080,
+                                                           rand_range(r, scale_ticks(0x23)), 147000.0f);
             }
         }
     }

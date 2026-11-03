@@ -21,6 +21,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -84,7 +86,7 @@ extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, f
 extern void SetDeathBits(void *, int, int);
 
 extern char *MobyGetHitMessage(void *, int, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern void spawn_debris_moby(void *, void *, u32, s32, f32, f32, f32, f32, s32);
 
 /* Rock formation update: when hit, plays a sound and bursts into 200 debris pieces. */
@@ -940,7 +942,6 @@ void agnogg_ship_front_update(Moby *moby) {
 typedef int u128_2FCC80 __attribute__((mode(TI)));
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 extern int g_current_level_index SDATA(g_current_level_index);
 extern unsigned char help_stats_base[] NOT_SDA;
@@ -1451,7 +1452,6 @@ void door_left_update(Moby *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 
-extern int Moby_PlaySound(int, int, int);
 extern int rand_range(int, int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern char *spawn_pipe_replacement_moby(char *owner);
@@ -1518,7 +1518,6 @@ char *spawn_pipe_replacement_moby(char *owner) {
     }
     return moby;
 }
-extern int Moby_PlaySound(int, int, int);
 
 extern int rand_range(int, int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
@@ -2145,7 +2144,6 @@ char *SpawnDebrisMoby(char *src, void *dir, float scale) {
 
 extern u128_D568 fx_prev_pos MACRO_ADDR;
 
-extern void Moby_GetJointWorldPos(struct Moby *, int, void *);
 extern int truncate_float_to_s32(float);
 extern char *spawn_splash(float, float, void *, void *, void *);
 extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, float, int);

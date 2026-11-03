@@ -114,7 +114,6 @@ struct FollowCamOrbitB {
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int func_001F9908(int *);
 

@@ -17,6 +17,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/audio/sound.h"
 extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
@@ -207,8 +208,6 @@ extern float ApproachValue(float *, float, float);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 // Per-state hop velocity update for the player. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00220b80.c, FUN_L02_00223450.
 void hero_update_hop_velocity(void) {
     Vec4 tmp;
@@ -348,7 +347,7 @@ extern int pad_pressed_within(int, int, int *);
 extern int truncate_float_to_s32(float);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern int HeroL02_SetMoveState(int, int);
 extern int func_001F9908(int *);
 

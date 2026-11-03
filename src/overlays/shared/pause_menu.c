@@ -27,6 +27,7 @@
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/audio/sound.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -574,7 +575,6 @@ extern int sound_update(void); /* sound update: ends in `return 0`, so it return
 extern void initialize_pause_menu(void);
 
 extern void process_unlock_code_input(void);
-extern void Moby_PlaySound(int, int, void *);
 
 extern void close_pause_menu(void);
 

@@ -24,6 +24,9 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -1058,7 +1061,6 @@ int invoke_optional_moby_callback_or_return_one(char *a, void *b) {
     }
     return 1;
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern char player_camera[];
 
@@ -1344,16 +1346,12 @@ extern void reset_suck40(M40 *) __asm__("func_L00_002DF150");
 
 extern int is_suck_cannon_suction_blocked_by_hero_state(void);
 
-extern int Moby_PlaySound(int, int, int);
-
 extern void stop_suck_cannon_suction_effect(int);
 extern void update_suck_cannon_suction(u8 *, void *);
 extern void HeroEnterMoveState(int, int);
 
 extern int coll_line(void *, void *, int, int, int);
 extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern float vec_length_xy(void *);
 typedef struct {
@@ -1829,7 +1827,7 @@ fail:
 }
 extern short suck_cannon_stored_rot_offset;
 extern char *get_moby_suck_cannon_record(char *);
-extern int Moby_PlaySound(int, int, int);
+
 extern void SetDeathBits(void *, int, int);
 
 /* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
@@ -1861,7 +1859,6 @@ extern char *get_moby_suck_cannon_record(char *);
 
 extern char *GetFlaggedPvarWord(void *);
 extern float vec_distance_xy(void *, void *);
-extern int Moby_PlaySound(int, int, int);
 
 /* starts a moby's animation from a data moby and sets up its effect state */
 int launch_suck_cannon_projectile(Moby *m, float *pos, char *other, float f) {
@@ -2278,7 +2275,7 @@ extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-extern void func_L00_0026D270(void *, void *);
+
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
 extern void STUB_printf_r(void *) __asm__("func_001E9730");

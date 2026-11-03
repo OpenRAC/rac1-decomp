@@ -20,6 +20,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -36,8 +37,6 @@ extern int get_hero_help_value(int a);
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 extern int truncate_float_to_s32(float);
 
 extern void *MobyGetHitMessage(void *, int, int);
@@ -46,7 +45,6 @@ extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, 
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int Moby_PlaySound(int, int, int);
 extern int level_game_mode_q MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;

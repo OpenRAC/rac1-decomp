@@ -8,6 +8,7 @@
 #include "data/executable.h"
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -266,9 +267,6 @@ void update_moby_animation_state(Moby *m) {
     }
     m->prev_frame_data = (void *)(((MobySeq *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame]);
 }
-
-extern void sound_KillChannel(int);
-extern int Moby_PlaySound(int, int, int);
 
 /* Drop this moby's sound handle (byte 0x7D) when its sound slot no longer
    belongs to it or plays another sound than the wanted one (byte 0x7C);

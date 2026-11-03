@@ -15,6 +15,7 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -647,7 +648,6 @@ void process_blarg_space_commando_hits(char *m) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern char blarg_coll_hit_normal[];
 extern float space_commando_beam_fan_degrees SDATA(space_commando_beam_fan_degrees);
@@ -1188,7 +1188,7 @@ void draw_bot_door_lock_glow(char *o) {
     pk.uv[7] = 1.0f;
     draw_world_quad(&pk, 0, 1);
 }
-extern void Moby_PlaySound(int, int, int);
+
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 
 /* state transitions of a moby depending on its id at 0xA6 */

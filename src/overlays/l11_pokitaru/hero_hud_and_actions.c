@@ -25,6 +25,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -68,8 +69,6 @@ extern int truncate_float_to_s32(float);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
-
-extern void allocate_hero_voice_for_entry(int, int);
 
 extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);

@@ -17,6 +17,7 @@
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char usage_stats[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -700,7 +701,6 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         }
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void draw_veldin_robot_effect_quad_r(void) __asm__("func_L00_002E3128");
 

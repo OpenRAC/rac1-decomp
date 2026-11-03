@@ -34,6 +34,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -232,12 +234,10 @@ extern void fire_starfighter_homing_rocket(void *, void *);
 
 extern int queue_starfighter_voice_line(void *, void *, int, int);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern int fast_subtract_rotations_cf(void *);
 
 extern unsigned char *fire_mine_83_projectile(char *, char *);
-extern int Moby_PlaySound(int, int, int);
+
 extern char hero_globals_base[];
 
 // Gemlik state machine: advances the moby's state byte at 0xBC and sets its timers
@@ -555,7 +555,6 @@ extern void update_qwarks_starfighter_attack_commands(void *, void *);
 extern int update_moby_path_following_away_from_hero(void *, void *, int, int);
 extern void process_moby_attachment_damage(void *, void *);
 extern void StepColorFade(void *, void *);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1269,7 +1268,7 @@ void update_qwarks_starfighter(QwarksStarfighterPart388 *moby) {
     }
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void moby_build_matrix(void *);
 typedef int u128 __attribute__((mode(TI)));
 
@@ -1858,7 +1857,7 @@ extern int PartType44Spawn(void *, void *, int, int, int, int, float, float, flo
 
 #define desc_p func_L00_0025A8C0
 #define mat_p func_L00_001FF610
-extern void PartType27Spawn(void *, void *, int, int, float);
+
 #define spark_p func_L00_0026EBC0
 
 #define puff_p func_L07_0029B070
@@ -3113,7 +3112,6 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern char gemlik_coll_hit_normal[];
 extern short gemlik_trail_arc_degrees, gemlik_trail_ticks;

@@ -21,6 +21,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char g_hero[];
 extern char item_usage[];
 extern unsigned int pad_held;
@@ -553,10 +555,7 @@ extern void set_hero_idle_state_for_vehicle_mode(void);
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 extern int truncate_float_to_s32(float);
-extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
@@ -564,11 +563,7 @@ extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, 
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int Moby_PlaySound(int, int, int);
 extern void RippleDisturb(int, int, int, float, float, float, float);
-extern void help_queue_add(int, int, int);
-
-extern void spawn_hero_radial_particle_burst(void);
 
 extern int cinematic_mode MACRO_ADDR;
 extern int water_patches MACRO_ADDR;
@@ -3002,7 +2997,6 @@ collision_mode:
 
 extern int coll_line(void *, void *, int, int, int);
 
-extern int allocate_hero_voice_for_entry(int a, int b);
 extern float coll_hit_point_z;
 extern int level_frame_counter MACRO_ADDR;
 
@@ -3154,7 +3148,6 @@ extern unsigned char item_available_r[] __asm__("D_0013D5C8");
 extern Rec2C attack_records_r[] __asm__("D_L00_0017BD28");
 extern int hero_repeat_press_window_frames SDATA(hero_repeat_press_window_frames);
 extern int pad_pressed_within_r2(int, int, int *) __asm__("func_L00_00267BA8");
-extern void launch_hero_wrench(void);
 
 extern int Sound_IsPlaying(void *, int);
 

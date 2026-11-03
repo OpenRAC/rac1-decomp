@@ -24,6 +24,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/render/draw.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -548,7 +549,7 @@ void func_L00_002D19E8_r(u8 *a) {
 /* break_crate (CrateBreakFx) -- src/overlays/shared/vendor_002D1168.c. EXACT 2026-10-19 (fg). */
 
 extern int Sound_PlayClassSound(int, int, void *, int);
-extern void Moby_PlaySound(int, int, int);
+extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 extern int is_moby_in_class_range_500_to_540(void *);
 
 extern int truncate_float_to_s32(float);
@@ -618,7 +619,7 @@ void break_crate(void *mv, int a1, int av) {
         if (((Moby *)m)->oclass == 0x1FA)
             Sound_PlayClassSound(0, 0, m, 0x1F4);
         else
-            Moby_PlaySound(0, 0, (int)m);
+            Moby_PlaySound_v(0, 0, (int)m);
         crate_break_sound_frame = level_frame_counter;
     }
     if (subtract_integer_with_clamp(level_frame_counter - crate_break_effect_frame) >= 2)
@@ -1232,13 +1233,10 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
     compute_glove_of_doom_launch_velocity(anchor_ptr, aim, output + 4, g_frame_time_sq_r * 9.0f, 0.00000999999975f,
                                           (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f);
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int spawn_decoy(void *, void *, void *);
 extern void HeroEnterMoveState(int, int);
 extern int fast_dec_timer(int *);
-
-extern int allocate_hero_voice_for_entry(int, int);
 
 extern void release_moby_with_collision_check(float *, char *, void *);
 extern short decoy_list[];
@@ -1251,7 +1249,7 @@ typedef int u128_D3B20 __attribute__((mode(TI)));
 void decoy_glove_update(unsigned char *moby) {
     extern void DeleteMoby(void);
     extern void transform_vector();
-    extern void Moby_PlaySound(int, int, int);
+    extern void Moby_PlaySound_v(int, int, int);
     struct DecoyGloveVars *d;
     char *p;
     struct Hero *g;
@@ -1342,7 +1340,7 @@ L3D34:
                 release_moby_with_collision_check(&d->pos.x, d->decoy, *(char **)(d->decoy + 0x78) + 0x10);
                 *(int *)&d->decoy = 0;
             } else {
-                Moby_PlaySound(0, 0, (int)moby);
+                Moby_PlaySound_v(0, 0, (int)moby);
             }
             ((Moby *)moby)->state = 4;
             d->timer = scale_ticks(0x14);
@@ -2288,7 +2286,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int test_path_segment_strict_crossing(int, void *, void *);
 
 extern int mine_fall(void *, void *);
-extern void Moby_PlaySound(int, int, int);
+extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 
@@ -2506,7 +2504,7 @@ void horny_toad_update(Moby *moby) {
             break;
         case 12:
             if (mine_fall(moby, data->f70) & 0x140) {
-                Moby_PlaySound(7, 0, (int)moby);
+                Moby_PlaySound_v(7, 0, (int)moby);
                 spawn_color_swapped_explosion_burst(moby, (*(Vec_5AC0 *)&moby->pos), -1, 0.75f, 10.0f);
                 DeleteMoby_r2(moby);
                 return;

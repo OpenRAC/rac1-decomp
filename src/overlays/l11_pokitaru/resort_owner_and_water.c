@@ -31,6 +31,9 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -1321,7 +1324,7 @@ extern void MobySphereHitDirectional(int, float, void *, int, float, float, int,
 
 extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern void MusicRequestTrack(int, int);
 
 /* L11 twin of FUN_L01_00308bd8: a three-part switch moby that, once the hero stands on it in mission state 0xB and
@@ -1919,7 +1922,6 @@ int try_activate_pokitaru_gate(unsigned char *moby) {
 
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, float *) __asm__("func_L00_00250800");
 
-extern void PartType34Spawn(float *, float *, float, float);
 extern int level_frame_r __asm__("D_L11_0015F6B0") MACRO_ADDR;
 struct PartA500 {
     u8 unk0;
@@ -2423,7 +2425,7 @@ void update_child_set_poses(void *mv) {
 #undef mat_p
 #undef zero_p
 #undef refresh_p
-extern void Moby_PlaySound(int, int, int);
+
 extern void update_child_grid_poses(struct Moby *);
 extern int child_grid_fade_start_word SDATA(child_grid_fade_start_word);
 extern float child_grid_camera_accel SDATA(child_grid_camera_accel);
@@ -3070,7 +3072,7 @@ void seesaw_platform_update(struct Moby *m) {
     FastVecAdd_r3(&v, &v, &m->pos);
     update_entity_matrix_r2(d->unk20, &v, &rot, &m->rot);
 }
-extern void Moby_PlaySound(int, int, int);
+
 extern unsigned char menu_item_enabled_79 NOT_SDA;
 extern int level_frame SDATA(level_frame);
 
@@ -3137,7 +3139,7 @@ char *spawn_moby_with_random_yaw(void *position, void *vector, int id) {
     return moby;
 }
 extern char *spawn_ship_pickup_child(char *);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 // Updates an attached object's transform or clears the unattached position state.
 int sync_ship_pickup_child_pose(char *owner, char *data) {
     char *child;

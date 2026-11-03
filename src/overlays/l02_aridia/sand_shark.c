@@ -28,6 +28,9 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -242,7 +245,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern void emit_sand_shark_radial_particles(void *pos, int n);
-extern int Moby_PlaySound(int, int, int);
+
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
@@ -1353,8 +1356,6 @@ extern void ClampVectorLength(void *a, float x);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
@@ -1880,8 +1881,6 @@ extern float aridia_elevator_max_speed SDATA(aridia_elevator_max_speed);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern int Sound_IsPlaying(void *, int);
-
-extern int Moby_PlaySound(int, int, int);
 
 extern void DrawRotatingQuadRing(char *);
 
@@ -2517,8 +2516,6 @@ extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
 extern void SamplePathAt(void *, int, void *, void *, int, float);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 
@@ -2947,7 +2944,6 @@ void snap_transport_pod_rails_to_offsets(char *moby) {
     moby_build_matrix(d->rail_b);
 }
 extern float aridia_crane_anim_speed SDATA(aridia_crane_anim_speed);
-extern int Moby_PlaySound(int, int, int);
 
 /* State machine for a moby that picks a new animation each time the previous one finishes. */
 void crane_update(unsigned char *moby) {
@@ -3355,7 +3351,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
+
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
 

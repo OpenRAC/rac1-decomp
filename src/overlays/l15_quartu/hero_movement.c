@@ -34,6 +34,8 @@
 #include "enums/moby_class.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -195,7 +197,7 @@ extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
 
 void HeroQuartu_TrySetMoveState(s32, s32);
-void allocate_hero_voice_for_entry(s32, s32);
+
 void remove_tracked_class_5f3_moby(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/ui_help_002044c8.c, FUN_L15_00208e10. */
@@ -388,9 +390,7 @@ extern float vec_length_xy(void *);
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern int PartType34Spawn(void *, void *, float, float);
 
 extern float ApproachValue(float *, float, float);
 
@@ -401,7 +401,6 @@ extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern void update_hero_target_heading(float, float, float);
 
 extern int coll_line(void *, void *, int, int, int);
 

@@ -25,6 +25,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern u8 gHeroPos[];
 extern char g_hero_pos_z[];
 extern char g_hero_rot[];
@@ -573,11 +575,7 @@ extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern float frame_scale MACRO_ADDR;
 extern int select_hero_condition_animation_id(int);
 
-extern void *allocate_moby_animation_slot(void *, int);
 extern float ApproachValue(float *, float, float);
-extern void release_moby_animation_slot(void *, void *);
-extern void initialize_moby_animation_blend(int, void *, int, int, int, int);
-extern void advance_moby_animation_blend(void *, unsigned char *);
 
 // Picks the hero's current animation id and speed from its state and starts or updates the animation slot. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020da68.
 void update_hero_condition_animation(void) {
@@ -908,9 +906,6 @@ typedef struct {
 extern Rec item_defs[] __attribute__((section(".data")));
 extern char hero_globals_base[];
 extern short hero_item_slot_anim_ids;
-extern void *allocate_moby_animation_slot(void *, int);
-
-extern void initialize_moby_animation_blend(int, void *, int, int, int, int);
 
 /* Spawn the one or two help markers for the current help target, in free slots. */
 void create_missing_hero_item_slot_animations(int a, int b) {
@@ -1770,8 +1765,6 @@ int Hero_CanUseGadget(void) {
     return 0;
 }
 extern int hero_is_in_special_state();
-
-extern int allocate_hero_voice_for_entry(int, int);
 
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
@@ -3114,7 +3107,6 @@ void sceVu0Normalize(void *, void *);
 void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
 
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
 extern Hero D_0013F450_12E70 __asm__("D_0013F450");
 extern struct CollisionHit coll_hit_result_r2 __asm__("D_L00_00173F40");

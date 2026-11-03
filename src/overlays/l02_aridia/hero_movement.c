@@ -31,6 +31,7 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/audio/sound.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -315,7 +316,6 @@ u8 *GetFlaggedPvarWord(s32);
 void sceVu0Normalize(void *, void *);
 
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
 extern Hero g_hero;
 extern struct CollisionHit aridia_coll_hit;
@@ -623,7 +623,6 @@ extern int fast_dec_timer(int *);
 
 extern int get_hero_idle_animation_index(int);
 
-extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 
@@ -638,9 +637,6 @@ extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern void update_hero_target_heading(float, float, float);
-
-extern void allocate_hero_voice_for_entry(int, int);
 
 struct UpdateHeroStateMotionVars {};
 

@@ -25,6 +25,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -176,19 +178,13 @@ extern int can_sentrybot_approach_linked_moby(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void compute_selected_world_matrices(void *, int, void *, void *);
-
 extern float vec_length_xy(void *);
 extern char *spawn_class_3a6_moby(char *, float *, char *, char *);
 extern int mine_fall(void *, void *);
 
-extern int Moby_PlaySound(int, int, int);
-
 extern void SetDeathBits(void *, int, int);
 
 extern void update_sentrybot_joint_aim(void *);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void draw_sentrybot_effect_quads(char *m);
 extern int quartu_game_mode MACRO_ADDR;
@@ -3443,7 +3439,6 @@ void prepare_sentrybot_alarm(unsigned char *moby) {
     }
 }
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 extern void emit_sine_modulated_rgba_draw_packet(void);
 extern s32 g_current_level_index SDATA(g_current_level_index);

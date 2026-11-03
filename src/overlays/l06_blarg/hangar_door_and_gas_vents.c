@@ -26,6 +26,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -692,7 +694,6 @@ void set_moby_list_state_4(int idx) {
         moby[0x20] = 4;
     } while (*p++ >= 0);
 }
-extern void Moby_PlaySound(int, int, int);
 
 // Marks a moby as done when in state 2: sets state 4, clears two fields and puts its 7 children into state 5.
 void set_moby_and_links_to_states_4_and_5(char *moby) {
@@ -2748,7 +2749,7 @@ extern void StepColorFade(void *, void *);
 extern void euler_rotation_basis(void *, void *);
 
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern void start_alien_queen_first_recovery(char *);
 extern void start_alien_queen_second_recovery(char *);
 
@@ -2925,7 +2926,7 @@ void activate_listed_state_15_mobys_at_raised_positions(char *moby) {
         } while (*p++ >= 0);
     }
 }
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
 

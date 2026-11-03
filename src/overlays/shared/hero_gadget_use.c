@@ -21,6 +21,8 @@
 #include "enums/moby_class.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -86,8 +88,6 @@ INCLUDE_ASM("asm/overlays", func_L05_0023BA64);
 INCLUDE_ASM("asm/overlays", func_L05_0023BAA0);
 extern char pad_globals_base[];
 extern unsigned char gHaveHeliPack[] NOT_SDA;
-
-extern int allocate_hero_voice_for_entry(int, int);
 
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
@@ -660,7 +660,7 @@ extern int pad_pressed_within(int, int, int *);
 extern int truncate_float_to_s32(float);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern int Hero_TryMoveStateL05_r(int, int) __asm__("func_L05_0024D680");
 extern int func_001F9908(int *);
 typedef struct {
@@ -674,7 +674,7 @@ extern unsigned short help_records_131_count[] NOT_SDA;
 extern unsigned short usage_stats_entry27_count[] NOT_SDA;
 
 extern float vec_distance_xy(void *, void *);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void create_rocket_1475_moby(void *, void *, void *, float, float);
 extern Moby *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;

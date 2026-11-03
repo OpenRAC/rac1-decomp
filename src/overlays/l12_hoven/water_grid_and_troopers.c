@@ -26,6 +26,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -1831,8 +1832,7 @@ extern int coll_sphere_mobys(void *, int, void *, int, float);
 extern int is_moby_in_class_range_500_to_540(void *);
 
 extern int IsFrameWithinWindow(void *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void Moby_PlaySound(int, int, int);
+
 extern int truncate_float_to_s32(float);
 extern void spawn_class_b8_projectile(void *, void *, void *, int);
 extern int mine_fall(void *, void *);
@@ -2497,7 +2497,6 @@ void remove_blarg_trooper_and_attachment(Moby *moby) {
     }
     DeleteMoby(moby);
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Keeps the Blarg trooper's attachment on its bone, spawning it if missing. */
 void update_blarg_trooper_attachment(unsigned char *moby) {
@@ -3180,7 +3179,7 @@ int follow_blarg_helicopter_path(struct Moby *m, int idx) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void Moby_PlaySound(int, int, int);
+
 extern void RerollEffectCounter(void *m, short *p);
 
 extern void StepColorFade(void *, void *);

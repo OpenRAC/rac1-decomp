@@ -26,6 +26,7 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -81,10 +82,6 @@ extern int truncate_float_to_s32(float);
 
 extern void update_hero_ground_material_effects(void);
 extern void HeroL01_UpdateStateTransitions(void);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void allocate_hero_voice_for_entry(int, int);
 
 typedef struct {
     char pad0[0x80];
@@ -825,7 +822,6 @@ extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 
 void Hero_SetMoveState(s32, s32);
-void allocate_hero_voice_for_entry(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231580. */
 s32 HeroL01_TryTakeHit(s32 arg) {
@@ -1128,7 +1124,6 @@ u8 *GetFlaggedPvarWord(s32);
 void sceVu0Normalize(void *, void *);
 
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
 extern struct CollisionHit novalis_coll_hit_r3 __asm__("D_L01_00174340");
 

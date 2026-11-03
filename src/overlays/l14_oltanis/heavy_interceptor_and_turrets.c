@@ -22,6 +22,10 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -213,7 +217,6 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float vec_distance_xy(void *, void *);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -566,7 +569,6 @@ extern void lerp_vector(void *, void *, void *, float);
 extern void Profile_Mark(void *, float);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern f32 Spring_r(f32 *pos, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025C918");
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
@@ -2697,7 +2699,6 @@ void ease_minibomber_position_and_heading(char *moby, float *target, float a, fl
 
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
 
-extern void spawn_two_point_effect_particle(void *, void *);
 extern void mine_camera_blast(void *, void *, int, int);
 extern float oltanis_zero_vector[] MACRO_ADDR;
 extern char minibomber_drop_blast_params[];
@@ -3292,7 +3293,7 @@ typedef struct {
 extern G_6570 g_hero;
 extern int find_nearest_path_point_r2(void *, void *, void *, int *, float *, int, float, float,
                                       float) __asm__("func_L00_0025EFC0");
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern void func_L00_0025E860_D7880(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002d6358.c, FUN_L14_002d6570. */

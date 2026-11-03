@@ -28,6 +28,9 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -329,8 +332,6 @@ void update_robot_dog_aim_joint(char *moby) {
     d->part.yaw = yaw;
     EaseManipulatorOffsets(moby, (char *)&d->part, 0, accel * g_frame_scale_sq, speed * g_frame_scale_sq);
 }
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void draw_three_moby_effect_quads(char *);
 extern int fleet_frame_count MACRO_ADDR;
@@ -668,11 +669,10 @@ void DrawLightRing(char *moby) {
         }
     }
 }
-extern int Moby_PlaySound(int, int, int);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void update_entity_matrix(char *, void *, void *, void *);

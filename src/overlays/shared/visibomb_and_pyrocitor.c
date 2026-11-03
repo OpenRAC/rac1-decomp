@@ -25,6 +25,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -458,8 +460,6 @@ extern float vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int spawn_visibomb_missile(void *, void *, float, float);
-
-extern int Moby_PlaySound(int, int, int);
 
 /* Per-frame update of a moby that arms a pickup-style reaction when the player state allows it. */
 void visibomb_update(char *m) {
@@ -1225,7 +1225,7 @@ extern void func_L00_002CC3C0(void *, float, float, float, float, void *, void *
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
-extern void func_L00_0026EBC0(void *, void *, int, int, float);
+
 extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
 
 extern void cancel_hero_item_animation_r(void) __asm__("func_L00_0020ED30");
@@ -2283,8 +2283,6 @@ extern short taunter_effect_alpha_g __asm__("D_L00_0016158C");
 extern short D_L00_001615A8;
 extern int fast_dec_timer(int *);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern void draw_taunter_effect_quads_b(void) __asm__("func_L00_002B8860");
 /* per-frame update of the ten slot table: spawn one, age the rest, then draw */
 void update_taunter_effect_slots(Moby *arg) {
@@ -2460,7 +2458,6 @@ extern char collision_hit_point[];
 extern Order_2B8AE8 gold_weapon_purchased;
 
 extern void update_pyrocitor_usage_and_cleanup(unsigned char *);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern Moby *spawn_linked_moby_from_basis(void *);
 extern void lerp_vector(void *, void *, void *, float);
@@ -2473,7 +2470,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void rand_vec(float *, float, float);
 
-extern void *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
 extern void register_pyrocitor_flame_effect();
 
 extern void coll_sphere_mobys(void *, float, int, void *, void *);

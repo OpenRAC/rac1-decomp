@@ -24,6 +24,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
@@ -397,8 +399,6 @@ void update_rocket_moby(char *moby) {
 extern void *CreateMoby_r() __asm__("func_0020D348");
 extern float rocket_scale SDATA(rocket_scale);
 
-extern void Moby_PlaySound(int, int, int);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d5348. */
 char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b, int frames, int kind) {
     char *moby = CreateMoby_r(0x234);
@@ -660,12 +660,11 @@ extern float g_frame_time_sq MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
-extern void Moby_PlaySound(int, int, int);
 
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void Moby_PlaySound(int, int, int);
+
 /* Launches a dormant Mine moby from list idx toward p7; returns it or 0. */
 char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float *p7, int a8) {
     float v[4];
@@ -1282,7 +1281,6 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
     }
 }
 extern int Sound_IsPlaying(void *, int);
-extern int allocate_voice_for_group_entry(int, int, void *);
 
 /* Activates a moby and starts an effect on it if none is playing. */
 void request_thruster_pack_lock_red_wait(unsigned char *arg, int value) {
@@ -2240,7 +2238,6 @@ void draw_class_274_ring_effect(void *moby_v) {
     }
 }
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);

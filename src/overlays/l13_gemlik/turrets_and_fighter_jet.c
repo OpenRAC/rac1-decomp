@@ -29,6 +29,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -288,7 +290,6 @@ extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 extern int HeroEnterMoveState(int, int);
 
@@ -650,7 +651,7 @@ void blarg_turret_update(Moby *m) {
         data->gun = 0;
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern float vec_distance_xy(void *, void *);
 
 extern char *spawn_gemlik_projectile(float, float *, float *, void *);
@@ -2866,7 +2867,6 @@ extern void jet_group_flag(int, int);
 extern int try_set_help_message(int, int);
 extern int HeroEnterMoveState(int, int);
 extern void jet_animate(unsigned char *, float);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void PlayerFighterFlight(void *, void *);
 

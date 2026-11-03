@@ -8,6 +8,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -236,7 +237,6 @@ extern unsigned char saved_mission_state[];
 
 extern void vec_scale_to_length(f32, void *, void *);
 
-extern void Moby_PlaySound(s32, s32, void *);
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 
@@ -363,7 +363,6 @@ extern void FastVecScale_v(f32, void *, void *) __asm__("func_001F9C30");
 
 extern void vec_scale_to_length(f32, void *, void *);
 
-extern void Moby_PlaySound(s32, s32, void *);
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;

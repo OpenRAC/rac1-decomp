@@ -31,6 +31,8 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -968,23 +970,17 @@ extern float hoven_turret_destruction_view_offset_distance_min SDATA(hoven_turre
 extern float hoven_turret_destruction_view_offset_distance_max SDATA(hoven_turret_destruction_view_offset_distance_max);
 extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float vec_distance_xy(void *, void *);
-
-extern void Moby_PlaySound(int, int, int);
 
 extern void update_hoven_turret_target_alignment_timer(void *);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage(void *, int, int);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachValue(float *, float, float);
 
 extern void create_moby_with_particles(void *, void *, void *, int);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern char *PartType27Spawn(void *, void *, int, int, float);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -1618,7 +1614,6 @@ extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void *spawn_class_b8_projectile(void *, void *, void *, int);
 
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int slot);
 extern void update_planetbuster_maximus_detached_parts(char *);
@@ -2637,7 +2632,7 @@ void emit_phase_selected_moby_effects(Moby *moby) {
             break;
     }
 }
-extern void Moby_PlaySound(int, int, int);
+
 extern void spawn_proximity_gated_bolts(void *);
 
 /* Moby update for a breakable. */

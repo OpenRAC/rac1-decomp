@@ -23,6 +23,7 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
@@ -34,7 +35,6 @@ extern int Npc_TryStartDialog(void *, void *);
 extern int fast_dec_timer(void *);
 
 extern void MusicRequestTrack(int, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int memcard_Save(int, int);
 extern float vec_distance_xy(float *, float *);

@@ -24,6 +24,7 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -198,8 +199,6 @@ extern int predict_mine_impact(W910 *, M910 *, int);
 
 extern float resolve_camera_surface_height(float *, void *);
 
-extern int PartType34Spawn(void *, void *, float, float);
-
 extern int coll_line(void *, void *, int, int, int);
 
 extern void RippleDisturb(int, int, int, float, float, float, float);
@@ -213,7 +212,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern int fast_dec_timer(int *);
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
@@ -233,7 +232,6 @@ extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(v
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern int truncate_float_to_s32(float);
-extern char *mine_debris(char *, char *, int, int, float, int, int);
 
 extern char *mine_camera_blast(char *a, char *b, int c, char *d);
 extern void jet_animate(unsigned char *, float);

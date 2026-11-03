@@ -30,6 +30,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -307,7 +309,6 @@ extern float g_frame_time MACRO_ADDR;
 extern void draw_glow_moby_layered_quads(struct Moby *);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
@@ -891,9 +892,6 @@ extern void set_ground_height_band(void *);
 
 extern void StartCutscene(int);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void queue_movie_with_game_language(int i);

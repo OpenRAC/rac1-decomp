@@ -22,6 +22,9 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -973,7 +976,6 @@ extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(void *);
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
 extern void SpawnExplosionFx_v(void *, void *, float, float, int) __asm__("func_L00_00260108");
-extern void Moby_PlaySound(int, int, void *);
 
 extern void spawn_moby_point_offset_particle(void *, float, int, float);
 
@@ -1040,7 +1042,6 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
     return m;
 }
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
 
@@ -1288,8 +1289,6 @@ void codebot_update(unsigned char *moby) {
 extern Hero g_hero_r __asm__("D_0013F450");
 extern PadState D_0013CA40;
 extern void try_set_help_message(int, int);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void MusicRequestTrack(int, int);
 extern Moby *quartu_moby_array_m __asm__("D_L15_00160058") MACRO_ADDR;

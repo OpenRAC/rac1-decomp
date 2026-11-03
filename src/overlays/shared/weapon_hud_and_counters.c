@@ -18,6 +18,7 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char g_hero[];
 extern char item_available[];
 extern int weapon_ammo_counts[];
@@ -572,7 +573,6 @@ extern int hud_screen_position(HudElem *rec, int *x, int *y);
 extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
-extern int allocate_hero_voice_for_entry(int, int);
 extern int GetIconFrame(int, int);
 
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);

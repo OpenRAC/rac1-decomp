@@ -21,6 +21,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -314,7 +316,6 @@ extern int suck_moby_list MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 
 extern int fast_dec_timer(int *);
-extern void *spawn_moby_bound_effect_particle(void *);
 
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_moby_collision_particles(void *);
@@ -581,7 +582,7 @@ extern int rand_range(int, int);
 
 extern void SetDeathBits(void *, int, int);
 
-extern void PartType05Spawn(void *, float, int, int, int, int, float);
+extern void PartType05Spawn_v(void *, float, int, int, int, int, float) __asm__("func_L00_0026AA10");
 
 extern int morphoray_chicken_slots[];
 extern char morphoray_chicken_slot_state_blocks[];
@@ -657,7 +658,7 @@ char *spawn_morphoray_chicken(char *src) {
             DeleteMoby(src);
         }
         z = 0.0f;
-        PartType05Spawn(&((Moby *)m)->pos, 1000000.0f, 0x7F, 0x7F, 0x7F, scale_ticks(0xF), z);
+        PartType05Spawn_v(&((Moby *)m)->pos, 1000000.0f, 0x7F, 0x7F, 0x7F, scale_ticks(0xF), z);
         FastMemSet(((char *)d), 0, 0x20);
         r = (unsigned char *)morphoray_chicken_slots[morphoray_chicken_next_slot];
         if (r != 0 && *(short *)(r + 0xA6) == 0x10E && r[0x20] != 0xFE && r[0x20] != 0xFD) {
@@ -708,7 +709,7 @@ extern float rfb_CB(float, float) __asm__("func_002140F8");
 extern float rang_CB(void) __asm__("func_00214158");
 extern void sph_CB(void *, float, float, float) __asm__("func_00215C00");
 extern void vadd_CB(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
+
 extern int ftoi_CB(float) __asm__("func_001FA898");
 extern void f25F4A8_CB(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int,
                        int, int, int) __asm__("func_L00_0025F4A8");
@@ -1123,8 +1124,6 @@ int moby_set_state_from_check(char *a, void *p, void *t, float h) {
     return r;
 }
 
-extern void Moby_PlaySound(int, int, char *);
-
 /* Launch the moby's suck cannon shot: state 5 on success, back to 1 on a failed refire. */
 int launch_suck_cannon_projectile_and_update_moby_state(char *m, int a, int b, float f) {
     char *h = get_moby_suck_cannon_record(m);
@@ -1157,7 +1156,6 @@ int GetMobyPvarWord5(struct Moby *m) {
 }
 typedef int w128 __attribute__((mode(TI)));
 
-extern void *PartType27Spawn(void *, void *, unsigned, int, float);
 extern float vec_length_xy(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 extern unsigned char *spawn_random_size_rotated_particle(char *a, char *b, int c, float f);
@@ -1532,7 +1530,6 @@ void update_homing_shot(Moby *m) {
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern s32 rand_range(s32, s32);
-extern void *PartType27Spawn(void *, void *, u32, s32, f32);
 
 extern u8 *PartType23Spawn(void *, s32, f32, f32, void *, u32, f32, f32);
 
@@ -1828,7 +1825,7 @@ extern char D_0014171B[];
 
 extern int timer32_2CDAB8(int *) __asm__("func_001F9908");
 extern int timer16_2CDAB8(short *) __asm__("func_001F9938");
-extern void func_L00_00250800(Moby *, int, float *);
+
 extern Moby *find_target_2CDAB8(float *, float *, Moby **, float, float, float) __asm__("func_L00_002CD7B0");
 extern int ticks_2CDAB8(int) __asm__("func_001F9850");
 extern Bounds *bounds_2CDAB8(Moby *) __asm__("func_L00_0025D390");

@@ -22,6 +22,10 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -65,8 +69,6 @@ extern void set_ground_height_band(void *);
 
 extern void restore_gadgetron_ceo_non_challenge_environment(char *);
 extern void activate_gadgetron_ceo_challenge_environment(char *);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int memcard_Save(int, int);
 extern int PlayBankSound(int, int, int);
@@ -415,7 +417,6 @@ void update_two_region_trigger_latch(char *moby) {
     }
 }
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 extern void initialize_path_walker_group(unsigned char *);
 extern void emit_path_walker_particle(unsigned char *, void *);
@@ -550,8 +551,6 @@ extern float path_walker_particle_target_scalar_scale SDATA(path_walker_particle
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
-
 /* Emits a particle near an active moby when the target is close. */
 void emit_path_walker_particle(unsigned char *m, void *v) {
     float input[4];
@@ -646,7 +645,6 @@ void initialize_path_walker_group(unsigned char *m) {
 }
 extern int kalebo3_game_mode;
 extern char kalebo3_cutscene_state[];
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 typedef float W[4] __attribute__((aligned(16)));
 

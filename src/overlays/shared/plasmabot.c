@@ -18,6 +18,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -157,7 +159,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
 extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
 extern int mine_fall(void *, void *);
-extern void Moby_GetJointWorldPos(char *, int, void *);
+
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
 extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                             float, int, int, int, int);
@@ -1910,7 +1912,6 @@ extern void FastMemZero16(void *, int);
 extern int ComputeHitResponse_r(struct Moby *, MobyHit *, HitInfo *, int, int *, int, int,
                                 int) __asm__("func_L00_0025B4D0");
 
-extern int Moby_PlaySound(int, int, struct Moby *);
 extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                             float, int, int, int, int);
 

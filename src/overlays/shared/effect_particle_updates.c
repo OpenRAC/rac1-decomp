@@ -15,6 +15,7 @@
 #include "game/moby/mobyutil.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 
 extern void lerp_vector(void *, void *, void *, float);
@@ -1368,7 +1369,6 @@ typedef struct PartType19Data {
 } PartType19Data;
 extern f32 frame_scale MACRO_ADDR;
 
-void Moby_GetJointWorldPos(void *, s32, void *);
 void vec_scale_to_length(void *, void *, f32);
 
 s32 truncate_float_to_s32(f32);
@@ -1823,7 +1823,7 @@ void update_color_decaying_effect_particle_with_collision(struct PartBase *parti
     }
     particle->spin--;
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern char *part_type26_textures;
 
 typedef struct PartType26Data {
@@ -2058,7 +2058,7 @@ extern u8 *part_type29_textures;
 extern f32 g_debug_camera_r2[4] __asm__("D_L00_00166EC0");
 
 extern s32 truncate_float_to_s32(f32);
-extern void Moby_GetJointWorldPos(void *, s32, void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026e3a8. */

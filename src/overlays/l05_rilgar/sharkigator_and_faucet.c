@@ -25,6 +25,9 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -235,9 +238,6 @@ extern float vec_distance_xy(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 extern void euler_rotation_basis(void *, void *);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void Moby_PlaySound(int, int, int);
 
 extern void spawn_sharkigator_surface_effects(char *moby);
 extern void spawn_sharkigator_splash_effects(int unused, char *p);
@@ -553,7 +553,6 @@ void draw_group_moby_glow_quads(unsigned char *moby) {
         get_next_moby_in_group((int *)&it, (int)it, 0, 0);
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int rilgar_frame_count MACRO_ADDR;
 
@@ -980,7 +979,6 @@ void amoeboid_update(unsigned char *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_amoeboid_hit_sparks(void *, void *);
-extern void Moby_PlaySound(int, int, int);
 
 // Sets up a moby from a found neighbour and adds a random bonus to a counter when the neighbour has no owner.
 void handle_amoeboid_hits(unsigned char *m) {

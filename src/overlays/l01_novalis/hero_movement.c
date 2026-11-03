@@ -28,6 +28,9 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -193,8 +196,6 @@ extern float novalis_hero_speed_bands_6[];
 
 extern float ApproachValue(float *, float, float);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 // Per-tick horizontal air movement for the hero's jump states (level 01).
 // Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l01/ui_help_00233de0.c, FUN_L01_00234b40.
 void update_hero_airborne_planar_motion(void) {
@@ -342,14 +343,10 @@ extern int fast_dec_timer(int *);
 
 extern int get_hero_idle_animation_index(int);
 
-extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
-extern int PartType34Spawn(void *, void *, float, float);
 
 extern void ClampVectorLength(void *, float);
 
@@ -357,7 +354,6 @@ extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern void update_hero_target_heading(float, float, float);
 
 extern int coll_line(void *, void *, int, int, int);
 

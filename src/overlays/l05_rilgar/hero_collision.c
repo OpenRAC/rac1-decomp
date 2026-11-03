@@ -14,6 +14,7 @@
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char gHeroPos[];
 extern unsigned char g_hero[] NOT_SDA;
 
@@ -200,7 +201,6 @@ u8 *GetFlaggedPvarWord(s32);
 void sceVu0Normalize(void *, void *);
 
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
 void func_L00_00233D50_40968(void *, void *, f32) __asm__("func_L00_00233D50");
 

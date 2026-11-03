@@ -31,6 +31,9 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern int g_controller_state_no_direction;
 
 typedef int u128 __attribute__((mode(TI)));
@@ -79,17 +82,13 @@ extern int fast_dec_timer(int *);
 
 extern int get_hero_idle_animation_index(int);
 
-extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern void vec_scale_to_length(void *, void *, float);
-extern int PartType34Spawn(void *, void *, float, float);
 
 extern float ApproachValue(float *, float, float);
 
@@ -101,13 +100,10 @@ extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern void update_hero_target_heading(float, float, float);
 
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 extern int offset_path_index(void *, int, int, int);
-
-extern void allocate_hero_voice_for_entry(int, int);
 
 extern int coll_line(void *, void *, int, int, int);
 
@@ -118,7 +114,6 @@ extern void compose_and_limit_hero_velocity(void);
 extern int pad_pressed_within(int, int, int *);
 
 extern void compute_hero_hoverboard_respawn_transform(void *, void *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 struct HeroUpdateStatePhysicsVars {};
 

@@ -27,6 +27,8 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -725,7 +727,6 @@ void update_hero_bolt_exclamation_hud(void) {
     }
 }
 extern int request_grouped_voice(int, int, int, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void spawn_texture_indexed_rotated_particle(float *, float, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -842,10 +843,9 @@ extern float ApproachValue(float *p, float target, float maxstep);
 void func_001F9BC0_c(void *) __asm__("func_001F9BC0");
 
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern int func_0022ED80(void *, int, void *);
 
 extern int truncate_float_to_s32(float);
-extern void allocate_hero_voice_for_entry(int, int);
+
 extern void update_hero_moby_probed_height_bounds(void);
 
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -1444,7 +1444,6 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 
 extern int truncate_float_to_s32(float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void HeroDrawQueue_Add(void *vec, int a, float f0, float f1);
 
@@ -2014,8 +2013,6 @@ void update_hero_moby(void) {
     }
 }
 
-extern void set_moby_local_table_entry(void *, int, void *, float, float);
-
 /* positions the help-screen moby and re-aims it twice */
 void update_hero_vehicle_moby(void) {
     unsigned char *g;
@@ -2269,7 +2266,7 @@ typedef struct {
 } T;
 extern T hero_world_matrix_joints;
 extern unsigned char hero_globals_base[] NOT_SDA;
-extern void compute_selected_world_matrices(int, int, void *, void *);
+
 /* update_hero_world_matrices: computes the hero attach matrices for model a. */
 void update_hero_world_matrices(int a) {
     T t;

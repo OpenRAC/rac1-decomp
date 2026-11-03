@@ -27,6 +27,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -402,7 +404,7 @@ extern float g_frame_time MACRO_ADDR;
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
-extern void Moby_PlaySound(int, int, void *);
+
 extern float vec_distance_xy(void *, void *);
 extern int FastBSphereCheck(char *, float);
 typedef struct {
@@ -1040,7 +1042,7 @@ extern void refresh_test_dummy_door_timer(char *);
 extern int move_test_dummy_toward_position_and_heading(char *, void *, float);
 extern void reset_shot_tracking(char *);
 extern int IsFrameWithinWindow(char *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern float jump_speed_4318(void *, void *, void *, float, float);
 
 extern void ClampVectorLength(void *, float);
@@ -2535,7 +2537,6 @@ void *activate_door_647_group_and_find_nearest(int index, int secondary) {
     }
 }
 
-extern void Moby_PlaySound(int, int, void *);
 extern int kalebo3_frame_count MACRO_ADDR;
 extern int last_test_dummy_door_sound_request_frame SDATA(last_test_dummy_door_sound_request_frame);
 extern float test_dummy_door_height_offset SDATA(test_dummy_door_height_offset);
@@ -2617,9 +2618,8 @@ extern void compute_triggered_scene_path_pose(char *, void *, float *);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-extern void Moby_PlaySound(int, int, void *);
+
 extern char hero_globals_base[], help_stats_base[], special_items_base[], kalebo3_camera_pos[];
 typedef struct {
     char pad[0x72];
@@ -2752,7 +2752,7 @@ void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
     out2[2] = ((Moby *)moby)->rot.z;
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void Moby_PlaySound(int, int, void *);
+
 extern void spawn_proximity_gated_bolts(void *);
 
 // Update moby 800: waits for a trigger value, then plays an effect and deletes itself.
@@ -2784,7 +2784,6 @@ extern float kalebo3_challenge_layout_value SDATA(kalebo3_challenge_layout_value
 void challenge_set_layout_param(float f) {
     kalebo3_challenge_layout_value = f;
 }
-extern void Moby_PlaySound(int, int, void *);
 
 /* Play the moby's sound and switch it from state 1 to state 7. */
 void request_target_reposition(unsigned char *moby) {
@@ -2811,7 +2810,6 @@ INCLUDE_ASM("asm/overlays", func_L16_002E22DC);
 
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int memcard_Save(int, int);
 

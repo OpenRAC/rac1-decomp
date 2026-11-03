@@ -31,6 +31,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -294,12 +296,11 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern int Moby_PlaySound(int, int, int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern void spawn_particle_alt_9768(void *, void *, int, int, int, float);
+
 extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
 extern void spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int, int,
                                                                               int, int);
@@ -559,7 +560,6 @@ extern s32 coll_line(void *, void *, s32, void *, s32);
 extern s32 coll_sphere(f32, void *, s32, void *);
 
 extern s32 rand_range(s32, s32);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, s32, s32, f32, s32);
 
 /* Debris update: falls and spins, bounces off what it hits with a random kick, bursts into 40 sparks once it comes to
    rest (or its unk10 timer runs out), or fades out over unk28 frames when unk20 is set.
@@ -682,8 +682,6 @@ extern char *camera_points_c __asm__("D_L01_0016016C") MACRO_ADDR;
 extern int g_current_level_index_c __asm__("D_0015EE84") MACRO_ADDR;
 extern char help_stats_base_c[] __asm__("D_0014171B");
 extern int STUB_printf_c(void *, int, int) __asm__("func_001E9730");
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
 
@@ -1486,7 +1484,6 @@ extern int gold_bolt_ring_color_b SDATA(gold_bolt_ring_color_b);
 extern int gold_bolt_ring_blend_flag SDATA(gold_bolt_ring_blend_flag);
 extern int gold_bolt_ring_texture SDATA(gold_bolt_ring_texture);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float MobyGetFrameValue_m(void *) __asm__("func_0020D830");
 
 extern void vec_scale_to_length(void *, void *, float);
@@ -1604,7 +1601,6 @@ extern float gold_bolt_trail_spread_max SDATA(gold_bolt_trail_spread_max);
 extern int gold_bolt_trail_color SDATA(gold_bolt_trail_color);
 extern float gold_bolt_trail_size SDATA(gold_bolt_trail_size);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void rand_vec(float *, float, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
 
@@ -1668,13 +1664,12 @@ extern void hide_teleporter_and_children(struct Moby *);
 extern void try_set_teleporter_help_message(char *);
 
 extern void draw_moby_radius_ring(char *);
-extern int Moby_PlaySound(int, int, int);
 
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern void MusicRequestTrack(int, int);
 
 /* Teleporter pad update: activation check, then per state: spawn rings, wait for the player, charge, teleport, cool
@@ -2669,7 +2664,6 @@ void draw_sandmouse_billboard_quads(char *moby) {
         entry += 0x10;
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Attach two effect entries and register their update callback. */
 void update_sandmouse_billboard_quads(char *moby) {

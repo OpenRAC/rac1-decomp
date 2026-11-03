@@ -24,6 +24,7 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/math/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -36,11 +37,8 @@ extern float quartu_hero_bones_28_scale, quartu_hero_bones_30_scale;
 extern void Hero_UpdateAimFlags(void);
 extern void HeroL15_UpdateStateTransitions(void);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern int truncate_float_to_s32(float);
 extern unsigned int FastTweenColor_v(float, unsigned int, unsigned int) __asm__("func_001FA8A8");
-extern void allocate_hero_voice_for_entry(int, int);
 
 /* Per-frame hero update: animation, state, voices, vehicle, scale, glow pulse and attachments. */
 void update_hero_and_vehicle_mode_effects(void) {
@@ -383,7 +381,6 @@ u8 *GetFlaggedPvarWord(s32);
 void sceVu0Normalize(void *, void *);
 
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
 extern Hero g_hero_r __asm__("D_0013F450");
 extern struct CollisionHit quartu_coll_hit_r __asm__("D_L15_001744C0");

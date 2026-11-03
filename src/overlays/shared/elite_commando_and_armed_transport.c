@@ -19,6 +19,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -295,7 +297,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void select_blarg_elite_commando_movement_animation(char *);
 extern int IsFrameWithinWindow(char *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern char *spawn_blarg_elite_commando_rocket(char *, float *, char *);
 extern int mine_fall(void *, void *);
 extern int Moby_PlaySound_update(int, int, void *) __asm__("func_0022ED80");
@@ -877,7 +879,6 @@ void select_blarg_elite_commando_movement_animation(char *moby) {
             MobyBlendAnimation(moby, 4, 0, scale_ticks(0x14));
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 extern void spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
@@ -1572,7 +1573,6 @@ int check_grindrail_barrier_release_condition(int idx) {
 INCLUDE_ASM("asm/overlays", func_L16_002E7160);
 extern char hero_globals_base[];
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern void Moby_PlaySound(int, int, int);
 
 /* picks the nearest moby in a list (skipping Grindrail Barrier) and acts on it */
 void group_trigger_nearest(int idx) {

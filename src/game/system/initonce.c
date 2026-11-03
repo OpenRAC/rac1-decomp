@@ -9,6 +9,7 @@
 #include "game/render/draw.h"
 #include "game/render/vuchain.h"
 #include "asm_functions/executable.h"
+#include "game/audio/sound.h"
 
 /*
  * initonce.cpp in the original source; text 0x201E10-0x202260.
@@ -75,7 +76,6 @@ extern void init_pads(void);
 extern int sceGsSyncVCallback(void *arg0);
 extern void memcard_Init(void);
 
-extern void initialize_gameplay_sound_system(void);
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *src, void *dst);
 extern void wait_for_graphics_pipeline_idle(int, unsigned short);

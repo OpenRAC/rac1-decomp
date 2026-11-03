@@ -22,6 +22,9 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -210,8 +213,6 @@ extern int compute_moby_state_from_vertical_probe(void *);
 extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-
-extern void Moby_PlaySound(int, int, void *);
 
 /* Updates an Agent of Doom's movement, target selection and detonation. */
 void doom_bot_update(M44 *moby) {
@@ -770,12 +771,8 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern int HeroEnterMoveState(int, int);
 extern int fast_dec_timer(int *);
-
-extern int allocate_hero_voice_for_entry(int, int);
 
 extern float vec_length_xy(void *);
 
@@ -1074,9 +1071,6 @@ extern s32 coll_line_r2(void *, void *, s32, void *, s32) __asm__("func_L00_001E
 extern f32 vec_length_xy(void *);
 
 extern int HeroEnterMoveState(int, int);
-extern int allocate_hero_voice_for_entry(int, int);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Updates the grip, chooses a throw target, and handles the held moby states.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c26c8. */
@@ -1770,7 +1764,6 @@ extern int coll_sphere(float, void *, int, void *);
 extern float vec_length(float);
 extern void destroy_decoy_on_selected_materials(void *);
 
-extern void Moby_PlaySound(int, int, void *);
 extern void add_random_offset_to_vector_xyz(float, void *);
 
 extern char *MobyGetHitMessage(void *, int, int);
@@ -2434,7 +2427,6 @@ int try_collect_ammo_pickup(char *m) {
     return 1;
 }
 typedef float V4q[4] __attribute__((aligned(16)));
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern char g_debug_camera[];
 
@@ -3255,7 +3247,8 @@ void glove_of_doom_update(struct Moby *moby) {
 }
 
 extern int func_001160D8(void);
-extern void PartType05Spawn(void *, unsigned char, unsigned char, int, float, float, int);
+extern void PartType05Spawn_v(void *, unsigned char, unsigned char, int, float, float,
+                              int) __asm__("func_L00_0026AA10");
 
 /* On selected modes, spawn twenty random particles around the moby and set its state to 4. */
 void spawn_moby_collision_particles(void *mm) {
@@ -3285,7 +3278,7 @@ void spawn_moby_collision_particles(void *mm) {
                 b = (func_001160D8() + 0x20) & 0x3F;
                 c = func_001160D8() & 0x2F;
                 f = random_float_between(100000.0f, 800000.0f);
-                PartType05Spawn(&v, a, b, c, f, 0.0f, scale_ticks(func_001160D8() % n + 10));
+                PartType05Spawn_v(&v, a, b, c, f, 0.0f, scale_ticks(func_001160D8() % n + 10));
             } while (--i >= 0);
             m->state = 4;
             break;

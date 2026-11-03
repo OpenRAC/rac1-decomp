@@ -19,6 +19,9 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -352,7 +355,6 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void libc_memset(void *, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1533,8 +1535,6 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
     }
 }
 
-extern int Moby_PlaySound(int, int, int);
-
 /* Moby update: advance a timer from a collision query, switch state, aim head angles. */
 void handle_blarg_helicopter_hits(char *m) {
     int st;
@@ -1643,11 +1643,7 @@ extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern void vec_scale_to_length(void *, void *, float);
-
-extern char *PartType27Spawn(void *pos, void *vel, int c, int d, float f);
 
 extern void create_type_31_part(void *, void *, void *, void *, int);
 extern int coll_line(void *, void *, int, void *, void *);

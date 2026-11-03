@@ -29,6 +29,9 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -391,9 +394,8 @@ extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
-extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int Moby_PlaySound(int, int, int);
+
 extern char *spawn_class_558_moby_toward_target(char *src, char *pos, float *v, float f);
 extern void FindNearestTargetMoby(void *, void *, float);
 extern int fast_dec_timer(void *);
@@ -936,7 +938,7 @@ extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, 
 
 extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern float resolve_camera_surface_height(float *, void *);
-extern char *PartType34Spawn(char *vec, float *pos, float sc, float vy);
+
 extern float fleet_bobber_height SDATA(fleet_bobber_height);
 extern float fleet_bobber_rate_deg SDATA(fleet_bobber_rate_deg);
 extern char *fleet_coll_hit_moby;
@@ -1862,7 +1864,6 @@ void DrawFleetHud(char *moby) {
     }
     d->bar_value = v;
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern float fleet_jet_gun_aim_distance SDATA(fleet_jet_gun_aim_distance);
 extern int fleet_jet_gun_fire_delay SDATA(fleet_jet_gun_fire_delay);
@@ -2320,7 +2321,6 @@ extern int try_set_help_message(int, int);
 extern float ApproachValue(float *, float, float);
 extern void jet_animate(unsigned char *, float);
 extern void MusicRequestTrack(int, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int STUB_printf();
 

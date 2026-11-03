@@ -13,6 +13,8 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -40,8 +42,6 @@ extern s32 umbris_indicator_states[];
 extern struct Moby *level_mobys MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern int Moby_PlaySound(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/0030cd20.c, FUN_L07_0031a9e8. */
 void update_moby_offset_motion(struct Moby *moby) {
@@ -185,7 +185,6 @@ typedef struct {
     EaseData1C7C0 *data;
     char pad3[0x84];
 } EaseMoby1C7C0;
-extern int Moby_PlaySound(int, int, int);
 
 extern float g_frame_time MACRO_ADDR;
 extern EaseMoby1C7C0 *level_mobys_ease __asm__("D_L07_00160058") MACRO_ADDR;
@@ -420,8 +419,6 @@ typedef struct {
     char pad[0x178];
     int arr[8];
 } L07SparkState;
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern char *func_L00_0026DEA0(void *, int, void *, int, float, float, float, float);
 extern int umbris_scene_state MACRO_ADDR;

@@ -10,6 +10,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -1303,8 +1304,7 @@ extern s32 func_00209070(void);
 extern void update_pad_BB48(void) __asm__("func_00218908");
 extern void queue_dma_BB48(s32) __asm__("func_001EB300");
 extern s32 is_active_BB48(s32, s32) __asm__("func_001EBAF0");
-extern s32 func_0022EEB8(s32, s32, s32);
-extern void func_0022EAB0(s32);
+
 extern void update_gameplay_BB48(void) __asm__("func_001EB458");
 extern void default_draw_BB48(void) __asm__("func_001EB7C0");
 extern void func_001E9808(s32);

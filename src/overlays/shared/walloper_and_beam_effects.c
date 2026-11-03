@@ -20,6 +20,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -163,7 +164,7 @@ extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm_
 
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
-extern void Moby_PlaySound(int, int, void *);
+
 extern unsigned char *PartType53Spawn(void *, int, float, float, int, int, int, float *, float);
 #define hero43 (*(Hero43 *)g_hero)
 

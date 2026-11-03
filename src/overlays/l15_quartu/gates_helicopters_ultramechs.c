@@ -25,6 +25,9 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -99,8 +102,6 @@ extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_moby_killed[];
 extern char quartu_camera_pos[];
-
-extern int Moby_PlaySound(int, int, int);
 
 extern unsigned char hero_globals_base[];
 
@@ -416,7 +417,6 @@ typedef struct {
     s32 sound; /* 0x18 */
 } DoorVars;
 
-extern int Moby_PlaySound(int, int, int);
 extern void *GetFlaggedPvarWord(struct Moby *);
 extern char *quartu_moby_list MACRO_ADDR;
 extern struct Moby *quartu_moby_array_r __asm__("D_L15_00160058") MACRO_ADDR;
@@ -540,7 +540,6 @@ extern int DefaultVtbl_DeleteMoby(float, int, int);
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
-extern void *mine_debris(void *, void *, int, int, float, int, int);
 
 extern void SetDeathBits_r(void *, int, long) __asm__("func_L00_002584A8");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
@@ -699,7 +698,6 @@ extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, fl
 
 extern int DefaultVtbl_DeleteMoby(float, int, int);
 
-extern void *mine_debris(void *, void *, int, int, float, int, int);
 extern void SetDeathBits(void *, int, int);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
@@ -840,7 +838,7 @@ extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern int truncate_float_to_s32(float);
 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern void spawn_proximity_gated_bolts(void *);
@@ -1944,7 +1942,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
 extern int fast_dec_timer(int *);
 extern int IsFrameWithinWindow(char *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern char *func_L10_002CD578(void *vel, float scale, void *pos, int a, int b, int c);
 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
@@ -1960,9 +1958,7 @@ extern float jump_speed_4318(void *a, void *b, void *out, float speed, float g);
 extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
 extern float frame_scale MACRO_ADDR;
@@ -3074,8 +3070,6 @@ extern unsigned char saved_mission_state[];
 extern int quartu_alarm_on SDATA(quartu_alarm_on);
 extern char *quartu_cuboids MACRO_ADDR;
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
 extern int memcard_Save(int slot, int flags);
 
 extern void draw_quartu_cutscene_messages(void);
@@ -3198,7 +3192,7 @@ void draw_quartu_cutscene_messages(void) {
     print_text_with_texture_3((void *)quartu_cutscene_msg_x, (void *)quartu_cutscene_msg_y,
                               (void *)quartu_cutscene_msg_color, buf, (void *)n);
 }
-extern void PartType34Spawn(float, float, char *, float *);
+extern void PartType34Spawn_v(float, float, char *, float *) __asm__("func_L00_0026FF20");
 extern int quartu_rising_puff_chance SDATA(quartu_rising_puff_chance);
 extern float quartu_rising_puff_speed SDATA(quartu_rising_puff_speed);
 
@@ -3210,7 +3204,7 @@ void emit_randomized_vertical_effect(char *moby) {
         char *pos = moby + 0x10;
         clear_u64_value(vec);
         vec[2] = random_float_between(0.75f, 1.5f) * quartu_rising_puff_speed * g_frame_time;
-        PartType34Spawn(random_float_between(0.06f, 0.12f) * 210000.0f, *data, pos, vec);
+        PartType34Spawn_v(random_float_between(0.06f, 0.12f) * 210000.0f, *data, pos, vec);
     }
 }
 extern char *CreateMoby_c(int) __asm__("func_0020D348");

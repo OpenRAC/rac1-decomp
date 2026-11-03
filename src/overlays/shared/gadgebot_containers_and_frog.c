@@ -25,6 +25,8 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char level_moby_killed[];
 extern unsigned char saved_mission_state[];
 extern Hero g_hero;
@@ -99,8 +101,6 @@ struct FrogVars {
 
 typedef u32 u128_D9548 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
-extern int Moby_PlaySound(int, int, int);
-extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *, int, int, float, float, float, float, float);
 
 extern char *g_hero_moby;
 extern float g_frame_time MACRO_ADDR;
@@ -980,7 +980,6 @@ void move_frog_with_collision_resolution(void *moby, void *out, int use_path, fl
     }
 }
 typedef u32 u128_EB360 __attribute__((mode(TI), aligned(16)));
-extern int Moby_PlaySound(int, int, int);
 
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
 
@@ -2719,7 +2718,7 @@ void draw_gadgebot_group_glow_effects(char *owner) {
 }
 
 extern s32 truncate_float_to_s32(f32);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void AddDrawCallback_r(void *, void *) __asm__("func_001F49B0");
 extern void draw_gadgebot_group_glow_effects_r(void *) __asm__("func_L06_002F4C00");
 
@@ -3143,7 +3142,6 @@ void update_hero_trigger_volume_monitor(char *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_energy_sphere_destruction_particles(char *m);
-extern int Moby_PlaySound(int, int, int);
 
 extern int Sound_IsPlaying(void *, int);
 extern short blarg_energy_sphere_spin_x_deg, blarg_energy_sphere_spin_y_deg, blarg_energy_sphere_spin_z_deg,

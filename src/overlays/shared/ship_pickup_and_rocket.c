@@ -10,6 +10,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 /* Ship rocket: homes in on a target. Same layout as Rocket below (defined after use). */
 struct ShipRocketVars {
@@ -139,14 +141,12 @@ extern struct Moby *gemlik_moby_array_start MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gemlik_coll_hit_moby __attribute__((section(".data")));
 extern int fast_dec_timer(void *);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern int coll_sphere(float, void *, int, void *);
 
 extern float vec_length(float);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void Moby_PlaySound(int, int, void *);
 
 /* Ship pickup update: waits, homes in on the player ship and gives ammo or health when taken. */
 void ShipPickupUpdate(char *moby) {

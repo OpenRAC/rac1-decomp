@@ -26,6 +26,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -669,7 +670,6 @@ extern void FindNearestTargetMoby(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 extern void suck_beam_queue_draw(int);
-extern int Moby_PlaySound(int, int, int);
 
 extern void AddDrawCallback_v(void (*)(), void *) __asm__("func_001F49B0");
 extern int queue_animation_update(int, int, int, int, int, int, int);
@@ -683,7 +683,7 @@ extern int start_snagglebeast_turn_toward_target(unsigned char *, unsigned char 
 extern int update_alternating_joint_emission_burst(void *, char *, float *);
 extern int IsFrameWithinWindow(void *, float);
 extern unsigned char *spawn_moby_class_1046(int, void *, int, float, float, float, float, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void func_L07_00313298(void *, void *, int, void *, short, unsigned int, int, float);
 
 extern void spawn_white_particle_with_payload(void *, void *);
@@ -2354,7 +2354,6 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     }
     return best;
 }
-extern int Moby_PlaySound(int, int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern void suck_beam_queue_draw(int arg0);

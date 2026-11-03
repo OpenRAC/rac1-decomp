@@ -21,6 +21,9 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -142,8 +145,6 @@ extern char *kerwan_mobys_t __asm__("D_L03_00160058") MACRO_ADDR;
 extern float kerwan_train_car_spacing SDATA(kerwan_train_car_spacing);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Places a train: puts the engine at `at` facing ang (offset back by its length), then lays each linked
  * car behind the previous one along ang, updating their motion deltas, and enables the coupling moby. */
@@ -447,7 +448,7 @@ extern void MusicRequestTrack(int, int);
 extern void set_moby_dialogue_record_value(void *, int);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern int fast_dec_timer(int *);
 
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
@@ -974,7 +975,6 @@ void add_moby_rotation_based_offsets(char *moby, float *out) {
 }
 extern int D_L03_0015F6B0 MACRO_ADDR;
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 typedef struct EmitterVoiceData {
     u8 pad_000[0x14A];
@@ -1013,8 +1013,6 @@ void maintain_emitter_sound_voice(unsigned char *moby) {
             break;
     }
 }
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 extern void spawn_emitter_child_effect(void *, void *, int, int, float, float, int);
 

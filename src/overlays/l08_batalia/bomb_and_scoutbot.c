@@ -19,6 +19,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -338,10 +340,7 @@ union Coll_36F8 {
 
 extern int coll_sphere(float, void *, int, void *);
 
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
-
 extern int coll_line(void *, void *, int, void *, int);
-extern int Moby_PlaySound(int, int, void *);
 
 extern int fast_dec_timer(void *);
 extern void RerollEffectCounter(void *, short *);
@@ -999,7 +998,7 @@ extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern float vec_distance_xy(void *, void *);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, void *);
+
 extern void Sound_SetPitchBend(int, int);
 
 typedef struct {
@@ -2314,7 +2313,6 @@ extern int fast_dec_timer(void *);
 
 extern void vec_scale_to_length_r3(float, void *, void *) __asm__("func_L00_001FF4B0");
 extern int DefaultVtbl_DeleteMoby(float, int, int);
-extern void mine_debris(void *, void *, int, int, float, int, int);
 
 extern void Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern float g_frame_time_r3 __asm__("D_0015EE6C") MACRO_ADDR;
@@ -2524,13 +2522,12 @@ extern float vec_length_xy(void *);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
-extern int Moby_PlaySound(int, int, void *);
 
 extern void ClampVectorLength(void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float ApproachValue(float *, float, float);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern int timer46(int *) __asm__("func_001F9908");
 extern void MobySpringTurn(void *, void *, float, float, float, float);
 

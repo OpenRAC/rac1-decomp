@@ -20,6 +20,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -124,7 +126,7 @@ extern void func_L00_002592B0(void *, float, float *, float, float, float);
 extern float anglediff_3DF8(float, float) __asm__("func_001FA850");
 extern float fast_distance_3DF8(void *, void *) __asm__("func_001F9D48");
 extern float fabs_3DF8(float) __asm__("func_001F9B88");
-extern int func_0022ED80(int, int, void *);
+
 extern float animframe_3DF8(void *) __asm__("func_0020D830");
 
 extern int func_00215B18(void *, float);
@@ -407,7 +409,7 @@ typedef struct Packet {
 
 extern u64 GetEffectTex(s32);
 #define func_001F4868_4B80 ((long (*)(int))func_001F4868)
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 #define func_L00_00250800_4B80 func_L00_00250800
 
 #define func_001F9BF0_4B80 ((void (*)(void *, void *, void *))func_001F9BF0)

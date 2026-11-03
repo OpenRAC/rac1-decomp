@@ -26,6 +26,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -171,7 +173,6 @@ extern float vec_distance_xy(void *, void *);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int coll_line(void *, void *, int, void *, int);
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -496,7 +497,6 @@ extern int create_attached_rocket(void *, int);
 extern void launch_attached_rocket(char *, char *, int, float);
 
 extern float ApproachWithVelocity(float *, float, float *, float, float, float);
-extern void Moby_PlaySound(int, int, int);
 
 extern float hovering_rocket_attacker_launch_vector_speed SDATA(hovering_rocket_attacker_launch_vector_speed);
 extern char *gemlik_scene_points MACRO_ADDR;
@@ -1749,8 +1749,7 @@ typedef int u128z __attribute__((mode(TI)));
 typedef struct {
     unsigned char b[24];
 } Blk24;
-extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int spin, int col, float range, float f1,
-                                                                 float f2, float f3, float scale);
+
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
 
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
@@ -1872,7 +1871,7 @@ typedef int Q_2cff90 __attribute__((mode(TI)));
 extern char forcefield_tower_damage_debug_format[];
 extern char forcefield_tower_hit_debug_format[];
 extern void SetDeathBits(void *, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -1988,7 +1987,7 @@ extern char *spawn_scaled_owned_moby(char *, void *, float);
 extern int Sound_IsPlaying(void *, int);
 #define Moby_PlaySound_s ((int (*)(int, int, int))Moby_PlaySound_r)
 extern int set_voice_position(int, const void *);
-extern void PartType05Spawn(float *, unsigned char, unsigned char, unsigned char, float, float, int);
+
 #define func_L00_0026AA10_C4748 func_L00_0026AA10
 extern int IsFrameWithinWindow(char *, float);
 extern void process_forcefield_tower_damage(char *, char *, float *);
@@ -2950,7 +2949,6 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
     }
 }
 extern int gemlik_effect_joint_list[];
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
@@ -3700,10 +3698,8 @@ unsigned char *fire_starfighter_homing_rocket(struct Moby *firing_moby, unsigned
     }
     return spawned_rocket_moby;
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern unsigned char *spawn_mine_83_projectile(char *owner, char *pos, char *vec);
-extern void Moby_PlaySound(int, int, int);
 
 /* computes a velocity vector for a moby from the camera/player and spawns a projectile */
 unsigned char *fire_mine_83_projectile(char *a, char *b) {

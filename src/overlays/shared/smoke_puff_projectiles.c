@@ -10,6 +10,8 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
 
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad_B0068 __attribute__((mode(TI)));
@@ -111,13 +113,10 @@ extern f32 eudora_camera_pos[];
 extern u128_B0290 eudora_coll_hit_point;
 extern u8 eudora_coll_hit_normal[];
 extern f32 vec_distance_xy(void *, void *);
-extern s32 Moby_PlaySound(s32, s32, struct Moby *);
 
 extern s32 coll_line(void *, void *, s32, struct Moby *, CollisionProbe *);
 
 extern void vec_scale_to_length(void *, void *, f32);
-
-extern void PartType27Spawn(void *, void *, u32, s32, f32);
 
 /* Update of the class 0xB8 shot (spawned by FUN_L04_002aee30): moves along its direction, plays its sound once it
    starts moving away from the hero within 3 units, dies off the arena, and on a hit (probing for its owner's targets

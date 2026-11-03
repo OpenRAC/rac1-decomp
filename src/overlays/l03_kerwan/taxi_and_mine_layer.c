@@ -25,6 +25,9 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -538,7 +541,6 @@ extern s32 truncate_float_to_s32(f32);
 
 extern int DefaultVtbl_DeleteMoby_r(int, int, f32) __asm__("func_L00_00237B70");
 
-extern void mine_debris(void *, void *, int, int, f32, int, int);
 extern void mine_camera_blast(void *, void *, int, int);
 
 /* l03 mine update: falls until it lands, sticks to or homes on its target, arms, and explodes on contact (debris,
@@ -1690,7 +1692,7 @@ void update_path_mover_spawner(struct RailSpawnerMoby *moby) {
 extern u8 menu_item_enabled_115[];
 extern u8 race_gates_base[];
 extern void attach_shared_manipulator_to_matching_class_moby(struct Moby *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 struct TalkRecord_gd {
     u8 pad0[4];
     s16 mode;
@@ -1925,8 +1927,6 @@ typedef unsigned int u128_DD158 __attribute__((mode(TI), aligned(16)));
 extern int DialogRequest_Init(void *, unsigned char *);
 
 extern int PlayBankSound(int, int, int);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 extern unsigned char menu_item_enabled_115[];
 extern unsigned char gHaveHeliPack[];
@@ -2638,10 +2638,6 @@ struct L03Cutscene {
 };
 extern struct L03Cutscene kerwan_cutscene_state_r __asm__("D_L03_0016C9E0");
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
-
 /* Starts the cutscene, then during mode 3 (frames 900-10000) emits two particle beams from the listed moby.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/vendor/002df520.c, FUN_L03_002e01d0. */
 void update_kerwan_cutscene_effects(char *m) {
@@ -2689,7 +2685,7 @@ void update_kerwan_cutscene_effects(char *m) {
             break;
     }
 }
-extern void Moby_PlaySound(int, int, int);
+
 extern void spawn_proximity_gated_bolts(void *);
 
 /* Lightpost update: on a hit it plays a sound, drops bolts, breaks apart and spawns its remains. */

@@ -15,6 +15,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -120,7 +121,6 @@ extern float deplanetizer_burst_particle_size_gp SDATA(deplanetizer_burst_partic
 extern int scale_ticks(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void clear_u64_value(void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
@@ -886,7 +886,7 @@ void mark_class_0630_moby_and_child_for_removal(Moby *moby) {
         DeleteMoby(moby);
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float veldin2_joint_trail_offset SDATA(veldin2_joint_trail_offset);

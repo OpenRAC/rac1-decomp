@@ -29,6 +29,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -426,8 +428,6 @@ extern float vec_distance_xy(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
 extern void set_camera_rotation(void *);
 
 extern void set_camera_position(void *);
@@ -435,7 +435,6 @@ extern void set_camera_position(void *);
 extern int HeroL06_TrySetMoveState(int, int);
 extern void spawn_moby_breakup_effect(char *, int);
 
-extern void Moby_PlaySound(int, int, void *);
 extern void draw_tube_mesh96_twin(void);
 extern void effect_quad_draw_single(void);
 extern void draw_tube_mesh64_twin(void);
@@ -896,7 +895,6 @@ extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -1453,7 +1451,6 @@ extern int D_0015EF1D MACRO_ADDR;
 extern int D_0015EF1C MACRO_ADDR;
 extern void update_shuttle_route_selection_and_prompt(char *m);
 extern void mark_shuttle_linked_mobys_for_removal(char *moby);
-extern void Moby_PlaySound(int, int, void *);
 
 extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
 extern void MusicRequestTrack(int, int);
@@ -1462,7 +1459,7 @@ extern float vec_distance_xy(void *, void *);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern int update_shuttle_path_ride(char *, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -1807,7 +1804,7 @@ struct PathRide {
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int truncate_float_to_s32(float);
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
-extern int allocate_voice_for_group_entry(int, int, void *);
+
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
 extern void break_apart_shuttle_linked_mobys(struct Moby *);
 extern char blarg_paths[];
@@ -2339,7 +2336,6 @@ void red_button_update(Moby *m) {
             break;
     }
 }
-extern void Moby_PlaySound(int, int, void *);
 
 /* Advances a moby from state 1 to state 2 and calls Moby_PlaySound. */
 void begin_red_button_rotation(char *arg) {

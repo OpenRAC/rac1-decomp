@@ -20,6 +20,9 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -369,7 +372,6 @@ void set_big_axebot_and_axe_animation_speed(char *arg, float f) {
     }
 }
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
@@ -526,7 +528,7 @@ extern float vec_distance_xy(float *, float *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
-extern int Moby_PlaySound(int, int, char *);
+
 extern void set_big_axebot_and_axe_animation_speed(char *, float);
 
 extern void InitKnockback(float, void *, void *, int, int, int);
@@ -1223,7 +1225,6 @@ void func_L04_002C2F00_r(struct Moby *m) {
 
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern int Moby_PlaySound(int, int, char *);
 
 typedef struct {
     u8 pad_000[0x238];
@@ -1545,8 +1546,6 @@ extern void MobySpringTurn_b(char *moby, float target, float *vel, float k, floa
 extern int CarriedMobyUpdate(void *, void *);
 
 extern int truncate_float_to_s32(float);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 extern float eudora_camera_pos[4];
 extern float g_frame_time MACRO_ADDR;
@@ -2111,7 +2110,6 @@ void circular_saw_enemy_update(M_35F0 *moby) {
     StepColorFade(moby, data->fB0);
 }
 
-extern int Moby_PlaySound(int, int, char *);
 /* Run the suck cannon hit check; set state 9 while caught, back to 1 when released. */
 int process_moby_hit_state_and_voice(char *m, int a, int b, float f) {
     char *h = get_moby_suck_cannon_record(m);

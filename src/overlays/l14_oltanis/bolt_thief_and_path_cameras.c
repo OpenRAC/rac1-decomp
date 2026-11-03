@@ -26,6 +26,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -740,8 +742,6 @@ extern int fast_dec_timer(int *);
 extern int coll_line(void *, void *, int, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int Moby_PlaySound();
-
 extern int truncate_float_to_s32(float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -1404,7 +1404,6 @@ extern L14LevelState_08000 oltanis_collected_flags_base_r2 __asm__("D_L14_001BBC
 extern u8 saved_mission_state[];
 
 extern s32 truncate_float_to_s32(f32);
-extern s32 Moby_PlaySound();
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00306b78. */
 void StepOnSwitchUpdate(struct Moby *moby) {
@@ -1974,7 +1973,6 @@ typedef struct {
     char *p184;
 } Cam;
 extern Cam D_L14_00167480;
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 typedef struct {
     char pad0[0xB0];

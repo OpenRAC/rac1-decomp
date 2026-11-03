@@ -31,6 +31,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -124,7 +126,7 @@ extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void func_L00_00250800(void *, s32, void *);
+
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 
 extern struct Moby *func_L08_002DF758(void *, struct Moby *, void *, f32, f32);
@@ -764,8 +766,6 @@ extern float SmoothNoise(float, char *);
 extern void draw_world_quad(void *, void *, int);
 extern unsigned char *func_L08_0027C218(void *, float, void *, void *, short, unsigned char, unsigned char,
                                         unsigned char, unsigned char);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 /* Builds the animated grid, draws its quads, and updates attached effects. */
 void draw_flickering_mesh_effect(M45 *moby) {
@@ -2162,7 +2162,7 @@ void update_batalia_textured_effect(unsigned char *moby) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern void spawn_proximity_gated_bolts(void *);
 
 // Moby state machine: wait, check hit on first probe, then clean up and delete.

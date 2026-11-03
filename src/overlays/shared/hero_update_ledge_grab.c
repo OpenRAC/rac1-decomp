@@ -20,6 +20,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -67,14 +69,9 @@ extern void apply_hero_ground_material_response(void);
 
 extern void HeroL06_UpdateStateTransitions(void);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern float ApproachValue(float *, float, float);
 
-extern int Moby_PlaySound(void *, int, void *);
-
 extern int truncate_float_to_s32(float);
-extern void allocate_hero_voice_for_entry(int, int);
 
 extern unsigned char hero_globals_base[];
 extern unsigned char gHaveMorphORay[];

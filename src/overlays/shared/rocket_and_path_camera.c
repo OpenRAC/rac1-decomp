@@ -17,6 +17,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
 extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
@@ -138,7 +139,6 @@ extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern float SpringTurn(float, float, float, float, float, float *);
 extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00215C00");
 
-extern int Moby_PlaySound(int, int, void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage_v(float, int, void *, int, void *, void *) __asm__("func_L00_0025AC00");
 

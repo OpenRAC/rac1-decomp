@@ -18,6 +18,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -326,7 +328,6 @@ void sync_hero_mapped_moby_animation_frames(void) {
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
-extern int SlotTable_Insert(void *);
 
 extern int truncate_float_to_s32(float);
 extern void clear_hero_queued_animation(void);
@@ -459,7 +460,6 @@ typedef struct {
 } AnimSeq_32EF0;
 extern f32 hero_anim_blend_curves[][25];
 extern int cinematic_mode MACRO_ADDR;
-extern int Moby_PlaySound(int, int, Moby *);
 
 extern void clear_hero_mapped_moby_animation_state(void);
 

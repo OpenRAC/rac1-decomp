@@ -25,6 +25,9 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -284,10 +287,6 @@ typedef struct {
 extern SplashColors novalis_birdbot_splash_inner_colors;
 extern SplashColors novalis_birdbot_splash_outer_colors;
 extern float g_frame_time MACRO_ADDR;
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, unsigned int, unsigned int, float, int);
 
 /* Spawns three bursts of sparks around a moby with random velocity, colours and size. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002e6518. */
 void spawn_birdbot_movement_particles(SplashMoby *m, u128 *origin) {
@@ -2605,7 +2604,6 @@ typedef struct {
 } BeamVars;
 
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
-extern void Moby_PlaySound(int, int, int);
 
 /* Spawns a beam moby from an owner, position, direction and colour vectors. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f68a0. */
 BeamMoby *spawn_beam(void *owner, u128_t *pos, u128_t *dir, u128_t *color, int kind) {
@@ -3094,7 +3092,7 @@ extern SteamColors novalis_rising_emitter_debris_colors;
 extern SteamColors novalis_rising_emitter_puff_colors;
 
 extern void spawn_debris_moby(void *, void *, unsigned int, int, float, float, float, float, int);
-extern char *mine_debris(float f, char *a, char *b, int c, int d, int e, int g);
+extern char *mine_debris_v(float f, char *a, char *b, int c, int d, int e, int g) __asm__("func_L00_0026CD70");
 
 // Emitter update: ticks timers, occasionally bursts a smoke puff and spawns two drifting smoke particles per frame. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8c58.
 void update_rising_particle_and_debris_emitter(SteamMoby *m) {
@@ -3154,8 +3152,8 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
         vel.f[2] += r;
         size = random_float_between(70000.0f, 140000.0f);
         life = scale_ticks(0xB4);
-        p = (SteamParticle *)mine_debris(size, (char *)&puff, (char *)&vel, 0x0F081020, 0x00081020, life,
-                                         colors.c[random_integer_below(3)]);
+        p = (SteamParticle *)mine_debris_v(size, (char *)&puff, (char *)&vel, 0x0F081020, 0x00081020, life,
+                                           colors.c[random_integer_below(3)]);
         if (p != 0) {
             p->floor_z = m->pos.f[2] - 0.5f;
         }

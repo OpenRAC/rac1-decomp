@@ -29,6 +29,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -401,10 +403,8 @@ extern float g_frame_time MACRO_ADDR;
 extern void STUB_printf(const char *, short);
 
 extern void gunship_follow_path(void *);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, void *);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -907,7 +907,7 @@ extern int Spline_AdvanceByDistance_r(void *, float *, int *, float *, int, floa
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern L14MineHit *MobyGetHitMessage(void *, int, int);
 extern s32 ComputeHitResponse(struct Moby *, void *, f32 *, s32, s32 *, s32, s32, s32);
-extern int Moby_PlaySound(int, int, void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 
@@ -1034,7 +1034,6 @@ extern void vec_scale_to_length(void *, void *, f32);
 extern int coll_line(void *, void *, int, void *, void *);
 extern void InitDirectionalHitQuery_v(void *, struct Moby *, s32, void *, f32) __asm__("func_L00_0025A8C0");
 
-extern char *PartType27Spawn(char *, char *, int c, int d, float f);
 extern struct {
     u8 pad0[0x18];
     struct Moby *moby;
@@ -1223,7 +1222,7 @@ extern float lightning_arc_inverse_fade_duration MACRO_ADDR;
 extern int lightning_arc_sound_pending MACRO_ADDR;
 extern int lightning_branch_starts[] MACRO_ADDR;
 extern void lerp_vector(void *, void *, void *, float);
-extern void allocate_voice_for_group_entry(int, int, void *);
+
 void spawn_lightning_arc_particle_pairs(float *pos, int n);
 void draw_branched_lightning_arc();
 /* Lightning arc between the camera points: builds the bolt and its branches once, then ages and fades them. DB2 is an

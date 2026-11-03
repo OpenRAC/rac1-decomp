@@ -21,6 +21,8 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -923,7 +925,6 @@ void update_hero_planar_movement_velocity(void) {
         g_hero_r3.motion.pos.f[2] = g_hero_r3.ground_z.f;
     }
 }
-extern int Moby_PlaySound(int, int, int);
 
 /* passes a pointer chosen by a mode byte to Moby_PlaySound, copying a vector first in mode 3 */
 int allocate_hero_voice_for_entry(int a, int b) {
@@ -993,8 +994,6 @@ void update_hero_delayed_voice_requests(void) {
 extern int hero_control_mode_11_flag NOT_SDA;
 
 extern void HeroEnterMoveState(int, int);
-
-extern void apply_nearest_environment_sample(int);
 
 /* resets the level state from two vectors: sets up camera matrices, clears flags, starts sound bank */
 void Hero_ResetToPosition(void *a, void *b, int c, int d) {

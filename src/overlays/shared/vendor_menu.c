@@ -26,6 +26,8 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -247,7 +249,6 @@ extern s32 queue_animation_update(s32, s32, void *, void *, void *, void *, s32)
 extern void initialize_numeric_hud_timer_and_base_dimensions(void);
 extern void Hud_UpdateCounter(void);
 extern void draw_weapon_ammo_hud_panel(void);
-extern s32 Moby_PlaySound(s32, s32, void *);
 
 extern s32 HeroEnterMoveState(s32, s32);
 
@@ -382,8 +383,6 @@ void open_vendor_menu(VendorMoby_pv *m) {
 extern void Hud_SetBarValueById(int, int);
 
 extern int HeroEnterMoveState(int, int);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
@@ -1231,10 +1230,7 @@ extern f32 render_view_tan_half_fov NOT_SDA;
 extern void reset_frame_counters();
 extern void update_game_frame_and_idle_counters();
 
-extern void enqueue_voice_request();
 extern void Profile_Mark();
-
-extern s32 Moby_PlaySound();
 
 extern void start_vendor_exit_cutscene();
 extern void close_vendor_menu();

@@ -6,10 +6,10 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
+#include "overlays/shared/moby_frame_packet.h"
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
+extern void spawn_effect_particle_with_target_scalar_v(void *, void *, int, int, int,
+                                                       float) __asm__("func_L00_0026DD70");
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 typedef struct {
@@ -49,6 +49,6 @@ void emit_level3_state5_moby_effects(void) {
         lo = scale_ticks(12);
         hi = scale_ticks(35);
         value = rand_range(lo, hi);
-        spawn_effect_particle_with_target_scalar(position, direction, 0x80808080, 0x808080, value, 147000.0f);
+        spawn_effect_particle_with_target_scalar_v(position, direction, 0x80808080, 0x808080, value, 147000.0f);
     }
 }

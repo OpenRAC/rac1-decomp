@@ -23,6 +23,10 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -143,7 +147,6 @@ struct PathSparkEffectVars {
 extern int STUB_printf();
 
 extern int fast_dec_timer(int *);
-extern int Moby_PlaySound(int, int, int);
 
 typedef int u128 __attribute__((mode(TI)));
 extern char cycling_platform_no_vars_fmt[];
@@ -391,7 +394,6 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern char *orxon_scene_points MACRO_ADDR;
 extern int orxon_relocation_reset_flag SDATA(orxon_relocation_reset_flag);
 extern int try_set_help_message(int, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void MusicRequestTrack(int, int);
 
@@ -739,8 +741,6 @@ void gate_update(Moby *m) {
 }
 extern int fast_dec_timer(int *arg0);
 
-extern void *spawn_splitting_effect_particle_with_collision_response_and_fade(char *a, char *b, unsigned char c, int d);
-
 extern int Sound_IsPlaying(void *, int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 
@@ -1039,7 +1039,6 @@ extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int FindNearestTargetMoby(float, void *, void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void PartType27Spawn(void *, void *, int, int, float);
 /* The result record of a collision query (ground_hit). */
 struct GroundHitRecord {
     u8 pad_00[0x18];
@@ -1433,7 +1432,6 @@ extern int fast_dec_timer(int *arg0);
 
 extern void BuildSphericalOffset(void *, float, float, float);
 
-extern int Moby_PlaySound(int, int, int);
 extern int bombthrower_grass_fire_ticks_min SDATA(bombthrower_grass_fire_ticks_min);
 extern int bombthrower_grass_fire_ticks_max SDATA(bombthrower_grass_fire_ticks_max);
 extern float bombthrower_grass_yaw_spread SDATA(bombthrower_grass_yaw_spread);
@@ -2815,7 +2813,7 @@ void set_moby_group_command_frames(unsigned char *moby);
 extern float vec_length_xy(void *);
 
 extern int IsFrameWithinWindow(char *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 

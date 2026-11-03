@@ -29,6 +29,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -76,8 +77,6 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void allocate_hero_voice_for_entry(int, int);
-
 extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
 
@@ -92,7 +91,6 @@ extern float jump_speed_4318(float *a, float *b, float *out, float speed, float 
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 
 extern int compute_hero_hoverboard_respawn_transform(float *, float *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 16 build). */
 void Hero_ChooseStateTransition(void) {

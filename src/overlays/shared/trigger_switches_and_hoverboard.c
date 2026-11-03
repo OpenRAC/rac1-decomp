@@ -21,6 +21,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
@@ -319,8 +321,6 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
     }
 }
 extern void Hero_TryMoveStateL05(int, int);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -834,7 +834,6 @@ void initialize_moby_launch_motion(Moby *m, int b, void *v1, void *v2, int a) {
     d->s[1] = random_float_between(-(g_frame_time * 4.1887903f), g_frame_time * 4.1887903f);
     d->s[2] = random_float_between(-(g_frame_time * 4.1887903f), g_frame_time * 4.1887903f);
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int coll_sphere(float, void *, int, void *);
 
@@ -1112,8 +1111,6 @@ extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern s32 truncate_float_to_s32(f32);
 extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001F49B0");
 extern char *MobyGetHitMessage(struct Moby *, s32, s32);
-
-extern void Moby_PlaySound(s32, s32, struct Moby *);
 
 extern struct Moby *SpawnBreakFragment(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *, void *);
 extern void spawn_proximity_gated_bolts(struct Moby *);

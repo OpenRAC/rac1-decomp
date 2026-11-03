@@ -22,6 +22,9 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern int g_screen_extent[];
 extern char help_records[];
@@ -309,8 +312,6 @@ extern float g_frame_time_e __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern void rand_vec(float *, float, float);
 
-extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
-
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern int fast_dec_timer(int *);
@@ -397,7 +398,7 @@ typedef struct {
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern char pokitaru_particle_textures_ptr_base[];
@@ -901,7 +902,6 @@ extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern LvState D_L11_001BBF40;
 extern LvState D_L11_001BB2E0;
 extern unsigned char D_L11_0015FD08[];
-extern void func_0022ED80(int, int, void *);
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
@@ -1202,7 +1202,6 @@ void project_world_point_to_screen_pixels(void *pt, int *outx, int *outy, int yo
 }
 typedef int u128_312780 __attribute__((mode(TI)));
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern void spawn_type_74_particle(void *, float *, float *, void *, int);
 extern float g_frame_time MACRO_ADDR;

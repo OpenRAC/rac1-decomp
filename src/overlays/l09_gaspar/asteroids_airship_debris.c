@@ -26,6 +26,9 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -262,8 +265,6 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
 }
 typedef int uq __attribute__((mode(TI)));
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 // Spawns a moby of class cls at pos, copying orientation and matrices from src.
 char *spawn_airship_part(char *src, char *pos, int cls) {
     char *m = CreateMoby(cls);
@@ -359,7 +360,7 @@ extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 extern int rand_range(int, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
@@ -1332,7 +1333,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 
 extern int rand_range(int, int);
-extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
+
 extern char *spawn_class_11c_moby(char *owner, void *position, float angle);
 
 typedef int xu128 __attribute__((mode(TI)));
@@ -1863,7 +1864,7 @@ extern int gaspar_moby_killed[];
 extern int g_current_level_index MACRO_ADDR;
 
 extern void HeroEnterMoveState(int, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern float vec_distance_xy(void *, void *);
 
 extern int Sound_IsPlaying(void *, int);

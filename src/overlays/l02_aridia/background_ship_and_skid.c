@@ -22,6 +22,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -91,8 +93,6 @@ extern void lerp_vector(void *, void *, void *, float);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");
@@ -517,7 +517,6 @@ void SkidMcMarxAridiaUpdate(char *m) {
 extern char gHeroPos[];
 extern char *aridia_mobys MACRO_ADDR;
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
 extern void initialize_numeric_hud_timer_and_base_dimensions(void);
 extern void update_hud_counter_transition(void);
@@ -621,8 +620,6 @@ extern unsigned char saved_mission_state[][16];
 extern char voice_pool[];
 
 extern float vec_distance_xy(void *a, void *b);
-
-extern int Moby_PlaySound(int, int, void *);
 
 extern void update_entity_matrix(void *, void *, void *, void *);
 

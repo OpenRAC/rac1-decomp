@@ -21,6 +21,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -135,7 +136,6 @@ struct LeafVars {
 
 #define MOBYS ((VehicleMoby *)D_L04_00160058)
 extern char *eudora_mobys MACRO_ADDR;
-extern void Moby_PlaySound(int, int, int);
 
 typedef int VehicleWide_2CB800 __attribute__((mode(TI)));
 typedef union {
@@ -242,7 +242,6 @@ extern s32 PlayBankSound(s32, s32, s32);
 extern void coll_sphere_mobys(void *, float, s32, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32, float, float, float, float, s32, float,
                             s32, s32, s32, s32);
-extern void Moby_GetJointWorldPos(void *, s32, void *);
 
 extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
 extern s32 fast_dec_timer(s32 *);
@@ -726,7 +725,6 @@ void initialize_woodcut_bot_movement_data(void *m) {
     initialize_leg_rig(m, p);
 }
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -1677,7 +1675,7 @@ typedef struct {
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 extern float riser_rise_speed(char *);
 extern int fast_dec_timer_i(int *arg0) __asm__("func_001F9908");
-extern void Moby_PlaySound(int, int, int);
+
 extern int g_current_level_index MACRO_ADDR;
 extern int level_moby_killed[][64] NOT_SDA;
 typedef struct {

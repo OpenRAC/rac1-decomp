@@ -23,6 +23,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -167,7 +169,6 @@ extern float compute_toxic_crab_group_approach_angle(char *self);
 
 extern int move_w(void *, void *, void *, void *, float);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 
 extern int mine_fall(void *, void *);
@@ -2585,7 +2586,7 @@ void update_level_mode_dispatcher(char *m) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern int Moby_PlaySound(int, int, int);
+
 extern void spawn_proximity_gated_bolts(void *);
 
 /* Update for moby class 1855: waits, arms, then fires an effect and deletes itself. */

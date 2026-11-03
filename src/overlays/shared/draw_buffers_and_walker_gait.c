@@ -11,6 +11,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 extern void wait_for_graphics_pipeline_idle(int, int);
 
@@ -177,8 +178,6 @@ typedef struct WalkData {
     short sEC;
     unsigned short uEE;
 } WalkData;
-
-extern int find_nearest_animation_sequence_entry(char *a, float time);
 
 extern int walker_gait_mask(WalkAnim *a, float t);
 

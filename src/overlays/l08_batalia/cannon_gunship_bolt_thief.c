@@ -14,6 +14,9 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -475,7 +478,7 @@ extern int hero_state52(int, int) __asm__("func_L08_00231228");
 extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void func_L00_001FF328(void *, void *, float);
-extern void func_L00_00217718(void *, void *, int, int);
+
 extern void func_L08_00307FF0(char *, int);
 extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
@@ -1037,8 +1040,6 @@ void update_falling_debris(Moby *m) {
     }
 }
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 // Spawns a moby of a class, copies the parent's position, and aims it at the parent's attach point.
 void *spawn_joint_aligned_moby_part(char *parent, int oClass, int joint, int pjoint) {
     unsigned char *m = CreateMoby(oClass);
@@ -1217,7 +1218,6 @@ void update_linked_moby_parts(char *moby) {
 }
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern s32 Moby_PlaySound(s32, s32, struct Moby *);
 /* Selects a damaged child moby, launches it, and advances the parent's state. */
 void process_gunship_part_hits(struct Moby *moby) {
     char *data = *(char **)((char *)moby + 0x78);
@@ -1324,7 +1324,6 @@ extern u8 saved_mission_state[];
 extern SwarmPath *batalia_path_table[];
 extern struct Moby *batalia_mobys_r2 __asm__("D_L08_00160058") MACRO_ADDR;
 extern s32 Sound_IsPlaying(struct Moby *, s32);
-extern s32 Moby_PlaySound(s32, s32, struct Moby *);
 
 extern s32 truncate_float_to_s32(f32);
 
@@ -2654,7 +2653,6 @@ void process_shrub_part_hits(char *m) {
     if (r >= 0)
         Moby_PlaySound_r(r, 0, (int)m);
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern float shrub_part_spin_speed SDATA(shrub_part_spin_speed);
 

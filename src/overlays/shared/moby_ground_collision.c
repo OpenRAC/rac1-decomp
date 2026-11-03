@@ -17,6 +17,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern char gold_weapon_purchased[];
 
 extern int func_001160D8(void);
@@ -766,7 +767,7 @@ int MobySphereHitDirectional(void *moby, void *position, int c, float d, float e
     descriptor.oclass = *(unsigned short *)&((Moby *)moby)->oclass;
     return coll_sphere_mobys(position, d, i, moby, &descriptor);
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern int MobySphereHitDirectional(void *, void *, int, float, float, float, int, int, int);
 
 /* Calls FUN_L00_002598b0 at a moby point; the f13 argument is ignored and c is passed again as a float.

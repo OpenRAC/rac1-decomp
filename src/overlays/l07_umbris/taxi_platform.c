@@ -20,6 +20,10 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -135,7 +139,6 @@ extern void HeroEnterMoveState(int, int);
 extern float vec_distance_xy(void *, void *);
 
 extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 extern void update_entity_matrix(void *, void *, void *, void *);
 
@@ -481,7 +484,7 @@ extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-extern void func_L00_00217718(void *, void *, int, int);
+
 extern void func_L00_002664B0(int, int);
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -1009,7 +1012,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void spawn_projectile_expiry_particle_r(void *, void *) __asm__("func_L07_0029B070");
 
-extern char *PartType27Spawn(char *, char *, int c, int d, float f);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 extern Vec4 umbris_coll_hit_point;
@@ -1664,7 +1666,6 @@ extern void FindNearestTargetMoby(void *, void *, float);
 
 extern void RerollEffectCounter(void *, short *);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 
@@ -2524,7 +2525,6 @@ int update_sharkigator_horizontal_velocity_by_heading(char *moby, char *obj, flo
     return r;
 }
 extern int debris_target;
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 
@@ -2571,7 +2571,7 @@ void handle_sharkigator_contact_attack(char *moby, char *obj, int state, int ani
     }
     moby[0x20] = next;
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern int coll_sphere(float, void *, int, void *);
 
 /* True when the sharkigator's joint sphere hits something and the hit target is id. */

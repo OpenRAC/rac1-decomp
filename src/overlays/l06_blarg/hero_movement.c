@@ -32,6 +32,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -317,7 +319,6 @@ u8 *GetFlaggedPvarWord(s32);
 void sceVu0Normalize(void *, void *);
 
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
 extern Hero g_hero;
 extern struct CollisionHit blarg_coll_hit;
@@ -507,7 +508,6 @@ extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void allocate_hero_voice_for_entry(int, int);
 extern int g_current_level_index MACRO_ADDR;
 
 /* Hopping player movement update by state. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l06/ui_help_00222fb8.c, FUN_L06_0022b438. */
@@ -671,10 +671,7 @@ extern int fast_dec_timer(int *);
 
 extern int get_hero_help_value(int);
 
-extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern float ApproachValue(float *, float, float);
 
@@ -683,7 +680,6 @@ extern void ClampVectorLength(void *, float);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern void update_hero_target_heading(float, float, float);
 
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 

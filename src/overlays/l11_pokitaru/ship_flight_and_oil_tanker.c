@@ -29,6 +29,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -563,7 +565,7 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
                                            &((struct ShipVars *)obj)->reticle_y, 0);
 }
 extern void fast_dec_timer(int *arg0);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int spawn_ship_projectile(void *, void *, int, void *, float, int);
@@ -938,8 +940,6 @@ extern void MusicRequestTrack(int, int);
 extern void update_player_ship_flight(void *, void *);
 extern int count_listed_blarg_ships_in_state_5(int);
 extern char *activate_listed_blarg_ship(int idx);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int STUB_printf();
 
@@ -1550,7 +1550,7 @@ extern void RotateWithMoby(struct Moby *, void *, void *, void *, void *, void *
 
 extern void move_4318(struct Moby *, void *, float, float, float, int);
 extern float randf_sym(float, float);
-extern void PartType34Spawn(void *, void *, float, float);
+
 extern int CarriedMobyUpdate(struct Moby *, void *);
 
 /* Update for the Puffoid creature: spawns on a path or a carrier moby, wanders, chases and attacks the target, jumps
@@ -2383,7 +2383,6 @@ struct L11GateVars {
 
 extern float vec_distance_xy(float *, float *);
 
-extern void Moby_PlaySound(int, int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 /* Moby update for a two-leaf gate that spawns and swings open its leaves. */
@@ -2525,7 +2524,6 @@ extern void update_oil_tanker_link_path_poses(void *);
 extern void process_oil_tanker_damage_and_destruction(void *);
 extern void update_oil_tanker_front_path_pose(char *moby);
 
-extern void Moby_PlaySound(int, int, int);
 extern s32 map_data_0015EE84 __asm__("D_0015EE84") MACRO_ADDR;
 extern float oil_tanker_path_step SDATA(oil_tanker_path_step);
 
@@ -3214,7 +3212,6 @@ extern float randf_sym(float lo, float hi);
 extern void update_moby_trail_points(void *);
 extern void update_moby_path_transform(void *);
 extern char *spawn_moby_with_random_yaw(void *position, void *vector, int id);
-extern void Moby_PlaySound(int, int, int);
 
 extern int FastBSphereCheck(char *, float);
 
@@ -3684,7 +3681,7 @@ void spawn_bubble_spark(char *m) {
     PartType02Spawn(m + 0x10, v1, v2, c0, c1, c2, c3, c4, -1);
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void Moby_PlaySound(int, int, int);
+
 extern void spawn_proximity_gated_bolts(void *);
 
 /* Moby update for a breakable object that plays effects when hit. */

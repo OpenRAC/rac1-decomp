@@ -33,6 +33,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -156,7 +157,6 @@ extern int queue_animation_update(int, int, int, int, int, int, int);
 extern void prepare_level_transition_with_help_cleanup(void);
 extern void count_expired_mobys(void);
 
-extern void enqueue_voice_request(void);
 extern void update_ambience_target_cycle(void);
 extern void Profile_Mark_a(void *, int) __asm__("func_001E9768");
 extern void Profile_Mark_b(void) __asm__("func_001E9768");
@@ -435,8 +435,6 @@ extern void calculate_dma_transfer_address(void);
 extern void reset_frame_counters(void);
 
 extern int HeroEnterMoveState(int, int);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void music_set_active_track_value(int v);
 

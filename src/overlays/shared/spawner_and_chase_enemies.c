@@ -15,6 +15,8 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -1427,7 +1429,7 @@ extern void func_L09_00278690(float *, float);
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern float random_float_between_r5(float, float) __asm__("func_002140F8");
 extern float ProbeGroundHeight_r2(void *, int, float) __asm__("func_00214358");
-extern void func_L00_00250800(void *, int, void *);
+
 extern void func_L00_00260958(float *, float);
 extern float func_L00_0025BC48(void *, void *, void *, float, float);
 extern char *spawn_spawner_egg_r(int, void *, void *, unsigned char, unsigned char) __asm__("func_L09_0030C658");
@@ -1667,7 +1669,6 @@ extern s32 coll_line(void *, void *, s32, struct Moby *, s32);
 extern f32 vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, f32);
 
-extern s32 Moby_PlaySound(s32, s32, struct Moby *);
 extern s32 coll_sphere(f32, void *, s32, struct Moby *);
 
 extern void jet_animate(struct Moby *, f32);

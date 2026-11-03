@@ -24,6 +24,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -830,7 +832,7 @@ extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
 extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
-extern int Moby_PlaySound(int, int, void *);
+
 extern void initialize_moby_launch_motion(struct Moby *, struct Moby *, void *, void *, int);
 extern void record_moby_context_bytes(void *, int, void *, int, void *);
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
@@ -923,7 +925,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
         DeleteMoby_r(moby);
     }
 }
-extern int Moby_PlaySound(int, int, void *);
+
 struct GateVars {
     s32 trigger; /* D_L05_0015FFD8 index of the moby whose byte 0xBC opens it */
     s32 riseTimer;
@@ -1143,7 +1145,6 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern int Moby_PlaySound();
 
 extern s32 truncate_float_to_s32(f32);
 typedef struct {
@@ -1705,7 +1706,6 @@ extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(char *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void Hero_ResetToPosition();
 extern void MusicRequestTrack();
 
 extern int memcard_Save(int, int);

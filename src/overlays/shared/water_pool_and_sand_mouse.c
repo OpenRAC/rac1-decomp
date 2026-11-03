@@ -29,6 +29,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/audio/sound.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -816,8 +817,6 @@ void novalis_elevator_update(unsigned char *moby) {
 LINKER_REMNANT("asm/overlays", func_L01_002C05B8);
 extern float vec_length_xy(void *);
 
-extern void spawn_two_point_effect_particle(char *, char *);
-
 extern char *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern char novalis_coll_hit_point[];
 extern float novalis_coll_hit[];
@@ -969,7 +968,7 @@ extern void Spring(float *, float *, float, float, float, float);
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 
 extern void FastMemZero16(void *, int);
-extern void Moby_PlaySound(int, int, char *);
+
 extern void set_novalis_bolt_crank_completion_flags(char *);
 
 static inline char *hero_p(void) {
@@ -2116,8 +2115,6 @@ extern int CarriedMobyUpdate(void *, void *);
 extern void SetDeathBits(void *, int, int);
 extern int IsFrameWithinWindow(float, void *);
 
-extern void Moby_PlaySound(int, int, char *);
-
 extern int truncate_float_to_s32(float);
 
 extern float g_hero_body_center[4];
@@ -2997,8 +2994,6 @@ int moby_hold_state_if_grabbed(char *a, void *pos, void *target, float h) {
     return r;
 }
 
-extern void Moby_PlaySound(int, int, char *);
-
 /* runs the moby update and sets its state byte */
 int launch_suck_cannon_projectile_and_sync_moby_state(char *m, int a, int b, float f) {
     char *h = get_moby_suck_cannon_record(m);
@@ -3339,7 +3334,7 @@ extern void initialize_path_descriptor(PathCursor *);
 extern s32 select_point_index_by_distance(void *, PathNodes *, f32);
 extern void compute_path_node_tangent(QVec *, PathCursor *, s32, f32, f32);
 extern f32 compute_sampled_spline_path_lengths(f32, f32, PathCursor *, s32, struct Moby *);
-extern void Moby_GetJointWorldPos(struct Moby *, s32, QVec *);
+
 extern s32 advance_path_node_index(PathCursor *);
 extern s32 resolve_path_node_index(PathCursor *, s32);
 extern void evaluate_cubic_hermite_segment(f32, QVec *, QVec *, QVec *, QVec *, QVec *);

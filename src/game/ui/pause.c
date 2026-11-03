@@ -30,6 +30,7 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -752,7 +753,6 @@ int Pause_PageInput(int arg0) {
 }
 
 extern int menu_system_close_locked;
-extern void Moby_PlaySound(int, int, int);
 
 /* Pause list handler (Pause_PageInput's family: one `char *` pad local per
    block). The cursor at arg0+0x3C moves on 0x1000/0x4000 within
@@ -2294,7 +2294,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
 
 extern char *current_menu_page NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern void Moby_PlaySound(int, int, int);
+
 typedef struct {
     char pad[0xA8];
     unsigned short count; /* 0xA8 */
@@ -5009,8 +5009,6 @@ int draw_pause_ring(char *arg0) {
     return 2;
 }
 
-extern void Moby_PlaySound(int, int, int);
-
 extern float gFade MACRO_ADDR;
 extern int requested_video_mode_i __asm__("D_0016044C") MACRO_ADDR;
 typedef struct {
@@ -5188,7 +5186,6 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
     return 2;
 }
 
-extern void Moby_PlaySound(int, int, int);
 typedef struct {
     int w0; /* 0x00 */
     unsigned char *buf; /* 0x04 */
@@ -5470,8 +5467,6 @@ int draw_level_selection_map_screen(void *arg0) {
     return 2;
 }
 
-extern void Moby_PlaySound(int, int, int);
-
 /* Pause sub-menu input on the pad word pad0_pressed_unmasked. One if/else-if chain
    falling to a single `return 0`; early returns in the 0x10 arm give a
    movn instead. */
@@ -5629,8 +5624,6 @@ int assign_pause_level_sprite_list(MenuScreen *screen) {
     return 0;
 }
 
-extern void Moby_PlaySound(int, int, int);
-
 /* Pause sub-menu with a 30-entry wrapping cursor at arg0+0x40, in
    Menu_BackInput's shape. */
 int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
@@ -5671,8 +5664,6 @@ int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
     }
     return 0;
 }
-
-extern void Moby_PlaySound(int, int, int);
 
 /* handle_cyclic_menu_selection_input's twin with a 12-entry cursor at arg0+0x54. */
 int update_menu_cycle_selection(struct MenuScreen *arg0) {
