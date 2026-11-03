@@ -1049,7 +1049,7 @@ extern float func_L00_00259148(float *, float, float, float, float, float);
 
 extern float func_00214D28(float *, float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
@@ -1066,7 +1066,7 @@ extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -1190,7 +1190,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 break;
             d->activation_region = -1;
             find_nearest_path_point(path, m->position, w.projected, &w.segment_a, &w.fraction_a, 0, 999.0f, 5.0f, 0.0f);
-            progress = IntToFloat_r(w.segment_a) * path->points[0].length + w.fraction_a + 2.0f;
+            progress = IntToFloat(w.segment_a) * path->points[0].length + w.fraction_a + 2.0f;
             distance = FastVecDist_r(m->position, (char *)path + (path->count << 4));
             step = g_frame_time_sq_r * 10.0f;
             if (distance <= d->speed * d->speed / (step + step)) {
@@ -1207,7 +1207,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                     d->speed = limit;
             }
             w.segment_a = truncate_float_to_s32_r2(progress / path->points[0].length);
-            w.fraction_a = (progress - IntToFloat_r(w.segment_a) * path->points[0].length) / path->points[0].length;
+            w.fraction_a = (progress - IntToFloat(w.segment_a) * path->points[0].length) / path->points[0].length;
             if (w.segment_a >= path->count - 1) {
                 if (d->route_a.path_id != -1 && d->speed <= D_L03_00161A1C_2CDDC8 * g_frame_time_r) {
                     d->alternate = 0;
@@ -1298,7 +1298,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             }
             if (point > 0 && point < route->path->count - 1) {
                 float node_distance = vec_distance_xy_r(&route->path->points[point], w.target.position);
-                if (node_distance < 20.0f && FastAbsF_r(w.target.position[2] - m->position[2]) < 10.0f &&
+                if (node_distance < 20.0f && FastAbsF(w.target.position[2] - m->position[2]) < 10.0f &&
                     node_distance < FastVecDist_r(&route->path->points[point + 1], w.target.position) &&
                     point < route->path->count - 2)
                     route->index++;
@@ -1374,7 +1374,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             }
             path = kerwan_paths_r[d->alternate ? d->other_exit_path : d->exit_path];
             find_nearest_path_point(path, m->position, w.projected, &w.segment_b, &w.fraction_b, 0, 999.0f, 5.0f, 0.0f);
-            progress = IntToFloat_r(w.segment_b) * path->points[0].length + w.fraction_b + 2.0f;
+            progress = IntToFloat(w.segment_b) * path->points[0].length + w.fraction_b + 2.0f;
             distance = FastVecDist_r(m->position, (char *)path + (path->count << 4));
             step = g_frame_time_sq_r * 10.0f;
             if (distance <= d->speed * d->speed / (step + step)) {
@@ -1391,7 +1391,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                     d->speed = limit;
             }
             w.segment_b = truncate_float_to_s32_r2(progress / path->points[0].length);
-            w.fraction_b = (progress - IntToFloat_r(w.segment_b) * path->points[0].length) / path->points[0].length;
+            w.fraction_b = (progress - IntToFloat(w.segment_b) * path->points[0].length) / path->points[0].length;
             if (w.segment_b >= path->count - 1) {
                 if (d->other_exit_path != -1 && d->route_b.path_id != -1 &&
                     d->speed <= D_L03_00161A1C_2CDDC8 * g_frame_time_r) {

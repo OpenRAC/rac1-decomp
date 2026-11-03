@@ -125,7 +125,7 @@ extern float D_L12_00161A88_2EDAA0 SDATA(D_L12_00161A88);
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -169,10 +169,10 @@ void water_reservoir_update(Moby *moby) {
     if (hoven_fade_level == 0.0f) {
         if (fast_dec_timer_r(&data->timer) == 0) {
             if (moby->command & 1) {
-                f20 = IntToFloat_r(data->timer) / IntToFloat_r(D_L12_00161A50_2EDAA0);
+                f20 = IntToFloat(data->timer) / IntToFloat(D_L12_00161A50_2EDAA0);
                 f20 = 1.0f - f20;
             } else {
-                f20 = IntToFloat_r(data->timer) / IntToFloat_r(D_L12_00161A50_2EDAA0);
+                f20 = IntToFloat(data->timer) / IntToFloat(D_L12_00161A50_2EDAA0);
             }
             if (random_float_between_r(0.0f, 1.0f) < f20) {
                 float k;
@@ -535,7 +535,7 @@ typedef struct Data_303CA8 {
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern int GetEffectTex_r(int) __asm__("func_001F4868");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern Moby *hoven_mobys_r __asm__("D_L12_00160058") MACRO_ADDR;
@@ -600,10 +600,10 @@ void draw_oscillating_target_link_strips(Moby *moby) {
     }
     for (idx = 0; idx < 4; idx++) {
         if (oscillating_link_strip_fade_pivot_ticks < data->phase[idx]) {
-            t = IntToFloat_r2(data->phase[idx] - oscillating_link_strip_fade_pivot_ticks) /
-                IntToFloat_r2(oscillating_link_strip_reset_ticks_r - oscillating_link_strip_fade_pivot_ticks);
+            t = IntToFloat(data->phase[idx] - oscillating_link_strip_fade_pivot_ticks) /
+                IntToFloat(oscillating_link_strip_reset_ticks_r - oscillating_link_strip_fade_pivot_ticks);
         } else {
-            t = 1.0f - IntToFloat_r2(data->phase[idx]) / IntToFloat_r2(oscillating_link_strip_fade_pivot_ticks);
+            t = 1.0f - IntToFloat(data->phase[idx]) / IntToFloat(oscillating_link_strip_fade_pivot_ticks);
         }
         quad[1].c[0] = quad[1].c[1] = quad[1].c[2] = quad[1].c[3] =
             FastTweenColor_r(D_L12_00161E6C_303CA8, D_L12_00161E70_303CA8, t);
@@ -720,7 +720,7 @@ extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern void LerpVec4_r(void *, void *, void *, float) __asm__("func_L00_0025C710");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
@@ -779,7 +779,7 @@ void update_oscillating_target_link(Moby *moby) {
             if (1.0f < a) {
                 a = a - 2.0f;
             }
-            a = FastAbsF_r(a);
+            a = FastAbsF(a);
             tmp0.q = row->v10;
             tmp1.q = row->v20;
             LerpVec4_r(((float *)&moby->pos), &tmp0, &tmp1, a);
@@ -1248,7 +1248,6 @@ void hoven_turret_update(Moby *moby) {
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern float IntToFloat_r3(int) __asm__("func_001FA888");
 extern void draw_geometry_quad_5188_v(void *, void *, void *, long, int) __asm__("func_L02_0020BF88");
 extern int hoven_turret_hud_frame_color SDATA(hoven_turret_hud_frame_color);
 extern int hoven_turret_hud_frame_vertex_3_uv SDATA(hoven_turret_hud_frame_vertex_3_uv);
@@ -1394,9 +1393,9 @@ void draw_hoven_turret_hud(Moby *moby) {
         draw_geometry_quad_5188_v(xy, uv, col, tex, 1);
     }
     if (scale_ticks(0xF) < d->f88) {
-        c = FastTweenColor(0x5000FFFF, 0x500000FF, IntToFloat_r3(d->f88 - scale_ticks(0xF)) / (float)scale_ticks(0xF));
+        c = FastTweenColor(0x5000FFFF, 0x500000FF, IntToFloat(d->f88 - scale_ticks(0xF)) / (float)scale_ticks(0xF));
     } else {
-        c = FastTweenColor(0x5000FF00, 0x5000FFFF, IntToFloat_r3(d->f88) / (float)scale_ticks(0xF));
+        c = FastTweenColor(0x5000FF00, 0x5000FFFF, IntToFloat(d->f88) / (float)scale_ticks(0xF));
     }
     uv[0] = hoven_turret_hud_orientation_indicator_vertex_0_uv;
     uv[1] = hoven_turret_hud_orientation_indicator_vertex_1_uv;
@@ -1689,7 +1688,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                 }
             } else {
                 float a = FastAddRots(yaw, md->f8C * 0.55850536f);
-                if (FastAbsF_r(SpringAngle(
+                if (FastAbsF(SpringAngle(
                         ent + 0x18, a, (char *)md + 0x94, 0, g_frame_scale_sq_f * 0.022f, g_frame_scale_sq_f * 0.3f,
                         g_frame_time * 0.2617994f + (float)i * (g_frame_time * 0.05235988f))) < 0.017453292f) {
                     md->f8C = -md->f8C;
@@ -1698,7 +1697,7 @@ void update_planetbuster_maximus_guns(char *moby) {
             flag = 0;
             hp = (float *)((char *)&g_hero + 0x80);
             dist = vec_distance_xy(moby + 0x10, hp);
-            dz = FastAbsF_r(hp[2] - ((Moby *)moby)->pos.z);
+            dz = FastAbsF(hp[2] - ((Moby *)moby)->pos.z);
             if (scale_ticks(0x4B0) < planetbuster_aggro_timer) {
                 if (dist < 80.0f && dz < 4.0f) {
                     flag = 1;
@@ -1875,8 +1874,8 @@ void update_planetbuster_maximus_guns(char *moby) {
                     v1[0] = FastCos(ang) * s;
                     v1[1] = FastSin(ang) * s;
                     v1[2] = 0.0f;
-                    v1[2] = random_float_between(g_frame_time * 7.0f, g_frame_time * 17.0f) * IntToFloat_r3(lvl) *
-                            1.5f / IntToFloat_r3(5);
+                    v1[2] = random_float_between(g_frame_time * 7.0f, g_frame_time * 17.0f) * IntToFloat(lvl) * 1.5f /
+                            IntToFloat(5);
                     spawn_effect_particle_with_target_scalar(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA,
                                                              0xA0A46, 420000.0f, c);
                 }

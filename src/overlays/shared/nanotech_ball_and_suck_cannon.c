@@ -474,8 +474,6 @@ extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern void KillPart_r(void *) __asm__("func_L00_002688A8");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 
-extern float IntToFloat_r(int) __asm__("func_001FA888");
-
 /* Nanotech ball update: spawns, homes in on its target, hits or fizzles; kills itself when its owner goes. */
 void nanotech_ball_update(Moby *m) {
     V_2D9EA0 v0, v10, v20, v30, v40, v50, v60;
@@ -735,7 +733,7 @@ void nanotech_ball_update(Moby *m) {
                         float k;
                         Part *n;
                         qcopy(&v40, &e->pos);
-                        k = IntToFloat_r(x->h1C);
+                        k = IntToFloat(x->h1C);
                         k = (float)x->h1E / k;
                         {
                             V3_2D9EA0 *src = &x->b;
@@ -2239,7 +2237,7 @@ extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern void func_L00_002592B0(void *, void *, float, float, float, float);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern void extract_matrix_rotation_quaternion_r(void *, void *) __asm__("func_00215328");
 extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
 extern void copy_matrix_rotation_r(void *, void *) __asm__("func_001FA460");
@@ -2255,7 +2253,7 @@ extern int invoke_optional_moby_callback_or_return_one_r(void *, void *) __asm__
 extern void matrix_from_basis_rows_r(void *, void *) __asm__("func_001FA4A0");
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void func_001E9768(void *, void *);
@@ -2313,7 +2311,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
             }
             case 1:
                 self->anim_speed = m->f6C + 1.0f;
-                m->f6C = m->f6C + 1.0f / IntToFloat_r2(scale_ticks_r2(1));
+                m->f6C = m->f6C + 1.0f / IntToFloat(scale_ticks_r2(1));
                 if (1.0f < m->f6C)
                     m->f6C = 1.0f;
                 self->pos.z += m->f6C / 100.0f * frame_scale_r;
@@ -2326,7 +2324,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                 self->flags &= 0xFFFE;
                 one = 1.0f;
                 if (m->f6C < one) {
-                    m->f6C = m->f6C + one / IntToFloat_r2(scale_ticks_r2(30));
+                    m->f6C = m->f6C + one / IntToFloat(scale_ticks_r2(30));
                     fr.q = 0;
                     fr.v[0].x = -1.5707964f;
                     fr.v[0].z = -1.5707964f;
@@ -2373,7 +2371,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                         fr.v[3].x = -fr.v[2].x * 0.5f;
                     } else {
                         fr.v[3].y = fr.v[2].y * f21;
-                        fr.v[3].x = (FastAbsF_r(fr.v[2].y) < 2.0f) ? FastAbsF_r(fr.v[2].y) : 2.0f;
+                        fr.v[3].x = (FastAbsF(fr.v[2].y) < 2.0f) ? FastAbsF(fr.v[2].y) : 2.0f;
                     }
                     fr.v[3].z = 0.0f;
                     matrix_mul_vec3_r(&fr.v[3], &fr.v[3], hero_basis);

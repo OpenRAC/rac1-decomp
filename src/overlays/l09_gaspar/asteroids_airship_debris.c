@@ -2918,10 +2918,10 @@ extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
 extern float FastVecLength_r2(void *) __asm__("func_001F9CB8");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern void vec_scale_to_length_r3(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void spawn_tumbling_debris_r2(void *, void *, void *, int, float) __asm__("func_L09_002F0BB8");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern void FastVecScale_r4(void *, void *, float) __asm__("func_001F9C30");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -2990,7 +2990,7 @@ void barrier_update(Moby *m) {
         matrix_mul_vec3_r(a40, a40, ((f32 *)&m->rot_row0));
         FastVecAdd_r4(a40, a40, a30);
         FastVecSub_r3(a50, a40, a20);
-        f = FastAbsF_r(6.0f - FastVecLength_r2(a50)) / 6.0f;
+        f = FastAbsF(6.0f - FastVecLength_r2(a50)) / 6.0f;
         vec_scale_to_length_r3(a60, r->pos, f * f * 8.0f);
         FastVecAdd_r4(a50, a50, a60);
         vec_scale_to_length_r3(a50, a50, f * (random_float_between_r3(5.0f, 8.0f) * g_frame_time_r2));
@@ -3001,7 +3001,7 @@ void barrier_update(Moby *m) {
         if (i % 3 == 0) {
             SpawnExplosionFx_r2(m, a40, -1, random_float_between_r3(0.3f, 0.6f), 0.0f);
         }
-        ang = ang + 6.2831855f / IntToFloat_r(n);
+        ang = ang + 6.2831855f / IntToFloat(n);
     }
     FastVecScale_r4(a40, r->pos, 0.5f);
     spawn_explosion_r(m, r->pos, a20, 0.0f, 0.0f, 10, 3, 16, 3.0f, 2.0f, 1.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);

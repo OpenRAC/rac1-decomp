@@ -705,7 +705,7 @@ extern void func_L00_00264B40(void *, int, void *, float);
 extern int t32_CB(int *) __asm__("func_001F9908");
 extern int t16_CB(short *) __asm__("func_001F9938");
 extern int rnd_CB(int) __asm__("func_002140B0");
-extern float itof_CB(int) __asm__("func_001FA888");
+
 extern Moby *contact_CB(void *, int, int) __asm__("func_L00_0025B478");
 extern int sound_CB(int, int, Moby *) __asm__("func_0022ED80");
 extern float rfb_CB(float, float) __asm__("func_002140F8");
@@ -727,7 +727,6 @@ extern float angdiff_CB(float, float) __asm__("func_001FA850");
 extern float dist3_CB(void *, void *) __asm__("func_001F9D10");
 extern void func_L00_002592B0(void *, float *, float, float, float, float);
 extern float ground_CB(void *, int, float) __asm__("func_00214358");
-extern float fabs_CB(float) __asm__("func_001F9B88");
 
 extern void vsub_CB(void *, void *, void *) __asm__("func_001F9BF0");
 extern float vlen_CB(void *) __asm__("func_001F9CB8");
@@ -846,7 +845,7 @@ void update_morphoray_chicken(Moby *m) {
         }
     }
     if (d->i74 > 0) {
-        m->scale += ((itof_CB(d->i74) * 3.0f + 1.0f) * m->pclass->scale - m->scale) * 0.1f;
+        m->scale += ((IntToFloat(d->i74) * 3.0f + 1.0f) * m->pclass->scale - m->scale) * 0.1f;
     }
     s = m->scale / m->pclass->scale;
     if (t32_CB(&d->i7C) != 0) {
@@ -960,7 +959,7 @@ void update_morphoray_chicken(Moby *m) {
                 v.y = sin_CB(m->rot.z) * E6C_CB * s;
                 v.z = 0.0f;
                 vadd_CB(&v, &v, &T);
-                if (fabs_CB(ground_CB(&v, 0, 0.5f) - v.z) <= (E6C_CB + E6C_CB) * s) {
+                if (FastAbsF(ground_CB(&v, 0, 0.5f) - v.z) <= (E6C_CB + E6C_CB) * s) {
                     m->state = 3;
                     MobyBlendAnimation(m, 3, 0, st_CB(10));
                 }
@@ -1074,7 +1073,7 @@ void update_morphoray_chicken(Moby *m) {
             vscale_CB(&W, &W, max);
         }
         vadd_CB(&T, &m->pos, &W);
-        if (fabs_CB(f25A748_CB(&T) - m->pos.z) <= E6C_CB * s) {
+        if (FastAbsF(f25A748_CB(&T) - m->pos.z) <= E6C_CB * s) {
             qcopy(&m->pos, &T);
         }
     } else {
@@ -1353,7 +1352,7 @@ extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
@@ -1492,8 +1491,8 @@ void update_homing_shot(Moby *m) {
     m->rot.y = FastAddRots_r2(m->rot.y, homing_shot_rotation_params_r[1]);
     n = d->h26 - d->h24;
     if (n < scale_ticks_r2(13)) {
-        s = IntToFloat_r(n);
-        s = s / IntToFloat_r(scale_ticks_r2(13));
+        s = IntToFloat(n);
+        s = s / IntToFloat(scale_ticks_r2(13));
         s = s * D_L00_00161950_2CC868;
     } else {
         s = D_L00_00161950_2CC868;
@@ -1834,7 +1833,6 @@ extern Bounds *bounds_2CDAB8(Moby *) __asm__("func_L00_0025D390");
 extern int has_ammo_2CDAB8(int) __asm__("func_L00_00234718");
 extern int use_ammo_2CDAB8(int, int) __asm__("func_L00_00234638");
 extern float distance_2CDAB8(void *, void *) __asm__("func_001F9D10");
-extern float fabs_2CDAB8(float) __asm__("func_001F9B88");
 
 extern void fire_start_2CDAB8(void) __asm__("func_L00_0020EB60");
 extern void fire_end_2CDAB8(void) __asm__("func_L00_0020ED30");
@@ -1892,7 +1890,7 @@ void ryno_update(Moby *m) {
                 qcopy(aim.f, ((float *)&d->target->pos));
                 f = f * 0.65f;
                 aim.f[2] = aim.f[2] + d->height;
-                EffectQueue_Add(m, 0xFF0FFF0F, fabs_2CDAB8(0.9f - f), 0.0f, aim.f, 0x23, -1, 90.0f, 4);
+                EffectQueue_Add(m, 0xFF0FFF0F, FastAbsF(0.9f - f), 0.0f, aim.f, 0x23, -1, 90.0f, 4);
             }
         }
     }
@@ -2593,7 +2591,7 @@ extern void FastVecScale_2CF808(void *, void *, f32) __asm__("func_001F9C30");
 extern f32 FastVecDistance_2CF808(void *, void *) __asm__("func_001F9D48");
 extern void *aim_height_2CF808(void *) __asm__("func_L00_0025D390");
 extern f32 FastArcTan_2CF808(f32, f32) __asm__("func_L00_001FF860");
-extern f32 IntToFloat_2CF808(int) __asm__("func_001FA888");
+
 extern s32 truncate_float_to_s32_2CF808(f32) __asm__("func_001FA898");
 extern void set_length_xy_2CF808(void *, void *, f32) __asm__("func_L00_001FF500");
 extern void clamp_length_2CF808(void *, void *, f32) __asm__("func_L00_001FF548");
@@ -2716,9 +2714,8 @@ void update_drone(struct Moby *updated_moby) {
             s32 counter = ((DroneSlots *)&hero_2CF808)->counter;
             if (next == 0)
                 next = 1;
-            v->desired_yaw = IntToFloat_2CF808(counter) / (f32)divisor * 6.2831855f - 3.1415927f;
-            v->pitch =
-                (IntToFloat_2CF808((counter * (next / 5)) % next) / (f32)divisor * 6.2831855f - 3.1415927f) * 0.25f;
+            v->desired_yaw = IntToFloat(counter) / (f32)divisor * 6.2831855f - 3.1415927f;
+            v->pitch = (IntToFloat((counter * (next / 5)) % next) / (f32)divisor * 6.2831855f - 3.1415927f) * 0.25f;
         }
         {
             struct HitMessage *hit = (struct HitMessage *)MobyGetHitMessage_r(updated_moby, 1, 0);

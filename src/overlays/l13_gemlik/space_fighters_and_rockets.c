@@ -797,7 +797,7 @@ extern void RerollEffectCounter_r(void *m, short *p) __asm__("func_L00_0025E4B0"
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
 extern int func_L00_00260FB0(float, char *, void *, int, int, void *, int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern int gemlik_frame_count_r __asm__("D_L13_0015F6B0") MACRO_ADDR;
 extern char *walker_paths_r[] __asm__("D_L13_001B0AB0");
@@ -961,7 +961,7 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
     }
     if (target_selection_status != 2) {
         if (moby_data->search_range < vec_distance_xy_r(&m->pos, &moby_data->target) ||
-            8.0f < FastAbsF_r(m->pos.z - moby_data->target.f[2])) {
+            8.0f < FastAbsF(m->pos.z - moby_data->target.f[2])) {
             moby_data->unkB4 = 2;
         } else if (m->state != 5 && coll_line_r(&m->pos, &g_hero.motion.body_center, 2, m, 0) != 0) {
             moby_data->unkB4 = 2;
@@ -3361,7 +3361,7 @@ typedef struct {
     Moby *f88;
 } Voice;
 extern char g_hero_r[] __asm__("D_0013F450");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern Hit_2EAE80 *MobyGetHitMessage_r3(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r2(void *, void *, void *, int, void *, void *, int, int) __asm__("func_L00_0025B4D0");
 extern void begin_starfighter_death_sequence_r(void *, void *, void *, void *) __asm__("func_L13_002EAC18");
@@ -3396,9 +3396,9 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
         rf = 0;
         k6 = 6.0f;
         step = (float)dd->h4 / k6;
-        hi = (k6 - IntToFloat_r(m->command)) * step;
+        hi = (k6 - IntToFloat(m->command)) * step;
         if (m->command >= 5) {
-            hi = (k6 - IntToFloat_r(m->command - 1)) * step;
+            hi = (k6 - IntToFloat(m->command - 1)) * step;
         }
         lo = hi + step * 0.3f;
         if (d->first != 0) {

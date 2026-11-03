@@ -75,7 +75,7 @@ void alien_queen_update(unsigned char *moby) {
             *(float *)(moby + 0x18) = *(float *)(moby + 0x18) + *(float *)(data + 0x48);
             *(float *)(data + 0x48) = *(float *)(data + 0x48) - g;
             if ((unsigned char)moby[0x53] == 8) {
-                if (FastAbsF_q((*(float *)(moby + 0x18) - *(float *)(data + 0xC8)) / *(float *)(data + 0x48)) <= 6.0f &&
+                if (FastAbsF((*(float *)(moby + 0x18) - *(float *)(data + 0xC8)) / *(float *)(data + 0x48)) <= 6.0f &&
                     (unsigned char)moby[0x53] != 9) {
                     MobyBlendAnimation_q(moby, 9, 0, scale_ticks_q(5));
                 }

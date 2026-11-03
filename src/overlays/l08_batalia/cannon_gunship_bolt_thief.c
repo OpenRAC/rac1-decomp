@@ -77,7 +77,7 @@ extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern long texture51(int) __asm__("func_001F4868");
 extern void draw_quad51(void *, void *, void *, long, int) __asm__("func_L02_0020BF88");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 
@@ -354,9 +354,9 @@ void draw_batalia_cannon_hud(Moby *m) {
     }
     if (scale_ticks_r(15) < data->timer) {
         color = FastTweenColor(0x5000FFFF, 0x500000FF,
-                               IntToFloat_r(data->timer - scale_ticks_r(15)) / (float)scale_ticks_r(15));
+                               IntToFloat(data->timer - scale_ticks_r(15)) / (float)scale_ticks_r(15));
     } else {
-        color = FastTweenColor(0x5000FF00, 0x5000FFFF, IntToFloat_r(data->timer) / (float)scale_ticks_r(15));
+        color = FastTweenColor(0x5000FF00, 0x5000FFFF, IntToFloat(data->timer) / (float)scale_ticks_r(15));
     }
     uv_words[0] = D_L08_00161C70_2E0258;
     uv_words[1] = D_L08_00161C74_2E0258;

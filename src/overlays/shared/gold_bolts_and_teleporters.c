@@ -1021,7 +1021,6 @@ extern s32 moby_killed_r[] __asm__("D_L01_001BAC60");
 extern u8 saved_mission_state_r[] __asm__("D_0014C150");
 extern u8 D_001414F4 NOT_SDA;
 extern u32 D_001414DC;
-extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002f6328.c, FUN_L01_00300220. */
 void spawn_point_update(struct Moby *moby) {
@@ -1069,7 +1068,7 @@ void spawn_point_update(struct Moby *moby) {
             jet_clear_persistent_r(moby->mission);
             qcopy(&pos, &moby->pos);
             pos.z = ProbeGroundHeight(&pos, 0, 0.5f);
-            if (FastAbsF_r(moby->pos.z - pos.z) > 2.0f) {
+            if (FastAbsF(moby->pos.z - pos.z) > 2.0f) {
                 pos.z = moby->pos.z;
             }
             jet_reset_camera_r(&pos, &moby->rot);
@@ -1241,7 +1240,7 @@ extern f32 D_L01_00161FB8_00309078 SDATA(D_L01_00161FB8);
 extern f32 D_L01_00161FBC_00309078 SDATA(D_L01_00161FBC);
 extern s32 D_L01_00161FE0_00309078 SDATA(D_L01_00161FE0);
 extern f32 rand_angle_00309078(void) __asm__("func_00214158");
-extern f32 fabs_00309078(f32) __asm__("func_001F9B88");
+
 extern s32 rand_below_00309078(s32) __asm__("func_002140B0");
 extern void clear_vec_00309078(void *) __asm__("func_001F9BC0");
 extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
@@ -1314,7 +1313,7 @@ void gold_bolt_update(Moby *moby) {
             if (!(dist_00309078(&moby->pos, &hero_00309078.motion.pos) < 3.0f)) {
                 return;
             }
-            if (!(fabs_00309078(moby->pos.z - hero_00309078.motion.pos.f[2]) < 2.0f)) {
+            if (!(FastAbsF(moby->pos.z - hero_00309078.motion.pos.f[2]) < 2.0f)) {
                 return;
             }
             if (hero_00309078.health.hp == 0) {

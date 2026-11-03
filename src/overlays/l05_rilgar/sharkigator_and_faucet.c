@@ -593,7 +593,7 @@ extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float FastAbsF_r(float input) __asm__("func_001F9B88");
+
 extern float FastVecDist_r(float *, float *) __asm__("func_001F9D10");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
@@ -701,8 +701,8 @@ void scenery_ship_update(char *moby) {
                                       *(float *)(nxt + 0x14) - *(float *)(cur + 0x14));
                     v2 = FastSubRots_r(a2, ang);
                     *(float *)(cur + 0x1C) = v2;
-                    if (f21v < FastAbsF_r(v2)) {
-                        f21v = FastAbsF_r(*(float *)(cur + 0x1C));
+                    if (f21v < FastAbsF(v2)) {
+                        f21v = FastAbsF(*(float *)(cur + 0x1C));
                     }
                 }
                 ang = fast_atan2_r(
@@ -1593,7 +1593,7 @@ extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
 extern int func_L00_00260FB0(float, void *, void *, int, int, int *, int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float FastAbsF_r2(float) __asm__("func_001F9B88");
+
 extern Moby *find_nearest_extermibot_group_target_r(void *, int) __asm__("func_L05_003053D8");
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastSin_r2(float) __asm__("func_001F9FA8");
@@ -1728,7 +1728,7 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
     }
     if (FindNearestEligibleMoby(d->f2A0, m, d->f120, 0, 0, rilgar_paths_r2[d->f2CC]->pts,
                                 rilgar_paths_r2[d->f2CC]->n) != 2) {
-        if (d->f2A0 < vec_distance_xy_r(d->f270, d->f120) || 3.0f < FastAbsF_r2(m->pos.z - d->f128)) {
+        if (d->f2A0 < vec_distance_xy_r(d->f270, d->f120) || 3.0f < FastAbsF(m->pos.z - d->f128)) {
             d->f164 = 2;
         }
     }
@@ -1899,7 +1899,7 @@ typedef struct {
     Vec4 points[1];
 } SegmentPath;
 extern SegmentPath *rilgar_paths_r3[] __asm__("D_L05_001B0CB0");
-extern f32 abs_3054B0(f32) __asm__("func_001F9B88");
+
 extern void FastVecAdd_r3(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 extern void FastVecSub_r3(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
 
@@ -1937,7 +1937,7 @@ f32 push_point_from_path(s32 path_index, void *input, void *output, f32 distance
         vec_scale_to_length_r(&scaled_segment, &segment, 1.0f);
         FastVecCross(&cross, &difference, &scaled_segment);
         {
-            f32 wall_distance = abs_3054B0(cross.f[2]);
+            f32 wall_distance = FastAbsF(cross.f[2]);
             if (wall_distance < best)
                 best = wall_distance;
             if (distance < wall_distance)

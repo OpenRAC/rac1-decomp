@@ -1067,7 +1067,7 @@ extern void FastVecScale_r2(void *, void *, f32) __asm__("func_001F9C30");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void update_morphoray_particles_r(struct Moby *) __asm__("func_L14_00306FA0");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
+
 extern void grant_inventory_item_r(s32, s32) __asm__("func_L00_002618D8");
 extern void StartCutscene_r(s32) __asm__("func_L00_00299B68");
 extern void jet_clear_persistent_r(s32) __asm__("func_L00_002512D8");
@@ -1107,7 +1107,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
                 return;
             if (!(vec_distance_xy_r(&o->pos, g_hero_r.motion.pos.f) < 1.0f))
                 return;
-            if (!(FastAbsF_r(o->pos.z - g_hero_r.motion.pos.f[2]) < 2.0f))
+            if (!(FastAbsF(o->pos.z - g_hero_r.motion.pos.f[2]) < 2.0f))
                 return;
             if (gHaveMorphORay_r != 0)
                 d->picked_up = state;
@@ -1240,7 +1240,6 @@ extern Moby *create_helper_sequence_owner_moby_r(Moby *owner) __asm__("func_L14_
 extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
 
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern float interpolate_angle_r(float, float, float) __asm__("func_L00_0025C7A8");
@@ -1291,7 +1290,7 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
                 moby->state = 2;
                 data->cur = 5;
                 data->timer = scale_ticks_r2(D_L14_001622D4_3071B0);
-                data->rate = 1.0f / IntToFloat_r(data->timer);
+                data->rate = 1.0f / IntToFloat(data->timer);
                 Sound_PlayClassSound(0, 0, data->slots.m[data->cur], 0x575);
             }
             break;
@@ -1299,14 +1298,14 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
             Slots *slots = &data->slots;
             Moby *o = slots->m[data->cur];
             FastDecTimer_r(&data->timer);
-            o->rot.y = interpolate_angle_r(1.5707964f, 0.0f, IntToFloat_r(data->timer) * data->rate);
+            o->rot.y = interpolate_angle_r(1.5707964f, 0.0f, IntToFloat(data->timer) * data->rate);
             if (data->timer == 0) {
                 data->timer = scale_ticks_r2(D_L14_001622D4_3071B0);
                 data->cur--;
                 if (data->cur < 0) {
                     moby->state = 3;
                     data->timer = scale_ticks_r2(D_L14_001622DC_3071B0);
-                    data->rate = 1.0f / IntToFloat_r(data->timer);
+                    data->rate = 1.0f / IntToFloat(data->timer);
                 } else {
                     Sound_PlayClassSound(0, 0, slots->m[data->cur], 0x575);
                 }
@@ -1323,7 +1322,7 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
             }
             FastDecTimer_r(&data->timer);
             slots = data->slots.m;
-            t = IntToFloat_r(data->timer) * data->rate;
+            t = IntToFloat(data->timer) * data->rate;
             owner->rot.y = interpolate_scalar_linear_r(D_L14_001622D0_3071B0 * 0.017453292f, 0.0f, t);
             for (i = 0; i < 6; i++) {
                 FastVecScale_r3(vec, &owner->rot_row2, D_L14_001622C8_3071B0 * (float)i + D_L14_001622CC_3071B0);

@@ -1103,7 +1103,6 @@ extern f32 random_float_between_r2(f32, f32) __asm__("func_002140F8");
 extern f32 FastVecDist_r2(void *, void *) __asm__("func_001F9D10");
 extern int FastBSphereCheck_r(char *, float) __asm__("func_L00_00200290");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
-extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
 
 /* Flickering point light: state 0 checks the periods and fills the two flicker rings; then sets the draw scale,
  * fades the intensity with the distance to the camera and creates, updates or frees its point light.
@@ -1147,7 +1146,7 @@ void update_flickering_mesh_effect(struct Moby *m) {
         m->state = 1;
     }
     m->scale = m->pclass->scale * (d->size_x > d->size_y ? d->size_x : d->size_y) * 0.25f;
-    view = IntToFloat_r(m->draw_dist);
+    view = IntToFloat(m->draw_dist);
     dist = FastVecDist_r2(at, batalia_hero_pos_r);
     fade = view - d->fade_range;
     if (fade < 0.0f)
@@ -1165,20 +1164,20 @@ void update_flickering_mesh_effect(struct Moby *m) {
         d->intensity = fade;
     }
     pos.q = *(u128_2F8560 *)at;
-    pos.f[3] = IntToFloat_r(d->radius);
+    pos.f[3] = IntToFloat(d->radius);
     if ((m->visible != 0 || FastBSphereCheck_r((char *)&pos, 255.0f) != -1) && !hidden) {
         AddDrawCallback_r(draw_flickering_mesh_effect_r, m);
         if (d->flags & 4) {
             if (d->light == -1) {
-                d->light = allocate_colored_effect_slot(
-                    d->light_pos.f, (f32)d->radius, IntToFloat_r(d->falloff) / 100.0f,
-                    d->intensity * IntToFloat_r(d->red) / 100.0f, d->intensity * IntToFloat_r(d->green) / 100.0f,
-                    d->intensity * IntToFloat_r(d->blue) / 100.0f);
+                d->light = allocate_colored_effect_slot(d->light_pos.f, (f32)d->radius, IntToFloat(d->falloff) / 100.0f,
+                                                        d->intensity * IntToFloat(d->red) / 100.0f,
+                                                        d->intensity * IntToFloat(d->green) / 100.0f,
+                                                        d->intensity * IntToFloat(d->blue) / 100.0f);
             } else {
                 l = &batalia_lights_r[d->light];
-                l->red = d->intensity * IntToFloat_r(d->red) / 100.0f;
-                l->green = d->intensity * IntToFloat_r(d->green) / 100.0f;
-                l->blue = d->intensity * IntToFloat_r(d->blue) / 100.0f;
+                l->red = d->intensity * IntToFloat(d->red) / 100.0f;
+                l->green = d->intensity * IntToFloat(d->green) / 100.0f;
+                l->blue = d->intensity * IntToFloat(d->blue) / 100.0f;
             }
         }
     } else if (d->light != -1) {

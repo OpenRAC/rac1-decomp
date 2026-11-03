@@ -41,9 +41,8 @@ extern u8 D_00187180[];
 extern ScreenInfo g_screen_extent_r __asm__("D_0013E600");
 extern LensFlare D_00187400;
 
-extern f32 ConvertIntegerToFloat(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32(f32) __asm__("func_001FA898");
-extern float AbsoluteFloat(float input) __asm__("func_001F9B88");
+
 extern void project_to_screen_r(f32 *, void *) __asm__("func_001F2418");
 extern s64 get_effect_texture(s32) __asm__("func_001F4868");
 
@@ -75,11 +74,11 @@ void draw_lens_flare(void) {
         return;
     }
     dist = FastVecDist(camera_position, effect_ribbon.moby->pos);
-    ctr[0] = ConvertIntegerToFloat(g_screen_extent_r.cx);
-    ctr[1] = ConvertIntegerToFloat(g_screen_extent_r.cy);
+    ctr[0] = IntToFloat(g_screen_extent_r.cx);
+    ctr[1] = IntToFloat(g_screen_extent_r.cy);
     project_to_screen_r(scr, effect_ribbon.moby->pos);
-    scr[0] = (scr[0] - ConvertIntegerToFloat(g_screen_extent_r.ox)) * 0.0625f;
-    scr[1] = (scr[1] - ConvertIntegerToFloat(g_screen_extent_r.oy)) * 0.0625f;
+    scr[0] = (scr[0] - IntToFloat(g_screen_extent_r.ox)) * 0.0625f;
+    scr[1] = (scr[1] - IntToFloat(g_screen_extent_r.oy)) * 0.0625f;
     d[0] = ctr[0] - scr[0];
     d[1] = ctr[1] - scr[1];
     for (i = 0; i < 16; i++) {
@@ -95,13 +94,13 @@ void draw_lens_flare(void) {
         } else if (fade < 0.0f) {
             fade = 0.0f;
         }
-        fx = AbsoluteFloat(d[0]) / ctr[0] * -5.0f + 5.5f;
+        fx = FastAbsF(d[0]) / ctr[0] * -5.0f + 5.5f;
         if (fx > 1.0f) {
             fx = 1.0f;
         } else if (fx < 0.0f) {
             fx = 0.0f;
         }
-        fy = AbsoluteFloat(d[1]) / ctr[1] * -5.0f + 5.5f;
+        fy = FastAbsF(d[1]) / ctr[1] * -5.0f + 5.5f;
         if (fy > 1.0f) {
             fy = 1.0f;
         } else if (fy < 0.0f) {

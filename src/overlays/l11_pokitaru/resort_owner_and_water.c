@@ -3015,7 +3015,6 @@ extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void matrix_from_basis_rows_r2(void *, void *) __asm__("func_001FA4A0");
 extern void transform_vector_r2(void *, void *, void *) __asm__("func_001F9EE8");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
 
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern void update_entity_matrix_r2(void *, void *, void *, void *) __asm__("func_L00_002617B0");
@@ -3053,7 +3052,7 @@ void seesaw_platform_update(struct Moby *m) {
             change += D_L11_00162004_10058 * 0.017453292f * g_frame_time_sq_r;
         }
         d->spin = d->spin + change;
-        if (FastAbsF_r(m->rot.y) > D_L11_00162014_10058 * 0.017453292f && (u32)g_hero_r2.state.control_mode < 2) {
+        if (FastAbsF(m->rot.y) > D_L11_00162014_10058 * 0.017453292f && (u32)g_hero_r2.state.control_mode < 2) {
             Hero_TrySetMoveStateL11(HERO_STATE_FALL, 1);
         }
     }
@@ -3704,7 +3703,6 @@ extern void RerollEffectCounter_r2(void *m, void *p) __asm__("func_L00_0025E4B0"
 extern void StepColorFade_r2(void *, void *) __asm__("func_L00_0025E590");
 extern int func_L00_00260FB0(float, void *, void *, int, int, void *, int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float FastAbsF_r2(float) __asm__("func_001F9B88");
 
 /* Pokitaru psytcopus movement (called from psytcopus_update): follows its path, picks a jump or a hop from the
  * path helper's result and keeps the effect attached to it, then checks whether the hero is out of reach. */
@@ -3798,7 +3796,7 @@ void handle_psytcopus_hits(Moby *moby) {
     data->f140 = 24.0f;
     if (FindNearestEligibleMoby(24.0f, moby, data->fD0, 0, 0, path_table_r3[data->f13C]->pts,
                                 path_table_r3[data->f13C]->count) != 2) {
-        if (data->f140 < vec_distance_xy_r(&moby->pos, data->fD0) || 3.0f < FastAbsF_r2(moby->pos.z - data->fD0[2])) {
+        if (data->f140 < vec_distance_xy_r(&moby->pos, data->fD0) || 3.0f < FastAbsF(moby->pos.z - data->fD0[2])) {
             data->f114 = 2;
         }
     }

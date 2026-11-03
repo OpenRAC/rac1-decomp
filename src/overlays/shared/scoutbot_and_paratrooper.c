@@ -132,7 +132,6 @@ extern float angle_3DF8(float, float) __asm__("func_L00_001FF860");
 extern void func_L00_002592B0(void *, float, float *, float, float, float);
 extern float anglediff_3DF8(float, float) __asm__("func_001FA850");
 extern float fast_distance_3DF8(void *, void *) __asm__("func_001F9D48");
-extern float fabs_3DF8(float) __asm__("func_001F9B88");
 
 extern float animframe_3DF8(void *) __asm__("func_0020D830");
 
@@ -245,11 +244,10 @@ void scoutbot_update(Moby *moby) {
                 d->v40[0] += sine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += cosine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
             }
-            if (fast_distance_3DF8(&moby->pos, &d->f218->pos) < 3.0f &&
-                fabs_3DF8(d->f218->pos.z - moby->pos.z) < 2.0f) {
+            if (fast_distance_3DF8(&moby->pos, &d->f218->pos) < 3.0f && FastAbsF(d->f218->pos.z - moby->pos.z) < 2.0f) {
                 d->h214 = Moby_PlaySound(0, 0, moby);
                 moby->state = 6;
-            } else if (fast_distance_3DF8(tgt, d->v1C0) > 15.0f || fabs_3DF8(d->v1C0[2] - tgt[2]) > 4.0f) {
+            } else if (fast_distance_3DF8(tgt, d->v1C0) > 15.0f || FastAbsF(d->v1C0[2] - tgt[2]) > 4.0f) {
                 d->f200 = 4.0f;
                 d->f208 = 0.5f;
                 if (moby->prev_seq != 2) {
@@ -269,7 +267,7 @@ void scoutbot_update(Moby *moby) {
                 d->v40[0] += sine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += cosine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
             }
-            if (fast_distance_3DF8(&moby->pos, d->v1C0) < 1.0f && fabs_3DF8(d->v1C0[2] - moby->pos.z) >= 3.9f) {
+            if (fast_distance_3DF8(&moby->pos, d->v1C0) < 1.0f && FastAbsF(d->v1C0[2] - moby->pos.z) >= 3.9f) {
                 if (moby->prev_seq != 0) {
                     animate_3DF8(moby, 0, 0, 3);
                 }
@@ -298,7 +296,7 @@ void scoutbot_update(Moby *moby) {
             }
             if (IsFrameWithinWindow(moby, 14.0f)) {
                 if (fast_distance_3DF8(&d->f1B0->pos, &moby->pos) < 3.0f &&
-                    fabs_3DF8(d->f218->pos.z - moby->pos.z) < 1.0f) {
+                    FastAbsF(d->f218->pos.z - moby->pos.z) < 1.0f) {
                     v30[0] = sine_3DF8(moby->rot.z) * 0.2f;
                     v30[1] = cosine_3DF8(moby->rot.z) * 0.2f;
                     v30[2] = 0.0f;

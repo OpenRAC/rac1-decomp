@@ -1473,7 +1473,7 @@ extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern Moby *select_morphoray_target_and_adjust_aim_r(void *, void *, void *, void *) __asm__("func_L00_002BD6B8");
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern float *GetFlaggedPvarWord_r(Moby *) __asm__("func_L00_0025D390");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern int queue_animation_update_r(int, int, void *, void *, void *, int *, int) __asm__("func_001FFB38");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
@@ -1580,7 +1580,7 @@ void MorphorayUpdate(Moby *m) {
                 float *s = GetFlaggedPvarWord_r(hit);
                 if (hit != p->target && p->delay == 0) {
                     p->target = hit;
-                    p->total = IntToFloat_r(((short *)s)[2]);
+                    p->total = IntToFloat(((short *)s)[2]);
                     p->left = s[0];
                     p->delay = scale_ticks_r(30);
                     if (p->total <= 1.0f) {
@@ -1591,7 +1591,7 @@ void MorphorayUpdate(Moby *m) {
                 }
             }
             {
-                float a = IntToFloat_r(hero_globals_base_r[2]) * 0.33f + 1.0f;
+                float a = IntToFloat(hero_globals_base_r[2]) * 0.33f + 1.0f;
                 float d = p->left - D_L00_001617B0_2BDAF0 * g_frame_time_r * a;
                 p->left = d;
                 if (d < 0.0f) {
@@ -1643,7 +1643,7 @@ void MorphorayUpdate(Moby *m) {
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[0].y;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[0].z;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].radius = 7.5f;
-            f = IntToFloat_r(morphoray_light_fade_timer_r) * 0.05f;
+            f = IntToFloat(morphoray_light_fade_timer_r) * 0.05f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[0] = f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[1] = f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[2] = f * 0.25f;
@@ -1776,7 +1776,7 @@ extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
@@ -1854,7 +1854,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             float d;
 
             FastVecSub_r(&seg, &tesla_chain_points_r[i], &tesla_chain_points_r[i - 1]);
-            t = IntToFloat_r2(i) * D_L00_001617C0_2BE3A8;
+            t = IntToFloat(i) * D_L00_001617C0_2BE3A8;
             a = t * -0.49999997f + 0.9f;
             if (D_L00_001617C4_2BE3A8 < i && p->target != 0) {
                 FastVecSub_r(&tmp, &p->target->pos, &tesla_chain_points_r[i]);
@@ -1890,7 +1890,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
                 FastVecCross_r(&up, &out, &fwd);
                 w = D_L00_001617FC_2BE3A8;
                 w = w + (D_L00_00161800_2BE3A8 - w) * t;
-                a = normalize_angle_r(tesla_rail_twist_phase_r + D_L00_001617CC_2BE3A8 * IntToFloat_r2(i));
+                a = normalize_angle_r(tesla_rail_twist_phase_r + D_L00_001617CC_2BE3A8 * IntToFloat(i));
                 off.y = w * FastSin_r(a);
                 w = w * FastCos_r(a);
                 off.z = w;
@@ -1954,7 +1954,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
                 tesla_pulse_timer[k] = scale_ticks_r2(D_L00_0016181C_2BE3A8);
                 tesla_pulse_travel[k] = 0.0f;
                 tesla_pulse_size_r[k] = D_L00_0016182C_2BE3A8;
-                tesla_pulse_alpha_r[k] = IntToFloat_r2(tesla_pulse_initial_alpha_r[0]);
+                tesla_pulse_alpha_r[k] = IntToFloat(tesla_pulse_initial_alpha_r[0]);
                 qcopy(&tesla_pulse_pos_r[k], p);
                 FastVecSub_r(&side, &tesla_chain_points_r[1], &tesla_chain_points_r[0]);
                 vec_scale_to_length_r2(&tesla_pulse_dir_r[k], &side, 1.0f);
@@ -1996,7 +1996,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             continue;
         }
         n = truncate_float_to_s32_r3(sum / tesla_chain_segment_length_r);
-        rem = tesla_pulse_travel[q] - IntToFloat_r2(n) * tesla_chain_segment_length_r;
+        rem = tesla_pulse_travel[q] - IntToFloat(n) * tesla_chain_segment_length_r;
         qcopy(&tesla_pulse_pos_r[q], &tesla_chain_points_r[n]);
         if (n == 11) {
             FastVecSub_r(&side, &tesla_chain_points_r[n], &tesla_chain_points_base_r[n]);
@@ -2814,7 +2814,7 @@ extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern float vec_length_xy_r2(void *) __asm__("func_001F9CE8");
 extern float probe_moby_landing_height_r2(void *, void *) __asm__("func_L00_002BFF88");
 extern void vec_scale_to_length_r3(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern int probe_moby_raised_sphere_collision_r(void *, int, void *) __asm__("func_L00_002BFDB8");
 extern void save_state_vector_and_fields_to_hero_r(void *a) __asm__("func_L00_002BFF08");
 extern void restore_saved_state_fields_from_hero_r(void *a) __asm__("func_L00_002BFF50");
@@ -2866,9 +2866,9 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
     }
     qcopy(mid, coll_hit_normal);
     vec_scale_to_length_r3(mid, mid, 1.0f);
-    sum = FastAbsF_r(mid[0]);
-    sum = sum + FastAbsF_r(mid[1]);
-    if (FastAbsF_r(mid[2]) < sum) {
+    sum = FastAbsF(mid[0]);
+    sum = sum + FastAbsF(mid[1]);
+    if (FastAbsF(mid[2]) < sum) {
         if (ok) {
             return try_start_moby_hop(m, p, half, 1);
         }

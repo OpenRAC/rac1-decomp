@@ -150,7 +150,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
 
 /* Free-camera controls (debug camera): pad buttons move the camera (in the free-look matrix when the hero's
@@ -269,7 +269,7 @@ void update_debug_camera(void) {
         float t = ((Cam *)g_debug_menu_r)->f80 / 1.5f;
 
         ((Cam *)g_debug_menu_r)->f80 = t;
-        if (FastAbsF_r(t) < 0.002f) {
+        if (FastAbsF(t) < 0.002f) {
             ((Cam *)g_debug_menu_r)->f80 = 0.0f;
         }
     }
@@ -304,7 +304,7 @@ void update_debug_camera(void) {
         float t = ((Cam *)g_debug_menu_r)->f7C / 1.5f;
 
         ((Cam *)g_debug_menu_r)->f7C = t;
-        if (FastAbsF_r(t) < 0.002f) {
+        if (FastAbsF(t) < 0.002f) {
             ((Cam *)g_debug_menu_r)->f7C = 0.0f;
         }
     }
@@ -334,7 +334,7 @@ void update_debug_camera(void) {
         float t = ((Cam *)g_debug_menu_r)->f78 / 1.5f;
 
         ((Cam *)g_debug_menu_r)->f78 = t;
-        if (FastAbsF_r(t) < 0.002f) {
+        if (FastAbsF(t) < 0.002f) {
             ((Cam *)g_debug_menu_r)->f78 = 0.0f;
         }
     }

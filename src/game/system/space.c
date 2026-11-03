@@ -227,7 +227,7 @@ void func_001F9BD8_2F4C8(void *, void *, void *) __asm__("func_001F9BD8");
 void func_001F9EC0_2F4C8(void *, void *, void *) __asm__("func_001F9EC0");
 long func_001F4868_2F4C8(int) __asm__("func_001F4868");
 int func_002140B0_2F4C8(int) __asm__("func_002140B0");
-float func_001FA888_2F4C8(int) __asm__("func_001FA888");
+
 void func_001F7EF8_2F4C8(void *, int, int) __asm__("func_001F7EF8");
 
 /* Resident effect quads: picks the row table by level_render_state's
@@ -262,7 +262,7 @@ void DrawResidentEffectQuads(struct Moby *m) {
         float s;
         if (*(short *)&m->save_id)
             c += func_002140B0_2F4C8(*(short *)&m->save_id);
-        s = func_001FA888_2F4C8(c) * (tbl[i].f[3] / 40.0f);
+        s = IntToFloat(c) * (tbl[i].f[3] / 40.0f);
         col = (c << 24) | 0x2058B0;
         if (m->oclass == MOBY_CLASS_PURPLE_SHIP_533)
             col = (c << 24) | 0x308000;
@@ -294,7 +294,6 @@ extern unsigned int trail_color_a_2F738[][2] __asm__("D_001D9DC0");
 extern unsigned int trail_color_b_2F738[][2] __asm__("D_001D9DC4");
 extern short D_001605D0;
 
-extern float trail_float_2F738(int) __asm__("func_001FA888");
 extern void trail_scale_2F738(void *, void *, float) __asm__("func_001F9DC0");
 
 /* Returns trail point n of ring t. */
@@ -380,7 +379,7 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
                             step = vertex >> 1;
                             age = step;
                             age--;
-                            t = trail_float_2F738(segment - age) * 0.03125f;
+                            t = IntToFloat(segment - age) * 0.03125f;
                             q.colors[vertex] = FastTweenColor(trail_color_a_2F738[trail_state_2F738.ship][0],
                                                               trail_color_b_2F738[trail_state_2F738.ship][0], t);
                             t = 1.0f - t * t;
@@ -402,7 +401,7 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
                             step = vertex >> 1;
                             age = step;
                             age--;
-                            t = trail_float_2F738(segment - age) * 0.03125f;
+                            t = IntToFloat(segment - age) * 0.03125f;
                             trail_scale_2F738(position_second, normal_second,
                                               (1.0f - t * t) * ((float *)&warp_trail_widths)[trail_state_2F738.ship]);
                             func_001F9BD8_2F4C8(position_second, position_second,
@@ -1130,7 +1129,7 @@ extern void resident_call_001F4B68(void *, ResidentRenderObject *) __asm__("func
 extern void resident_call_001F4E08(s32) __asm__("func_001F4E08");
 extern f32 resident_call_001F98B0(f32) __asm__("func_001F98B0");
 extern s32 resident_call_001F98C0(s32) __asm__("func_001F98C0");
-extern f32 resident_call_001F9B88(f32) __asm__("func_001F9B88");
+
 extern void resident_call_001F9BC0(void *) __asm__("func_001F9BC0");
 extern void resident_call_001F9BD8(void *, void *, void *) __asm__("func_001F9BD8");
 extern void resident_call_001F9C08(void *, void *, void *, f32) __asm__("func_001F9C08");
@@ -1143,7 +1142,7 @@ extern f32 resident_call_001F9F90(f32) __asm__("func_001F9F90");
 extern f32 resident_call_001FA058(f32, f32) __asm__("func_001FA058");
 extern f32 resident_call_001FA748(f32, f32) __asm__("func_001FA748");
 extern f32 resident_call_001FA790(f32, f32) __asm__("func_001FA790");
-extern f32 resident_call_001FA888(s32) __asm__("func_001FA888");
+
 extern void resident_call_00202260(void) __asm__("func_00202260");
 extern void resident_call_00205220(s32) __asm__("func_00205220");
 extern ResidentRenderObject *resident_call_0020D348(s32) __asm__("func_0020D348");
@@ -1326,7 +1325,7 @@ void update_resident_gameplay_state(void) {
                 object->current_frame = current_frame;
                 object->next_frame = current_frame + 1;
                 resident_call_0020D6D0(object);
-                object->blend = resident_call_001FA888(resident_data_0018CC20.frame & 1) * 0.5f;
+                object->blend = IntToFloat(resident_data_0018CC20.frame & 1) * 0.5f;
                 if (keyframe_flags != 0 && (resident_data_0018CC20.frame & 1)) {
                     object->blend = 1.0f;
                 }
@@ -1400,9 +1399,8 @@ void update_resident_gameplay_state(void) {
                     if (resident_data_0013E130.state == 0) {
                         if (resident_data_0018CC20.time < resident_call_001F98C0(360)) {
                             s32 color_intensity =
-                                (s32)(resident_call_001F9F90(
-                                          resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) *
-                                          0.09817477f) *
+                                (s32)(resident_call_001F9F90(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) *
+                                                             0.09817477f) *
                                       80.0f) +
                                 120;
                             if (object->class_id == 0x215) {
@@ -1450,8 +1448,8 @@ void update_resident_gameplay_state(void) {
                             resident_call_002308C8(object, resident_data_0015EE6C * -3.0f);
                         }
                         color_intensity =
-                            (s32)(resident_call_001F9F90(
-                                      resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
+                            (s32)(resident_call_001F9F90(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) *
+                                                         0.09817477f) *
                                   80.0f) +
                             120;
                         if (object->class_id == 0x215) {
@@ -1480,8 +1478,8 @@ void update_resident_gameplay_state(void) {
                         }
                     } else {
                         s32 color_intensity =
-                            (s32)(resident_call_001F9F90(
-                                      resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
+                            (s32)(resident_call_001F9F90(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) *
+                                                         0.09817477f) *
                                   80.0f) +
                             120;
                         if (object->class_id == 0x215) {
@@ -1552,8 +1550,8 @@ void update_resident_gameplay_state(void) {
                                 path->p[path_point_index + 1].components[0] - path->p[path_point_index].components[0],
                                 path->p[path_point_index + 1].components[1] - path->p[path_point_index].components[1]),
                             segment_angle);
-                        if (maximum_turn < resident_call_001F9B88(path->p[path_point_index].components[3])) {
-                            maximum_turn = resident_call_001F9B88(path->p[path_point_index].components[3]);
+                        if (maximum_turn < FastAbsF(path->p[path_point_index].components[3])) {
+                            maximum_turn = FastAbsF(path->p[path_point_index].components[3]);
                         }
                     }
                     segment_angle = resident_call_001FA058(
@@ -1613,9 +1611,8 @@ void update_resident_gameplay_state(void) {
             }
             if (resident_data_0013E130.path >= 0) {
                 if (resident_data_0013E130.timer < resident_call_001F98C0(150)) {
-                    blend = (1.0f - resident_call_001F9F90(
-                                        resident_call_001FA888(resident_data_0013E130.timer) *
-                                        (3.1415927f / resident_call_001FA888(resident_call_001F98C0(120))))) *
+                    blend = (1.0f - resident_call_001F9F90(IntToFloat(resident_data_0013E130.timer) *
+                                                           (3.1415927f / IntToFloat(resident_call_001F98C0(120))))) *
                             0.5f;
                     if (resident_data_0013E130.timer >= resident_call_001F98C0(120)) {
                         blend = 1.0f;

@@ -28,7 +28,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
                 return;
             if (!(vec_distance_xy_r(o + 0x10, g_hero_r.motion.pos.f) < 1.0f))
                 return;
-            if (!(FastAbsF_r(*(f32 *)(o + 0x18) - g_hero_r.motion.pos.f[2]) < 2.0f))
+            if (!(FastAbsF(*(f32 *)(o + 0x18) - g_hero_r.motion.pos.f[2]) < 2.0f))
                 return;
             if (gHaveMorphORay_r != 0)
                 *(s32 *)(d + 0x18) = state;

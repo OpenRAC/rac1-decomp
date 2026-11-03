@@ -541,7 +541,7 @@ typedef struct Data_2EC3E8 {
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern float FastVecLength_r(void *a) __asm__("func_001F9CB8");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
@@ -595,7 +595,7 @@ void update_wind_control(Moby *m) {
         d->f18 = FastVecLength_r(oltanis_clip_volumes_r + (d->node << 7) + 0x10);
         d->f1C = FastVecLength_r(oltanis_clip_volumes_r + (d->node << 7) + 0x20);
         d->timer2 = scale_ticks_r(d->ticks);
-        d->rate2 = 1.0f / IntToFloat_r(d->timer2);
+        d->rate2 = 1.0f / IntToFloat(d->timer2);
         sv[0] = FastCos_r(m->rot.z);
         sv[1] = FastSin_r(m->rot.z);
         sv[2] = 0.0f;
@@ -615,14 +615,14 @@ void update_wind_control(Moby *m) {
             is_point_inside_clip_volume_r(&g_hero.motion.pos, d->vol0)) {
             float t;
             FastDecTimer_r(&d->timer2);
-            t = (1.0f - IntToFloat_r(d->timer2) * d->rate2) * (d->speed * g_frame_time_r);
+            t = (1.0f - IntToFloat(d->timer2) * d->rate2) * (d->speed * g_frame_time_r);
             d->active = 1;
             sv[0] = FastCos_r(m->rot.z) * t;
             sv[1] = FastSin_r(m->rot.z) * t;
             sv[2] = 0.0f;
             FastVecAdd_r(&g_hero.motion.platform_delta, &g_hero.motion.platform_delta, sv);
             d->timer = scale_ticks_r(D_L14_00161CD4_2EC3E8);
-            d->rate = 1.0f / IntToFloat_r(d->timer);
+            d->rate = 1.0f / IntToFloat(d->timer);
             return;
         }
     }
@@ -632,7 +632,7 @@ void update_wind_control(Moby *m) {
         if (FastDecTimer_r(&d->timer)) {
             d->active = 0;
             d->timer2 = scale_ticks_r(d->ticks);
-            d->rate2 = 1.0f / IntToFloat_r(d->timer2);
+            d->rate2 = 1.0f / IntToFloat(d->timer2);
         }
         if (g_hero.unk308 != 0 || g_hero.on_ice_ground == 0) {
             if (d->timer > scale_ticks_r(15)) {
@@ -640,7 +640,7 @@ void update_wind_control(Moby *m) {
                 d->rate = 1.0f / (float)d->timer;
             }
         }
-        u = IntToFloat_r(d->timer) * d->rate;
+        u = IntToFloat(d->timer) * d->rate;
         t = (d->speed * g_frame_time_r - 0.0f) * u + 0.0f;
         sv[0] = FastCos_r(m->rot.z) * t;
         sv[1] = FastSin_r(m->rot.z) * t;
@@ -1675,7 +1675,7 @@ extern void rebuild_elevator_world_path_r(char *) __asm__("func_L14_002F0AB8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void update_entity_matrix_r(char *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern float FastVecLength_r2(void *) __asm__("func_001F9CB8");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern float Spring_r(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
@@ -1842,10 +1842,10 @@ void elevator_685_update(char *moby) {
                 if (Sound_IsPlaying_r(moby, data->voice) == 0) {
                     data->voice = Moby_PlaySound_r(0, 4, (int)moby);
                 }
-                t30 = IntToFloat_r2(data->pitch);
+                t30 = IntToFloat(data->pitch);
                 {
                     float *pt = &t30;
-                    f0 = IntToFloat_r2(data->pitch_base);
+                    f0 = IntToFloat(data->pitch_base);
                     Spring_r(pt, &data->pitch_spring, f0 * 0.25f, 0.003f, 0.2f, 0.0f);
                 }
                 data->pitch = truncate_float_to_s32_r2(t30);

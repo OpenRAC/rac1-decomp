@@ -2582,7 +2582,7 @@ extern Moby256_2A3DD0 *D_L15_00160058_2A3DD0 SDATA(D_L15_00160058);
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
@@ -2678,7 +2678,7 @@ void update_spark_emitter_moby(Moby *moby) {
                     fc = truncate_float_to_s32_r2((float)(scale_ticks_r(30) / 4));
                     create_type_47_particle(A, B, C, col, 0x60808080, fa, fb, fc, moby);
                 } while (i >= 0);
-                if (FastAbsF_r(V[1]) < hi && z < V[2] && V[2] < hi) {
+                if (FastAbsF(V[1]) < hi && z < V[2] && V[2] < hi) {
                     matrix_mul_vec3_r(&d->spark_pos, V, &moby->rot_row0);
                     FastVecAdd_r(&d->spark_pos, &d->spark_pos, &moby->pos);
                 } else {

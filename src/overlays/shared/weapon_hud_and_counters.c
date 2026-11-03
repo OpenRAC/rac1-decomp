@@ -1624,7 +1624,7 @@ extern int D_L00_0015F8B8_239918 SDATA(D_L00_0015F8B8);
 extern int D_L00_0015F8BC_239918 SDATA(D_L00_0015F8BC);
 extern Ids D_L00_0015F8C0;
 extern char texture_group_header_r3[] __asm__("D_L00_0017E5D8");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastCos_r(float) __asm__("func_001F9F90");
@@ -1649,8 +1649,8 @@ int draw_hud_radial_selector_panel(Elem *e) {
 
     q = e->cnt;
     {
-        float t = IntToFloat_r(e->cnt[0]);
-        f22 = t / IntToFloat_r(D_L00_0015F860_239918);
+        float t = IntToFloat(e->cnt[0]);
+        f22 = t / IntToFloat(D_L00_0015F860_239918);
     }
     if (1.0f < f22) {
         f22 = 1.0f;
@@ -1658,8 +1658,8 @@ int draw_hud_radial_selector_panel(Elem *e) {
         f22 = 0.0f;
     }
     {
-        float t = IntToFloat_r(q[1]);
-        f23 = t / IntToFloat_r(D_L00_0015F860_239918);
+        float t = IntToFloat(q[1]);
+        f23 = t / IntToFloat(D_L00_0015F860_239918);
     }
     if (1.0f < f23) {
         f23 = 1.0f;
@@ -1667,10 +1667,10 @@ int draw_hud_radial_selector_panel(Elem *e) {
         f23 = 0.0f;
     }
     {
-        float t = IntToFloat_r(level_frame_counter_r % D_L00_0015F890_239918);
+        float t = IntToFloat(level_frame_counter_r % D_L00_0015F890_239918);
         float wave;
         float s;
-        t = t / IntToFloat_r(D_L00_0015F890_239918);
+        t = t / IntToFloat(D_L00_0015F890_239918);
         t = t * 6.2831802f;
         wave = FastSin_r(t - 3.1415901f);
         s = f22 * 128.0f;

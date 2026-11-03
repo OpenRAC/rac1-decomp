@@ -628,7 +628,7 @@ extern Particle *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, vo
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
-extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
+
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
@@ -673,7 +673,7 @@ void update_plasmabot_visual_effects(struct Moby *m) {
             p->life = random_float_between_r(80000.0f, 120000.0f);
         }
         p->frames = scale_ticks_r(2);
-        f = 1.0f / IntToFloat_r(p->frames);
+        f = 1.0f / IntToFloat(p->frames);
         fade->mode = 3;
         fade->color = 0x7F7F7F;
         fade->scale = f;
@@ -1648,7 +1648,7 @@ extern Particle_2E17B8 *spawn_mode_controlled_rotating_alpha_fade_particle_r2(vo
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
 extern int random_integer_below_r2(int) __asm__("func_002140B0");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern float FastCos_r(float x) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float randf_sym_r(float lo, float hi) __asm__("func_L00_00258C80");
@@ -1699,7 +1699,7 @@ void emit_debris_trail_particles(Moby *m) {
             p->life = random_float_between_r2(80000.0f, 120000.0f);
         }
         p->frames = scale_ticks_r2(2);
-        f = 1.0f / IntToFloat_r2(p->frames);
+        f = 1.0f / IntToFloat(p->frames);
         color = 0x7F7F7F;
         fade->mode = 4;
         fade->color = color;

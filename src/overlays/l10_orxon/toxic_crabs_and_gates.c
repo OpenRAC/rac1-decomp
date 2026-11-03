@@ -922,7 +922,7 @@ extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_00
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern float FastVecDot_r(void *, void *) __asm__("func_001F9C78");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern void trooper_set_knockback_r(float *, float, float) __asm__("func_L03_00251A58");
 extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
@@ -1022,7 +1022,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 *(u128_2E52B0 *)&W = *(u128_2E52B0 *)&dst;
                 vec_scale_to_length_r(&W, &W, 1.0f);
                 vec_scale_to_length_r(&X, &orxon_ground_hit_normal_r, 1.0f);
-                if (0.5f < FastAbsF_r(FastVecDot_r(&W, &X))) {
+                if (0.5f < FastAbsF(FastVecDot_r(&W, &X))) {
                     B = 0.0f;
                     v21 = 11;
                 }
@@ -1104,10 +1104,10 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     }
     if (d->f1AC != 0) {
         FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
-        if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF_r(m->pos.z - d->a120.z)) {
+        if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
             d->f164 = 2;
         }
-    } else if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF_r(m->pos.z - d->a120.z)) {
+    } else if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
         FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
         d->f164 = 2;
     } else {

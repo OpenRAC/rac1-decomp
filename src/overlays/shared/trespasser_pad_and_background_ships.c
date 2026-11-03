@@ -2727,13 +2727,13 @@ extern void func_L00_002E9838(char *);
 extern int func_L00_002E9870(char *);
 extern int f_trigger_2FCE00(char *) __asm__("func_L02_002FCA80");
 extern float f_atan_2FCE00(float, float) __asm__("func_L00_001FF860");
-extern float f_abs_2FCE00(float) __asm__("func_001F9B88");
+
 extern float f_diffrot_2FCE00(float, float) __asm__("func_001FA850");
 extern float f_addrot_2FCE00(float, float) __asm__("func_001FA748");
 extern int f_frames_2FCE00(int) __asm__("func_001F9850");
 extern void f_6570_2FCE00(int) __asm__("func_L02_002F79A8");
 extern void f_6598_2FCE00(float, float, float) __asm__("func_L02_002F79D0");
-extern float f_itof_2FCE00(int) __asm__("func_001FA888");
+
 extern float f_cos_2FCE00(float) __asm__("func_001F9F90");
 extern float f_sin_2FCE00(float) __asm__("func_001F9FA8");
 extern void func_L00_002E9DC8(float, float, float *);
@@ -2840,8 +2840,7 @@ void apply_moby_camera_control(char *moby) {
         angle = f_atan_2FCE00(*(float *)aridia_camera_moby, *(float *)(aridia_camera_moby + 4));
         if (*(short *)(data + 0x20) < 2)
             *(float *)(data + 0x40) = *(float *)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x18);
-        else if (f_abs_2FCE00(g_controller_state.analog[0]) >= 0.3f ||
-                 f_abs_2FCE00(g_controller_state.analog[1]) >= 0.3f)
+        else if (FastAbsF(g_controller_state.analog[0]) >= 0.3f || FastAbsF(g_controller_state.analog[1]) >= 0.3f)
             *(float *)(data + 0x40) = angle;
         heading = *(float *)(data + 0x40);
         if (f_diffrot_2FCE00(heading, angle) > 1.5707964f)
@@ -2919,7 +2918,7 @@ void apply_moby_camera_control(char *moby) {
         *(short *)(data + 0x20) = frames;
     }
     hit = 0;
-    amount = *(float *)data * scale * 0.017453292f * ((float)*(short *)(data + 0x20) / f_itof_2FCE00(frames));
+    amount = *(float *)data * scale * 0.017453292f * ((float)*(short *)(data + 0x20) / IntToFloat(frames));
     if (active) {
         if (test_moby_camera_target_angle_limits(moby, *(float *)(data + 0x30), *(float *)(data + 0x2c)) != 0) {
             hit = 1;
@@ -2931,8 +2930,7 @@ void apply_moby_camera_control(char *moby) {
             } else if (*(short *)(data + 0x3c) == 3) {
                 float speed;
                 if (*(short *)(data + 0x20) < f_frames_2FCE00(90))
-                    speed =
-                        (amount - 0.0f) * ((float)*(short *)(data + 0x20) / f_itof_2FCE00(f_frames_2FCE00(90))) + 0.0f;
+                    speed = (amount - 0.0f) * ((float)*(short *)(data + 0x20) / IntToFloat(f_frames_2FCE00(90))) + 0.0f;
                 else
                     speed = amount;
                 set_follow_camera_angle_blend_from_position(speed, 0.0f, target + 0x10);
@@ -2958,7 +2956,7 @@ void apply_moby_camera_control(char *moby) {
         if (*(short *)(data + 0x20) >= f_frames_2FCE00(120))
             heading = 0.03f;
         else
-            heading = ((float)*(short *)(data + 0x20) / f_itof_2FCE00(f_frames_2FCE00(120))) * 0.02f + 0.01f;
+            heading = ((float)*(short *)(data + 0x20) / IntToFloat(f_frames_2FCE00(120))) * 0.02f + 0.01f;
         f_latspring_2FCE00(heading, 0.2f);
     }
     if ((unsigned short)(*(short *)(data + 0x3c) - 4) < 2) {

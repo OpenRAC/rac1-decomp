@@ -38,8 +38,6 @@ typedef struct {
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
-
 extern int func_001F9908(int *arg0);
 extern int play_voice_r(int, int, void *, int) __asm__("func_L00_0028F0B0");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
@@ -77,7 +75,7 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
     inner = FastVecLength(b);
     if (inner < outer) {
         flags = 0x10;
-        if (FastAbsF_r(b[0]) <= 1.0f && FastAbsF_r(b[1]) <= 1.0f && FastAbsF_r(b[2]) <= 1.0f) {
+        if (FastAbsF(b[0]) <= 1.0f && FastAbsF(b[1]) <= 1.0f && FastAbsF(b[2]) <= 1.0f) {
             vol = novalis_level_sound_slots[p->cls].fC;
         } else {
             if (b[0] > 1.0f) {

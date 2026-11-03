@@ -29,7 +29,7 @@ void update_gameplay_frame(void) {
         actor->current_frame = render_sequence_r2.frame >> 1;
         actor->next_frame = frame_index + 1;
         update_moby_animation_state_r(actor);
-        actor->frame_fraction = IntToFloat_r(render_sequence_r2.frame & 1) * 0.5f;
+        actor->frame_fraction = IntToFloat(render_sequence_r2.frame & 1) * 0.5f;
         animation_positions = ((RenderSequenceSidecar *)actor)->animation_positions;
         FastVecScale_r(&first_position, &animation_positions[actor->current_frame], 1.0f - actor->frame_fraction);
         FastVecScale_r(&next_position, &animation_positions[actor->next_frame], actor->frame_fraction);

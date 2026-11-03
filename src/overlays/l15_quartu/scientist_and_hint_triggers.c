@@ -924,7 +924,6 @@ extern int func_L00_002E9870(char *);
 extern void func_L00_002E9838(char *);
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 
-extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern void func_L00_002E9E20(void *, float, float);
 extern void func_L00_002E9900(int, float, float);
 extern void func_L00_002E9AD0(void);
@@ -981,7 +980,7 @@ void func_L15_002F9D38_r(char *m) {
         *(int *)(s + 0x3C) = t1;
         *(short *)(s + 0x20) = t4;
     }
-    r = IntToFloat_r(*(short *)(s + 0x20)) / IntToFloat_r(t4);
+    r = IntToFloat(*(short *)(s + 0x20)) / IntToFloat(t4);
     a = *(float *)s * 0.017453292f * r;
     if (done)
         set_follow_camera_angle_blend_from_position(o + 0x30, a, 0.0f);

@@ -2165,7 +2165,7 @@ extern void set_identity_matrix_r2(void *) __asm__("func_001FA190");
 extern int GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void draw_world_quad_r2(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern void multiply_matrix3x3_r2(void *, void *, void *) __asm__("func_001FA4F0");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastCos_r2(float) __asm__("func_001F9F90");
@@ -2207,7 +2207,7 @@ void draw_class_274_ring_effect(void *moby_v) {
         if (s > 1.0f)
             s = 1.0f;
         c = FastTweenColor_r2(c & 0xFFFFFF, c, s);
-        d = IntToFloat_r(((int *)p)[2]);
+        d = IntToFloat(((int *)p)[2]);
         s = d / (float)scale_ticks_r(D_L18_00161D2C_D8A8);
         if (s > 1.0f) {
             s = 1.0f;

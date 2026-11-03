@@ -888,13 +888,13 @@ extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0"
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern void matrix_to_euler_r(void *, void *) __asm__("func_002153E8");
 
 extern void update_bolt_grounded_pose_r(void *, void *, void *) __asm__("func_L00_002A8088");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern void quat_nlerp_r(void *, void *, void *, float) __asm__("func_001FA5C8");
 extern void func_001F9C08(void *, void *, void *, float);
 extern int begin_bolt_attraction_r(void *, void *, float, float) __asm__("func_L00_002A84B0");
@@ -1028,7 +1028,7 @@ void bolt_update(Moby *m) {
             dist = vec_distance_xy_r(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
             {
                 Hero *h = (Hero *)g_hero;
-                if (dist < h->reach_distance && FastAbsF_r(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
+                if (dist < h->reach_distance && FastAbsF(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
                     if (h->health.hp != 0) {
                         vec_scale_to_length_r(d->vel, d->vel, random_float_between_r(3.0f, 7.0f) * g_frame_time_r);
                         begin_bolt_attraction_r(m, h->moby, 0.0f, 0.0f);
@@ -1059,8 +1059,8 @@ void bolt_update(Moby *m) {
             u.s.b[2] += 0.25f;
             matrix_to_euler_r(((float *)&m->rot_row0), u.s.a);
             build_quaternion_from_axis_rotations(u.s.m, u.s.a);
-            s = 1.0f / IntToFloat_r(d->f57);
-            t = IntToFloat_r(d->f57) / IntToFloat_r(d->f56);
+            s = 1.0f / IntToFloat(d->f57);
+            t = IntToFloat(d->f57) / IntToFloat(d->f56);
             quat_nlerp_r(d->quat, d->quat, u.s.m, s);
             lerp_vector(((float *)&m->pos), ((float *)&m->pos), u.s.b, t);
             m->pos.z += -((t - 0.5f) * (t - 0.5f) - 0.25f) * ((float)d->f56 * 0.025f);
@@ -1077,7 +1077,7 @@ void bolt_update(Moby *m) {
             dist = vec_distance_xy_r(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
             {
                 Hero *h = (Hero *)g_hero;
-                if (dist < h->reach_distance && FastAbsF_r(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
+                if (dist < h->reach_distance && FastAbsF(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
                     begin_bolt_attraction_r(m, h->moby, 0.0f, 0.0f);
                     break;
                 }
@@ -1089,7 +1089,7 @@ void bolt_update(Moby *m) {
             if (m->visible != 0 || d->held != 0) {
                 update_bolt_grounded_pose_r(m, 0, 0);
                 if (d->f57 != 0) {
-                    float t = IntToFloat_r(d->f57) / IntToFloat_r(d->f56);
+                    float t = IntToFloat(d->f57) / IntToFloat(d->f56);
                     m->pos.z += -((t - 0.5f) * (t - 0.5f) - 0.25f) * ((float)d->f56 * 0.0125f);
                     d->f57--;
                 }

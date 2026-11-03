@@ -1165,7 +1165,7 @@ typedef struct {
     s16 oclass; /* 0x1A */
     u8 pad1C[0x14];
 } RocketHit;
-extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
+
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -1204,7 +1204,7 @@ void update_homing_rocket(struct Moby *m) {
     switch (state) {
         case 1:
             pos = &m->pos;
-            range = IntToFloat_r(v->timer * 2) * v->speed;
+            range = IntToFloat(v->timer * 2) * v->speed;
             FindNearestTargetMoby_r(m, &target, range);
             qcopy(&old, pos);
             FastVecAdd_r(pos, pos, v);
@@ -1532,7 +1532,7 @@ extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern void DeleteMoby_r5(char *) __asm__("func_0020D678");
 
 /* Moves the moby along its path: advances the distance, places it on the current segment, and dies at the end of the
@@ -1555,7 +1555,7 @@ void RailMobyUpdate(struct Moby *m) {
     *(int *)&a[2] = 0;
     FastVecAdd_r2(a, a, v->path + 0x10);
     i = truncate_float_to_s32_r(v->dist / *(float *)(v->path + 0x1C));
-    t = IntToFloat_r2(i);
+    t = IntToFloat(i);
     p = v->path;
     t = (v->dist - t * *(float *)(p + 0x1C)) / *(float *)(p + 0x1C);
     if (i >= *(int *)p - 2) {

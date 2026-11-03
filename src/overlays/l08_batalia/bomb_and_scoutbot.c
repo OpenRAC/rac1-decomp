@@ -175,7 +175,6 @@ extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
 
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
@@ -275,7 +274,7 @@ void update_bolt_pickup(Moby *m) {
                     hit = 1;
             } else if (vec_distance_xy_r(&m->pos, ((Hero *)g_hero_r)->motion.pos.f) <
                        ((Hero *)g_hero_r)->reach_distance) {
-                if (FastAbsF_r(m->pos.z - ((Hero *)g_hero_r)->motion.pos.f[2]) < ((Hero *)g_hero_r)->reach_height)
+                if (FastAbsF(m->pos.z - ((Hero *)g_hero_r)->motion.pos.f[2]) < ((Hero *)g_hero_r)->reach_height)
                     hit = 1;
             }
             if (hit == 0)

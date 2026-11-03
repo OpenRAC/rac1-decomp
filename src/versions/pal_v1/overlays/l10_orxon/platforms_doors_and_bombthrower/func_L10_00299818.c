@@ -16,7 +16,7 @@ void magnetboots_update(Moby *m) {
             emit_moby_sprite_particles_r(m);
             if (dist_00299818(&m->pos, g_hero_r + 0x80) < 3.0f) {
                 char *h = g_hero_r;
-                if (fabs_00299818(m->pos.z - *(float *)(h + 0x88)) < 2.0f && *(int *)(h + 0x22A8) != 0) {
+                if (FastAbsF(m->pos.z - *(float *)(h + 0x88)) < 2.0f && *(int *)(h + 0x22A8) != 0) {
                     m->flags |= 0x41;
                     start_scene_00299818(2);
                     m->state = 2;

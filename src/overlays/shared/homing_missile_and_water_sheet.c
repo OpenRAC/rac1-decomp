@@ -740,7 +740,7 @@ typedef struct {
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void AddDrawCallback_r(void *, void *) __asm__("func_001F49B0");
 extern void draw_pokitaru_ocean_r(void) __asm__("func_L11_0030BCD8");
@@ -804,10 +804,10 @@ void ocean_pokitaru_update(Moby *moby) {
     for (k = 0; k < 2; k++) {
         FastVecScale_r(out, src, (D_L11_00161E88_30C728[k] + D_L11_00161E88_30C728[k]) / (d->scale * 5.0f));
         if (1.0f < out[0] || out[0] < 1.0f) {
-            out[0] = out[0] - IntToFloat_r(truncate_float_to_s32_r2(out[0]));
+            out[0] = out[0] - IntToFloat(truncate_float_to_s32_r2(out[0]));
         }
         if (1.0f < out[1] || out[1] < 1.0f) {
-            out[1] = out[1] - IntToFloat_r(truncate_float_to_s32_r2(out[1]));
+            out[1] = out[1] - IntToFloat(truncate_float_to_s32_r2(out[1]));
         }
         wave_offset_r[k].u = wave_offset_r[k].u + out[0];
         wave_offset_r[k].v = wave_offset_r[k].v + out[1];
@@ -824,7 +824,7 @@ void ocean_pokitaru_update(Moby *moby) {
             wave_offset_r[k].v = wave_offset_r[k].v + 1.0f;
         }
     }
-    tide = pokitaru_ocean_base_height + FastSin_r(IntToFloat_r(level_frame_r % 360) * 0.017444445f - 3.14f) * 0.25f;
+    tide = pokitaru_ocean_base_height + FastSin_r(IntToFloat(level_frame_r % 360) * 0.017444445f - 3.14f) * 0.25f;
     D_L11_0016135C_30C728 = 1;
     D_L11_00161360_30C728 = 512.0f;
     D_L11_00161364_30C728 = 512.0f;

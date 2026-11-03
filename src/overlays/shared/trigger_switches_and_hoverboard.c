@@ -1757,7 +1757,7 @@ extern void vec_add_32B1F8(void *, void *, void *) __asm__("func_001F9BD8");
 extern float spring_32B1F8(float, float, float *, float, float, float) __asm__("func_001EC120");
 extern void vec_mul_32B1F8(void *, void *, float) __asm__("func_001F9C30");
 extern int collide_32B1F8(float, void *, int, void *) __asm__("func_L00_001F10E0");
-extern float fabs_32B1F8(float) __asm__("func_001F9B88");
+
 extern void vec_cross_32B1F8(void *, void *, void *) __asm__("func_001F9CA0");
 extern void orbit_32B1F8(Camera_32B1F8 *) __asm__("func_L05_0032ADE8");
 
@@ -1831,40 +1831,40 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
             e->height = spring_32B1F8(e->height, d->spring_height, &cur->vel, 0.005f, 0.2f, 0.0f);
         }
         if (((Hero *)g_hero)->air_frames.s != 0 && 2.0f < ((Hero *)g_hero)->ground_distance) {
-            if (fabs_32B1F8(e->dist - d->spring_dist2) < 0.015f)
+            if (FastAbsF(e->dist - d->spring_dist2) < 0.015f)
                 e->dist = d->spring_dist2;
             else if (e->dist < d->spring_dist2)
                 e->dist = e->dist + 0.015f;
             else
                 e->dist = e->dist - 0.015f;
             if (n == 6) {
-                if (fabs_32B1F8(e->height - d->spring_height2) < 0.05f)
+                if (FastAbsF(e->height - d->spring_height2) < 0.05f)
                     e->height = d->spring_height2;
                 else if (e->height < d->spring_height2)
                     e->height = e->height + 0.05f;
                 else
                     e->height = e->height - 0.05f;
             }
-            if (fabs_32B1F8(q->dist - d->focus_dist) < 0.02f)
+            if (FastAbsF(q->dist - d->focus_dist) < 0.02f)
                 q->dist = d->focus_dist;
             else if (q->dist < d->focus_dist)
                 q->dist = q->dist + 0.02f;
             else
                 q->dist = q->dist - 0.02f;
         } else {
-            if (fabs_32B1F8(e->dist - d->spring_dist) < 0.03f)
+            if (FastAbsF(e->dist - d->spring_dist) < 0.03f)
                 e->dist = d->spring_dist;
             else if (e->dist < d->spring_dist)
                 e->dist = e->dist + 0.03f;
             else
                 e->dist = e->dist - 0.03f;
-            if (fabs_32B1F8(e->height - d->spring_height) < 0.1f)
+            if (FastAbsF(e->height - d->spring_height) < 0.1f)
                 e->height = d->spring_height;
             else if (e->height < d->spring_height)
                 e->height = e->height + 0.1f;
             else
                 e->height = e->height - 0.1f;
-            if (fabs_32B1F8(q->dist - dist) < 0.04f)
+            if (FastAbsF(q->dist - dist) < 0.04f)
                 q->dist = dist;
             else if (q->dist < dist)
                 q->dist = q->dist + 0.04f;
@@ -1874,19 +1874,19 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
         fl = 1;
     } else {
         qcopy(&d->aim, *(char **)(g + 0x1DF0) + 0xE0);
-        if (fabs_32B1F8(e->dist - d->spring_dist) < 0.015f)
+        if (FastAbsF(e->dist - d->spring_dist) < 0.015f)
             e->dist = d->spring_dist;
         else if (e->dist < d->spring_dist)
             e->dist = e->dist + 0.015f;
         else
             e->dist = e->dist - 0.015f;
-        if (fabs_32B1F8(e->height - d->spring_height) < 0.05f)
+        if (FastAbsF(e->height - d->spring_height) < 0.05f)
             e->height = d->spring_height;
         else if (e->height < d->spring_height)
             e->height = e->height + 0.05f;
         else
             e->height = e->height - 0.05f;
-        if (fabs_32B1F8(q->dist - dist) < 0.02f)
+        if (FastAbsF(q->dist - dist) < 0.02f)
             q->dist = dist;
         else if (q->dist < dist)
             q->dist = q->dist + 0.02f;
@@ -1904,7 +1904,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     vec_cross_32B1F8(&m->up, &rel, &down);
     vec_scale_32B1F8(&m->up, &m->up, 1.0f);
     vec_cross_32B1F8(&m->side, &m->up, &rel);
-    if (fl == 0 || fabs_32B1F8(dd) < 0.5f || (v = (float *)g_hero, ((Hero *)v)->trick_input != 0)) {
+    if (fl == 0 || FastAbsF(dd) < 0.5f || (v = (float *)g_hero, ((Hero *)v)->trick_input != 0)) {
         tr->blend = spring_32B1F8(tr->blend, 0.0f, tr->state, tr->k34, tr->k38, tr->k3C);
     } else {
         float t;
@@ -1915,7 +1915,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
         t = vec_dot_32B1F8(&probe, &m->up);
         tr->blend = spring_32B1F8(tr->blend, t * D_L05_00162268_32B1F8, tr->state, tr->k34, tr->k38, tr->k3C);
     }
-    if (0.00001f < fabs_32B1F8(tr->blend)) {
+    if (0.00001f < FastAbsF(tr->blend)) {
         vec_scale_32B1F8(&probe, &m->up, tr->blend);
         vec_add_32B1F8(&goal, &goal, &probe);
     }

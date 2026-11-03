@@ -156,7 +156,7 @@ void update_resident_gameplay_state(void) {
                 object->current_frame = current_frame;
                 object->next_frame = current_frame + 1;
                 resident_call_0020D6D0(object);
-                object->blend = resident_call_001FA888(resident_data_0018CC20.frame & 1) * 0.5f;
+                object->blend = IntToFloat(resident_data_0018CC20.frame & 1) * 0.5f;
                 if (keyframe_flags != 0 && (resident_data_0018CC20.frame & 1)) {
                     object->blend = 1.0f;
                 }
@@ -230,9 +230,8 @@ void update_resident_gameplay_state(void) {
                     if (resident_data_0013E130.state == 0) {
                         if (resident_data_0018CC20.time < resident_call_001F98C0(360)) {
                             s32 color_intensity =
-                                (s32)(resident_call_001F9F90(
-                                          resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) *
-                                          0.09817477f) *
+                                (s32)(resident_call_001F9F90(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) *
+                                                             0.09817477f) *
                                       80.0f) +
                                 120;
                             if (object->class_id == 0x215) {
@@ -280,8 +279,8 @@ void update_resident_gameplay_state(void) {
                             resident_call_002308C8(object, resident_data_0015EE6C * -3.0f);
                         }
                         color_intensity =
-                            (s32)(resident_call_001F9F90(
-                                      resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
+                            (s32)(resident_call_001F9F90(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) *
+                                                         0.09817477f) *
                                   80.0f) +
                             120;
                         if (object->class_id == 0x215) {
@@ -310,8 +309,8 @@ void update_resident_gameplay_state(void) {
                         }
                     } else {
                         s32 color_intensity =
-                            (s32)(resident_call_001F9F90(
-                                      resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
+                            (s32)(resident_call_001F9F90(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) *
+                                                         0.09817477f) *
                                   80.0f) +
                             120;
                         if (object->class_id == 0x215) {
@@ -382,8 +381,8 @@ void update_resident_gameplay_state(void) {
                                 path->p[path_point_index + 1].components[0] - path->p[path_point_index].components[0],
                                 path->p[path_point_index + 1].components[1] - path->p[path_point_index].components[1]),
                             segment_angle);
-                        if (maximum_turn < resident_call_001F9B88(path->p[path_point_index].components[3])) {
-                            maximum_turn = resident_call_001F9B88(path->p[path_point_index].components[3]);
+                        if (maximum_turn < FastAbsF(path->p[path_point_index].components[3])) {
+                            maximum_turn = FastAbsF(path->p[path_point_index].components[3]);
                         }
                     }
                     segment_angle = resident_call_001FA058(
@@ -443,9 +442,8 @@ void update_resident_gameplay_state(void) {
             }
             if (resident_data_0013E130.path >= 0) {
                 if (resident_data_0013E130.timer < resident_call_001F98C0(150)) {
-                    blend = (1.0f - resident_call_001F9F90(
-                                        resident_call_001FA888(resident_data_0013E130.timer) *
-                                        (3.1415927f / resident_call_001FA888(resident_call_001F98C0(120))))) *
+                    blend = (1.0f - resident_call_001F9F90(IntToFloat(resident_data_0013E130.timer) *
+                                                           (3.1415927f / IntToFloat(resident_call_001F98C0(120))))) *
                             0.5f;
                     if (resident_data_0013E130.timer >= resident_call_001F98C0(120)) {
                         blend = 1.0f;

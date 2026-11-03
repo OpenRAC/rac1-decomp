@@ -990,7 +990,7 @@ extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 extern void FastVecAdd_r(Vec4A *, Vec4A *, Vec4A *) __asm__("func_001F9BD8");
 extern void FastVecScale_r(Vec4A *, Vec4A *, f32) __asm__("func_001F9C30");
 extern f32 FastCos_r(f32) __asm__("func_001F9F90");
-extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
+
 extern void update_mode_freeze_r(void) __asm__("func_001FD3E8");
 extern void parse_space_scene_chunk_r2(s32) __asm__("func_00205220");
 extern void update_moby_animation_state_r(RenderSequenceActor *) __asm__("func_0020D6D0");
@@ -1033,7 +1033,7 @@ void update_gameplay_frame(void) {
         actor->current_frame = render_sequence_r2.frame >> 1;
         actor->next_frame = frame_index + 1;
         update_moby_animation_state_r(actor);
-        actor->frame_fraction = IntToFloat_r(render_sequence_r2.frame & 1) * 0.5f;
+        actor->frame_fraction = IntToFloat(render_sequence_r2.frame & 1) * 0.5f;
         animation_positions = ((RenderSequenceSidecar *)actor)->animation_positions;
         FastVecScale_r(&first_position, &animation_positions[actor->current_frame], 1.0f - actor->frame_fraction);
         FastVecScale_r(&next_position, &animation_positions[actor->next_frame], actor->frame_fraction);

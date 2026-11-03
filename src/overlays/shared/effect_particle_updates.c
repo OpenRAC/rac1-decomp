@@ -1077,7 +1077,7 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 int func_001F9938_26bca8(void *) __asm__("func_001F9938");
 void func_L00_002688A8_26bca8(void *) __asm__("func_L00_002688A8");
-float func_001FA888_26bca8(int) __asm__("func_001FA888");
+
 int func_L00_00237B70_26bca8(int, int, float) __asm__("func_L00_00237B70");
 void func_001F9BD8_26bca8(void *, void *, void *) __asm__("func_001F9BD8");
 void func_001F9C30_26bca8(void *, void *, float) __asm__("func_001F9C30");
@@ -1099,13 +1099,13 @@ void update_shrinking_effect_particle_with_gravity_and_secondary_spawns(struct P
         return;
     }
     p = (unsigned char *)&m->pos;
-    a = func_001FA888_26bca8(m->timer);
-    b = func_001FA888_26bca8(o->max_timer);
+    a = IntToFloat(m->timer);
+    b = IntToFloat(o->max_timer);
     a *= o->base_size;
     a /= b;
     m->size = a;
-    a = func_001FA888_26bca8(m->timer);
-    m->color = func_L00_00237B70_26bca8(o->color_end, o->color_start, a / func_001FA888_26bca8(o->max_timer));
+    a = IntToFloat(m->timer);
+    m->color = func_L00_00237B70_26bca8(o->color_end, o->color_start, a / IntToFloat(o->max_timer));
     func_001F9BD8_26bca8(p, p, o);
     o->vel.z -= g_frame_time_sq_r * 14.6f;
     qcopy(&u, p);
@@ -1182,7 +1182,7 @@ char *mine_debris(float f, char *a, char *b, int c, int d, int e, int g) {
 }
 extern float cpu_frame_load_r __asm__("D_L00_0015F6B4") MACRO_ADDR;
 extern char g_debug_camera_r[] __asm__("D_L00_00166EC0");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
@@ -1211,8 +1211,8 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
         return;
     }
     {
-        float f20 = IntToFloat_r(m->timer);
-        m->color = DefaultVtbl_DeleteMoby_r(p->c14, p->c10, f20 / IntToFloat_r(p->life));
+        float f20 = IntToFloat(m->timer);
+        m->color = DefaultVtbl_DeleteMoby_r(p->c14, p->c10, f20 / IntToFloat(p->life));
         c = m->color >> 24;
         f = FastVecDist_r(&m->pos, g_debug_camera_r);
         if (m->timer < scale_ticks_r(6))
@@ -1222,7 +1222,7 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
             return;
         }
         if (f < 8.0f)
-            c = truncate_float_to_s32_r2(IntToFloat_r(c) * (f - 4.0f) * 0.25f);
+            c = truncate_float_to_s32_r2(IntToFloat(c) * (f - 4.0f) * 0.25f);
         m->color = (c << 24) | (m->color & 0xFFFFFF);
         FastVecAdd_r(&m->pos, &m->pos, p);
         k = p->kind;

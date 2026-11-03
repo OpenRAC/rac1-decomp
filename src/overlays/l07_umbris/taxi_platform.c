@@ -3197,7 +3197,7 @@ extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern int func_001160D8_3126A8(void) __asm__("func_001160D8");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern void MobyGroup_SetByteBC_r2(int, int) __asm__("func_L01_0026F040");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float FastCos_r(float) __asm__("func_001F9F90");
@@ -3272,14 +3272,14 @@ void update_command_triggered_falling_platform(Moby *m) {
                 if (d->bBE != 0)
                     MobyGroup_SetByteBC_r2(m->group, 2);
                 k = 0.017453292f;
-                m->rot.x = FastAddRots_r(d->fA4, FastSin_r(normalize_angle_r(IntToFloat_r(d->fAC) * 0.75f)) * k);
-                m->rot.y = FastAddRots_r(d->fA8, FastCos_r(normalize_angle_r(IntToFloat_r(d->fAC) * 0.89f)) * k);
+                m->rot.x = FastAddRots_r(d->fA4, FastSin_r(normalize_angle_r(IntToFloat(d->fAC) * 0.75f)) * k);
+                m->rot.y = FastAddRots_r(d->fA8, FastCos_r(normalize_angle_r(IntToFloat(d->fAC) * 0.89f)) * k);
             }
             break;
         case 2: {
             float k = 0.017453292f;
-            m->rot.x = FastAddRots_r(d->fA4, FastSin_r(normalize_angle_r(IntToFloat_r(d->fAC) * 0.75f)) * k);
-            m->rot.y = FastAddRots_r(d->fA8, FastCos_r(normalize_angle_r(IntToFloat_r(d->fAC) * 0.89f)) * k);
+            m->rot.x = FastAddRots_r(d->fA4, FastSin_r(normalize_angle_r(IntToFloat(d->fAC) * 0.75f)) * k);
+            m->rot.y = FastAddRots_r(d->fA8, FastCos_r(normalize_angle_r(IntToFloat(d->fAC) * 0.89f)) * k);
             if (fast_dec_timer_r2(&d->fAC) != 0) {
                 if (d->bBE != 0) {
                     q->b19D = d->bBF;
@@ -3641,7 +3641,6 @@ typedef struct Packet {
     long x138;
 } Packet;
 
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
 extern float normalize_angle_r2(float) __asm__("func_L00_0025F368");
 extern float FastCos_r2(float) __asm__("func_001F9F90");
 extern float FastSin_r2(float) __asm__("func_001F9FA8");
@@ -3669,7 +3668,7 @@ void draw_collision_clipped_moby_beam(Moby *arg) {
     int flag = 1;
     int k;
 
-    f20 = IntToFloat_r2(umbris_frame_count_r);
+    f20 = IntToFloat(umbris_frame_count_r);
     qcopy(v50, p->f140);
     t = FastCos_r2(normalize_angle_r2(f20 / 11.0f));
     f20 = f20 / 10.0f;

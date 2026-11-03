@@ -271,7 +271,6 @@ extern void FastVecAdd_DD68(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_DD68(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_DD68(void *, void *, f32) __asm__("func_001F9C30");
 
-extern f32 IntToFloat_DD68(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32_DD68(f32) __asm__("func_001FA898");
 
 extern void Sound_PickOcclusionOrigin_DD68(void *) __asm__("func_0022D8C0");
@@ -372,7 +371,7 @@ s32 func_0022DD68_r(void) {
         } while (previous_history_index != voice_pool_DD68.listener_history_position);
     }
     if (listener_sample_count >= 2) {
-        FastVecScale_DD68(&listener_velocity, &listener_velocity, 1.0f / IntToFloat_DD68(listener_sample_count));
+        FastVecScale_DD68(&listener_velocity, &listener_velocity, 1.0f / IntToFloat(listener_sample_count));
     }
 
     if (g_game_mode == 2) {

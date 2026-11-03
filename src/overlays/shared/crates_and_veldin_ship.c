@@ -421,7 +421,7 @@ extern u8 *level_paths_r2[] __asm__("D_L00_001B0830");
 void func_001F9BC0_2D19E8(void *) __asm__("func_001F9BC0");
 void func_L00_00261478_2D19E8(u8 *, s32, void *, void *, void *, void *) __asm__("func_L00_00261478");
 void func_001F9BF0_2D19E8(void *, void *, void *) __asm__("func_001F9BF0");
-f32 func_001F9B88_2D19E8(f32) __asm__("func_001F9B88");
+
 void func_L00_002584A8_2D19E8(u8 *, s32, s32) __asm__("func_L00_002584A8");
 s32 func_L00_00258250_2D19E8(u8 *, s32 *) __asm__("func_L00_00258250");
 f32 func_00214158_2D19E8(void) __asm__("func_00214158");
@@ -462,8 +462,8 @@ void func_L00_002D19E8_r(u8 *a) {
             func_L00_00261478_2D19E8(a, *(s32 *)&((struct CrateVars *)b)->attach_moby, a + 0x10, a + 0x40, &v30, &v40);
             func_001F9BF0_2D19E8(&v20, &v30, a + 0x10);
         }
-        if (g_current_level_index_r == LEVEL_QUARTU && func_001F9B88_2D19E8(((Moby *)a)->pos.x - 166.0f) < 6.0f &&
-            func_001F9B88_2D19E8(((Moby *)a)->pos.y - 193.0f) < 6.0f) {
+        if (g_current_level_index_r == LEVEL_QUARTU && FastAbsF(((Moby *)a)->pos.x - 166.0f) < 6.0f &&
+            FastAbsF(((Moby *)a)->pos.y - 193.0f) < 6.0f) {
             s32 save = current_moby_mission_complete;
             current_moby_mission_complete = 0;
             func_L00_002584A8_2D19E8(a, 0x100, -1);
@@ -1546,7 +1546,7 @@ extern f32 distxy_2D4398(void *, void *) __asm__("func_001F9D48");
 extern f32 atan2_2D4398(f32, f32) __asm__("func_L00_001FF860");
 extern f32 subrot_2D4398(f32, f32) __asm__("func_001FA790");
 extern f32 addrot_2D4398(f32, f32) __asm__("func_001FA748");
-extern f32 fabs_2D4398(f32) __asm__("func_001F9B88");
+
 extern void spherical_2D4398(void *, f32, f32, f32) __asm__("func_00215C00");
 extern void add_2D4398(void *, void *, void *) __asm__("func_001F9BD8");
 extern void func_001E9768(void *, void *);
@@ -1637,8 +1637,8 @@ void metal_detector_update(struct Moby *moby) {
                                    ((Hero *)g_hero_r)->metal_detector_target->pos.y - vars->pos.f[1]);
                 yaw = subrot_2D4398(yaw, ((Hero *)g_hero_r)->motion.rot.f[2]);
                 pitch = subrot_2D4398(pitch, -1.5707964f);
-                abs_yaw = fabs_2D4398(yaw);
-                abs_pitch = fabs_2D4398(pitch);
+                abs_yaw = FastAbsF(yaw);
+                abs_pitch = FastAbsF(pitch);
                 lim = D_L00_00161A20_2D4398 * 0.017453292f;
                 if (lim < abs_yaw) {
                     yaw /= abs_yaw;

@@ -13,6 +13,7 @@
 #include "game/system/stash.h"
 #include "game/gameplay/missionfunc.h"
 #include "overlays/shared/stash_slots.h"
+#include "game/math/fastfunc.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -129,7 +130,7 @@ extern long GetFrameTex_r(int) __asm__("func_00200248");
 extern void draw_rotated_sprite_r(float, float, int, int, long, float, float, float) __asm__("func_00200E38");
 extern void DoGifPaging_r(void) __asm__("func_001F4748");
 extern void flush_debug_text_queue_r(void) __asm__("func_L00_001F3A78");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void ResetGsRegistersPr_r(void) __asm__("func_001F3D00");
 extern void SpaceTransition_Tick_r(void) __asm__("func_00228110");
@@ -295,7 +296,7 @@ void run_level_main_loop(void) {
         func_001E9768_b_2465F8(level_main_loop_profile_label_r, 0x10);
         VU1_syncChain_r(1);
         {
-            cpu_frame_load_r = IntToFloat_r(*(volatile int *)0x10000800) / (pal_mode_r != 0 ? 11520.0f : 9600.0f);
+            cpu_frame_load_r = IntToFloat(*(volatile int *)0x10000800) / (pal_mode_r != 0 ? 11520.0f : 9600.0f);
         }
         if (cinematic_mode_r == 0 && ((Cam *)g_debug_menu_r)->f18 != 0) {
             func_001E9768_v_2465F8();

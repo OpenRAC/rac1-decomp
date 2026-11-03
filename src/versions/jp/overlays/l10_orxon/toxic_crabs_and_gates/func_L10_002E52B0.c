@@ -79,7 +79,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 *(u128_2E52B0 *)&W = *(u128_2E52B0 *)&dst;
                 vec_scale_to_length_r(&W, &W, 1.0f);
                 vec_scale_to_length_r(&X, &orxon_ground_hit_normal_r, 1.0f);
-                if (0.5f < FastAbsF_r(FastVecDot_r(&W, &X))) {
+                if (0.5f < FastAbsF(FastVecDot_r(&W, &X))) {
                     B = 0.0f;
                     v21 = 11;
                 }
@@ -161,10 +161,10 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     }
     if (d->f1AC != 0) {
         FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
-        if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF_r(m->pos.z - d->a120.z)) {
+        if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
             d->f164 = 2;
         }
-    } else if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF_r(m->pos.z - d->a120.z)) {
+    } else if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
         FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
         d->f164 = 2;
     } else {

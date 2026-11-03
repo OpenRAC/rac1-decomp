@@ -82,7 +82,7 @@ void MorphorayUpdate(Moby *m) {
                 float *s = GetFlaggedPvarWord_r(hit);
                 if (hit != p->target && p->delay == 0) {
                     p->target = hit;
-                    p->total = IntToFloat_r(((short *)s)[2]);
+                    p->total = IntToFloat(((short *)s)[2]);
                     p->left = s[0];
                     p->delay = scale_ticks_r(30);
                     if (p->total <= 1.0f) {
@@ -93,7 +93,7 @@ void MorphorayUpdate(Moby *m) {
                 }
             }
             {
-                float a = IntToFloat_r(hero_globals_base_r[2]) * 0.33f + 1.0f;
+                float a = IntToFloat(hero_globals_base_r[2]) * 0.33f + 1.0f;
                 float d = p->left - D_L00_001617B0_2BDAF0 * g_frame_time_r * a;
                 p->left = d;
                 if (d < 0.0f) {
@@ -145,7 +145,7 @@ void MorphorayUpdate(Moby *m) {
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[0].y;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[0].z;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].radius = 7.5f;
-            f = IntToFloat_r(morphoray_light_fade_timer_r) * 0.05f;
+            f = IntToFloat(morphoray_light_fade_timer_r) * 0.05f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[0] = f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[1] = f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[2] = f * 0.25f;

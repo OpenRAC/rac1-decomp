@@ -1160,7 +1160,7 @@ typedef struct {
 extern s32 Sound_IsPlaying_r(long moby, s32 voice) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r(s32, s32, struct Moby *m) __asm__("func_0022ED80");
 extern void Sound_StopSlot_r(s32 voice) __asm__("func_L00_0028EBF0");
-extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
+
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern f32 func_00214D28(f32 *value, f32 target, f32 step);
 extern void Sound_SetPitchBend_r(s32 voice, s32 volume) __asm__("func_L00_0028F210");
@@ -1178,32 +1178,32 @@ void func_L04_002C2F00_r(struct Moby *m) {
     if (m->state != 9) {
         if (Sound_IsPlaying_r((long)m, v->voice) == 0 && m->prev_seq < 8) {
             v->voice = Moby_PlaySound_r(0, 4, m);
-            v->volume = IntToFloat_r(0x400);
+            v->volume = IntToFloat(0x400);
             v->pitch = 0;
         }
         switch (m->prev_seq) {
             case 0:
                 pitch = 0.0f;
-                volume = IntToFloat_r(0x400) * 0.6f;
+                volume = IntToFloat(0x400) * 0.6f;
                 break;
             case 1:
                 pitch = 3.0f;
-                volume = IntToFloat_r(0x400);
+                volume = IntToFloat(0x400);
                 break;
             case 2:
                 pitch = -2.0f;
-                volume = IntToFloat_r(0x400);
+                volume = IntToFloat(0x400);
                 break;
             case 3:
             case 4:
                 pitch = 4.0f;
-                volume = IntToFloat_r(0x400);
+                volume = IntToFloat(0x400);
                 break;
             case 5:
             case 6:
             case 7:
                 pitch = 0.0f;
-                volume = IntToFloat_r(0x400) * 0.8f;
+                volume = IntToFloat(0x400) * 0.8f;
                 break;
             default:
                 goto release;
@@ -1218,7 +1218,7 @@ void func_L04_002C2F00_r(struct Moby *m) {
         v->voice = -1;
         return;
     }
-    ApproachValue(&v->volume, volume, IntToFloat_r(0x400) * g_frame_time_r * 2.0f);
+    ApproachValue(&v->volume, volume, IntToFloat(0x400) * g_frame_time_r * 2.0f);
     ApproachValue(&v->pitch, pitch, g_frame_time_r * 8.0f);
     Sound_SetPitchBend_r(v->voice, truncate_float_to_s32_r(v->volume));
     Sound_SetPitchBend_r2(v->voice, truncate_float_to_s32_r(v->pitch));

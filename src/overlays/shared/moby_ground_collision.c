@@ -2163,7 +2163,7 @@ void copy_hero_moby_field_38(S *p, s64 v) {
     p->v = v;
 }
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
+
 extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 /* Per-component adjustment of v against src: for each of the three components of v that is negative it recomputes v through the vector helpers. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/math_rotations_0025d238.c, FUN_L00_0025d238. */
@@ -2179,7 +2179,7 @@ void clip_negative_segment_endpoint_xyz(Vec4 *src, Vec4 *v) {
     for (i = 2; i >= 0; i--) {
         if (*pv < 0.0f) {
             FastVecSub_r(b, v, a);
-            FastVecScale_r(b, b, FastAbsF_r((*p0 - 0.1f) / *p1));
+            FastVecScale_r(b, b, FastAbsF((*p0 - 0.1f) / *p1));
             FastVecAdd_r(v, a, b);
         }
         pv++;
@@ -2659,7 +2659,7 @@ extern int D_L00_0016007C MACRO_ADDR;
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float random_angle_radians_r(void) __asm__("func_00214158");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
@@ -2774,7 +2774,7 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             }
         }
     }
-    if (dist < IntToFloat_r(k8) * 2.0f) {
+    if (dist < IntToFloat(k8) * 2.0f) {
         cnt4 = truncate_float_to_s32_r(dist) / 2;
     } else {
         cnt4 = k8;

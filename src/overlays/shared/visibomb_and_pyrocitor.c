@@ -165,13 +165,13 @@ extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
 
 extern void EffectQueue_Add_r(int, int, float, void *, float, int, int, float, int) __asm__("func_L00_001EE2E0");
 extern int get_ammo_r(int) __asm__("func_L00_00234718");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
 extern int use_ammo_r(int, int) __asm__("func_L00_00234638");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
@@ -244,16 +244,16 @@ void func_L00_002B33E8_r(Moby *m) {
             }
         }
         EffectQueue_Add_r((int)m, 0xFF180A65, 1.0f, 0,
-                          FastNormalizeAngle(IntToFloat_r(level_frame_counter_r % scale_ticks_r(240)) * 360.0f /
+                          FastNormalizeAngle(IntToFloat(level_frame_counter_r % scale_ticks_r(240)) * 360.0f /
                                              multiply_global_factor_r(240.0f) * 0.017453292f),
                           0x27, -1, 90.0f, 4);
         if (data->target && !data->cooldown && get_ammo_r(-1)) {
             float d = FastVecDist_r(g_debug_camera_r, &data->target->pos) / 100.0f;
             qcopy(&point, &data->target->pos);
             point.f.z += data->target_height;
-            size = FastAbsF_r(0.9f - d * 0.57f);
+            size = FastAbsF(0.9f - d * 0.57f);
             EffectQueue_Add_r((int)m, 0xFF0FFF0F, size, &point,
-                              FastNormalizeAngle(IntToFloat_r(level_frame_counter_r % scale_ticks_r(240)) * -360.0f /
+                              FastNormalizeAngle(IntToFloat(level_frame_counter_r % scale_ticks_r(240)) * -360.0f /
                                                  multiply_global_factor_r(240.0f) * 0.017453292f),
                               0x27, -1, 90.0f, 4);
         }
@@ -317,7 +317,7 @@ void func_L00_002B33E8_r(Moby *m) {
                                 if (FastDiffRots_r(cam->rot.z, fast_atan2_r(o->pos.x - hero_2B33E8.motion.pos.f[0],
                                                                             o->pos.y - hero_2B33E8.motion.pos.f[1])) <
                                         1.0471976f &&
-                                    FastAbsF_r(tpitch) < 0.7853982f) {
+                                    FastAbsF(tpitch) < 0.7853982f) {
                                     limit = distance;
                                     pitch = -tpitch;
                                     best = o;
@@ -326,14 +326,14 @@ void func_L00_002B33E8_r(Moby *m) {
                                 }
                             }
                             if (!(limit < distance)) {
-                                spread = IntToFloat_r(order_2B33E8.level) * 0.6981317f;
+                                spread = IntToFloat(order_2B33E8.level) * 0.6981317f;
                                 BuildSphericalOffset_r(&tmp, distance, yaw, pitch + hero_2B33E8.ground_pitch.f * 0.5f);
                                 FastVecAdd_r(&tmp, &tmp, &launch);
                                 off = FastArcSin_r(FastVecDist_r(&tmp, &point) / (distance + distance));
                                 off = off + off;
                                 if (spread + 0.17453292f < off) {
                                     if (r) {
-                                        float radius = IntToFloat_r(r->radius) * 0.125f;
+                                        float radius = IntToFloat(r->radius) * 0.125f;
                                         if (radius < distance) {
                                             off -= FastArcSin_r(radius / distance);
                                             if (off < 0.0f)
@@ -419,13 +419,13 @@ void func_L00_002B33E8_r(Moby *m) {
     }
     if (m->seq != 2 && data->glow > 0) {
         if (data->glow > scale_ticks_r(10)) {
-            a = IntToFloat_r(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) / (float)scale_ticks_r(5);
-            b = IntToFloat_r(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) * 0.8f / (float)scale_ticks_r(5);
-            c = IntToFloat_r(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) * 0.5f / (float)scale_ticks_r(5);
+            a = IntToFloat(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) / (float)scale_ticks_r(5);
+            b = IntToFloat(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) * 0.8f / (float)scale_ticks_r(5);
+            c = IntToFloat(scale_ticks_r(5) + scale_ticks_r(10) - data->glow) * 0.5f / (float)scale_ticks_r(5);
         } else {
-            a = IntToFloat_r(data->glow) / (float)scale_ticks_r(10);
-            b = IntToFloat_r(data->glow) * 0.8f / (float)scale_ticks_r(10);
-            c = IntToFloat_r(data->glow) * 0.5f / (float)scale_ticks_r(10);
+            a = IntToFloat(data->glow) / (float)scale_ticks_r(10);
+            b = IntToFloat(data->glow) * 0.8f / (float)scale_ticks_r(10);
+            c = IntToFloat(data->glow) * 0.5f / (float)scale_ticks_r(10);
         }
         Moby_GetJointWorldPos_r(m, 0, &velocity);
         velocity.f.x += FastCos_r(fast_atan2_r(hero_2B33E8.facing_x, hero_2B33E8.facing_y));
@@ -1214,7 +1214,7 @@ extern Moby *select_blaster_auto_aim_target_r(Moby *, void *, float *, float *) 
 extern int get_ammo_r2(int) __asm__("func_L00_00234718");
 extern Aim_2B5C98 *GetFlaggedPvarWord_r2(void *) __asm__("func_L00_0025D390");
 extern float FastVecDist_r3(void *, void *) __asm__("func_001F9D10");
-extern float FastAbsF_r2(float) __asm__("func_001F9B88");
+
 extern int use_ammo_r2(int, int) __asm__("func_L00_00234638");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern float FastDiffRots_r2(float, float) __asm__("func_001FA850");
@@ -1232,7 +1232,7 @@ extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
 
 extern void cancel_hero_item_animation_r(void) __asm__("func_L00_0020ED30");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern int allocate_colored_effect_slot_r2(void *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
 extern void release_point_light_slot_r2(int) __asm__("func_L00_0023F1D0");
 
@@ -1324,7 +1324,7 @@ void func_L00_002B5C98_r(Moby *m) {
             if (r)
                 h = r->height;
             w.point.f.z += h;
-            EffectQueue_Add_r2((int)m, 0xFF0FFF0F, FastAbsF_r2(0.9f - d * 0.65f), &w.point, 0.0f, 0x26, -1, 90.0f, 4);
+            EffectQueue_Add_r2((int)m, 0xFF0FFF0F, FastAbsF(0.9f - d * 0.65f), &w.point, 0.0f, 0x26, -1, 90.0f, 4);
         }
     }
     if (hero_2B33E8.item_anim_active && hero_2B33E8.state.current != 0x72 && cinematic_mode != 2) {
@@ -1413,11 +1413,11 @@ void func_L00_002B5C98_r(Moby *m) {
         data->cooldown = 0;
     }
     if (m->seq != 2 && data->glow > 0) {
-        a = IntToFloat_r2(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f /
+        a = IntToFloat(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f /
             (float)scale_ticks_r3(9);
-        b = IntToFloat_r2(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f /
+        b = IntToFloat(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f /
             (float)scale_ticks_r3(9);
-        c = IntToFloat_r2(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f /
+        c = IntToFloat(data->glow < scale_ticks_r3(9) ? data->glow : scale_ticks_r3(9)) * 0.7f /
             (float)scale_ticks_r3(9);
         w.point.f.x =
             hero_2B33E8.motion.pos.f[0] + FastCos_r2(fast_atan2_r2(hero_2B33E8.facing_x, hero_2B33E8.facing_y)) * 2.0f;
@@ -1811,7 +1811,6 @@ extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
 
 extern float func_00214D28(float *, float, float);
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
-extern float FastAbsF_r3(float) __asm__("func_001F9B88");
 
 extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
 extern int coll_line_r3(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
@@ -1926,9 +1925,9 @@ void visibomb_missile_update(Moby *m) {
     {
         Moby *skip = m;
         axis_rotation_2d48(&d->f24->pos, 1,
-                           -(d->f1C * 0.5f + FastAbsF_r3(d->f18 / 3.0f) + (d->f18 - m->rot.x) * 1.1f) * 0.7f);
+                           -(d->f1C * 0.5f + FastAbsF(d->f18 / 3.0f) + (d->f18 - m->rot.x) * 1.1f) * 0.7f);
         axis_rotation_2d48(&d->f28->pos, 1,
-                           -(d->f1C * 0.5f + FastAbsF_r3(d->f18 / 3.0f) - (d->f18 - m->rot.x) * 1.1f) * 0.7f);
+                           -(d->f1C * 0.5f + FastAbsF(d->f18 / 3.0f) - (d->f18 - m->rot.x) * 1.1f) * 0.7f);
         ev.moby = m;
         ev.flags = 0x830000;
         ev.f1C = 6.0f;
@@ -2891,7 +2890,7 @@ extern float fast_atan2_r4(float, float) __asm__("func_L00_001FF860");
 extern float FastDiffRots_r3(float, float) __asm__("func_001FA850");
 extern float FastVecDist_r4(void *, void *) __asm__("func_001F9D10");
 extern Aim_2B9AD8 *GetFlaggedPvarWord_r3(void *) __asm__("func_L00_0025D390");
-extern float IntToFloat_r3(int) __asm__("func_001FA888");
+
 extern void matrix_mul_vec3_r3(void *, void *, void *) __asm__("func_001F9EC0");
 extern void func_001F9BD8_2B9AD8(void *, void *, void *) __asm__("func_001F9BD8");
 extern void Moby_GetJointWorldPos_r3(void *, int, void *) __asm__("func_L00_00250800");
@@ -3002,8 +3001,7 @@ void func_L00_002B9AD8_r(Moby *m) {
                 } else {
                     s->hold2 = 0;
                 }
-                s->reach +=
-                    (IntToFloat_r3(hero_globals_base_r2[0]) * 6.0f + 12.0f - s->reach) * (frame_scale_r * 0.07f);
+                s->reach += (IntToFloat(hero_globals_base_r2[0]) * 6.0f + 12.0f - s->reach) * (frame_scale_r * 0.07f);
                 if (((Hero *)g_hero_r3)->state.current == HERO_STATE_LOOK) {
                     t.f.x = 1.2f;
                     t.f.y = 0.0f;
@@ -3149,7 +3147,7 @@ void func_L00_002B9AD8_r(Moby *m) {
         level_point_lights_r3[s->light].pos.f.y = ((Hero *)g_hero_r3)->motion.pos.f[1] + t.f.y;
         level_point_lights_r3[s->light].pos.f.z = ((Hero *)g_hero_r3)->motion.pos.f[2] + t.f.z;
         level_point_lights_r3[s->light].pos.f.w = 7.5f;
-        k = IntToFloat_r3(s->glow) / (float)scale_ticks_r5(10);
+        k = IntToFloat(s->glow) / (float)scale_ticks_r5(10);
         level_point_lights_r3[s->light].z = k;
         k = k * 0.7f;
         level_point_lights_r3[s->light].y = k;

@@ -2674,7 +2674,7 @@ extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern s32 see_31AAB0(struct Moby *, SwooperSight *, f32) __asm__("func_L00_00260D30");
 extern f32 dist_31AAB0(void *, void *) __asm__("func_001F9D10");
 extern f32 distxy_31AAB0(void *, void *) __asm__("func_001F9D48");
-extern f32 fabs_31AAB0(f32) __asm__("func_001F9B88");
+
 extern void set_ground_height_band_r(struct Moby *) __asm__("func_L00_0025B178");
 extern MobyHit *hit_31AAB0(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern s32 ComputeHitResponse_r2(struct Moby *, MobyHit *, void *, s32, s32 *, s32, s32,
@@ -2758,7 +2758,7 @@ void update_swooper(struct Moby *moby) {
                         g_frame_time_r * 6.2831855f);
             qcopy(&moby->pos, &vars->goal);
             if ((vars->perch != 0 && distxy_31AAB0(&moby->pos, &vars->perch->pos) < 20.0f &&
-                 fabs_31AAB0(moby->pos.z - vars->perch->pos.z) < 3.0f) ||
+                 FastAbsF(moby->pos.z - vars->perch->pos.z) < 3.0f) ||
                 (sight.found != 0 && dist_31AAB0(&moby->pos, &sight.pos) < spawner_vars->view_range &&
                  distxy_31AAB0(&moby->pos, &vars->spawner->pos) > 2.0f &&
                  rotdiff_31AAB0(moby->rot.z, atan2_31AAB0(sight.pos.f[0] - moby->pos.x, sight.pos.f[1] - moby->pos.y)) <

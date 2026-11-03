@@ -211,8 +211,6 @@ typedef struct {
     Vec4f v40; /* 0x40 */
 } StTab;
 
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
-
 extern float FastCos_r(float) __asm__("func_001F9F90");
 
 extern float func_001F9CE8(void *);
@@ -256,9 +254,9 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
                 h = probe_leg_rig_ground_height((float *)e);
                 sum += h;
                 if (0.0f < h) {
-                    t = FastAbsF_r(((StTab *)eudora_coll_hit)->v40.x);
-                    t = t + FastAbsF_r(((StTab *)eudora_coll_hit)->v40.y);
-                    if (t < FastAbsF_r(((StTab *)eudora_coll_hit)->v40.z)) {
+                    t = FastAbsF(((StTab *)eudora_coll_hit)->v40.x);
+                    t = t + FastAbsF(((StTab *)eudora_coll_hit)->v40.y);
+                    if (t < FastAbsF(((StTab *)eudora_coll_hit)->v40.z)) {
                         FastVecAdd(push, push, &((StTab *)eudora_coll_hit)->v40);
                         n += 4.0f;
                         dz += h - e->z;
@@ -285,12 +283,12 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
         } else {
             a->tilt = 0.0f;
         }
-        if (0.785398f < FastAbsF_r(a->tilt)) {
+        if (0.785398f < FastAbsF(a->tilt)) {
             ret = 2;
         }
         if (a->kind == 0xD && 0.0f < a->ground && (a->mask & 0xF) == 0) {
             t = -fast_atan2_r(a->f8C[1], a->ground - m->pos.z);
-            if (FastAbsF_r(t) < 0.5235988f) {
+            if (FastAbsF(t) < 0.5235988f) {
                 pinned = 1;
                 dz += a->ground - m->pos.z;
                 a->tilt = t;
@@ -604,7 +602,7 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
                     t = g_frame_time * 0.19f;
                     f = (float *)*pp;
                 }
-                m->anim_speed = inv_frame_scale * FastAbsF_r(t / f[2]);
+                m->anim_speed = inv_frame_scale * FastAbsF(t / f[2]);
                 break;
             }
         }

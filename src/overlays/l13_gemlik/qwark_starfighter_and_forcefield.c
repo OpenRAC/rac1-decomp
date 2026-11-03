@@ -157,7 +157,6 @@ extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
 
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -212,7 +211,7 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
     vec_scale_to_length_r(direction, direction, step);
     qcopy(position, start);
     distance = zero;
-    vec_scale_to_length_r(offset, direction, IntToFloat_r(gemlik_frame_count % 20) / 20.0f);
+    vec_scale_to_length_r(offset, direction, IntToFloat(gemlik_frame_count % 20) / 20.0f);
     FastVecSub_r(position, position, offset);
     while (distance < length) {
         width = (distance * 0.0f) / (length + length) + 0.5f;

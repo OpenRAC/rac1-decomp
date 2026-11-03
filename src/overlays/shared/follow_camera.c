@@ -514,7 +514,7 @@ extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float FastCos_r(float) __asm__("func_001F9F90");
@@ -574,10 +574,10 @@ void update_slot_panes_and_effects(int unused, int idx) {
     beam_strand_wave_phase_r[idx] = FastAddRots_r(beam_strand_wave_phase_r[idx], 0.17453292f);
     beam_strand_twist_phase_r[idx] = FastSubRots_r(beam_strand_twist_phase_r[idx], 0.80285144f);
     beam_strand_sway_phase_r[idx] = FastAddRots_r(beam_strand_sway_phase_r[idx], 0.05236f);
-    ang = 360.0f / (IntToFloat_r(20) * 0.5f) * 0.017453292f;
+    ang = 360.0f / (IntToFloat(20) * 0.5f) * 0.017453292f;
     for (j = 0; j < 19; j++) {
         float fj = (float)j;
-        float a = IntToFloat_r(j) / IntToFloat_r(20) * 0.3f + 0.1f;
+        float a = IntToFloat(j) / IntToFloat(20) * 0.3f + 0.1f;
         Pt *p = &beam_strand_points_r[k][j];
 
         a = a * FastSin_r(normalize_angle_r(beam_strand_wave_phase_r[idx] + fj * ang));
@@ -643,7 +643,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
 
                 p->fC = 120000.0f;
                 p->fA = scale_ticks_r(4);
-                q->f10 = one / IntToFloat_r(p->fA);
+                q->f10 = one / IntToFloat(p->fA);
                 q->f18 = 0x7F7F7F;
                 if (beam_spark_style_r[idx] == 1)
                     q->f16 = 1;
@@ -661,7 +661,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
 
                 p->fC = 120000.0f;
                 p->fA = scale_ticks_r(4);
-                q->f10 = 1.0f / IntToFloat_r(p->fA);
+                q->f10 = 1.0f / IntToFloat(p->fA);
                 q->f18 = 0x7F7F7F;
                 if (beam_spark_style_r[idx] == 1)
                     q->f16 = 2;
@@ -1914,7 +1914,7 @@ extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern float Cam_InterpValues_r(void *, float, float, float, float, float) __asm__("func_001EC120");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern void lerp_vector_r(float, void *, void *, void *) __asm__("func_001F9C08");
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern void Cam_UpdateOffsetBlend_r(char *, float *) __asm__("func_L00_002E6BE0");
@@ -1957,14 +1957,14 @@ void follow_camera_springs(char *m) {
         if (++q->hD8 > scale_ticks_r2(D_L00_00161DF0_2E6CE0)) {
             q->hD8 = scale_ticks_r2(D_L00_00161DF0_2E6CE0);
         }
-        lerp_vector_r((float)q->hD8 / IntToFloat_r2(scale_ticks_r2(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
+        lerp_vector_r((float)q->hD8 / IntToFloat(scale_ticks_r2(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
         FastVecAdd_r2(p + 0x80, f, g);
     } else {
         FastDecTimer_r(p + 0x118);
         if (q->hD8 < 0) {
             q->hD8 = 0;
         }
-        lerp_vector_r((float)q->hD8 / IntToFloat_r2(scale_ticks_r2(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
+        lerp_vector_r((float)q->hD8 / IntToFloat(scale_ticks_r2(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
         FastVecAdd_r2(p + 0x80, f, g);
     }
     Cam_UpdateOffsetBlend_r(m, f);

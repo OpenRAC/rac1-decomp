@@ -1783,7 +1783,7 @@ extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, i
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern int FastDecTimer_r2(void *) __asm__("func_001F9938");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
@@ -1854,9 +1854,9 @@ void machinegun_turret_update(char *moby) {
             }
             ((Moby *)moby)->state = 2;
             data->timer = scale_ticks_r(D_L14_001615D4_2B4E40);
-            data->inv_move_time = 1.0f / IntToFloat_r2(data->timer);
+            data->inv_move_time = 1.0f / IntToFloat(data->timer);
             MobySetAnimation_r(moby, 1, 0);
-            ((Moby *)moby)->anim_speed = 1.0f / (IntToFloat_r2(data->timer) * D_L14_001615D8_2B4E40);
+            ((Moby *)moby)->anim_speed = 1.0f / (IntToFloat(data->timer) * D_L14_001615D8_2B4E40);
             return;
         case 2: {
             float t = (float)data->timer * data->inv_move_time;

@@ -379,7 +379,7 @@ extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern unsigned char draw_map51_r[] __asm__("D_0015EEB4") MACRO_ADDR;
 extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
 int func_L00_00205728_00205780(int) __asm__("func_L00_00205728");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern void DetachManipulator_r(int, void *) __asm__("func_0020D9D8");
 extern float func_L00_0025CCF0(void *, void *, float, float, float, float, int);
 extern float func_L00_0025C918(float *, float *, float, float, float, float);
@@ -403,9 +403,9 @@ void update_hero_easing_record(char *p) {
             return;
     }
     if (m->tgt[0] == 0.0f && m->tgt[1] == 0.0f && m->tgt[2] == 0.0f && m->rtgt[0] == 0.0f && m->rtgt[1] == 0.0f &&
-        m->rtgt[2] == 0.0f && FastAbsF_r(m->rot[0]) < 0.003f && FastAbsF_r(m->rot[1]) < 0.003f &&
-        FastAbsF_r(m->rot[2]) < 0.003f && m->scale == 1.0f && FastAbsF_r(m->pos[0]) < 0.005f &&
-        FastAbsF_r(m->pos[1]) < 0.005f && FastAbsF_r(m->pos[2]) < 0.005f) {
+        m->rtgt[2] == 0.0f && FastAbsF(m->rot[0]) < 0.003f && FastAbsF(m->rot[1]) < 0.003f &&
+        FastAbsF(m->rot[2]) < 0.003f && m->scale == 1.0f && FastAbsF(m->pos[0]) < 0.005f &&
+        FastAbsF(m->pos[1]) < 0.005f && FastAbsF(m->pos[2]) < 0.005f) {
         if (m->active != 0)
             DetachManipulator_r(v, m);
     } else {
@@ -2970,7 +2970,7 @@ typedef struct {
 extern struct Hero D_0013F450_20b1d8 __asm__("D_0013F450");
 extern A_20b1d8 lean_state_r3 __asm__("D_L00_0017A780");
 extern s32 Hero_IsInSpecialState_r(void) __asm__("func_L00_0020DC00");
-extern f32 FastAbsF_r2(f32) __asm__("func_001F9B88");
+
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
 extern f32 FastSubRots_r(f32, f32) __asm__("func_001FA790");
 extern void configure_hero_point_effect_emission_r(s32, s32, s32, s32, f32, f32) __asm__("func_L00_00233B08");
@@ -2986,11 +2986,11 @@ void update_hero_easing_targets_and_point_effects(void) {
     s32 i;
     if (Hero_IsInSpecialState_r())
         return;
-    if (0.03f < FastAbsF_r2(D_0013F450_20b1d8.unk2C0.f[0]) || 0.03f < FastAbsF_r2(D_0013F450_20b1d8.unk2C0.f[1]) ||
-        0.06981317f < FastAbsF_r2(D_0013F450_20b1d8.unk2C8.f[0]) ||
-        0.06981317f < FastAbsF_r2(D_0013F450_20b1d8.unk2C8.f[1]) ||
-        0.06981317f < FastAbsF_r2(D_0013F450_20b1d8.unk2D0.f[0]) ||
-        0.06981317f < FastAbsF_r2(D_0013F450_20b1d8.unk2D0.f[1])) {
+    if (0.03f < FastAbsF(D_0013F450_20b1d8.unk2C0.f[0]) || 0.03f < FastAbsF(D_0013F450_20b1d8.unk2C0.f[1]) ||
+        0.06981317f < FastAbsF(D_0013F450_20b1d8.unk2C8.f[0]) ||
+        0.06981317f < FastAbsF(D_0013F450_20b1d8.unk2C8.f[1]) ||
+        0.06981317f < FastAbsF(D_0013F450_20b1d8.unk2D0.f[0]) ||
+        0.06981317f < FastAbsF(D_0013F450_20b1d8.unk2D0.f[1])) {
         if (D_0013F450_20b1d8.unk308 != 1) {
             lean_state_r3.f324 = -D_0013F450_20b1d8.unk2C8.f[0];
             lean_state_r3.f3D4 = -D_0013F450_20b1d8.unk2C8.f[1];

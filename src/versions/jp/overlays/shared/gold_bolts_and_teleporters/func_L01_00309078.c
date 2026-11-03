@@ -38,7 +38,7 @@ void gold_bolt_update(Moby *moby) {
             if (!(dist_00309078(&moby->pos, &hero_00309078.motion.pos) < 3.0f)) {
                 return;
             }
-            if (!(fabs_00309078(moby->pos.z - hero_00309078.motion.pos.f[2]) < 2.0f)) {
+            if (!(FastAbsF(moby->pos.z - hero_00309078.motion.pos.f[2]) < 2.0f)) {
                 return;
             }
             if (hero_00309078.health.hp == 0) {

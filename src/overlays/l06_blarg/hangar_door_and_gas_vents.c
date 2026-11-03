@@ -822,7 +822,7 @@ extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
 extern void update_drawbridge_segment_transforms_r(Moby *) __asm__("func_L06_002F71A8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern int Moby_PlaySound_r2(int, int, Moby *) __asm__("func_0022ED80");
@@ -906,7 +906,7 @@ void update_drawbridge(Moby *m) {
         case 3:
             old = s->f6C;
             ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks_r(20));
-            blarg_fade_level = 1.0f - FastAbsF_r(s->f6C);
+            blarg_fade_level = 1.0f - FastAbsF(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
                 Hero_ResetToPosition_r(&g_hero.motion.pos, &g_hero.motion.rot, 0x72, 1);
                 CameraScript_r(blarg_scene_points_r + (s->i60 << 7) + 0x30, blarg_scene_points_r + (s->i60 << 7) + 0x70,
@@ -975,7 +975,7 @@ void update_drawbridge(Moby *m) {
         case 5:
             old = s->f6C;
             ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks_r(20));
-            blarg_fade_level = 1.0f - FastAbsF_r(s->f6C);
+            blarg_fade_level = 1.0f - FastAbsF(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
                 enter_hero_idle_state_for_current_vehicle_mode_r();
                 CameraScript2_r(3);
@@ -1612,7 +1612,7 @@ extern int func_L00_00259B88(Moby *, void *, void *, void *, float);
 extern void resolve_point_path_segment_xy_clearance_r(float, int, void *, void *) __asm__("func_L00_00262DF0");
 extern void resolve_point_path_segment_xy_clearance_r2(int, void *, void *, float) __asm__("func_L00_00262DF0");
 extern int SegmentCrossPolyline_r(int, void *, void *, void *) __asm__("func_L00_00262BC0");
-extern float FastAbsF_r2(float) __asm__("func_001F9B88");
+
 extern float MobyGetFrameValue_r(Moby *) __asm__("func_0020D830");
 extern void Moby_GetJointWorldPos_r(Moby *, int, void *) __asm__("func_L00_00250800");
 extern int coll_sphere_mobys_r(float, void *, int, Moby *, void *) __asm__("func_L00_001F2BE8");
@@ -1885,7 +1885,7 @@ void alien_snapper_update(Moby *moby) {
             if (D_L06_00161F58_91A8 < FastVecDist(&moby->pos, &v->home) || v->f164 == 2) {
                 moby->state = 0xC;
             } else if (vec_distance_xy(&moby->pos, &target->pos) < D_L06_00161F54_91A8) {
-                if (FastAbsF_r2(target->pos.z - moby->pos.z) < 1.0f) {
+                if (FastAbsF(target->pos.z - moby->pos.z) < 1.0f) {
                     struct Hero *hero = &g_hero;
 
                     if (hero->invulnerable_frames < scale_ticks(10)) {
@@ -2100,7 +2100,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int FastTweenColor_r2(int, int, float) __asm__("func_001FA8A8");
 extern int FindNearestEligibleMoby_r(float, void *, void *, int, int, void *, int) __asm__("func_L00_00260FB0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float FastAbsF_r3(float) __asm__("func_001F9B88");
+
 extern int *blarg_paths_r2[] __asm__("D_L06_001B0FB0");
 extern int D_L06_0015F6B0_2FA618 SDATA(D_L06_0015F6B0);
 extern float D_L06_00161F74_2FA618 SDATA(D_L06_00161F74);
@@ -2207,7 +2207,7 @@ void update_alien_snapper_hit_response_and_targeting(Moby *moby) {
 
     if (FindNearestEligibleMoby_r(data->f1A0, moby, data->f120, 0, 0, blarg_paths_r2[data->f1B0] + 4,
                                   *blarg_paths_r2[data->f1B0]) != 2) {
-        if (data->f1A0 < vec_distance_xy_r(data->f170, data->f120) || 3.0f < FastAbsF_r3(moby->pos.z - data->f128)) {
+        if (data->f1A0 < vec_distance_xy_r(data->f170, data->f120) || 3.0f < FastAbsF(moby->pos.z - data->f128)) {
             data->f164 = 2;
         }
     }
@@ -2319,7 +2319,7 @@ extern void set_moby_and_links_to_states_8_and_9_q(void *) __asm__("func_L06_002
 extern void set_listed_class_16f_state_2_and_data_28_to_one_q(int) __asm__("func_L06_002DB1D8");
 extern void MobyBlendAnimation_q(void *, int, int, int) __asm__("func_00213DE0");
 extern void start_alien_queen_intro_q(void *) __asm__("func_L06_002FC578");
-extern float FastAbsF_q(float) __asm__("func_001F9B88");
+
 extern int update_alien_queen_intro_camera_q(void *) __asm__("func_L06_002FC6D8");
 extern void finish_alien_queen_intro_q(void *) __asm__("func_L06_002FC8E0");
 
@@ -2454,7 +2454,7 @@ void alien_queen_update(unsigned char *moby) {
             ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + data->vel_z;
             data->vel_z = data->vel_z - g;
             if ((unsigned char)((Moby *)moby)->prev_seq == 8) {
-                if (FastAbsF_q((((Moby *)moby)->pos.z - data->home_z) / data->vel_z) <= 6.0f &&
+                if (FastAbsF((((Moby *)moby)->pos.z - data->home_z) / data->vel_z) <= 6.0f &&
                     (unsigned char)((Moby *)moby)->prev_seq != 9) {
                     MobyBlendAnimation_q(moby, 9, 0, scale_ticks_q(5));
                 }

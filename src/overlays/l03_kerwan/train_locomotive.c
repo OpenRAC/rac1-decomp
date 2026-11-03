@@ -756,7 +756,7 @@ extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
@@ -809,7 +809,7 @@ void moving_platform_small_update(Moby *moby) {
             d->length = FastVecDist_r(p->path->pts, &p->path->pts[p->path->count - 1]);
             {
                 int n = scale_ticks_r(240);
-                float t = IntToFloat_r(n * scale_ticks_r(240));
+                float t = IntToFloat(n * scale_ticks_r(240));
                 d->ticks = 0;
                 d->accel = d->length * 4.0f / t;
             }
@@ -833,7 +833,7 @@ void moving_platform_small_update(Moby *moby) {
                 n = scale_ticks_r(240) - d->ticks;
                 s = d->length;
             }
-            s = s + a * 0.5f * IntToFloat_r(n * n);
+            s = s + a * 0.5f * IntToFloat(n * n);
             if (p->dir < 0)
                 s = d->length - s;
             FastVecSub_r2(v3, &p->path->pts[p->path->count - 1], p->path->pts);

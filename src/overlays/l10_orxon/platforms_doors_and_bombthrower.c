@@ -332,7 +332,7 @@ extern float addrot_00299818(float, float) __asm__("func_001FA748");
 extern void initialize_moby_particle_effect_r(void *) __asm__("func_L00_002D80A0");
 extern void emit_moby_sprite_particles_r(void *) __asm__("func_L10_00299AF0");
 extern float dist_00299818(void *, void *) __asm__("func_001F9D48");
-extern float fabs_00299818(float) __asm__("func_001F9B88");
+
 extern void start_scene_00299818(int) __asm__("func_L00_00299B68");
 extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
 extern void grant_inventory_item_r(int, int) __asm__("func_L00_002618D8");
@@ -360,7 +360,7 @@ void magnetboots_update(Moby *m) {
             emit_moby_sprite_particles_r(m);
             if (dist_00299818(&m->pos, g_hero_r + 0x80) < 5.0f) {
                 struct Hero *h = (struct Hero *)g_hero_r;
-                if (fabs_00299818(m->pos.z - h->motion.pos.f[2]) < 2.0f && h->health.hp != 0) {
+                if (FastAbsF(m->pos.z - h->motion.pos.f[2]) < 2.0f && h->health.hp != 0) {
                     m->flags |= 0x41;
                     start_scene_00299818(2);
                     m->state = 2;

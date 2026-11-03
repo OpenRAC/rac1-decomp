@@ -11,6 +11,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "game/audio/music.h"
+#include "game/math/fastfunc.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -76,7 +77,7 @@ extern int D_0015EE84_30D370 SDATA(D_0015EE84);
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern float func_001F9D48(void *, void *);
 
 extern int func_001F9908(int *arg0);
@@ -115,7 +116,7 @@ void timed_activation_pads_update(unsigned char *moby) {
         p = &g_hero;
         if (p->air_frames.s == 0)
             flag = (unsigned char *)p->ground_moby == moby;
-        if (0.7853982f < FastAbsF_r(((Moby *)moby)->rot.y)) {
+        if (0.7853982f < FastAbsF(((Moby *)moby)->rot.y)) {
             if (vec_distance_xy(moby + 0x10, (char *)&p->motion.pos) < 2.0f) {
                 if (p->state.current == 0x11) {
                     if (p->anim_frame < 7.0f) {
@@ -123,9 +124,9 @@ void timed_activation_pads_update(unsigned char *moby) {
                         set_identity_matrix(q);
                         matrix_from_basis_rows(q, moby + 0xC0);
                         transform_vector(o, o, q);
-                        if (FastAbsF_r(o[0]) < 0.6f) {
-                            if (FastAbsF_r(o[1]) < 0.6f) {
-                                if (FastAbsF_r(o[2]) < 0.957f)
+                        if (FastAbsF(o[0]) < 0.6f) {
+                            if (FastAbsF(o[1]) < 0.6f) {
+                                if (FastAbsF(o[2]) < 0.957f)
                                     flag = 1;
                             }
                         }

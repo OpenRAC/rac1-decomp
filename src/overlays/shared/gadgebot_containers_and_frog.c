@@ -2329,7 +2329,7 @@ typedef struct {
 extern int get_first_moby_in_group_r(int *, int, int, int) __asm__("func_L00_0025A208");
 extern int get_next_moby_in_group_r(int *, int, int, int) __asm__("func_L00_0025A2F0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern int blarg_moby_list_r[] __asm__("D_L06_001AC500");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002f2910. */
@@ -2350,8 +2350,8 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                 ((Moby *)list)->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                 ((Moby *)list)->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) {
                 if (!(best < vec_distance_xy_r(&moby->pos, &((Moby *)list)->pos)) &&
-                    !(0.2f < FastAbsF_r(moby->pos.z - ((Moby *)list)->pos.z)) &&
-                    !(1.5f < FastAbsF_r(moby->pos.z - ((Moby *)list)->pos.z))) {
+                    !(0.2f < FastAbsF(moby->pos.z - ((Moby *)list)->pos.z)) &&
+                    !(1.5f < FastAbsF(moby->pos.z - ((Moby *)list)->pos.z))) {
                     if ((((Moby *)list)->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER &&
                          ((Moby *)list)->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) ||
                         ((Moby *)list)->state != 2) {
@@ -2373,8 +2373,8 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                 candidate->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                 candidate->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) {
                 if (!(best < vec_distance_xy_r(&moby->pos, &candidate->pos)) &&
-                    !(0.2f < FastAbsF_r(moby->pos.z - candidate->pos.z)) &&
-                    !(1.5f < FastAbsF_r(moby->pos.z - candidate->pos.z))) {
+                    !(0.2f < FastAbsF(moby->pos.z - candidate->pos.z)) &&
+                    !(1.5f < FastAbsF(moby->pos.z - candidate->pos.z))) {
                     if ((candidate->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER &&
                          candidate->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) ||
                         candidate->state != 2) {

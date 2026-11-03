@@ -2176,7 +2176,7 @@ extern int allocate_voice_for_group_entry_r2(int, int, void *) __asm__("func_002
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 
 /* Red button (moby Red Button) update on level 06: turns its two levers, waits for the hero to press it, then
@@ -2247,7 +2247,7 @@ void red_button_update(Moby *m) {
                 scripted_camera_sequence_active_r = 1;
             }
             if (d->timer < scale_ticks_r2(10)) {
-                f20 = IntToFloat_r(d->timer);
+                f20 = IntToFloat(d->timer);
                 f20 = f20 / (float)scale_ticks_r2(10);
                 blarg_fade_level_r = 1.0f - f20;
             }
@@ -2257,7 +2257,7 @@ void red_button_update(Moby *m) {
             cur = d->timer;
             if (cur < n) {
                 d->timer = cur + 1;
-                f20 = IntToFloat_r(cur + 1);
+                f20 = IntToFloat(cur + 1);
                 f20 = f20 / (float)scale_ticks_r2(10);
                 blarg_fade_level_r = 1.0f - f20;
             }

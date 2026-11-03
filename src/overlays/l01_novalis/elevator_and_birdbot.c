@@ -2962,7 +2962,7 @@ extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
-extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
+
 typedef union {
     u128_pt q;
     struct {
@@ -2992,7 +2992,7 @@ extern short D_L01_00161C90;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern f32 spring_axis_to_r(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L01_002F95A0");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
+
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 
@@ -3030,7 +3030,7 @@ void water_lily_update(HoverMoby *m) {
                              *(float *)&water_lily_spring_velocity_adjustment_scale * g_frame_time_sq_r,
                              *(float *)&water_lily_spring_damping, 3.0f);
             if (vec_distance_xy_r(&m->pos, &g_hero_r2.motion.pos) < *(float *)&water_lily_hero_separation_radius) {
-                if (FastAbsF_r(m->pos.v.z - g_hero_r2.motion.pos.f[2]) < 0.7f) {
+                if (FastAbsF(m->pos.v.z - g_hero_r2.motion.pos.f[2]) < 0.7f) {
                     ang = fast_atan2_r(m->pos.v.x - g_hero_r2.motion.pos.f[0], m->pos.v.y - g_hero_r2.motion.pos.f[1]);
                     m->pos.v.x = FastCos_r(ang) * *(float *)&water_lily_hero_separation_radius;
                     m->pos.v.y = FastSin_r(ang) * *(float *)&water_lily_hero_separation_radius;

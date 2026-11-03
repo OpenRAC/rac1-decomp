@@ -403,7 +403,7 @@ extern int random_integer_below_r2(int) __asm__("func_002140B0");
 extern int FindNearestTargetMoby_r(void *, void *, float) __asm__("func_L00_00260D30");
 extern int FindNearestEligibleMoby_r(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
+
 extern float g_frame_time_sq_r2 __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern Path *gaspar_paths_r[] __asm__("D_L09_001B0930");
@@ -533,7 +533,7 @@ void update_seeker_damage_and_target(Moby *m) {
         if (res != lost && d->retreat == 0) {
             if (d->reach < vec_distance_xy_r2(&m->pos, tgt)) {
                 d->f164 = lost;
-            } else if (3.0f < FastAbsF_r(m->pos.z - d->target[2])) {
+            } else if (3.0f < FastAbsF(m->pos.z - d->target[2])) {
                 d->f164 = lost;
             }
         }
@@ -661,7 +661,7 @@ extern float ground_2E39E0(void *, int, float) __asm__("func_00214358");
 extern void vec_sub_2E39E0(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_add_2E39E0(void *, void *, void *) __asm__("func_001F9BD8");
 extern float length_2E39E0(void *) __asm__("func_001F9CB8");
-extern float fabs_2E39E0(float) __asm__("func_001F9B88");
+
 extern int status_2E39E0(int) __asm__("func_002140B0");
 extern float range_float_2E39E0(float, float) __asm__("func_002140F8");
 extern void func_L00_002592B0(Moby *, float, void *, float, float, float);
@@ -817,7 +817,7 @@ void update_ground_melee_enemy(Moby *m) {
             break;
         case 1:
             vec_sub_2E39E0(&step, &query, &m->pos);
-            if ((kind < 2 || length_2E39E0(&step) < d->range + 4.0f) && fabs_2E39E0(m->pos.z - query.z) < 8.0f &&
+            if ((kind < 2 || length_2E39E0(&step) < d->range + 4.0f) && FastAbsF(m->pos.z - query.z) < 8.0f &&
                 !status_2E39E0(19)) {
                 m->state = 2;
                 if (m->prev_seq != 4)
@@ -839,7 +839,7 @@ void update_ground_melee_enemy(Moby *m) {
         case 11:
             MobySpringTurn(m, angle_2E39E0(query.x - m->pos.x, query.y - m->pos.y), d->turn, 0.02f, 0.3f, 0.1f);
             vec_sub_2E39E0(&step, &query, &m->pos);
-            if ((kind < 2 || length_2E39E0(&step) < d->range) && fabs_2E39E0(m->pos.z - query.z) < 8.0f &&
+            if ((kind < 2 || length_2E39E0(&step) < d->range) && FastAbsF(m->pos.z - query.z) < 8.0f &&
                 !status_2E39E0(19)) {
                 if (m->group != 0xFF)
                     event_2E39E0(m->group, 1);
@@ -867,7 +867,7 @@ void update_ground_melee_enemy(Moby *m) {
         case 3: {
             int flags;
             float steep;
-            steep = fabs_2E39E0(m->pos.z - query.z);
+            steep = FastAbsF(m->pos.z - query.z);
             steep /= fast_distance_2E39E0(&m->pos, &query);
             if (d->path != -1)
                 project_2E39E0(m, gaspar_paths_r2[d->path], &query, &goal);
@@ -891,7 +891,7 @@ void update_ground_melee_enemy(Moby *m) {
             } else if (d->f190 < g_frame_time_r2 || 1.0f < steep || (flags & 2)) {
                 d->home_timer = ticks_2E39E0(50);
                 m->state = 5;
-            } else if (length_2E39E0(&away) < d->range + 4.0f && fabs_2E39E0(m->pos.z - query.z) < 8.0f) {
+            } else if (length_2E39E0(&away) < d->range + 4.0f && FastAbsF(m->pos.z - query.z) < 8.0f) {
                 if (m->group != 0xFF)
                     event_2E39E0(m->group, 1);
             } else if (m->command != 1) {
@@ -902,7 +902,7 @@ void update_ground_melee_enemy(Moby *m) {
         }
         case 4:
             MobySpringTurn(m, angle_2E39E0(query.x - m->pos.x, query.y - m->pos.y), d->turn, 0.05f, 0.3f, 0.2f);
-            if (m->seq == m->prev_seq && MobyGetFrameValue(m) == 13.0f && fabs_2E39E0(m->pos.z - query.z) < 0.5f &&
+            if (m->seq == m->prev_seq && MobyGetFrameValue(m) == 13.0f && FastAbsF(m->pos.z - query.z) < 0.5f &&
                 fast_distance_2E39E0(&m->pos, &query) < 2.0f &&
                 angle_dist_2E39E0(angle_2E39E0(query.x - m->pos.x, query.y - m->pos.y), m->rot.z) < 0.2617994f) {
                 step.x = sine_2E39E0(m->rot.z) * 0.2f;
@@ -1006,7 +1006,7 @@ void update_ground_melee_enemy(Moby *m) {
         case 12: {
             int flags;
             float steep;
-            steep = fabs_2E39E0(m->pos.z - query.z);
+            steep = FastAbsF(m->pos.z - query.z);
             steep /= fast_distance_2E39E0(&m->pos, &query);
             if (d->path != -1)
                 project_2E39E0(m, gaspar_paths_r2[d->path], &d->home, &goal);
