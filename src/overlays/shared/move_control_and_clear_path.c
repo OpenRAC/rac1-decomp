@@ -98,8 +98,6 @@ void check_scaled_vector_bsphere(char *vec, float scale) {
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int test_path_segment_strict_crossing(int, void *, void *);
-
 typedef int u128 __attribute__((mode(TI)));
 
 // Returns a bitmask of the table's spheres that no listed object touches, testing swept offsets.

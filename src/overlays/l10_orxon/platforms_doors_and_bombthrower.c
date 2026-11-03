@@ -20,6 +20,8 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -203,8 +205,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 
 extern float random_angle_radians(void);
 extern float randf_sym(float lo, float hi);
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
+
 extern int rand_range(int, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -390,9 +391,8 @@ extern char *orxon_scene_points MACRO_ADDR;
 extern int orxon_relocation_reset_flag SDATA(orxon_relocation_reset_flag);
 extern int try_set_help_message(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void enter_hero_vehicle_mode(int, int, char *);
+
 extern void MusicRequestTrack(int, int);
-extern void exit_hero_vehicle_mode(void);
 
 // Level 10 update for moby class 22: links two Ent records, sets table bits, calls the spawn helpers.
 void update_hero_relocation_trigger(char *m) {
@@ -2212,7 +2212,7 @@ unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, fl
     return o;
 }
 typedef int Effect128 __attribute__((mode(TI)));
-extern void path_sample_at_distance(int, float *, float *, void *, float, float);
+
 extern s32 truncate_float_to_s32(f32);
 extern f32 IntToFloat(s32);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);

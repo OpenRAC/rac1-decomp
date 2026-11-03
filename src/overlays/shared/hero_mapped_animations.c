@@ -17,6 +17,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -1441,7 +1442,6 @@ void update_hero_attachment(void) {
     FastVecAdd(g_hero + 0xF0, g_hero + 0xF0, &v20);
     ((Hero *)g_hero)->motion.platform_delta.f[3] = FastSubRots(((Hero *)g_hero)->motion.rot.f[2], ang);
 }
-extern int resolve_point_path_segment_clearance(int, void *, void *, float);
 
 /* Calls resolve_point_path_segment_clearance with the id at g_hero + 0x22DA, the vector
    at +0x80 (as both pointers) and the float at +0x234; when it returns
@@ -1504,7 +1504,6 @@ void animate_hero_slot4_and_slot5_visuals(void) {
 }
 extern char cutscene_state[];
 
-extern void update_hero_item_mobys(void);
 extern void animate_hero_slot4_and_slot5_visuals(void);
 
 /* in state 2 or 6: flag the matching mobys, update, then clear bit 0 of three mobys */

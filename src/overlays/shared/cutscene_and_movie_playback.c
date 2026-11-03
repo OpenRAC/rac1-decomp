@@ -32,6 +32,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -148,8 +149,6 @@ extern char level_profile_mark_after_hero[];
 extern char level_profile_mark_after_parts[];
 extern char level_profile_mark_after_camera[];
 extern char level_profile_mark_after_sound[];
-
-extern void update_timed_hud_visibility(void);
 
 extern void hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, int, int, int, int, int);

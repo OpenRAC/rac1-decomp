@@ -1033,8 +1033,7 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
     }
     return done;
 }
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
+
 extern short D_L03_00161B70;
 extern short D_L03_00161B74;
 extern short D_L03_00161B78;
@@ -1342,7 +1341,6 @@ extern int DialogRequest_Init(void *, unsigned char *);
 extern int Npc_TryStartDialog(struct Moby *, struct TalkState_hg *);
 extern void initialize_moby_grounding(struct Moby *);
 
-extern void ShowBanner(int, int);
 extern void memcard_Save(int, int);
 
 #define LINK_HELPER(M, V)                                                  \
@@ -2248,7 +2246,7 @@ extern float kerwan_moby_bob_rate_deg SDATA(kerwan_moby_bob_rate_deg);
 extern float kerwan_moby_sway_amplitude SDATA(kerwan_moby_sway_amplitude);
 extern float kerwan_moby_sway_rate_a_deg SDATA(kerwan_moby_sway_rate_a_deg);
 extern float kerwan_moby_sway_rate_b_deg SDATA(kerwan_moby_sway_rate_b_deg);
-extern void update_moby_vertical_oscillation(float x, float y, char *a, float *p, float *q);
+
 /* sets two aim angles on a moby from level constants scaled by degrees-to-radians */
 void update_moby_oscillation(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
@@ -2326,7 +2324,7 @@ extern int Help_Request(int a, int b);
 extern float vec_distance_xy(void *, void *);
 
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern Help_2E08E8 usage_stats_r[] __asm__("D_00141948");
 extern Help_2E08E8 help_records_r[] __asm__("D_00141A68");
 extern unsigned char special_items_base[];
@@ -2640,7 +2638,7 @@ struct L03Cutscene {
     char *mobys[4];
 };
 extern struct L03Cutscene kerwan_cutscene_state_r __asm__("D_L03_0016C9E0");
-extern void cutscene_set_camera_target(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);

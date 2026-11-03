@@ -20,6 +20,7 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -113,7 +114,6 @@ extern int Sound_PlayClassSound(int, int, void *, int);
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int test_linked_moby_turn_trigger(void *);
-extern int hero_is_in_special_state(void);
 
 #define MOBY_2D7C00(i) ((unsigned char *)(((i) << 8) + (int)D_L15_00160058))
 #define MOBYP_2D7C00(i) (D_L15_00160058 + ((i) << 8))
@@ -1291,7 +1291,7 @@ extern PadState D_0013CA40;
 extern void try_set_help_message(int, int);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void enter_hero_vehicle_mode(int, int, char *);
+
 extern void MusicRequestTrack(int, int);
 extern Moby *quartu_moby_array_m __asm__("D_L15_00160058") MACRO_ADDR;
 extern int quartu_help_message_selector MACRO_ADDR;

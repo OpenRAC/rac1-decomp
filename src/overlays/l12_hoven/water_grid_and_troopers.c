@@ -23,6 +23,7 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -946,7 +947,7 @@ void update_hoven_anklebiter(Moby *m) {
     }
     return;
 }
-extern int SegmentCrossPolyline(int, void *, void *, void *);
+
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern int move_w(void *, void *, void *, void *, float);
 
@@ -1604,8 +1605,6 @@ extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void ShowBanner(int, int);
-
 extern int memcard_Save(int, int);
 
 extern float vec_length_xy(void *);
@@ -1814,7 +1813,7 @@ extern void SetDeathBits();
 extern int hoven_cinematic_mode MACRO_ADDR;
 extern float hoven_zero_vec[] MACRO_ADDR;
 extern char *hoven_nearby_mobys[];
-extern void manipulator_set_scale(void *, float);
+
 extern void process_blarg_trooper_damage_and_alerts(char *moby);
 extern void FindNearestTargetMoby(char *, float *, float);
 extern void MoveCtl_Init(void *);
@@ -3496,7 +3495,7 @@ void edwina_update(char *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int PlayBankSound(int, int, int);
-extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
+
 extern int fast_dec_timer(int *arg0);
 
 extern int helicopter_hit_count SDATA(helicopter_hit_count);

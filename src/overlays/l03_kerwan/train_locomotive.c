@@ -20,6 +20,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -1708,7 +1709,7 @@ extern void set_ground_height_band(void *);
 extern void StepColorFade(void *, void *);
 
 extern void Manipulator_ApplyScale(void *, int, void *, float);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+
 extern void MoveCtl_Init_r(char *p, void *) __asm__("func_L01_0026E8E0");
 extern void update_robot_dog_hit_reaction_r(struct Moby *moby) __asm__("func_L03_002C7DE8");
 
@@ -2246,7 +2247,7 @@ typedef struct Data2C8398 {
     int i29C;
 } Data2C8398;
 extern void FindNearestTargetMoby(void *, void *, float);
-extern void manipulator_set_scale(void *, float);
+
 extern void update_kerwan_path_enemy_hit_reaction(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern void MoveCtl_Init(char *p);

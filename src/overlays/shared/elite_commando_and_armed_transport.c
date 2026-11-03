@@ -559,7 +559,7 @@ extern int truncate_float_to_s32(float);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);

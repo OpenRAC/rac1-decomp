@@ -432,7 +432,6 @@ extern int pad_globals_base_e[] __asm__("D_0013A5E0") NOT_SDA;
 extern int gameplay_event_frame_count_e __asm__("D_0015EFA4") MACRO_ADDR;
 extern int count_active_moby_group_members(int, int);
 extern void PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
 
 extern void Help_Request(int, int);
 
@@ -2114,8 +2113,7 @@ extern float planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_
 extern float planetbuster_sway_amplitude SDATA(planetbuster_sway_amplitude);
 
 extern void apply_linked_moby_relative_transforms(char *, char *, int);
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
+
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
@@ -2612,7 +2610,6 @@ typedef struct {
     char *mobys[4];
 } Level12MobyList;
 extern Level12MobyList hoven_cutscene_state;
-extern void cutscene_set_camera_target(int);
 
 /* Picks cutscene moby slot 2 for step 1, else slot 0. */
 static inline unsigned char func_L12_pick(int cur) {

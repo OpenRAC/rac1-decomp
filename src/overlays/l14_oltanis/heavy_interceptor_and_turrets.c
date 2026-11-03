@@ -21,6 +21,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -1557,8 +1558,6 @@ void update_blarg_heavy_interceptor_return_path_position(char *moby, float a, fl
     Spring((float *)(moby + 0x14), &data->pos_vel.y, tmp[1], a, interceptor_return_spring_damping, 0.0f);
     Spring((float *)(moby + 0x18), &data->pos_vel.z, tmp[2], a, interceptor_return_spring_damping, 0.0f);
 }
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
 
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern float interceptor_bob_height SDATA(interceptor_bob_height);

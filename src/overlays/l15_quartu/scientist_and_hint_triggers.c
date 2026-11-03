@@ -21,6 +21,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
@@ -438,7 +439,7 @@ typedef struct Items {
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern int func_L00_00203F20(int, int);
-extern int func_L00_0020DC00(void);
+
 extern unsigned char D_0013D5E7[];
 extern int D_0015EFA4 MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -610,7 +611,6 @@ struct L15MissionState {
     int slot[5];
 };
 extern struct L15MissionState g_mission;
-extern void cutscene_set_camera_target(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/gameplay/vendor/002e73c0.c, FUN_L15_002edb20. */
 void emit_cutscene_mode_moby_effects(struct Moby *m) {

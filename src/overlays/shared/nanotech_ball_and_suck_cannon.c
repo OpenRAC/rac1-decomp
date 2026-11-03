@@ -22,6 +22,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -3165,7 +3166,6 @@ void scatter_moby_from_hazards(Moby *m) {
 }
 int get_first_moby_in_group(void *, s32, s32, s32);
 int get_next_moby_in_group(void *, s32, s32, s32);
-void draw_offset_textured_effect_quad(void *, void *, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002df3d8. */
 void draw_red_orb_group_effect_quads(Moby *p) {

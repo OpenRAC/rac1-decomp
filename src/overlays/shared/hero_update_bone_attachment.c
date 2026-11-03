@@ -21,6 +21,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -30,7 +32,6 @@ extern int quartu_frame_count MACRO_ADDR;
 
 extern float quartu_hero_bones_28_scale, quartu_hero_bones_30_scale;
 
-extern void hero_update(void);
 extern void Hero_UpdateAimFlags(void);
 extern void HeroL15_UpdateStateTransitions(void);
 
@@ -168,7 +169,6 @@ void update_enabled_item_tint_from_hero(void) {
         }
     }
 }
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
 
 extern float g_frame_time MACRO_ADDR;
 extern float quartu_hero_bones_0_rot;
@@ -378,7 +378,6 @@ typedef int Q __attribute__((mode(TI)));
 
 extern s32 g_current_level_index MACRO_ADDR;
 
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
@@ -583,10 +582,6 @@ extern s32 fast_dec_timer(s32 *);
 extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
 
 extern s32 pad_pressed_within(s32, s32, s32);
-
-extern void enter_hero_vehicle_mode(s32, s32, struct Moby *);
-
-extern void Hero_OnKilled(void);
 
 /* Per-frame hero upkeep: tick the hero timers, spawn the respawn marker, track sinking, and set the camera follow
    target. Clone of FUN_L00_002215c8 without the case-1 camera tuning.

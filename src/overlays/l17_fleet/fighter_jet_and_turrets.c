@@ -695,7 +695,6 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
     }
 }
 typedef int u128_2D8CC8 __attribute__((mode(TI)));
-extern int hero_is_in_special_state(void);
 
 extern float IntToFloat(int);
 
@@ -937,7 +936,6 @@ void draw_fleet_scrolling_radial_quads(char *moby) {
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
 extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern float resolve_camera_surface_height(float *, void *);
 extern char *PartType34Spawn(char *vec, float *pos, float sc, float vy);

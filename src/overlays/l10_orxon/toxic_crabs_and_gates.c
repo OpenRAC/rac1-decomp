@@ -1685,7 +1685,7 @@ extern void set_moby_dialogue_record_value(void *, int);
 extern int try_set_help_message(int, int);
 
 extern int memcard_Save(int, int);
-extern void ShowBanner(int, int);
+
 extern unsigned char special_items_base[];
 
 extern int orxon_cinematic_mode MACRO_ADDR;
@@ -2557,7 +2557,6 @@ struct L10Data {
     int slot[4];
 };
 extern struct L10Data orxon_cutscene_state;
-extern void cutscene_set_camera_target(int);
 
 /* update: wait for state 1, then act on the level's current mode */
 void update_level_mode_dispatcher(char *m) {

@@ -86,12 +86,8 @@ INCLUDE_ASM("asm/overlays", func_L05_0023BA64);
 INCLUDE_ASM("asm/overlays", func_L05_0023BAA0);
 extern char pad_globals_base[];
 extern unsigned char gHaveHeliPack[] NOT_SDA;
-extern int hero_is_in_special_state();
 
 extern int allocate_hero_voice_for_entry(int, int);
-
-extern void set_hero_item_switch_timer_for_item(int id);
-extern void set_hero_condition_animation_timer_for_item(int id);
 
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
@@ -545,7 +541,6 @@ void update_hero_movement_and_collision_probes(void) {
 extern short rilgar_frame_count;
 extern float rilgar_coll_hit_z;
 
-extern void hero_get_collision_ray_endpoints(void *, void *, int, float, float);
 extern int coll_line(void *, void *, int, int, int);
 
 extern void Hero_TryMoveStateL05(int, int);
@@ -661,7 +656,6 @@ extern unsigned char D_0013D5C8[];
 extern Rec2C D_L05_0017C188[];
 extern int gadget_double_tap_timer SDATA(gadget_double_tap_timer);
 extern int pad_pressed_within(int, int, int *);
-extern int is_wrench_moby(void *);
 
 extern int truncate_float_to_s32(float);
 
@@ -675,7 +669,7 @@ typedef struct {
     unsigned short hDA;
     int fDC;
 } Stats;
-extern int hero_slot_item_id(int);
+
 extern unsigned short help_records_131_count[] NOT_SDA;
 extern unsigned short usage_stats_entry27_count[] NOT_SDA;
 

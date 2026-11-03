@@ -30,6 +30,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -37,7 +38,6 @@ extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 
 extern void HeroL02_SetMoveState(int, int);
-extern void Hero_OnKilled(void);
 
 // Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021b698.
 void process_hero_ground_material_effects(void) {
@@ -165,7 +165,6 @@ extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
 
 void HeroL02_SetMoveState(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021ff70. */
 s32 HeroL02_TryKnockback(s32 arg) {
@@ -308,7 +307,6 @@ typedef int Q __attribute__((mode(TI)));
 extern u8 aridia_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
@@ -622,20 +620,11 @@ extern Moby *aridia_coll_sphere_moby_hits[];
 extern HeroAttackRecord aridia_attack_records[];
 extern HeroSpeedBands aridia_hero_speed_bands;
 extern float aridia_hero_anim_frame_speeds[];
-extern void build_scaled_hero_move_impulse(float, float);
 
-extern void stick_target(float, int);
-
-extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
-
-extern void turn_hero_toward_move_direction_for_item(void);
 
 extern int get_hero_idle_animation_index(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-extern void speed_step(float, float);
-
-extern void correct_hero_airborne_wall_velocity(void);
 
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
@@ -650,23 +639,11 @@ extern void ClampVectorLength(void *, float);
 extern float vec_distance_xy(void *, void *);
 
 extern float Spring(float *, float *, float, float, float, float);
-extern float forward_component(void *);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 
-extern int test_hero_animation_frame_window(float);
-
-extern void set_planar_vel(float);
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
-extern void turn_hero_toward_move_direction_with_stick_scale(void);
-
-extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
-
-extern void hero_integrate_velocity(void);
 
 struct UpdateHeroStateMotionVars {};
 

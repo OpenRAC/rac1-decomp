@@ -23,12 +23,12 @@ LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
 
 extern float g_frame_time MACRO_ADDR;
 extern float aridia_hero_speed_bands[];
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00220b80.c, FUN_L02_00220b80. */
 void update_hero_stick_target_magnitude(void) {
     struct Hero *x;
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     x = &g_hero;
     if (x->state.current == 0x3F) {
         float two = g_frame_time + g_frame_time;
@@ -204,12 +204,9 @@ extern int g_current_level_index MACRO_ADDR;
 extern float aridia_hero_speed_bands_field_18[];
 
 extern float ApproachValue(float *, float, float);
-extern void build_scaled_hero_move_impulse(float, float);
 
-extern void turn_to(int, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);
 
 // Per-state hop velocity update for the player. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00220b80.c, FUN_L02_00223450.
@@ -347,7 +344,6 @@ extern unsigned char D_0013D5C8[];
 extern Rec2C D_L02_0017C2A8[];
 extern int D_L02_0015F754 SDATA(D_L02_0015F754);
 extern int pad_pressed_within(int, int, int *);
-extern int is_wrench_moby(void *);
 
 extern int truncate_float_to_s32(float);
 

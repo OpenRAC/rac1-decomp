@@ -14,6 +14,7 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char gHeroPos[];
 extern Hero g_hero;
 extern char g_hero_body_center[];
@@ -535,7 +536,6 @@ typedef struct {
     void *p10;
     void *p14;
 } Q54;
-extern void path_sample_at_distance(int, float *, float *, void *, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, int);
 
@@ -1723,8 +1723,6 @@ void update_size_gated_rotating_particle(struct PartBase *a) {
 extern float particle_drift[];
 extern float particle_clearance MACRO_ADDR;
 extern float particle_min_ground MACRO_ADDR;
-extern float ground_height_at(void *);
-extern void spawn_ground_contact_effect_particle(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/002712b8.c, FUN_L00_00275320. */
 void update_gravity_ground_culled_particle(struct PartBase *o) {

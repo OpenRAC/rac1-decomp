@@ -19,6 +19,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -28,17 +30,14 @@ extern float hero_speed_bands_field_18[];
 
 extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
-extern void build_scaled_hero_move_impulse(float, float);
-extern void speed_step(float, float);
-extern void turn_to(int, float, float, float);
-extern void stick_target(int, float);
+
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern float SpringAngle_r(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void steer_hero_planar_velocity(float);
 extern int allocate_hero_voice_for_entry(int, int);
-extern int hero_slot_item_id(int);
+
 extern int g_current_level_index MACRO_ADDR;
 
 /* Per-state horizontal velocity and turn updates for the hero's movement states: hero_update_hop_movement
@@ -170,7 +169,7 @@ void hero_move_state_velocity(void) {
         if (g_hero_s.unk4A8 && g_hero_s.on_ice_ground) {
             arg = g_frame_time_sq * 0.17f;
             if (g_hero_s.state.current == 15) {
-                stick_target(0, g_frame_time * 2.5f);
+                stick_target_v(0, g_frame_time * 2.5f);
                 arg = g_frame_time_sq * 3.0f;
             }
             if (0.2617994f < g_hero_s.ground_slope.f) {
@@ -181,8 +180,7 @@ void hero_move_state_velocity(void) {
         steer_hero_planar_velocity(arg);
     }
 }
-extern void stick_target(int, float);
-extern char *find_best_hero_heading_target(float, float, float, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern char hero_globals_base[];
 
@@ -194,7 +192,7 @@ void update_hero_target_heading(float a, float b, float c) {
     if (((struct Hero *)g)->heading_locked == 0) {
         d = ((struct Hero *)g)->motion.rot.f[2];
         if (((struct Hero *)g)->stick_magnitude > 0.5f) {
-            stick_target(0, 1.0f);
+            stick_target_v(0, 1.0f);
             d = ((struct Hero *)g)->motion.move_yaw;
             ((struct Hero *)g)->heading_locked = 1;
             *(int *)&((struct Hero *)g)->melee_target = 0;
@@ -800,15 +798,11 @@ extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern s32 g_controller_state_no_direction[];
-extern void stick_target(s32, f32);
-extern void turn_to(s32, f32, f32, f32);
+extern void stick_target_v(s32, f32) __asm__("func_L00_00211F80");
 
-extern void build_scaled_hero_move_impulse(f32, f32);
 extern f32 vec_length_xy(void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
-
-extern void clip_hero_velocity_against_probed_surfaces(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
 void update_hero_planar_movement_velocity(void) {
@@ -819,7 +813,7 @@ void update_hero_planar_movement_velocity(void) {
     Hero *g;
     f32 f20, f21, f22, a, b, c, d, e, h, k;
 
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     f20 = 0.2f;
     turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * f20, g_frame_time * 3.66519141f);
     if (g_hero_r3.state.current == HERO_STATE_WRENCH_COMBO) {
@@ -999,14 +993,8 @@ void update_hero_delayed_voice_requests(void) {
     }
 }
 extern int hero_control_mode_11_flag NOT_SDA;
-extern void clear_hero_target_and_ground_speeds(void);
-extern void clear_moby_transform_history(char *o);
-
-extern void cancel_hero_item_animation(void);
 
 extern void HeroEnterMoveState(int, int);
-
-extern void update_hero_ground_contact_and_surface_slopes(void);
 
 extern void apply_nearest_environment_sample(int);
 
@@ -1069,8 +1057,6 @@ void func_L00_00234420_178A0(void *, void *, float) __asm__("func_L00_00234420")
 void func_L00_002343A0_178A0(void *, void *, float) __asm__("func_L00_002343A0");
 
 int coll_line(void *, void *, int, void *, int);
-
-void scale_hero_motion(float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_00217118. */
 void stop_hero_motion_without_forward_support(float a, float b) {
@@ -1195,10 +1181,6 @@ typedef struct {
 } ThrowPvars;
 extern f32 player_camera[];
 extern char g_hero_transform_history[];
-extern int is_wrench_moby(void *);
-
-extern void initialize_moby_transform_history(void *, char *);
-extern void create_moby_transform_history_entry(char *, int, int);
 
 /* Launches the equipped gadget moby: aims it at its target (or along the camera), builds its orientation matrix and
    starts its animation/sound.

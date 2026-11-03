@@ -25,6 +25,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -177,7 +178,7 @@ extern s32 hero_max_health MACRO_ADDR;
 extern struct HeroEase lean_state_r[] __asm__("D_L00_0017A780");
 
 extern f32 ProbeGroundHeight_r(Vec4f *, s32, f32) __asm__("func_00214358");
-extern void update_hero_ground_contact_and_surface_slopes(void);
+
 extern void update_hero_moby(void);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
@@ -273,7 +274,6 @@ typedef struct {
     char pad2[0x24];
 } Rec;
 extern Rec item_defs[] NOT_SDA;
-extern int hero_slot_item_id(int);
 
 /* Picks an id for the hero's current situation. */
 int hero_idle_sequence(int a) {
@@ -754,7 +754,6 @@ void emit_hero_animation_voice_and_ground_particle(int a, int b, int c) {
     }
 }
 extern void emit_hero_animation_voice_and_ground_particle(int, int, int);
-extern int test_hero_animation_frame_window(float t);
 
 /* fires the pickup/sound hooks for the player's current gadget state */
 void dispatch_hero_animation_timed_events(void) {
@@ -823,7 +822,6 @@ void update_hero_bone_attachment(void) {
     }
 }
 
-extern void hero_update(void);
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
 
@@ -1190,7 +1188,7 @@ typedef struct {
 extern HelpRecord help_records[];
 extern unsigned short usage_stats_entry21_count NOT_SDA;
 extern unsigned char item_available[] NOT_SDA;
-extern int hero_is_in_special_state(void);
+
 /* Periodic help-message check: tick-based hints for the pack and the unused-slot count. The two message tables sit
    behind separate symbols (help_records and usage_stats_entry21_count) as in retail. */
 void check_hero_item_reward_conditions(void) {
@@ -1220,7 +1218,6 @@ extern unsigned char draw_map51[4] MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char selector_available[] MACRO_ADDR;
 extern unsigned char cheat_input_sequences[][16];
-extern void ShowBanner(int arg0, int arg1);
 
 // Records a pressed-input code in a 16-entry ring buffer and toggles any cheat whose sequence now ends the buffer.
 void scan_hero_input_sequences(void) {
@@ -1320,11 +1317,9 @@ void scan_hero_input_sequences(void) {
 extern void FadeToBlack(int);
 extern void update_hero_in_vehicle_mode(void);
 
-extern void hero_update(void);
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
-extern void find_grind_rail(void);
-extern void update_hero_offset_rail_candidate(void);
+
 extern void hero_update_transitions(void);
 
 extern void update_hero_easing_targets_and_point_effects(void);
@@ -1337,7 +1332,6 @@ extern void update_hero_glow_and_extra_manipulators(void);
 
 extern void update_hero_easing_records(void);
 extern void update_hero_world_matrices(int);
-extern void update_hero_equipped_items(void);
 
 extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
@@ -1577,7 +1571,7 @@ void update_hero_color_and_item_tint(void) {
 extern struct Hero D_0013F450_07EC0 __asm__("D_0013F450");
 extern float g_frame_time MACRO_ADDR;
 extern char hero_bob_attach_euler[];
-void update_moby_vertical_oscillation(char *, float *, float *, float, float);
+void update_moby_vertical_oscillation_v(char *, float *, float *, float, float) __asm__("func_L00_00263B78");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_002078a8. */
 void apply_hero_vertical_oscillation(void) {
@@ -1585,10 +1579,10 @@ void apply_hero_vertical_oscillation(void) {
     Vec4 v;
     float m[16] __attribute__((aligned(16)));
     if (P->state.current == HERO_STATE_SINK) {
-        update_moby_vertical_oscillation((char *)P->moby, &P->unk6A8, &P->unk6AC, 0.3f, g_frame_time * 6.981317f);
+        update_moby_vertical_oscillation_v((char *)P->moby, &P->unk6A8, &P->unk6AC, 0.3f, g_frame_time * 6.981317f);
     }
     if (P->state.current == 0x6B && P->hoverboard_airborne == 0) {
-        update_moby_vertical_oscillation((char *)P->moby, &P->unk6A8, &P->unk6AC, 1.1f, g_frame_time * 5.2359877f);
+        update_moby_vertical_oscillation_v((char *)P->moby, &P->unk6A8, &P->unk6AC, 1.1f, g_frame_time * 5.2359877f);
         if (P->hoverboard_moby) {
             char *s = (char *)P->moby;
             qcopy(P->hoverboard_moby + 0x10, s + 0x10);
@@ -1603,7 +1597,7 @@ void apply_hero_vertical_oscillation(void) {
 }
 extern unsigned char g_hero[] NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
-extern void update_moby_rotation_oscillation(int, char *, char *, float, float, float);
+
 /* Steps the hero's two angle fields toward their targets while in state 0x7F. */
 void apply_hero_rotation_oscillation(void) {
     Hero *g = (Hero *)g_hero;
@@ -1968,7 +1962,7 @@ extern void apply_hero_vertical_oscillation(void);
 extern void apply_hero_rotation_oscillation(void);
 
 extern void set_moby_local_table_entry_r(void *, int, float, float, void *) __asm__("func_L00_0024FF10");
-extern int hero_is_in_special_state(void);
+
 // Syncs the hero moby with the hero state: pose, position, and the blend of its animation
 void update_hero_moby(void) {
     struct Hero *g0 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -3188,7 +3182,7 @@ void probe_hero_airborne_wall_contact(void) {
         h->wall_jump_window = scale_ticks_r2(6);
     }
 }
-extern void exit_hero_vehicle_mode(void);
+
 /* Calls exit_hero_vehicle_mode when the hero is in vehicle mode 3. */
 void exit_hero_vehicle_mode_if_mode_three(void) {
     if (*(unsigned char *)(g_hero + 0x20A4) == 3) {
@@ -3198,7 +3192,6 @@ void exit_hero_vehicle_mode_if_mode_three(void) {
 extern int coll_sphere(float, void *, int, void *);
 
 extern void exit_hero_vehicle_mode_if_mode_three(void);
-extern void Hero_OnKilled(void);
 
 /* Per-frame update of the state flags for the current action, then the follow-up action it requests. */
 void apply_hero_selected_flags_and_state_transitions(void) {

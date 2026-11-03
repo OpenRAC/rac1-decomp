@@ -1707,7 +1707,7 @@ extern int is_pokitaru_boat_target_group_clear_r(void *) __asm__("func_L11_0030B
 extern float ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void func_L00_00263BF8(void *, float *, float *, float, float, float);
+
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern Path *path_table_r[] __asm__("D_L11_001B11B0");
 extern char D_0013E650[];

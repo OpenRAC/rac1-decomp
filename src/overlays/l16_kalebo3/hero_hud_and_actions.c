@@ -61,18 +61,15 @@ extern int queue_animation_update(int, int, int, int, int, int, int);
 
 extern void hud_keep_visible(int, int);
 
-extern int hero_slot_item_id(int);
 extern int get_hero_idle_animation_index(int a);
 
 extern int Hero_TryMoveState(int, int);
 
 extern int func_001F9908(int *);
 
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int pad_pressed_within(int, int, int *);
-
-extern int is_wrench_moby(void *);
 
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
@@ -95,7 +92,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
-extern int nearest_rail_point(void *, void *, void *, void *, void *, void *, int, int);
 
 extern int compute_hero_hoverboard_respawn_transform(float *, float *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -296,7 +292,7 @@ void Hero_ChooseStateTransition(void) {
                                 }
                             }
                         }
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         if (g_hero.on_slip_ground != 0 && g_hero.frames_off_ground.s == 0) {
                             Hero_TryMoveState(HERO_STATE_SLIP, 1);
                             break;
@@ -358,7 +354,7 @@ void Hero_ChooseStateTransition(void) {
                             if (g_hero.state.prev == HERO_STATE_LOOK ||
                                 g_hero.state.prev == HERO_STATE_LOOK_RELEASE_WAIT) {
                                 if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
-                                    stick_target(0, 1.0f);
+                                    stick_target_v(0, 1.0f);
                                     if (FastDiffRots(g_hero.motion.move_yaw, kalebo3_camera_yaw) > 1.2217305f) {
                                         ok = 0;
                                     }
@@ -739,7 +735,7 @@ void Hero_ChooseStateTransition(void) {
                             }
                             if (pad_pressed_within(0x40, t, 0)) {
                                 if (!(g_hero.air_frames.s > scale_ticks(4)) || g_hero.still_frames != 0) {
-                                    stick_target(0, 1.0f);
+                                    stick_target_v(0, 1.0f);
                                     if (try_start_hero_jump(t, 1)) {
                                         break;
                                     }
@@ -1295,7 +1291,7 @@ void Hero_ChooseStateTransition(void) {
                             if (g_hero.state.current == HERO_STATE_GRIND_JUMP &&
                                 g_hero.state_timer < scale_ticks(0xA) && g_hero.past_jump_apex == 0 &&
                                 g_hero.unk12EE == 0 && g_hero.stick_magnitude > 0.5f && g_hero.rail_switching == 0) {
-                                stick_target(0, 1.0f);
+                                stick_target_v(0, 1.0f);
                                 if (FastDiffRots(FastDiffRots(g_hero.motion.move_yaw, g_hero.rail_dir_yaw),
                                                  1.5707964f) < 1.2217305f) {
                                     float ang;
@@ -1437,7 +1433,7 @@ void Hero_ChooseStateTransition(void) {
                         if ((g_hero.anim_flags & 2) && ((unsigned char *)g_hero.moby)[0x53] == 0x20) {
                             set_hero_animation(0x21, 0, scale_ticks(6));
                         }
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         qcopy(v0, g_hero.motion.pos.f);
                         sp44 = g_hero.motion.rot.f[2];
                         if (test_hero_ledge_ahead(v0, &sp44) == 0) {
@@ -1492,7 +1488,7 @@ void Hero_ChooseStateTransition(void) {
                         v0[0] += FastCos(FastAddRots(g_hero.motion.rot.f[2], ang)) * 0.3f;
                         v0[1] += FastSin(FastAddRots(g_hero.motion.rot.f[2], ang)) * 0.3f;
                         sp50 = g_hero.motion.rot.f[2];
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         if (g_hero.stick_magnitude < 0.5f ||
                             0.7853982f <
                                 FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], ang)) ||
@@ -1720,7 +1716,7 @@ void Hero_ChooseStateTransition(void) {
                         if (scale_ticks(0xA) > g_hero.state_timer) {
                             g_hero.jump_buffer_lockout = scale_ticks(0xC) - g_hero.state_timer;
                         }
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         if (g_hero.state.prev == HERO_STATE_PACK_LONG_JUMP && scale_ticks(4) > g_hero.state_timer) {
                             if (Hero_TryMoveState(HERO_STATE_STOP, 0) == 0) {
                                 break;
@@ -2362,7 +2358,7 @@ void Hero_ChooseStateTransition(void) {
                             apply_hero_item_slot_selection(0);
                             break;
                         }
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         if (g_hero.stick_magnitude > 0.22f && g_hero.target_speed > 0.0f) {
                             Hero_TryMoveState(HERO_STATE_VEHICLE_MODE_3_RUN, 1);
                         }

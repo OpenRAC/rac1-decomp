@@ -2886,7 +2886,6 @@ void update_moby_gameplay_events(unsigned char *moby) {
     if (!D_0013F65E)
         qcopy(data + 4, D_0013F3D0);
 }
-extern void cutscene_set_camera_target(int);
 
 /* UpdateMoby_1550 (names.tsv role). State 0 arms it: state 1 and byte 0x30 = 0xFF. In state 1,
  * while the level flag is 2 and the word at +0x30 of rilgar_cutscene_state is 10 or 11, passes one

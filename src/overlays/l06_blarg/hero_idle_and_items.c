@@ -19,6 +19,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -29,26 +30,18 @@ typedef struct {
     int c;
     char pad[0x20];
 } T2C;
-extern void clear_moby_transform_history(char *o);
 
 extern int get_hero_help_value(int a);
 
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
-extern void stick_target(float, int);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern void initialize_moby_transform_history(int a, char *b);
-extern void create_moby_transform_history_entry(char *o, int a, int b);
-
 extern int truncate_float_to_s32(float);
-
-extern int is_wrench_moby(char *);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 

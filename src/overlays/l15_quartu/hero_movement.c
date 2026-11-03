@@ -199,8 +199,6 @@ void HeroQuartu_TrySetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
 void remove_tracked_class_5f3_moby(void);
 
-void hero_knockback(void *, s32, f32, f32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/ui_help_002044c8.c, FUN_L15_00208e10. */
 s32 process_hero_incoming_hit(s32 arg) {
     u8 *m;
@@ -384,11 +382,6 @@ extern float quartu_hero_run_turn_stick_threshold;
 extern float quartu_hero_anim_speed_curve[];
 extern float quartu_hero_anim_frame_speeds[];
 
-extern void build_scaled_hero_move_impulse(float, float);
-
-extern void stick_target(float, int);
-
-extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
 
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
@@ -413,13 +406,6 @@ extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-
-extern int test_hero_animation_frame_window(float);
-
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
-extern int hero_slot_item_id(int);
 
 extern int coll_line(void *, void *, int, int, int);
 

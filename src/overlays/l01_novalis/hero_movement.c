@@ -190,13 +190,9 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float novalis_hero_speed_bands_6[];
-extern void build_scaled_hero_move_impulse(float, float);
 
 extern float ApproachValue(float *, float, float);
 
-extern void turn_to(int, float, float, float);
-
-extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);
 
 // Per-tick horizontal air movement for the hero's jump states (level 01).
@@ -342,8 +338,6 @@ extern HeroSpeedBands novalis_hero_speed_bands;
 extern float novalis_hero_stride_speeds[];
 extern float novalis_hero_ledge_shimmy_frame_speeds[];
 
-extern void stick_target(float, int);
-
 extern int fast_dec_timer(int *);
 
 extern int get_hero_idle_animation_index(int);
@@ -367,11 +361,6 @@ extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-
-extern int test_hero_animation_frame_window(float);
-
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
 
 extern int coll_line(void *, void *, int, int, int);
 

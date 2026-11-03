@@ -19,7 +19,6 @@ extern void hero_frame_update(void);
 
 extern void update_hero_ground_material_effects(void);
 
-extern void update_hero_offset_rail_candidate(void);
 extern void HeroL03_UpdateStateTransitions(void);
 
 extern void update_hero_easing_targets_and_point_effects(void);
@@ -30,8 +29,6 @@ extern void update_hero_idle_random_rotation_targets(void);
 extern void update_hero_rotation_targets_and_random_manipulators(void);
 
 extern void update_hero_moby(void);
-
-extern void update_hero_equipped_items(void);
 
 extern void check_hero_item_reward_conditions(void);
 extern void update_hero_bolt_exclamation_hud(void);

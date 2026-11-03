@@ -2146,7 +2146,7 @@ char *SpawnDebrisMoby(char *src, void *dir, float scale) {
 }
 
 extern u128_D568 fx_prev_pos MACRO_ADDR;
-extern void cutscene_set_camera_target(struct Moby *);
+
 extern void Moby_GetJointWorldPos(struct Moby *, int, void *);
 extern int truncate_float_to_s32(float);
 extern char *spawn_splash(float, float, void *, void *, void *);

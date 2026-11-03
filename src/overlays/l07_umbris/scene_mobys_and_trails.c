@@ -420,7 +420,6 @@ typedef struct {
     char pad[0x178];
     int arr[8];
 } L07SparkState;
-extern void cutscene_set_camera_target(int);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 

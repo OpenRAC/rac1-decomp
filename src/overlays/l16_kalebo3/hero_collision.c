@@ -14,6 +14,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
@@ -154,7 +155,6 @@ typedef int Q __attribute__((mode(TI)));
 extern u8 kalebo3_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
@@ -463,10 +463,6 @@ int HeroL16_ApplyPositionOffset(int mode) {
 
 extern float vec_length_xy(void *);
 
-extern void resolve_hero_collisions_with_history(void);
-extern void correct_hero_ground_penetration(void);
-
-extern float forward_component(void *);
 extern float g_frame_time MACRO_ADDR;
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */

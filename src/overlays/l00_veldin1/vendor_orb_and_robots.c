@@ -835,7 +835,6 @@ void update_beam_slot_controller(unsigned char *m) {
             break;
     }
 }
-extern void cutscene_set_camera_target(int);
 
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
 extern float veldin1_zero_vec_b[] __asm__("D_L00_0015F660") MACRO_ADDR;

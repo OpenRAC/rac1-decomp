@@ -1102,7 +1102,6 @@ void move_extermibot_along_path(struct Moby *m, s32 node, f32 side);
 
 extern s32 follow_path(void *, s32, s32, void *, s32, void *, f32);
 extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);
-extern int SegmentCrossPolyline(int, void *, void *, void *);
 
 extern f32 ApproachValue(f32 *, f32, f32);
 
@@ -1844,7 +1843,6 @@ extern float FastVecDist_r3(float *, float *) __asm__("func_001F9D10");
 extern void FastVecAdd_r2(float *, float *, float *) __asm__("func_001F9BD8");
 extern void FastVecSub_r2(float *, float *, float *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length(float *, float *, float);
-extern int test_path_segment_strict_crossing(int, float *, float *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/002d1688.c, FUN_L05_00303e50. */
 int test_extermibot_offset_path_clearance(char *moby, float *goal, float s) {

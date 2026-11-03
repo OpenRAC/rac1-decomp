@@ -11,6 +11,7 @@
 #include "enums/moby_class.h"
 #include "structs/hit_message.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_animation_slots.h"
 
 typedef int Q_8 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -25,7 +26,6 @@ void release_and_clear_hero_voice_slots(void);
 
 void Hero_TryMoveStateL08(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00222800.c, FUN_L08_00222800. */
 s32 handle_hero_hit(s32 arg) {

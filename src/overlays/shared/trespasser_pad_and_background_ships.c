@@ -1632,8 +1632,6 @@ extern void initialize_collectible_sprite_state(char *moby);
 extern void update_collectible_sprite_effect(char *m);
 extern float vec_distance_xy(void *, void *);
 
-extern void ShowBanner(int, int);
-
 extern int Help_Request(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int memcard_Save(int, int);
@@ -1933,7 +1931,7 @@ extern int Moby_PlaySound_r_r(int, int, int) __asm__("func_0022ED80");
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern void spawn_background_ship_1_joint_sparks(char *m, void *arg1);
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 
 extern float frame_scale MACRO_ADDR;

@@ -23,6 +23,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -1973,20 +1974,17 @@ extern void draw_wrench_swing_effect(void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern int test_hero_animation_frame_window(float);
-
 extern void vec_set_length_xy(void *, void *, float);
 
 extern int func_L00_001F2BE8(void *, float, int, void *, void *);
 extern int HeroEnterMoveState(int, int);
 
-extern void compose_target_euler_rotation(char *, float, float, float);
 extern int fast_dec_timer(int *);
 
 extern float ApproachValue(float *, float, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
-extern void clear_moby_transform_history(char *);
+
 extern int is_moby_in_class_range_500_to_540(int);
 
 static __inline__ WPlayer48 *wplayer48(void) {
@@ -2371,7 +2369,7 @@ typedef struct {
 } BoltOwner;
 extern float homing_bolt_bounds_scale SDATA(homing_bolt_bounds_scale);
 extern short active_homing_missiles[];
-extern char *select_auto_aim_target_moby(void *, void *, void *, float *, float *, float *, float);
+
 extern int coll_line(void *, void *, int, int, int);
 
 /* Spawns a homing bolt (class 0x100) from owner at pos, aimed at tgt or at whatever lies along its heading. */

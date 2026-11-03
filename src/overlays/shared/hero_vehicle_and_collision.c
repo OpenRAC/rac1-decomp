@@ -19,6 +19,8 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char g_hero[];
 extern char item_usage[];
 extern unsigned int pad_held;
@@ -30,7 +32,7 @@ typedef int OvlQuad __attribute__((mode(TI)));
 
 extern s32 level_frame_counter MACRO_ADDR;
 extern CollisionHit coll_hit_result;
-extern void apply_hero_motion_and_resolve_collisions(void);
+
 extern s32 probe_hero_forward_collision(f32 *, f32, f32);
 extern f32 vec_length_xy(void *);
 
@@ -124,11 +126,8 @@ extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern void update_hero_tilt_r(void) __asm__("func_L00_00216D40");
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
-extern void func_L00_002111E8(void);
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern s32 pad_pressed_within_r(s32, s32, s32) __asm__("func_L00_00267BA8");
-
-extern void func_L00_002110C0(s32, s32, struct Moby *);
 
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -344,14 +343,14 @@ int get_hero_high_jump_input_window_frames(void) {
     }
     return r;
 }
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 // Classifies the stick direction into one of four quadrants (2, 3, 1 or 0).
 int stick_direction_vs_facing(void) {
     struct Hero *p;
     float a;
     int r = 2;
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     p = (struct Hero *)g_hero;
     a = FastSubRots(p->motion.move_yaw, p->motion.rot.f[2]);
     if (FastDiffRots(a, 3.14159274f) < 0.785398185f) {
@@ -365,7 +364,7 @@ int stick_direction_vs_facing(void) {
 }
 extern char *suck_moby_list MACRO_ADDR;
 
-extern float score_hero_target_candidate(void *, int *, float, float, float, float);
+extern float score_hero_target_candidate_v(void *, int *, float, float, float, float) __asm__("func_L00_0020DD48");
 
 extern int coll_line(void *, void *, int, int, int);
 
@@ -421,7 +420,7 @@ void select_hero_grapple_swing_target(void) {
         x = gb->motion.rot.f[2];
         if (t != 0.0f)
             a13 = t;
-        d = score_hero_target_candidate(m, &out, x, a13, a14, a15);
+        d = score_hero_target_candidate_v(m, &out, x, a13, a14, a15);
         if (out != 0)
             continue;
         if (m->visible == 0)
@@ -508,8 +507,8 @@ int select_hero_grapple_target(void) {
         max_target_distance = 30.0f;
         if (candidate_data->max_range != 0.0f)
             max_target_distance = candidate_data->max_range;
-        target_score = score_hero_target_candidate(candidate_moby, &out, x, max_target_distance, target_angle_limit,
-                                                   target_elevation_angle_limit);
+        target_score = score_hero_target_candidate_v(candidate_moby, &out, x, max_target_distance, target_angle_limit,
+                                                     target_elevation_angle_limit);
         if (out != 0)
             continue;
         hero_pos = (char *)&gb->motion.pos;
@@ -548,32 +547,20 @@ typedef struct {
     int c;
     char pad[0x20];
 } T2C;
-extern void clear_moby_transform_history(char *o);
-
-extern void create_missing_hero_item_slot_animations(int a, int b);
 
 extern void set_hero_idle_state_for_vehicle_mode(void);
 extern int hero_idle_sequence(int a);
 
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
-extern void cancel_hero_item_animation(void);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern void scale_hero_motion(float);
-
-extern void initialize_moby_transform_history(int a, char *b);
-extern void create_moby_transform_history_entry(char *o, int a, int b);
-extern float get_hero_yaw_history(int back);
 extern int truncate_float_to_s32(float);
 extern void update_hero_target_heading(float a, float b, float c);
-extern char *hero_slot_moby(int);
-extern int is_wrench_moby(char *);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
@@ -1059,7 +1046,7 @@ int HeroEnterMoveState(int a, int b) {
                 if (g_frame_time * 7.0f < q->ground_speed)
                     q->ground_speed = g_frame_time * 7.0f;
                 q->unk3BE = 0;
-                stick_target(0, 1.0f);
+                stick_target_v(0, 1.0f);
                 if (1.5707964f < FastDiffRots(q->motion.rot.f[2], q->motion.move_yaw)) {
                     if (q->state.prev_control_mode == HERO_MODE_HURT || q->state.prev == HERO_STATE_STOP ||
                         q->state.prev2 == HERO_STATE_STOP) {
@@ -3014,7 +3001,7 @@ collision_mode:
     }
     return 0;
 }
-extern void hero_get_collision_ray_endpoints(void *, void *, int, float, float);
+
 extern int coll_line(void *, void *, int, int, int);
 
 extern int allocate_hero_voice_for_entry(int a, int b);
@@ -3170,11 +3157,9 @@ extern Rec2C attack_records_r[] __asm__("D_L00_0017BD28");
 extern int hero_repeat_press_window_frames SDATA(hero_repeat_press_window_frames);
 extern int pad_pressed_within_r2(int, int, int *) __asm__("func_L00_00267BA8");
 extern void launch_hero_wrench(void);
-extern int Hero_CanUseGadget(void);
 
-extern void start_equipped_item_animation(void);
 extern int Sound_IsPlaying(void *, int);
-extern int hero_slot_item_id(int);
+
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */

@@ -22,6 +22,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -218,7 +219,6 @@ extern int fast_dec_timer(int *);
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
 extern int coll_sphere(float, void *, int, void *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
 
 extern void *MobyGetHitMessage(void *, int, int);
 extern f32 vec_distance_xy(void *, void *);

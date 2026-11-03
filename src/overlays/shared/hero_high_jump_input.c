@@ -30,8 +30,6 @@ extern Ent idle_fidgets[] NOT_SDA;
 extern int idle_fidgets_field_220 NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
 
-extern int hero_slot_item_id(int);
-
 extern int coll_line(void *, void *, int, int, int);
 
 /* Hero idle-fidget picker; returns 1 and writes the chosen index if one is picked. */
@@ -121,7 +119,7 @@ int pick_idle_fidget(int *index) {
 
 extern int HeroEnterMoveState(int, int);
 
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern void ClampVectorLength(void *a, float x);
 extern int hero_idle_sequence(int);
 
@@ -140,7 +138,7 @@ void update_hero_locomotion_state(void) {
         HeroEnterMoveState(HERO_STATE_RUN_CLEAR_VELOCITY_Z, 1);
         return;
     }
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     if (*(int *)(&pad_held) & 0xA) {
         HeroEnterMoveState(HERO_STATE_CROUCH, 0);
         set_hero_animation(0xD, 2, -2.0f);
@@ -191,7 +189,6 @@ extern int check_pad_press_separation(int, int, int, int);
 extern int HeroEnterMoveState(int, int);
 extern int HeroEnterMoveState_b(int, int) __asm__("func_L00_00222B80");
 extern int pad_pressed_within(int, int, int);
-extern int hero_slot_item_id(int);
 
 // Tries the crouch-jump style moves in priority order and starts the first whose conditions hold. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_00229660.
 int hero_handle_jump_press(void) {

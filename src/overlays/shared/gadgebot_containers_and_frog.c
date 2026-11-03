@@ -429,8 +429,6 @@ extern int mine_fall(void *, void *);
 extern void SetDeathBits(void *, int, int);
 extern int fast_dec_timer(int *);
 
-extern int SegmentCrossPolyline(int, void *, void *, void *);
-
 extern void collect_mobies_in_sphere_at_moby_point(void *, int, int, float, float, float, int, int, int);
 extern int CarriedMobyUpdate(void *, void *);
 
@@ -1355,8 +1353,6 @@ extern void MobySpringTurn(char *moby, float target, float *vel, float k, float 
 extern int move_w(void *, void *, void *, void *, float);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern void assign_gadgebot_attack_targets(void);
-
-extern int test_path_segment_strict_crossing(int, void *, void *);
 
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 

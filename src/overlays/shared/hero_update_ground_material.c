@@ -23,13 +23,14 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
-extern int hero_slot_item_id(int);
 
 /* Looks up the value of the current help record, or 0/0x54 in the special cases. */
 int get_hero_idle_animation_index(int a) {
@@ -77,7 +78,6 @@ extern float novalis_lean_state_30_scale;
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 
-extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
 extern void HeroL01_UpdateStateTransitions(void);
 
@@ -210,7 +210,6 @@ void hero_frame_update(void) {
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
 
-extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
 extern void update_hero_ledge_probe(void);
 extern void HeroL01_UpdateStateTransitions(void);
@@ -226,7 +225,6 @@ extern void update_hero_glow_and_extra_manipulators(void);
 extern void update_hero_easing_records(void);
 extern void update_hero_moby(void);
 extern void update_hero_world_matrices(int);
-extern void update_hero_equipped_items(void);
 
 extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
@@ -767,9 +765,8 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
     return 0;
 }
 extern unsigned char hero_globals_base[] NOT_SDA;
-extern void cancel_hero_item_animation(void);
+
 extern void hero_update_items();
-extern void clear_moby_transform_history(char *o);
 
 extern void release_and_clear_hero_voice_slots(void);
 extern void reset_hero_easing_records(void);
@@ -860,7 +857,6 @@ void release_and_clear_hero_voice_slots(void);
 
 void Hero_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231580. */
 s32 HeroL01_TryTakeHit(s32 arg) {
@@ -1035,12 +1031,12 @@ void HeroSetCollisionSize(void) {
 }
 extern float g_frame_time MACRO_ADDR;
 extern float novalis_hero_speed_bands[];
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00232290. */
 void hero_speed_from_table(void) {
     Hero *x;
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     x = &g_hero;
     if (0.0f < x->target_speed) {
         if (x->target_speed < novalis_hero_speed_bands[3]) {
@@ -1153,7 +1149,7 @@ void clip_hero_horizontal_velocity(int flag) {
 typedef int Q __attribute__((mode(TI)));
 extern u8 novalis_coll_hit_point[];
 void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
@@ -1430,8 +1426,6 @@ int resolve_hero_position_with_collision_queries(int a0) {
 }
 typedef int u128_34970 __attribute__((mode(TI)));
 
-extern float forward_component(void *);
-
 // Accelerates the hero's air velocity toward the stick direction, clamped to the step.
 void air_accel(float step) {
     float v[4];
@@ -1537,8 +1531,6 @@ extern s32 pad_pressed_within(s32, s32, s32);
 extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
 
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-
-extern void Hero_OnKilled(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0023c710. */
 void update_hero_timers_and_vehicle_transitions(void) {
@@ -1692,7 +1684,7 @@ void select_hero_locomotion_state(void) {
     int n;
     b = (char *)&g_hero;
     ((struct Hero *)b)->unk2284 = 0;
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     if (pad_held & 0xA) {
         hl_next(4, 0);
         set_hero_animation(0xD, 2, -2.0f);

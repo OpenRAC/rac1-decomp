@@ -69,7 +69,6 @@ void release_and_clear_hero_voice_slots(void);
 
 void HeroL17_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l17/ui_help_002020a8.c, FUN_L17_0020dbe8. */
 s32 HeroL17_TryTakeHit(s32 arg) {

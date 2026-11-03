@@ -28,7 +28,6 @@ typedef struct {
 } Rec;
 extern Rec blarg_item_defs[];
 extern char g_hero_r[] __asm__("D_0013F450");
-extern int hero_slot_item_id(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_0021d0a0. */
 int get_hero_help_value(int a) {

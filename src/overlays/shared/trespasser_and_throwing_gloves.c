@@ -19,6 +19,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -2168,8 +2169,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern float ApproachValue(void *, float, float);
 extern int truncate_float_to_s32(float);
 
-extern void queue_formatted_dialogue_message(int, int, int);
-
 extern int Sound_PlayClassSound(int, int, int, int);
 
 typedef struct {
@@ -2389,8 +2388,6 @@ void devestator_ammo_update(Moby *m) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_002C6F40);
-
-extern void queue_formatted_dialogue_message(int a, int b, int c);
 
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 typedef struct {

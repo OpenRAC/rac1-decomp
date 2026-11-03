@@ -24,6 +24,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern u8 gHeroPos[];
 extern char g_hero_pos_z[];
 extern char g_hero_rot[];
@@ -2201,7 +2202,6 @@ void update_hero_equipped_items(void) {
     hero_update_items();
 }
 extern void cancel_hero_item_animation(void);
-extern void clear_moby_transform_history(char *o);
 
 extern void release_and_clear_hero_voice_slots();
 

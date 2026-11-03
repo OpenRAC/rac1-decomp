@@ -19,6 +19,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -452,7 +453,6 @@ typedef struct {
 
 extern void Load_r(void *, int, int) __asm__("func_002176C8");
 
-extern void SetUpdateModeTiming(int);
 extern void UpdateFog();
 
 extern void VU0_loadMicroProgram(void *);

@@ -76,11 +76,6 @@ extern float fleet_hero_stride_speeds[];
 extern float fleet_hero_anim_step_lengths[];
 extern float fleet_hero_state4e_step_lengths[];
 
-extern void build_scaled_hero_move_impulse(float, float);
-
-extern void stick_target(float, int);
-
-extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
 
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
@@ -110,16 +105,10 @@ extern float Spring(float *, float *, float, float, float, float);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 
-extern int test_hero_animation_frame_window(float);
-
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 extern int offset_path_index(void *, int, int, int);
 
-extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
 
 extern int coll_line(void *, void *, int, int, int);

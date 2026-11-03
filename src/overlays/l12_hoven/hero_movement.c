@@ -32,6 +32,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 extern int pad_held;
@@ -174,7 +175,6 @@ typedef int Q __attribute__((mode(TI)));
 extern u8 hoven_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
@@ -400,20 +400,10 @@ extern HeroSpeedBands D_L12_X_f;
 extern float hoven_hero_swim_frame_speeds[];
 extern float hoven_hero_ledge_shimmy_frame_speeds[];
 
-extern void build_scaled_hero_move_impulse(float, float);
-
-extern void stick_target(float, int);
-
-extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
-
-extern void turn_hero_toward_move_direction_for_item(void);
 
 extern int hero_get_gadget_anim_id(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-extern void speed_step(float, float);
-
-extern void correct_hero_airborne_wall_velocity(void);
 
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
@@ -435,26 +425,11 @@ extern void ClampVectorLength(void *, float);
 extern float vec_distance_xy(void *, void *);
 
 extern float Spring(float *, float *, float, float, float, float);
-extern float forward_component(void *);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 
-extern int test_hero_animation_frame_window(float);
-
-extern void set_planar_vel(float);
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
-extern void turn_hero_toward_move_direction_with_stick_scale(void);
-
-extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
-
-extern void update_hero_target_speed_from_stick(void);
-
-extern void hero_integrate_velocity(void);
-extern void steer_hero_planar_velocity(float);
 
 struct HeroUpdateStatePhysicsL12Vars {};
 

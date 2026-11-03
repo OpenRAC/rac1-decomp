@@ -6,6 +6,7 @@
 #include "structs/vector.h"
 #include "asm_functions/shared_levels.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern void func_L00_002689B0();
 extern void update_falling_effect_particle_r() __asm__("func_L00_00269BE8");
@@ -194,7 +195,6 @@ typedef struct {
 extern ParticleClearance particle_clearance MACRO_ADDR;
 extern f32 particle_min_ground MACRO_ADDR;
 
-extern f32 ground_height_at(Vec4 *);
 extern void KillPart_r(FallingParticle *) __asm__("func_L00_002688A8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/effects/00268900.c, FUN_L00_00268d48. */

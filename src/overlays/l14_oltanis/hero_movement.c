@@ -131,7 +131,6 @@ extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
 
 void Hero_TryMoveStateL14(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/ui_help_0021dd30.c, FUN_L14_00222aa8. */
 s32 process_hero_hit_reaction(s32 arg) {
@@ -311,11 +310,7 @@ extern float oltanis_hero_spline_tilt[];
 extern HeroAttackRecord oltanis_attack_records[];
 extern HeroSpeedBands oltanis_hero_speed_bands;
 extern float oltanis_hero_ledge_shimmy_frame_speeds[];
-extern void build_scaled_hero_move_impulse(float, float);
 
-extern void stick_target(float, int);
-
-extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
 
 extern int hero_get_gadget_anim_id(int);
@@ -344,16 +339,10 @@ extern float Spring(float *, float *, float, float, float, float);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 
-extern int test_hero_animation_frame_window(float);
-
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 extern int offset_path_index(void *, int, int, int);
 
-extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
 
 extern int coll_line(void *, void *, int, int, int);

@@ -804,7 +804,7 @@ extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 
 extern void unlock_planet(int);
-extern void queue_planet_unlock_message(int);
+
 extern void record_moby_context_bytes(char *, int, char *, int, void *);
 extern int memcard_Save(int, int);
 

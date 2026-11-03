@@ -70,7 +70,6 @@ extern int Help_Request(int, int);
 
 extern int memcard_Save(int, int);
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
 
 extern float vec_distance_xy(void *, void *);
 

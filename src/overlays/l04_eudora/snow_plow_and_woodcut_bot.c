@@ -237,7 +237,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern char *MobyGetHitMessage(void *, s32, s32);
 extern s32 PlayBankSound(s32, s32, s32);
-extern void ShowBanner(s32, s32);
 
 extern void coll_sphere_mobys(void *, float, s32, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32, float, float, float, float, s32, float,
@@ -2299,7 +2298,6 @@ struct L04MissionState {
     int slot[4];
 };
 extern struct L04MissionState eudora_cutscene_action;
-extern void cutscene_set_camera_target(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/vendor/002e3078.c, FUN_L04_002e53a0. */
 void dispatch_mode_selected_slot(struct Moby *m) {

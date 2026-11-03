@@ -26,6 +26,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -997,10 +998,9 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
 LINKER_REMNANT("asm/overlays", func_L17_002F4208);
 
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int arg0, int arg1);
+
 extern void STUB_printf();
 extern int Help_Request(int a, int b);
-extern int hero_is_in_special_state(void);
 
 extern void HeroL17_SetMoveState(int, int);
 
@@ -1240,7 +1240,6 @@ extern struct {
     int pad1[81];
     int tbl[3];
 } D_L17_0016D1E0;
-extern void cutscene_set_camera_target();
 
 // Update moby: on first tick set state 1 and 0xFF at 0x30; later dispatch through a table.
 void update_fleet_guarded_moby_effects(unsigned char *m) {

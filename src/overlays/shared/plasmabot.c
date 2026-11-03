@@ -16,6 +16,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -148,7 +149,6 @@ void update_plasmabot_aim_joint_rotation(char *a, float x);
 int count_listed_plasmabots_preparing_or_sweeping_beam(int index);
 extern int register_beam_slot(void *, int, int);
 
-extern int test_path_segment_strict_crossing(int, void *, void *);
 void Group_ResetClass28Timers(int idx);
 
 extern float IntToFloat(int);

@@ -26,6 +26,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -1493,7 +1494,6 @@ extern unsigned char *moby_array_start MACRO_ADDR;
 extern unsigned char *level_mobys_end MACRO_ADDR;
 
 extern void raise_kernel_trap(void);
-extern void enter_hero_vehicle_mode(int, int, char *);
 
 extern void euler_rotation_basis(void *, void *);
 

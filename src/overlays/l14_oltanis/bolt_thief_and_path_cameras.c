@@ -1557,7 +1557,7 @@ extern int scale_ticks_r3(int) __asm__("func_001F9850");
 
 extern void func_L00_0025E4B0(void *, void *);
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-extern void func_L00_00263BF8(void *, void *, void *, float, float, float);
+
 extern int update_flying_car_path_motion_r(void *) __asm__("func_L14_00308AA8");
 extern void FastVecScale_r4(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
@@ -1919,7 +1919,6 @@ typedef struct {
 
 extern int PlayBankSound(int, int, int);
 
-extern void cutscene_set_camera_target(int);
 extern Level14State oltanis_cutscene_state;
 extern unsigned char gSkillPoints[];
 

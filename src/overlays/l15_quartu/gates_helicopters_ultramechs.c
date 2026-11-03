@@ -2827,8 +2827,6 @@ extern void initialize_moby_particle_effect(char *);
 
 extern void emit_moby_sprite_particles(char *);
 
-extern void ShowBanner(int, int);
-
 extern int memcard_Save(int, int);
 extern float bolt_grabber_scale SDATA(bolt_grabber_scale);
 extern unsigned char race_gates_base[];
@@ -3081,7 +3079,6 @@ extern char *quartu_cuboids MACRO_ADDR;
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
-extern void queue_planet_unlock_message(int a);
 extern int memcard_Save(int slot, int flags);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_quartu_cutscene_messages(void);

@@ -183,8 +183,6 @@ void HeroL18_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
 void remove_tracked_class_5f3_moby(void);
 
-void hero_knockback(void *, s32, f32, f32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/ui_help_00213b40.c, FUN_L18_00218a90. */
 s32 HeroL18_TryTakeHit(s32 arg) {
     u8 *m;

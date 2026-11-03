@@ -17,6 +17,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -96,8 +97,6 @@ void draw_textured_grid(char *moby) {
 LINKER_REMNANT("asm/overlays", func_L03_00292B18);
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-
-extern void fast_add_rotations_cf(void *, void *, float, float, float);
 
 extern float IntToFloat(int);
 

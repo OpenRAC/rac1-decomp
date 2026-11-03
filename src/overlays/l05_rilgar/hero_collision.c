@@ -13,6 +13,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern char gHeroPos[];
 extern unsigned char g_hero[] NOT_SDA;
 
@@ -21,7 +22,6 @@ extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 
 extern void Hero_TryMoveStateL05(int, int);
-extern void Hero_OnKilled(void);
 
 #define GB(o) (*(unsigned char *)(g + (o)))
 #define GH(o) (*(short *)(g + (o)))
@@ -191,7 +191,6 @@ extern u8 rilgar_coll_hit_point[];
 extern f32 rilgar_coll_hit_z;
 extern s32 g_current_level_index MACRO_ADDR;
 
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
@@ -509,11 +508,7 @@ extern float g_frame_time MACRO_ADDR;
 extern s32 coll_line(void *, void *, s32, s32, s32);
 extern float vec_length_xy(void *);
 
-extern void resolve_hero_collisions_with_history(void);
 extern void HeroL05_GroundProbe(void);
-extern void correct_hero_ground_penetration(void);
-
-extern float forward_component(void *);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void integrate_hero_motion_with_collisions(void) {

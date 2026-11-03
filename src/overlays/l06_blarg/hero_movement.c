@@ -31,6 +31,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -128,7 +129,6 @@ extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
 
 void HeroL06_TrySetMoveState(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/ui_help_00222fb8.c, FUN_L06_00227e78. */
 s32 HeroL06_TryApplyHitKnockback(s32 arg) {
@@ -285,7 +285,7 @@ void CameraL06_UpdateFollowOffsets(void) {
     Spring(smoothing_state + 5, smoothing_state + 6, heroBlock.capsule_radius_target, g_frame_scale_sq * 0.02f,
            g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
 }
-extern void stick_target(float, int);
+
 extern float blarg_hero_speed_bands[];
 extern float g_frame_time MACRO_ADDR;
 
@@ -309,7 +309,6 @@ extern u8 blarg_collision_hit_point[];
 extern f32 blarg_coll_hit_z;
 extern s32 g_current_level_index MACRO_ADDR;
 
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
@@ -505,14 +504,11 @@ extern float blarg_hero_speed_bands_6[];
 
 extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
-extern void build_scaled_hero_move_impulse(float, float);
-extern void speed_step(float, float);
-extern void turn_to(int, float, float, float);
+
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
 extern int g_current_level_index MACRO_ADDR;
 
@@ -675,12 +671,8 @@ extern float blarg_hero_anim_frame_speeds_b[];
 
 extern int fast_dec_timer(int *);
 
-extern void turn_hero_toward_move_direction_for_item(void);
-
 extern int get_hero_help_value(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
-extern void correct_hero_airborne_wall_velocity(void);
 
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
@@ -692,18 +684,9 @@ extern void Hero_SetTiltSpringParams(float, float);
 extern void ClampVectorLength(void *, float);
 
 extern float Spring(float *, float *, float, float, float, float);
-extern float forward_component(void *);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-
-extern int test_hero_animation_frame_window(float);
-
-extern void set_planar_vel(float);
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
-extern void turn_hero_toward_move_direction_with_stick_scale(void);
 
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
@@ -711,7 +694,6 @@ extern int offset_path_index(void *, int, int, int);
 
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
-extern void hero_integrate_velocity(void);
 extern void update_hero_airborne_planar_velocity(void);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 

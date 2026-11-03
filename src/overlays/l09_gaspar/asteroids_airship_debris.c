@@ -351,8 +351,6 @@ typedef union {
 } Buf;
 
 extern int STUB_printf();
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
 
 extern void SetDeathBits(void *, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);

@@ -18,6 +18,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -1652,7 +1653,7 @@ typedef struct {
 
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(void *, void *, float, int, int, int);
-extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
+
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
 
@@ -2004,10 +2005,9 @@ extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float func_L00_002644E0(void *);
+
 extern void spawn_span_particle_r(void *, void *, float, void *) __asm__("func_L08_00273A80");
 extern void func_L08_002803B8(void *, void *, float, void *);
-extern void func_L00_00264570(void *);
 
 /* moby class 1400 update: steers the offset vectors from the mode, fans them out to the object over counted loops */
 void scatter_ground_particles(Moby *m) {

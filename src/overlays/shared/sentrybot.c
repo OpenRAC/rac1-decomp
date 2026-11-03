@@ -23,6 +23,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -3501,7 +3502,6 @@ void emit_sine_modulated_rgba_draw_packet(void) {
     emit_rgba_draw_packet(k & 0xFF, k >= 9, k >= 17, r);
 }
 typedef int u128 __attribute__((mode(TI)));
-extern int hero_is_in_special_state(void);
 
 // Checks whether the pad-state object is in state 0x18/0x19 and a probed height is above a threshold.
 int hero_is_near_ground(void) {

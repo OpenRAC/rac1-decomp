@@ -14,6 +14,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -325,7 +326,6 @@ typedef struct {
     int target;
 } L13Action;
 extern L13Action gemlik_cutscene_action;
-extern void cutscene_set_camera_target(int);
 
 // Initializes the moby and invokes its selected level action.
 void update_cutscene_target_effects(unsigned char *moby) {

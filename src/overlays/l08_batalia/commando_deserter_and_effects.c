@@ -1200,8 +1200,6 @@ extern void set_ground_height_band(void *);
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void queue_planet_unlock_message(int);
-
 extern int memcard_Save(int, int);
 
 extern float vec_distance_xy(void *, void *);
@@ -1829,7 +1827,7 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern int Help_Request(int a, int b);
 
 /* Moby update for a trigger-volume controller; tracks best times and raises Help_Request. */
@@ -1928,7 +1926,7 @@ sample_volume:
     if (alt_p[0x2F] == 0 && hero_p.state.control_mode == HERO_MODE_GRIND)
         alt_p[0x2F] = 1;
 }
-extern void cutscene_set_camera_target(int);
+
 /* per-frame update of a moby that fires a sound event when the game state allows */
 void update_batalia_selected_moby_effects(struct Moby *moby) {
     int k;

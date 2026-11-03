@@ -1546,7 +1546,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern int mine_fall(struct Moby *, void *);
 extern void spawn_color_swapped_explosion_burst(struct Moby *, void *, int, float, float);
 extern void RotateWithMoby(struct Moby *, void *, void *, void *, void *, void *);
-extern int test_path_segment_strict_crossing(int, void *, void *);
+
 extern void move_4318(struct Moby *, void *, float, float, float, int);
 extern float randf_sym(float, float);
 extern void PartType34Spawn(void *, void *, float, float);
@@ -3507,7 +3507,6 @@ char *activate_listed_blarg_ship(int idx) {
 }
 extern int count_active_moby_group_members(int, int);
 extern void PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
 
 /* Moby update that deletes itself or shows a banner depending on its data. */
 void update_moby_list_empty_dialogue_trigger(char *moby) {
