@@ -19,6 +19,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/system/memcard.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/music_track_requests.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -92,7 +93,6 @@ extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 
-extern void func_L00_002664B0(int, int);
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
 extern void func_L00_0028FB78(void *);

@@ -37,6 +37,7 @@
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "game/system/memcard.h"
+#include "overlays/shared/point_lights_and_glows.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -1101,7 +1102,6 @@ extern char D_L08_001FC540[];
 extern char D_L08_001FC590[];
 extern char D_L08_001FC5C0[];
 
-extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 extern void release_point_light_slot_r(int) __asm__("func_L00_0023F1D0");
 extern void draw_flickering_mesh_effect_r(void) __asm__("func_L08_002F7318");
 extern f32 random_float_between_r2(f32, f32) __asm__("func_002140F8");

@@ -17,6 +17,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -300,7 +301,7 @@ extern int func_001FA898(float);
 extern int func_L00_0025E860(void *, void *, int *, float *, float, int);
 extern float func_001F9D48(void *, void *);
 extern int func_00120778_31E6B0(float) __asm__("func_00120778");
-extern char *func_L00_002C6608(void *, int, int, int);
+
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");

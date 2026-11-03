@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "core/mpeg/ipu.h"
 
 /*
  * core_text object 0x12CC70-0x12CC90. Boundaries are retail's linker fill
@@ -11,15 +12,12 @@
  * emits those tail calls itself for a void function that ends in a call.
  */
 
-extern void sce_ipu_stop_dma(void *arg0);
-
 void mpeg_stop_ipu_dma(void *arg0) {
     sce_ipu_stop_dma((char *)*(void **)((char *)arg0 + 0x40) + 0x4C);
 }
 
 /* sce_ipu_restart_dma itself ends in a tail call (to set_d4_chcr): it returns
    nothing. */
-extern void sce_ipu_restart_dma(void *);
 
 /* Tail call with argument setup: retail is
    `lw $4,0x40($4)` / `j sce_ipu_restart_dma` / `addiu $4,$4,0x4C`. Void, so

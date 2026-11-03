@@ -17,8 +17,6 @@ typedef struct {
 extern int g_current_level_index MACRO_ADDR;
 extern Level14State oltanis_cutscene_state;
 
-extern void glow_quads_draw(void *);
-
 /* Attach the callback during the six active phases of this level event. */
 void update_level14_event_moby_effects(void) {
     void *moby;

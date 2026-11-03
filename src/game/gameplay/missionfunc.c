@@ -4,6 +4,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "game/render/draw.h"
+#include "game/ui/menu.h"
 
 /*
  * missionfunc.cpp in the original source; text 0x20C7A0-0x20D348.
@@ -384,9 +385,6 @@ extern struct {
     u8 pad0[0x10];
     MapIconLink *links;
 } D_001A2F90_0CDE0 __asm__("D_001A2F90");
-
-extern void func_00208C38(f32 *outx, f32 *outy, s32 view, f32 x, f32 y);
-extern void func_00208AB0(s32 idx, char *dst);
 
 /* Map screen icon refresh: picks the level's icon list, centres the map on the hero when
    it is the current level, places the fixed icons (-1..-9) and projects the others to map

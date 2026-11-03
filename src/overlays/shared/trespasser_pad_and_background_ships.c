@@ -35,6 +35,7 @@
 #include "game/system/memcard.h"
 #include "game/render/partupd.h"
 #include "game/render/framebuf.h"
+#include "overlays/l02_aridia/hero_idle_and_item_input.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -460,7 +461,6 @@ typedef struct {
 } Idle;
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int func_L02_0022BE40(int, int);
 
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern void align_hero_to_tresspasser_pad_r(Moby *) __asm__("func_L02_002DA728");

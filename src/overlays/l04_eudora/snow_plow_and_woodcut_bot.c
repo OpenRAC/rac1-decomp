@@ -29,6 +29,7 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "overlays/shared/draw_buffers_and_walker_gait.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -765,8 +766,6 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, void *);
-
-extern void reset_walker_gait_helpers(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 

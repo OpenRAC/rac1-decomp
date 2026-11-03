@@ -43,6 +43,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "game/audio/music.h"
 #include "game/render/partupd.h"
+#include "overlays/l13_gemlik/space_fighters_and_rockets.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -237,13 +238,8 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
     }
 }
 extern int fast_dec_timer(void *);
-extern void fire_starfighter_homing_rocket(void *, void *);
-
-extern int queue_starfighter_voice_line(void *, void *, int, int);
 
 extern int fast_subtract_rotations_cf(void *);
-
-extern unsigned char *fire_mine_83_projectile(char *, char *);
 
 extern char hero_globals_base[];
 
@@ -551,11 +547,8 @@ typedef struct {
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
-extern int advance_moby_along_selected_path(void *, void *, int, int);
-
 extern void update_qwarks_starfighter_attack_commands(void *, void *);
-extern int update_moby_path_following_away_from_hero(void *, void *, int, int);
-extern void process_moby_attachment_damage(void *, void *);
+
 extern void StepColorFade(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
@@ -564,23 +557,15 @@ extern int coll_line(void *, void *, int, void *, void *);
 extern int FastBSphereCheck(void *, float);
 
 extern float vec_distance_xy(void *, void *);
-extern void update_moby_spring_steering_and_banking(void *, void *, float, float);
 
 extern void draw_starfighter_tractor_beam();
-extern void detach_moby_joint_attachment(void *, void *, int);
+
 extern int fast_dec_timer(void *);
 extern void MobySpringTurn(void *moby, float *vel, float target, float k, float d, float max);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
-extern void func_L13_002E9F90(void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-
-extern char *spawn_owner_linked_class_160_moby(void *);
-extern void update_moby_joint_attachments(void *, void *);
-extern void emit_gated_moby_joint_effects(void *, void *);
-
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 extern int starfighter_part_classes[];
 

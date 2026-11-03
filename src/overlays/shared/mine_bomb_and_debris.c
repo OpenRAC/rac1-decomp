@@ -29,6 +29,7 @@
 #include "overlays/shared/bolts_and_wrench.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -1142,8 +1143,6 @@ char *spawn_bomb(int owner, void *pos) {
 extern char collision_hit_point[];
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
-
-extern void aim_throw_arc(float *, float *, float *, float, float, float);
 
 typedef struct BombVars {
     Vec4 vel; /* 0x00 */

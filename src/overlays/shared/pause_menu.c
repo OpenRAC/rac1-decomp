@@ -32,6 +32,9 @@
 #include "game/system/stub.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "game/render/framebuf.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/shared/draw_buffers_and_walker_gait.h"
+#include "game/system/update.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -150,14 +153,9 @@ extern char player_camera[];
 
 extern void update_mission_list(void);
 
-extern int sce_gs_sync_v(int);
 extern void initialize_menu_stream_buffers(int);
 
 extern void initialize_render_archive_transfer(void);
-
-extern void transfer_draw_buffer_chunks(int, int, int);
-
-extern Moby_277208 *create_menu_preview_moby(int);
 
 /* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
 void initialize_pause_menu(void) {
@@ -359,8 +357,6 @@ extern MobyClass *moby_class_headers[] NOT_SDA;
 extern unsigned char texture_group_header[];
 extern int coll_hit_result[];
 
-extern struct HEnt *delete_moby(struct HEnt *);
-
 /* PageMenuClose: closes the pause menu. */
 void close_pause_menu(void) {
     int i;
@@ -554,11 +550,6 @@ extern float render_view_tan_half_fov;
 extern unsigned char level_transition_target_fmt[];
 
 extern void prepare_target_level_transition(int);
-
-extern void PlayMovieEntryIfIdle(int);
-extern void queue_movie_with_game_language(int);
-extern void queue_language_zero_movie(int);
-extern void StartCutscene(int);
 
 extern int sound_update(void); /* sound update: ends in `return 0`, so it returns a value */
 extern void initialize_pause_menu(void);
@@ -770,10 +761,6 @@ L2:
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-
-extern void append_draw_buffer_upload_packets(int a, int b, int n);
-
-extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
 
 extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6);
 

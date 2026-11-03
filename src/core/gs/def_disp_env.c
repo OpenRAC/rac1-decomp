@@ -3,6 +3,7 @@
 #include "structs/misc.h"
 #include "core/kernel/kprintf.h"
 #include "asm_functions/executable.h"
+#include "core/cdvd/read.h"
 
 /*
  * core_text object 0x121D18-0x122140. Boundaries are retail's linker fill
@@ -64,8 +65,6 @@ typedef struct {
     unsigned long display;
     unsigned long bgcolor;
 } GsDispEnv;
-
-extern GsGParam *sceGsGetGParam(void);
 
 extern char gs_def_disp_env_mode_error_msg[];
 

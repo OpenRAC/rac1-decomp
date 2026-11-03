@@ -39,6 +39,8 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -1665,8 +1667,6 @@ extern void MobySphereHitDirectional(int, float, void *, int, float, float, int,
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern float ApproachValue(float *p, float target, float maxstep);
 
-extern void MusicRequestTrack(int, int);
-
 /* Teleporter pad update: activation check, then per state: spawn rings, wait for the player, charge, teleport, cool
    down. */
 void TeleporterPadUpdate(char *moby) {
@@ -2024,8 +2024,6 @@ void show_teleporter_and_children(char *a) {
     }
 }
 typedef int OvlQuad_c9 __attribute__((mode(TI)));
-
-extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 
 extern char novalis_point_light_slots[];
 
@@ -2716,7 +2714,6 @@ extern void MobySpringTurn(void *, f32, void *, f32, f32, f32);
 extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void jet_animate(void *, f32);
 
-extern int Hero_SetMoveState(int, int);
 extern void set_hero_animation_v(f32, int, int) __asm__("func_L00_00232C10");
 
 extern void add_random_offset_to_vector_xyz(void *, f32);
@@ -3354,7 +3351,7 @@ extern Path *novalis_paths_r3[] __asm__("D_L01_001B0C30");
 extern float novalis_camera_up_axis[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
-extern float Cam_InterpValues(float a, float b, float *p, float c, float d, float e);
+extern float Cam_InterpValues_v(float a, float b, float *p, float c, float d, float e) __asm__("func_001EC120");
 
 /* Update function of camera 3: follows a path beside the hero's and turns toward a look-at point on it.
    The four `= 0` initialisers in the mode 2 block are dead and leave no code: they make up for the insns
@@ -3397,9 +3394,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
         FastVecSub(v50, &path->nodes[seg + 1], &path->nodes[seg]);
         vec_scale_to_length(v40, v50, dist);
         FastVecAdd(v60, &path->nodes[seg], v40);
-        cam->pos[0] = Cam_InterpValues(cam->pos[0], v60[0], &d->vel[0], k, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues(cam->pos[1], v60[1], &d->vel[1], k, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues(cam->pos[2], v60[2], &d->vel[2], k, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v60[0], &d->vel[0], k, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v60[1], &d->vel[1], k, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v60[2], &d->vel[2], k, 0.175f, 0.0f);
     } else if (mode == 2) {
         Path *pathA = novalis_paths_r3[pi];
         Path *pathD = novalis_rails[p->f24].f10;
@@ -3470,9 +3467,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
         } else {
             d->f10 = d->f10 - 0.00015f;
         }
-        cam->pos[0] = Cam_InterpValues(cam->pos[0], v40[0], &d->vel[0], d->f10, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues(cam->pos[1], v40[1], &d->vel[1], d->f10, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues(cam->pos[2], v40[2], &d->vel[2], d->f10, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v40[0], &d->vel[0], d->f10, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v40[1], &d->vel[1], d->f10, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v40[2], &d->vel[2], d->f10, 0.175f, 0.0f);
     } else {
         Path *path = novalis_paths_r3[pi];
 
@@ -3496,9 +3493,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
             Spline_AdvanceByDistance((Path *)g_hero.rail_spline, v30, &hseg, &hfrac, p->f38, 1);
             find_nearest_path_point(path, v30, v0, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         }
-        cam->pos[0] = Cam_InterpValues(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues(cam->pos[1], v0[1], &d->vel[1], k, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues(cam->pos[2], v0[2], &d->vel[2], k, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v0[1], &d->vel[1], k, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v0[2], &d->vel[2], k, 0.175f, 0.0f);
     }
     if (p->f24 < 0) {
         Path *path = novalis_paths_r3[p->f20];
@@ -3619,7 +3616,6 @@ void update_camera_mode_from_preset(Camera *o) {
         o->control.mode = 3;
     }
 }
-extern char *find_camera_record_by_id(int);
 
 // Stores two floats into the record at 0xE0 of the data of the moby a global points at, or of moby 5.
 void set_camera_5_track_acceleration_yz(float a, float b) {

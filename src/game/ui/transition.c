@@ -17,6 +17,14 @@
 #include "core/sound/989snd.h"
 #include "game/system/loaders.h"
 #include "game/render/framebuf.h"
+#include "core/gs/put_draw_env.h"
+#include "game/ui/pause.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "game/ui/menu.h"
+#include "core/gs/load_image.h"
+#include "game/render/tiefunc.h"
+#include "game/system/stash.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -41,8 +49,6 @@
  * unit, or some other property not yet isolated). See "Open toolchain
  * questions" in docs/reference/DECOMP_PROGRESS.md.
  */
-
-extern void SkyLevelGeneric___maybe(void);
 
 extern int depth_buffer_address MACRO_ADDR;
 
@@ -689,7 +695,7 @@ extern s32 D_001E2900[];
 extern void FastMemSet_r(void *, s32, s32) __asm__("func_001F99B0");
 extern void flush_cache_r(s32) __asm__("func_00118D80");
 extern void queue_dma_transfer_r(s32) __asm__("func_001EB300");
-extern void func_00120858(s32, s32);
+
 extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
 extern void InitViewContext_r(void) __asm__("func_001F3008");
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
@@ -702,8 +708,6 @@ extern void func_00217628(u8 *, s32, s32);
 extern unsigned int Load_r(s32, s32, s32) __asm__("func_002176C8");
 extern void func_00217748(s32);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
-extern s32 func_00122630(void *, s16, s16, s16, s16, s16, s16, s16);
-extern s32 func_00122958(void *, u8 *);
 
 /* Loads the space-transition wad to 0x1400000 and unpacks it at the level arena: textures and
    their tables, the three kinds of moby classes, sound and help text tables, the loading image;
@@ -1103,7 +1107,6 @@ extern s32 truncate_float_to_s32(f32);
 
 extern s32 draw_freeze_message_box();
 
-extern void render_level_effects_and_screen_sprites();
 extern s32 patch_shrub_gifs();
 extern void DrawShrubs();
 
@@ -1111,9 +1114,6 @@ extern s32 PatchTfragGifs();
 extern void DrawTfrag();
 
 extern s32 VU1_addGSregister_r() __asm__("func_00234C98");
-
-extern s32 PatchTieGifs();
-extern void DrawTies_1();
 
 void Transition_DefaultDraw(s32 *arg0);
 
@@ -1272,10 +1272,6 @@ extern void load_and_init_BB48(void) __asm__("func_00209DC0");
 extern void transition_load_wad_BB48(void) __asm__("func_001EABE8");
 extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
 
-extern void func_00233FF8(void);
-extern void func_00234018(void);
-
-extern s32 func_00122598(s32);
 extern s32 scale_frames_BB48(s32) __asm__("func_001F98C0");
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
 
@@ -1286,7 +1282,7 @@ extern void put_draw_small_BB48(void) __asm__("func_001FB598");
 
 extern void put_draw_large_BB48(void) __asm__("func_001FB498");
 extern s32 memcard_update_BB48(void) __asm__("func_00209E68");
-extern s32 func_00209070(void);
+
 extern void update_pad_BB48(void) __asm__("func_00218908");
 extern void queue_dma_BB48(s32) __asm__("func_001EB300");
 extern s32 is_active_BB48(s32, s32) __asm__("func_001EBAF0");

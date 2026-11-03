@@ -40,6 +40,9 @@
 #include "overlays/shared/follow_camera.h"
 #include "overlays/shared/bolts_and_wrench.h"
 #include "game/system/memcard.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/trigger_switches_and_hoverboard.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -225,7 +228,6 @@ void trigger_pokitaru_paired_rotation(char *moby) {
             child[0x20] = 2;
     }
 }
-extern void func_L05_003188A8(char *);
 
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern void clear_active_help_record_r(void) __asm__("func_L00_00203FB8");
@@ -1326,8 +1328,6 @@ extern void MobySphereHitDirectional(int, float, void *, int, float, float, int,
 extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 
-extern void MusicRequestTrack(int, int);
-
 /* L11 twin of FUN_L01_00308bd8: a three-part switch moby that, once the hero stands on it in mission state 0xB and
    presses the button, swings its parts open and moves the linked moby (or its fallback) along.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002f2518. */
@@ -2040,7 +2040,7 @@ typedef struct {
 } Flags;
 
 extern void update_child_set_poses(void *);
-extern int test_linked_moby_turn_trigger(char *moby);
+
 extern float ApproachValue(float *, float, float);
 
 extern void Moby_PlaySound_u(int, int, void *) __asm__("func_0022ED80");
@@ -2723,8 +2723,6 @@ extern int pokitaru_water_tint2_b MACRO_ADDR;
 extern float pokitaru_camera_pos_z;
 
 extern void RipplePatch_ToFixedPoint(void *, void *);
-
-extern void Group_CopyZToTableSlots(struct Moby *);
 
 extern void render_level_11_water_grids(void);
 extern void populate_water_tile_neighbor_indices(int);

@@ -34,6 +34,9 @@
 #include "game/system/memcard.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/music_track_requests.h"
+#include "asm_functions/level_06.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -1382,7 +1385,7 @@ typedef u32 u128_F8200 __attribute__((mode(TI), aligned(16)));
 extern int GetEffectTex(int);
 
 extern unsigned int FastTweenColor_r(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
-extern void blarg_draw_strand_strip(int *, float *);
+
 extern float beam_barrier_draw_scale SDATA(beam_barrier_draw_scale);
 extern int beam_barrier_blend_a SDATA(beam_barrier_blend_a);
 extern int beam_barrier_blend_b SDATA(beam_barrier_blend_b);
@@ -1476,7 +1479,6 @@ extern f32 D_L06_00161E94_F8430 SDATA(D_L06_00161E94);
 extern int beam_barrier_strand_timers[4] MACRO_ADDR;
 extern Vec4 beam_barrier_strand_points[4][30];
 extern Vec4 beam_barrier_strand_drift[4][30];
-extern void set_vec_to_origin_point(void *);
 
 /* Spins the moby and animates four 30-point strands: a strand whose timer ran out is rebuilt with a smoothed random
    drift (each point averages three jitters) and its timer reset; otherwise every inner point moves by its drift.
@@ -2318,9 +2320,7 @@ extern void start_alien_queen_intro_q(void *) __asm__("func_L06_002FC578");
 extern float FastAbsF_q(float) __asm__("func_001F9B88");
 extern int update_alien_queen_intro_camera_q(void *) __asm__("func_L06_002FC6D8");
 extern void finish_alien_queen_intro_q(void *) __asm__("func_L06_002FC8E0");
-extern void finish_alien_queen_first_recovery(void *);
-extern void finish_alien_queen_second_recovery(void *);
-extern int update_alien_queen_second_recovery_camera(void *);
+
 extern void activate_listed_state_15_mobys_at_raised_positions_q(void *) __asm__("func_L06_002FC4C0");
 extern int update_alien_queen_first_recovery_camera_q(void *) __asm__("func_L06_002FCA98");
 extern void clear_moby_list_state_18_q(int) __asm__("func_L06_002FADE0");
@@ -2744,9 +2744,6 @@ extern void StepColorFade(void *, void *);
 
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 
-extern void start_alien_queen_first_recovery(char *);
-extern void start_alien_queen_second_recovery(char *);
-
 /* Boss-style moby update: applies hit damage, handles recovery and death states. */
 void update_alien_queen_hit_response_and_recovery(void *moby_) {
     char *moby = moby_;
@@ -2984,7 +2981,6 @@ int update_alien_queen_intro_camera(char *moby) {
         return 1;
     return 0;
 }
-extern void HeroL06_TrySetMoveState(int, int);
 
 /* Ends the moby's script. */
 void finish_alien_queen_intro(char *arg) {
@@ -3333,7 +3329,6 @@ typedef struct {
 extern int try_set_help_message(int, int);
 
 extern void restore_hero_from_vehicle_mode(void);
-extern void MusicRequestTrack(int, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");

@@ -33,6 +33,8 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/shot_tracking.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -118,7 +120,6 @@ extern char hoven_ripple_patches[];
 extern void RipplePatch_ToFixedPoint(float *in, int *out);
 extern void initialize_level_12_slot_grid_neighbors(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void Group_CopyZToTableSlots(char *moby);
 
 extern void render_level_12_water_grids(void);
 
@@ -1596,8 +1597,6 @@ void HovenPlatformUpdate(Moby *moby) {
     update_entity_matrix(d->f60, delta, oldRot, (*(float (*)[4]) & moby->rot));
 }
 
-extern void initialize_moby_grounding(void *);
-
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r2(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
@@ -1762,7 +1761,6 @@ void miner_update(Moby *m) {
         update_moby_bone_attachment(m, d->helper, 2);
     }
 }
-extern void draw_level_12_effects(void);
 
 /* Queues the level 12 effects draw when the camera is inside the moby's clip volume. */
 void register_level_12_effects_draw_callback(unsigned char *moby) {
@@ -2608,8 +2606,6 @@ extern void Manipulator_ApplyScale(float, void *, int, void *);
 extern void process_blarg_helicopter_hits(char *);
 typedef int (*Fn_ED80)(int, int, void *);
 
-extern void start_blarg_commander_knockback(void *, void *);
-extern char *create_blarg_commander_moby_from_source(void *);
 extern void cache_consecutive_point_distances(int);
 extern int follow_blarg_helicopter_path(struct Moby *, int);
 

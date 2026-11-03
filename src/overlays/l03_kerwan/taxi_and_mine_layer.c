@@ -34,6 +34,8 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/shot_tracking.h"
+#include "overlays/shared/radial_particle_burst.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -403,7 +405,6 @@ extern f32 D_L03_0016198C_CBBD0 SDATA(D_L03_0016198C);
 extern TrooperHit *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern s32 ComputeHitResponse(struct Moby *, TrooperHit *, f32 *, s32, s32 *, f32 *, s32, s32);
 
-extern void trooper_set_knockback(void *, f32, f32);
 extern void HeadingFromVector(Vec4 *, f32 *, f32 *, f32 *);
 extern void InitKnockback_r(f32, struct Moby *, void *, s32, s32, s32) __asm__("func_L00_0025D5B0");
 extern void RerollEffectCounter(struct Moby *, void *);
@@ -1338,8 +1339,6 @@ extern LevelState_hg kerwan_current_level_state;
 extern u8 kerwan_mission_group_state[];
 extern char *kerwan_camera_points SDATA(kerwan_camera_points);
 extern void record_moby_context_bytes(void *, int, struct Moby *, int, void *);
-
-extern void initialize_moby_grounding(struct Moby *);
 
 #define LINK_HELPER(M, V)                                                  \
     t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058);             \
@@ -2839,7 +2838,7 @@ void initialize_hero_relative_camera(char *m) {
     kerwan_player_camera_field_2f4 = 0x78;
 }
 extern void vec_scale_to_length(void *, void *, float);
-extern float Cam_InterpValues(void *, float, float, float, float, float);
+extern float Cam_InterpValues_v(void *, float, float, float, float, float) __asm__("func_001EC120");
 
 // Smooths a camera-like moby's position toward the player's and sets its orientation vector.
 void update_smoothed_hero_relative_camera_position(void *arg) {
@@ -2858,12 +2857,12 @@ void update_smoothed_hero_relative_camera_position(void *arg) {
     vec_scale_to_length(v1, &g_hero.gravity_dir, -*(float *)(a + 0x10));
     vec_scale_to_length(v3, b, -*(float *)a);
     h = &g_hero;
-    *(float *)d = Cam_InterpValues(d + 0x10, *(float *)d, h->motion.pos.f[0], *(float *)(d + 0x20),
-                                   *(float *)(d + 0x24), *(float *)(d + 0x28));
-    *(float *)(d + 4) = Cam_InterpValues(d + 0x14, *(float *)(d + 4), h->motion.pos.f[1], *(float *)(d + 0x20),
-                                         *(float *)(d + 0x24), *(float *)(d + 0x28));
-    *(float *)(d + 8) = Cam_InterpValues(d + 0x18, *(float *)(d + 8), *(float *)(b + 0x34), *(float *)(d + 0x20),
-                                         *(float *)(d + 0x24), *(float *)(d + 0x28));
+    *(float *)d = Cam_InterpValues_v(d + 0x10, *(float *)d, h->motion.pos.f[0], *(float *)(d + 0x20),
+                                     *(float *)(d + 0x24), *(float *)(d + 0x28));
+    *(float *)(d + 4) = Cam_InterpValues_v(d + 0x14, *(float *)(d + 4), h->motion.pos.f[1], *(float *)(d + 0x20),
+                                           *(float *)(d + 0x24), *(float *)(d + 0x28));
+    *(float *)(d + 8) = Cam_InterpValues_v(d + 0x18, *(float *)(d + 8), *(float *)(b + 0x34), *(float *)(d + 0x20),
+                                           *(float *)(d + 0x24), *(float *)(d + 0x28));
     FastVecAdd(v2, d, v1);
     FastVecAdd(v2, v2, v3);
     *(float *)(m + 0x30) = v2[0];
@@ -2885,8 +2884,8 @@ void rebuild_camera_orientation_axes(void *arg) {
     float b[4];
     float c[4];
     qcopy(b, d);
-    p[2] = Cam_InterpValues(d + 0xBC, p[2], g_hero.motion.pos.f[2], kerwan_hero_cam_blend_stiffness,
-                            kerwan_hero_cam_blend_damping, 0.0f);
+    p[2] = Cam_InterpValues_v(d + 0xBC, p[2], g_hero.motion.pos.f[2], kerwan_hero_cam_blend_stiffness,
+                              kerwan_hero_cam_blend_damping, 0.0f);
     vec_scale_to_length(c, kerwan_player_camera_target_offset_dir, p[5]);
     FastVecAdd(b, c, b);
     FastVecSub(a, b, m + 0x30);

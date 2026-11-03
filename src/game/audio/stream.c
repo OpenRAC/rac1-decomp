@@ -11,6 +11,9 @@
 #include "game/audio/music.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "core/cdvd/read.h"
+#include "core/mc/memory_card.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
@@ -46,7 +49,6 @@ extern StreamHdr stream_read_mode_template;
 extern unsigned char cd_read_spindle_speed[4] MACRO_ADDR;
 extern int cd_read_wait_frames MACRO_ADDR;
 extern int cd_read_slowdown_applied MACRO_ADDR;
-extern void sce_cd_read(int, int, int, void *);
 
 /* Start a CD stream read of arg2 sectors from arg1 into arg0 at the current spindle speed. */
 int Stream_SubmitRead(int arg0, int arg1, int arg2) {
@@ -86,8 +88,6 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
     *(int *)(d + 0x10) = arg2;
     return arg2 << 11;
 }
-
-extern void sce_gs_sync_v(int);
 
 /*
  * Close, not exact (15/124), same size so inert. Semantics confirmed:
@@ -495,9 +495,8 @@ void pad_resetState(void) {
 LINKER_REMNANT("asm/remnants/text", func_00217ED8);
 
 extern int pad_socket_param NOT_SDA;
-extern void sce_dbc_init(void);
-extern void sce_pad2_init(int);
-extern int sce_pad2_create_socket(void *, void *);
+
+extern void sce_pad2_init_v(int) __asm__("func_00124B88");
 
 /* Minimal layouts for init_pads: the port/slot socket parameter (NTSC name unknown)
    and the leading part of PadState from structs/pad.h, up to the fields init_pads writes. */
@@ -511,7 +510,7 @@ void init_pads(void) {
     PadSocketParam *p = (PadSocketParam *)&pad_socket_param;
 
     sce_dbc_init();
-    sce_pad2_init(0);
+    sce_pad2_init_v(0);
     pad_socket_param = 2;
     p->slot = 0;
     ((struct PadState *)g_controller_state)->socket = sce_pad2_create_socket(p, g_controller_state);

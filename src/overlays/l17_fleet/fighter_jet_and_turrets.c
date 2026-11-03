@@ -35,6 +35,7 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/music_track_requests.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -2318,9 +2319,7 @@ extern int try_set_help_message(int, int);
 
 extern float ApproachValue(float *, float, float);
 extern void jet_animate(unsigned char *, float);
-extern void MusicRequestTrack(int, int);
 
-extern void emit_type_74_particles_from_moby_joints(void *, void *);
 extern char fleet_player_camera[];
 extern unsigned char saved_mission_state[][16] NOT_SDA;
 extern float fleet_view_tan_half_fov_a[] __asm__("D_L17_0016D470");

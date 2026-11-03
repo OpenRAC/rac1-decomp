@@ -32,6 +32,7 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "game/system/memcard.h"
 #include "game/audio/music.h"
+#include "overlays/shared/blarg_commander.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -931,8 +932,6 @@ char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
     return (char *)moby;
 }
 extern char oltanis_scaled_float_table[];
-
-extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
 
 /* Moby update: init once, then draw each frame. */
 void update_moby_draw_registration(unsigned char *moby) {
@@ -1883,7 +1882,7 @@ int update_flying_car_path_motion(struct Moby *moby) {
     }
     return 1;
 }
-extern void draw_textured_effect_list(void *, int, int, int);
+
 extern char oltanis_textured_effect_list[];
 extern int GetEffectTex(int);
 /* Draw callback for the 0x13-entry effect at oltanis_textured_effect_list. */
@@ -2532,8 +2531,7 @@ extern float oltanis_key_cam_moby_step_progress[][3];
 extern CamKey171D0 oltanis_path_camera_keys[];
 extern char oltanis_lean_state[];
 
-extern float Cam_InterpValues(void *, float, float, float, float, float);
-extern void compute_position_from_spherical_offset(void *, void *, void *);
+extern float Cam_InterpValues_v(void *, float, float, float, float, float) __asm__("func_001EC120");
 
 /* Camera 21 update (level 14): follows keyed angles along the hero's path progress, triggers three mobys, builds the
    camera matrix. */
@@ -2699,10 +2697,10 @@ void update_path_key_camera(char *cam) {
                           oltanis_path_camera_keys[st->idx + 1].a4 * 0.017453292f, t);
     cur->f4 = Camera_SmoothAngle(vel + 1, cur->f4, x, k, 0.2f, 0.0f);
     cur->f8 =
-        Cam_InterpValues(vel + 2, cur->f8,
-                         oltanis_path_camera_keys[st->idx].a8 +
-                             (oltanis_path_camera_keys[st->idx + 1].a8 - oltanis_path_camera_keys[st->idx].a8) * t,
-                         path_key_camera_placement_distance_spring_gain, 0.2f, 0.0f);
+        Cam_InterpValues_v(vel + 2, cur->f8,
+                           oltanis_path_camera_keys[st->idx].a8 +
+                               (oltanis_path_camera_keys[st->idx + 1].a8 - oltanis_path_camera_keys[st->idx].a8) * t,
+                           path_key_camera_placement_distance_spring_gain, 0.2f, 0.0f);
     k = path_key_camera_lateral_axis_rotation_spring_gain;
     x = interpolate_angle(oltanis_path_camera_keys[st->idx].aC * 0.017453292f,
                           oltanis_path_camera_keys[st->idx + 1].aC * 0.017453292f, t);

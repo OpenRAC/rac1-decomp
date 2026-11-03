@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "core/cdvd/read.h"
 
 /*
  * core_text object 0x122140-0x122200. Boundaries are retail's linker fill
@@ -9,9 +10,6 @@
  * Sony's libgraph, graph004.o (sceGsPutDispEnv). Built with Sony's 2.9-ee
  * (Makefile.sn, EE29_CORE), like the prebuilt libgraph.a.
  */
-
-
-extern void *sceGsGetGParam(void);
 
 typedef struct {
     unsigned long f0;

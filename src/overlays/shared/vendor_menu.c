@@ -33,6 +33,9 @@
 #include "callees.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "game/ui/help.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "game/system/update.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -512,8 +515,6 @@ extern struct T_29ad08 item_defs_r[] __asm__("D_L00_00179BC0");
 
 extern float ProbeGroundHeight_v(float, void *, s32) __asm__("func_00214358");
 
-extern void sce_gs_sync_v(s32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_0029ad08. */
 void start_vendor_exit_cutscene(void) {
     Vendor_29a6b0 *g;
@@ -845,8 +846,6 @@ extern int vendor_quantity_adjustable SDATA(vendor_quantity_adjustable);
 extern s32 vendor_quantity_decrease_hold_frames MACRO_ADDR;
 extern s32 vendor_quantity_increase_hold_frames MACRO_ADDR;
 extern char level_render_state_base[];
-
-extern void set_scrolling_status_message();
 
 /* vendor buy dialog: quantity selection with held-button repeat, confirm and purchase */
 void update_vendor_purchase(void) {
@@ -1207,9 +1206,6 @@ extern s32 vendor_opening_countdown_frames MACRO_ADDR;
 extern s32 pal_mode MACRO_ADDR;
 extern f32 render_view_tan_half_fov NOT_SDA;
 
-extern void reset_frame_counters();
-extern void update_game_frame_and_idle_counters();
-
 extern void start_vendor_exit_cutscene();
 extern void close_vendor_menu();
 
@@ -1220,8 +1216,6 @@ extern void decompress_and_relocate_vendor_moby_assets();
 extern void handle_vendor_auxiliary_moby_event();
 
 extern void update_resident_dialogue_animation_state();
-
-extern void set_scrolling_status_message();
 
 extern void update_vendor_purchase();
 

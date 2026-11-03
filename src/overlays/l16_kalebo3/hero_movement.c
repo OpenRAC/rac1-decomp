@@ -111,8 +111,6 @@ extern int is_moby_in_class_range_500_to_540(int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern void compose_and_limit_hero_velocity(void);
 
-extern void compute_hero_hoverboard_respawn_transform(void *, void *);
-
 struct HeroUpdateStatePhysicsVars {};
 
 /* Hero state machine: per-frame movement and physics for the current hero state. */

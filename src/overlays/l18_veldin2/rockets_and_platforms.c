@@ -30,6 +30,7 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/space_commando_and_door_lock.h"
 extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
@@ -2785,7 +2786,6 @@ void spawn_sparks_along_target_direction(char *moby) {
         PartType02Spawn(v10, v20, v30, c1, c2, a, b, c, (*(int *)&(homing_spark_particle_texture)));
     }
 }
-extern void spawn_timed_projected_sprite_effect(void *, int, int, int);
 
 extern int truncate_float_to_s32(float);
 

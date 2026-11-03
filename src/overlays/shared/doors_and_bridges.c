@@ -55,7 +55,7 @@ struct BridgeVars {
     s32 indicator; /* 0xD8 */
 };
 
-extern void prepare_scaled_float_table_with_target_byte(void *, int, float);
+extern void prepare_scaled_float_table_with_target_byte_v(void *, int, float) __asm__("func_L02_002A5238");
 
 extern char umbris_ambient_stream_scaled_table[];
 
@@ -65,7 +65,7 @@ void AmbientStreamL07Update(unsigned char *moby) {
         case 0:
             moby[0x20] = 1;
             moby[0x30] = 0xFF;
-            prepare_scaled_float_table_with_target_byte(umbris_ambient_stream_scaled_table, 0x80, 1.0f);
+            prepare_scaled_float_table_with_target_byte_v(umbris_ambient_stream_scaled_table, 0x80, 1.0f);
             break;
         case 1:
             AddDrawCallback(register_audio_stream_callback, moby);

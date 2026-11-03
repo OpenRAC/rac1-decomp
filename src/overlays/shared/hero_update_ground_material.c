@@ -30,6 +30,7 @@
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -307,8 +308,6 @@ void update_hero_blink_and_gold_weapon_tint(void) {
         update_item_tint_from_hero_r(g_hero_r.items[0].moby, g_hero_r.moby);
 }
 extern int coll_sphere(float, void *, int, void *);
-
-extern void Hero_SetMoveState(int, int);
 
 // Handles a pending state change (HeroL08_ResetActionState without its state-2 flag): clears the request and sets
 // per-state flags.
@@ -739,8 +738,6 @@ extern void hero_update_items();
 
 extern void HeroSetCollisionSize(void);
 
-extern void Hero_SetMoveState(int, int);
-
 /* Starts a level scene: resets the player state, takes the new moby and sets up its flags. */
 void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     struct Hero *g;
@@ -774,7 +771,6 @@ void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     Hero_SetMoveState(b, 1);
 }
 
-extern void Hero_SetMoveState(int, int);
 extern int novalis_game_mode MACRO_ADDR;
 
 /* resets the hero state and default camera fields */
@@ -820,8 +816,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-
-void Hero_SetMoveState(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231580. */
 s32 HeroL01_TryTakeHit(s32 arg) {

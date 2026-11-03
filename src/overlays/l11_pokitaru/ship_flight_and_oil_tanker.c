@@ -36,6 +36,8 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -236,7 +238,6 @@ void *select_ship_lock_on_target(void *a0, char *a1, int a2, int a3, void *a4) {
     } while (*p++ >= 0);
     return best;
 }
-extern void project_world_point_to_screen_pixels(void *, void *, void *, int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char pokitaru_camera_matrix_row1[];
@@ -339,7 +340,6 @@ extern void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int ico
 extern void update_ship_lock_on_target(int a, char *moby);
 extern void draw_quarter_turn_textured_quads_f(float, float, float, float, unsigned char, unsigned char, unsigned char,
                                                unsigned char) __asm__("func_L11_00312510");
-extern void append_scaled_screen_triangle_strip(float, float, float, void *, int, int, long);
 
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
@@ -939,13 +939,9 @@ extern int Hero_TrySetMoveStateL11(int, int);
 
 extern int try_set_help_message(int, int);
 
-extern void MusicRequestTrack(int, int);
-
 extern void update_player_ship_flight(void *, void *);
 extern int count_listed_blarg_ships_in_state_5(int);
 extern char *activate_listed_blarg_ship(int idx);
-
-extern void emit_type_74_particles_from_moby_joints(void *, void *);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -3205,10 +3201,9 @@ void spawn_energy_sphere_spark(char *moby) {
     PartType02Spawn(moby + 0x10, v0, v1, c1, c2, energy_sphere_spark_time1, energy_sphere_spark_time2,
                     energy_sphere_spark_time3, energy_sphere_spark_texture);
 }
-extern void update_moby_hit_stats_and_state(void *);
+
 extern float randf_sym(float lo, float hi);
-extern void update_moby_trail_points(void *);
-extern void update_moby_path_transform(void *);
+
 extern char *spawn_moby_with_random_yaw(void *position, void *vector, int id);
 
 extern int FastBSphereCheck(char *, float);
@@ -3217,7 +3212,6 @@ extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z);
 extern char flying_craft_gun_offset_a[];
 extern char flying_craft_gun_offset_b[];
 extern float flying_craft_shot_speed SDATA(flying_craft_shot_speed);

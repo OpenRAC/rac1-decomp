@@ -35,6 +35,9 @@
 #include "game/system/stub.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "game/system/update.h"
+#include "game/system/stash.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -215,7 +218,6 @@ extern struct O2_19E90 *panel_slots_r[] __asm__("D_001D6120");
 extern u8 D_001602C0 MACRO_ADDR;
 extern u8 D_001602D0 MACRO_ADDR;
 
-extern s32 func_00122598(s32);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern struct O2_19E90 *create_menu_preview_moby_r() __asm__("func_00226720");
 extern s32 MobySetAnimation_r() __asm__("func_00213D28");
@@ -497,8 +499,6 @@ extern short panel_clear_color;
 extern s32 panel_slot_enabled[];
 
 extern void draw_hud_rect_blended();
-
-extern void project_graphics_bounds(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
 
 extern void draw_hud_rect_depth(s32, s32, s32, s32, u64, u32, s32);
 
@@ -1966,7 +1966,7 @@ extern struct MapEntry D_001384A0[];
 extern struct MapEntry D_00138538[];
 
 extern s32 func_00205C70();
-extern s32 func_00205A50(s32 id);
+extern s32 find_id_in_terminated_table_v(s32 id) __asm__("func_00205A50");
 extern s32 func_002058D0();
 extern s32 func_00205AA8();
 extern void func_00205830();
@@ -1981,7 +1981,7 @@ extern s32 start_audio_stream_read_r() __asm__("func_00217628");
 extern s32 stash_receive_data_r() __asm__("func_00234238");
 extern s32 fast_decompress_r() __asm__("func_0020C468");
 extern s64 register_8bit_texture_r() __asm__("func_00205660");
-extern void func_002083E0();
+
 extern void flush_pending_texture_uploads_r() __asm__("func_0020C2F8");
 extern void func_0020CDE0();
 extern void Moby_PlaySound_r3() __asm__("func_0022ED80");
@@ -2039,7 +2039,7 @@ s32 DrawMapScreen(MenuScreen *screen) {
             Moby_PlaySound_r3(0, 0x11, screen->moby);
             return 0;
         }
-        idx = find_id_in_terminated_table(level_map_selection_r.level);
+        idx = find_id_in_terminated_table_v(level_map_selection_r.level);
         if (idx >= 0) {
             if (g_controller_state_r.pressed_unmasked & 8) {
                 if (idx < 0x13) {
@@ -3898,13 +3898,13 @@ int draw_selected_item_ammo(char *arg0) {
     return 2;
 }
 
-extern void draw_map_overlay(void);
+extern void draw_map_overlay_v(void) __asm__("func_00205E70");
 
 /* Draws the map screen overlay with the needed GS registers set. Returns 8. */
 int draw_map_screen_overlay(void) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
-    draw_map_overlay();
+    draw_map_overlay_v();
     return 8;
 }
 
@@ -4670,7 +4670,7 @@ struct MS {
     char pad130[0x24];
     int ticks;
 };
-extern long load_texture_file(int);
+extern long load_texture_file_v(int) __asm__("func_00205520");
 
 /* Draws the stream image screen: while the card is checked it prints the centred
    status text, otherwise it draws the streamed image full screen. Returns 1 when
@@ -4735,9 +4735,9 @@ int draw_checking_memory_card_data_menu(struct Stream *menu) {
     }
     SetupGifPaging(0);
     if (menu->state < 4) {
-        texture = load_texture_file(menu->buffer[0]);
+        texture = load_texture_file_v(menu->buffer[0]);
     } else {
-        texture = load_texture_file(menu->buffer[1]);
+        texture = load_texture_file_v(menu->buffer[1]);
     }
     DrawTexturedQuad(0, 0, fs_aa_buffer[0xB0], fs_aa_buffer[0xB1], 0, 0, menu->tw, menu->th, 0x80808080L, texture);
     DoGifPaging();
@@ -4798,7 +4798,7 @@ int advance_audio_stream_state(MenuScreen *arg0) {
 /* Returns the packed texture handle the draw call takes as its last
    64-bit argument, so it is `long`: retail stores $v0 straight to the
    stack slot with `sd`, without sign-extending it. */
-extern long load_texture_file(int);
+extern long load_texture_file_v(int) __asm__("func_00205520");
 
 /* Sibling of draw_transition_overlay above: same 0x44 guard and the same
    DrawTexturedQuad draw, twice, with the colour held in one local because
@@ -4811,8 +4811,8 @@ int draw_two_texture_panels(MenuScreen *arg0) {
     }
     c = 0x80808080L;
     SetupGifPaging(0);
-    DrawTexturedQuad(0, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c, load_texture_file(arg0->data.stream.buffer[0]));
-    DrawTexturedQuad(0x100, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c, load_texture_file(arg0->data.stream.buffer[1]));
+    DrawTexturedQuad(0, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c, load_texture_file_v(arg0->data.stream.buffer[0]));
+    DrawTexturedQuad(0x100, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c, load_texture_file_v(arg0->data.stream.buffer[1]));
     DoGifPaging();
     return 8;
 }
@@ -8466,7 +8466,7 @@ void clear_preview_resource_bindings(void) {
 
 extern u8 D_001D60C8[];
 extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40") MACRO_ADDR;
-extern s32 func_00234350();
+
 extern void relocateObjectPointers_r() __asm__("func_00203B18");
 extern s32 fast_decompress_r4() __asm__("func_0020C468");
 extern s32 get_menu_stream_buffer_size_r3() __asm__("func_00227018");

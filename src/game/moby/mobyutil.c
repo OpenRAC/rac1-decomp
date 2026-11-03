@@ -11,6 +11,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/ui/hud.h"
 #include "game/ui/help.h"
+#include "game/ui/vendor.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -287,7 +288,7 @@ LINKER_REMNANT("asm/remnants/text", func_002143D0);
 extern int occl_cell_count MACRO_ADDR;
 extern int local_surface_region_enabled MACRO_ADDR;
 extern float local_surface_region_center_x[4] MACRO_ADDR;
-extern int sample_surface_height_map(float *, void *, float, float, float);
+
 extern float vec_distance_xy(void *, void *);
 
 /* Ground height under pos: sample_surface_height_map's answer when occl_cell_count is on

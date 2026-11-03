@@ -26,6 +26,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/ui/hud.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -52,10 +53,6 @@ extern HeroIdleFidget novalis_idle_fidgets[];
 extern HeroItemDefView novalis_item_defs[];
 extern HeroAttackRecord novalis_attack_records[];
 extern HeroSpeedBands novalis_hero_speed_bands;
-
-extern int handle_hero_gadget_button(void);
-
-extern int Hero_SetMoveState(int, int);
 
 extern int func_001F9908(int *);
 

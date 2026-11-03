@@ -29,6 +29,8 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "game/system/memcard.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/shot_tracking.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -79,8 +81,6 @@ struct ProjectileVars {
     Vec4A dir; /* 0x00 */
     s32 life; /* 0x10 */
 };
-
-extern void initialize_moby_grounding(void *);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -1396,7 +1396,7 @@ extern struct Hero g_hero_r __asm__("D_0013F450");
 struct Manip_F9E50;
 struct GifEntry_F9E50;
 struct AnimSeq_F9E50;
-extern void func_L00_001ED9B0(void *, void *, void *);
+
 extern char D_L02_00167300[];
 
 /* Sets the vendor camera mode; mode 3 also aims it from the hero's position.

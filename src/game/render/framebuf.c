@@ -7,6 +7,7 @@
 #include "data/executable.h"
 #include "structs/gs.h"
 #include "game/render/vuchain.h"
+#include "core/gs/put_draw_env.h"
 
 /*
  * framebuf.cpp in the original source; text 0x1FAA28-0x1FBC80.
@@ -212,7 +213,6 @@ void PutDispBuffer(void) {
 }
 
 extern int *g_render_packet_cursor MACRO_ADDR;
-extern void sceGsPutDrawEnv(void *);
 
 /* PutDrawBufferLarge: queue the draw environment at active_fs_aa_buffer+0x30 as a
    DMA ref tag when a packet buffer is open, else send it directly. */

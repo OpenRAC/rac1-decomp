@@ -20,6 +20,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "game/system/memcard.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "core/gs/put_draw_env.h"
 extern char cd_read_state[];
 extern char *level_render_state;
 
@@ -112,8 +113,6 @@ typedef struct {
 } S_171b;
 
 extern void load_chunks_with_optional_fade(int, int);
-
-extern int sce_gs_sync_v(int);
 
 // Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
 void initialize_level_transition_with_audio(int a) {

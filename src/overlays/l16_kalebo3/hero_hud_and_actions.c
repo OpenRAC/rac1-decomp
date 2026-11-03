@@ -75,15 +75,11 @@ extern void ClampVectorLength(void *a, float x);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
-extern void apply_hero_item_slot_selection(int i);
-
 extern int coll_line(void *, void *, int, int, int);
 
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
-
-extern int compute_hero_hoverboard_respawn_transform(float *, float *);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 16 build). */
 void Hero_ChooseStateTransition(void) {

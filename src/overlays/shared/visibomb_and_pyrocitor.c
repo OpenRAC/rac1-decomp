@@ -32,6 +32,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/walloper_and_beam_effects.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -2457,10 +2458,7 @@ extern Order_2B8AE8 gold_weapon_purchased;
 
 extern void update_pyrocitor_usage_and_cleanup(unsigned char *);
 
-extern Moby *spawn_linked_moby_from_basis(void *);
 extern void lerp_vector(void *, void *, void *, float);
-
-extern int allocate_packed_color_point_light_slot(void *, float, float, int);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
@@ -2665,7 +2663,6 @@ extern unsigned char voice_pool[];
 extern unsigned char g_hero_r5[] __asm__("D_0013F450");
 extern unsigned short pyrocitor_help_shown_count NOT_SDA;
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
-void release_point_light_slot(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b8230. */
 void update_pyrocitor_usage_and_cleanup(unsigned char *m) {
@@ -2899,8 +2896,7 @@ extern void func_001F9BD8_2B9AD8(void *, void *, void *) __asm__("func_001F9BD8"
 extern void Moby_GetJointWorldPos_r3(void *, int, void *) __asm__("func_L00_00250800");
 extern void vec_scale_to_length_r5(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void initialize_tesla_claw_beam_r(void *) __asm__("func_L00_002BA608");
-extern void func_L00_002BA7C8(void *);
-extern void func_L00_002BBC78(void);
+
 extern void AddDrawCallback_r2(void (*)(void), void *) __asm__("func_001F49B0");
 extern void Sound_StopSlot_r2(int) __asm__("func_L00_0028EBF0");
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");

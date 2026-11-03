@@ -29,6 +29,7 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "overlays/shared/music_track_requests.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -445,8 +446,6 @@ extern char kerwan_train_no_link_msg[];
 extern unsigned char hero_globals_base[];
 extern char voice_pool[];
 extern void update_metropolis_train_idle_motion_r(void *) __asm__("func_L03_00293EB8");
-
-extern void MusicRequestTrack(int, int);
 
 extern int fast_dec_timer(int *);
 
@@ -1976,7 +1975,6 @@ extern int fast_dec_timer(int *);
 extern void *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 
-extern void trooper_set_knockback(float *, float, float);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void RerollEffectCounter(void *, short *);

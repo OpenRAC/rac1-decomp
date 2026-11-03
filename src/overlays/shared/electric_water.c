@@ -28,6 +28,10 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "game/system/memcard.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/walloper_and_beam_effects.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -110,7 +114,6 @@ extern int truncate_float_to_s32(float);
 
 extern int hero_is_near_ground(void);
 
-extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 extern void initialize_electric_water_bolt_effect(char *);
 extern void update_electric_water_bolt_effect(Moby *);
 
@@ -118,8 +121,6 @@ extern void draw_electric_water_countdown(char *);
 extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
 
 extern float vec_distance_xy(void *, void *);
-
-extern int test_linked_moby_turn_trigger(void *);
 
 #define MOBY_2D7C00(i) ((unsigned char *)(((i) << 8) + (int)D_L15_00160058))
 #define MOBYP_2D7C00(i) (D_L15_00160058 + ((i) << 8))
@@ -850,7 +851,7 @@ extern short quartu_beam_arc_second_outer_alpha;
 extern short quartu_beam_arc_bolt_half_width;
 extern short quartu_beam_arc_bolt_outer_half_width;
 extern short quartu_beam_arc_second_end_extension;
-extern void draw_beam_and_arc_two_pass_quads(char *, int, int, int, float, float, float);
+
 extern void draw_electric_water_bolt_start_quads(char *);
 #define W(x) (*(int *)&(x))
 #define F(x) (*(float *)&(x))
@@ -960,7 +961,6 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     }
     draw_world_quad(&quad, 0, 0);
 }
-extern int test_linked_moby_turn_trigger(void *);
 
 /* Electric water switch: when its linked trigger turns, go to state 1 and raise it by 1.5. */
 void reset_electric_water_switch(char *moby) {
@@ -1220,8 +1220,6 @@ void ripple_strips_moby_update(struct Moby *moby) {
         moby->flags |= 1;
     }
 }
-extern void initialize_collectible_sprite_state(char *);
-extern void update_collectible_sprite_effect(char *);
 
 extern int g_current_level_index MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
@@ -1289,7 +1287,6 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern PadState D_0013CA40;
 extern void try_set_help_message(int, int);
 
-extern void MusicRequestTrack(int, int);
 extern Moby *quartu_moby_array_m __asm__("D_L15_00160058") MACRO_ADDR;
 extern int quartu_help_message_selector MACRO_ADDR;
 

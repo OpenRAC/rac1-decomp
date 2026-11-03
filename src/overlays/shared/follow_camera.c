@@ -28,6 +28,8 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/collision_queries.h"
 extern char g_hero[];
 extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
@@ -528,7 +530,6 @@ extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void random_spherical_offset_r(void *, float, float) __asm__("func_002141A8");
-extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 
 /* Per-frame update of one beam slot: lays out the two 20-point strips between the slot's ends
    (a sine wave and a noisy one), spawns sparks at both ends and keeps the two looping sounds
@@ -1205,7 +1206,7 @@ int compute_follow_camera_radial_collision_positions(VQ *p, float r) {
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) VS;
-extern int find_camera_collision_volume_for_point(VS *, float);
+
 /* True when point A lies inside a camera volume of the level's volume grid (find_camera_collision_volume_for_point
    with no margin). */
 int test_follow_camera_point_in_collision_volume(VS *a) {
@@ -1793,15 +1794,15 @@ void follow_cam_focus_velocity(char *m, float *v2) {
             break;
     }
 }
-extern float Cam_InterpValues(void *, float, float, float, float, float);
+extern float Cam_InterpValues_v(void *, float, float, float, float, float) __asm__("func_001EC120");
 
 /* Eases the three components of OUT toward IN with Cam_InterpValues, one spring state each at +0xE0/+0xE4/+0xE8 of
    camera M's state buffer (M + 0x70), with the rates A, B and C. */
 void interpolate_follow_camera_position(char *m, float *out, float *in, float a, float b, float c) {
     char *p = *(char **)(m + 0x70);
-    out[0] = Cam_InterpValues(p + 0xE0, out[0], in[0], a, b, c);
-    out[1] = Cam_InterpValues(p + 0xE4, out[1], in[1], a, b, c);
-    out[2] = Cam_InterpValues(p + 0xE8, out[2], in[2], a, b, c);
+    out[0] = Cam_InterpValues_v(p + 0xE0, out[0], in[0], a, b, c);
+    out[1] = Cam_InterpValues_v(p + 0xE4, out[1], in[1], a, b, c);
+    out[2] = Cam_InterpValues_v(p + 0xE8, out[2], in[2], a, b, c);
 }
 // Combines two vectors by mode: mode 1 adds a copied base vector, others add the moby's +0x40 vector; returns 0 for
 // modes 3-7.
@@ -3264,7 +3265,6 @@ f32 CosineInterpolate(f32, f32, f32);
 s32 is_moby_in_class_range_500_to_540(s32);
 void InitDirectionalHitQuery_v(void *, void *, s32, void *, f32) __asm__("func_L00_0025A8C0");
 
-void init_camera_system(void);
 void build_look_at_matrix(void *, void *, void *, f32);
 #define AF_2e7d20(o) (*(f32 *)(a + (o)))
 #define BF_2e7d20(o) (*(f32 *)(b + (o)))
@@ -3819,8 +3819,8 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     char *p;
 
     camera_data->turn_state.turn_pitch =
-        Cam_InterpValues(&camera_data->turn_state.turn_pitch_spring, camera_data->turn_state.turn_pitch, a,
-                         follow_cam_turn_stiffness, follow_cam_turn_damping, 0.0f);
+        Cam_InterpValues_v(&camera_data->turn_state.turn_pitch_spring, camera_data->turn_state.turn_pitch, a,
+                           follow_cam_turn_stiffness, follow_cam_turn_damping, 0.0f);
     turn_pitch_vector->angle = turn_pitch_state->turn_pitch_gain * camera_data->turn_state.turn_pitch;
     if (b < -0.3f) {
         b = (b + 0.3f) * 1.4285715f;
@@ -3841,8 +3841,8 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     } else {
         sel = follow_camera_pitch_input_tracking_step_limit;
     }
-    turn_pitch_state->turn_rate = Cam_InterpValues(&turn_pitch_state->turn_rate_spring, turn_pitch_state->turn_rate, b,
-                                                   follow_cam_turn_stiffness, follow_cam_turn_damping, sel);
+    turn_pitch_state->turn_rate = Cam_InterpValues_v(&turn_pitch_state->turn_rate_spring, turn_pitch_state->turn_rate,
+                                                     b, follow_cam_turn_stiffness, follow_cam_turn_damping, sel);
     lim = turn_pitch_state->turn_rate * 0.69813168f;
     if (a == 0.0f) {
         build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, &base->up,
@@ -3922,7 +3922,6 @@ void follow_camera_auto_turn(int m) {
 }
 extern char hero_globals_base[] NOT_SDA;
 extern char camera_view_up_axis[] NOT_SDA;
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
 
 /* Final placement of follow camera A_'s basis for the frame: in target mode 0xB looks along the hero, else builds the
    forward row from the target-to-eye direction with the camera up axis (camera_view_up_axis) projected off, eases the
@@ -3968,9 +3967,9 @@ void follow_camera_build_view(int a_) {
         vec_scale_to_length(w, w, 1.0f);
         p10 = w;
         *(float *)(q20 + 0x8) =
-            Cam_InterpValues(q + 0x30, *(float *)(q20 + 0x8), *(float *)(q130 + 0x30), 0.004f, 0.2f, 0.0f);
+            Cam_InterpValues_v(q + 0x30, *(float *)(q20 + 0x8), *(float *)(q130 + 0x30), 0.004f, 0.2f, 0.0f);
         p20 = p + 0x20;
-        g2 = Cam_InterpValues(q + 0x2C, *(float *)(q20 + 0x4), *(float *)(q40 + 0xB0), 0.004f, 0.2f, 0.0f);
+        g2 = Cam_InterpValues_v(q + 0x2C, *(float *)(q20 + 0x4), *(float *)(q40 + 0xB0), 0.004f, 0.2f, 0.0f);
         d = *(float *)(q20 + 0x8) - g2;
         *(float *)(q20 + 0x4) = g2;
         FastVecScale(v0, up, -FastVecDot(q2 + 0x140, up));
@@ -4089,7 +4088,6 @@ extern float follow_cam_pitch_damping SDATA(follow_cam_pitch_damping);
 extern float follow_cam_yaw_stiffness SDATA(follow_cam_yaw_stiffness);
 extern float follow_cam_yaw_damping SDATA(follow_cam_yaw_damping);
 extern void follow_camera_pull_back(char *, float *, float *);
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
 
 /* Aims a camera rig at its target: updates yaw/pitch smoothing and clamps roll. */
 void follow_camera_orbit(int arg) {
@@ -4118,7 +4116,7 @@ void follow_camera_orbit(int arg) {
     x -= *(float *)(p1d0 + 0x30);
     bc = FastVecLength(p140);
     follow_camera_pull_back(m, &tb[0], &tb[1]);
-    bc = Cam_InterpValues(d + 0x158, bc, x, tb[0], tb[1], 0.0f);
+    bc = Cam_InterpValues_v(d + 0x158, bc, x, tb[0], tb[1], 0.0f);
     e1 = FastVecDot(p130, up);
     y = FastArcSin(e1 / x);
     h = FastVecDot(p140, up);

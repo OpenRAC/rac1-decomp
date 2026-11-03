@@ -2,17 +2,15 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/cdvd/read.h"
+#include "core/gs/put_draw_env.h"
+#include "core/cdvd/callbacks.h"
 
 /*
  * wad.cpp (0x12F348-0x12F580), the last object in core_text. Name from
  * the NTSC split.
  */
 
-extern int sce_cd_sync_s(int);
-
 extern unsigned char cd_read_spindle_speed[4] MACRO_ADDR;
-extern int sce_cd_read(int, int, void *, void *);
-extern void sce_gs_sync_v(int);
 
 /* wad_GetSectors_FiiPv(lba, sectors, buf): sceCdRead with the usual
  * request/poll/retry shape (see load_disc_sectors_into_global_buffer/read_file_entry_with_retry below),

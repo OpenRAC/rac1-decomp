@@ -27,6 +27,9 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/walloper_and_beam_effects.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
+#include "overlays/shared/collision_queries.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -321,11 +324,8 @@ extern float frame_scale MACRO_ADDR;
 extern int fast_dec_timer(int *);
 
 extern int coll_sphere(float, void *, int, void *);
-extern void spawn_moby_collision_particles(void *);
 
 extern int RotateWithMoby(int, char *, char *, void *, char *, void *);
-
-extern char *spawn_doom_bot(int, void *, void *);
 
 void update_doom_bot_spawner(Moby *m) {
     struct ThrowVars *s;
@@ -1835,7 +1835,6 @@ extern int has_ammo_2CDAB8(int) __asm__("func_L00_00234718");
 extern int use_ammo_2CDAB8(int, int) __asm__("func_L00_00234638");
 extern float distance_2CDAB8(void *, void *) __asm__("func_001F9D10");
 extern float fabs_2CDAB8(float) __asm__("func_001F9B88");
-extern void func_L00_001EE2E0(Moby *, int, float, float, float *, int, int, float, int);
 
 extern void fire_start_2CDAB8(void) __asm__("func_L00_0020EB60");
 extern void fire_end_2CDAB8(void) __asm__("func_L00_0020ED30");

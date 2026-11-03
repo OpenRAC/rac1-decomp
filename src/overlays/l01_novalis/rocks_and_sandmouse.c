@@ -30,6 +30,9 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "overlays/shared/gold_bolts_and_teleporters.h"
+#include "asm_functions/level_01.h"
+#include "game/system/space.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -94,7 +97,7 @@ extern void SetDeathBits(void *, int, int);
 
 extern char *MobyGetHitMessage(void *, int, int);
 
-extern void spawn_debris_moby(void *, void *, u32, s32, f32, f32, f32, f32, s32);
+extern void spawn_debris_moby_v(void *, void *, u32, s32, f32, f32, f32, f32, s32) __asm__("func_L01_002F9908");
 
 /* Rock formation update: when hit, plays a sound and bursts into 200 debris pieces. */
 void rock_formation_update(DebrisMoby *m) {
@@ -157,7 +160,7 @@ void rock_formation_update(DebrisMoby *m) {
             pos.q = off.q;
             FastVecAdd(&pos, &pos, &m->pos);
             vec_scale_to_length(&vel, &vel, random_float_between(1.0f, 5.0f) * g_frame_time);
-            ((void (*)(void *, void *, int, float, int, float, float, float, int))spawn_debris_moby)(
+            ((void (*)(void *, void *, int, float, int, float, float, float, int))spawn_debris_moby_v)(
                 &pos, &vel, colors.c[random_integer_below(3)], random_float_between(0.04f, 0.09f), rand_range(60, 180),
                 1.0f, 1.0f, 0.75f, 0);
         }
@@ -264,7 +267,7 @@ extern BurstColors bridge_piece_debris_colors;
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern int rand_range(int lo, int hi);
-extern void spawn_debris_moby(void *, void *, u32, s32, f32, f32, f32, f32, s32);
+extern void spawn_debris_moby_v(void *, void *, u32, s32, f32, f32, f32, f32, s32) __asm__("func_L01_002F9908");
 
 void func_0020D678_FB158b(void *) __asm__("func_0020D678");
 
@@ -311,8 +314,8 @@ void bridge_piece_1_update(BurstMoby *self) {
             pos.f[2] = 0.0f;
             vec_scale_to_length(&dir, &dir, random_float_between_r(g_frame_time_r * 5.0f, g_frame_time_r * 20.0f));
             FastVecAdd_r4(&pos, &pos, &self->pos);
-            spawn_debris_moby(&pos, &dir, colors.c[random_integer_below(3)], rand_range_r(0xB4, 0x12C), 0.05f, 1.0f,
-                              1.0f, 0.75f, 0);
+            spawn_debris_moby_v(&pos, &dir, colors.c[random_integer_below(3)], rand_range_r(0xB4, 0x12C), 0.05f, 1.0f,
+                                1.0f, 0.75f, 0);
         }
         level_moby_killed[g_current_level_index_r][self->id >> 5] |= 1 << (self->id & 0x1F);
         moby_killed[self->id >> 5] |= 1 << (self->id & 0x1F);
@@ -474,7 +477,6 @@ extern float vec_distance_xy(void *, void *);
 extern int fast_dec_timer(int *arg0);
 extern int coll_line(void *, void *, int, void *, void *);
 
-extern void spawn_explosion_effects(void *, void *, int, float, float);
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 /* Per-frame update of a falling drop: integrates its velocity, tests it against the world and spawns its impact effect. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fa4c0. */
@@ -1066,8 +1068,6 @@ extern void RipplePatch_ToFixedPoint(void *, void *);
 
 extern void pool_ripple(f32, f32, f32, f32, void *, s32);
 
-extern void Moby751Draw(void);
-
 extern char *pool_drip(void *position, float scale);
 extern void pool_bubble(void *, void *, f32);
 extern void pool_bubbles(void *, void *, f32, f32);
@@ -1310,7 +1310,7 @@ void green_mushroom_update(char *m) {
 }
 
 extern void DefaultVtbl_DeleteMoby_v() __asm__("func_L00_00237B70");
-extern void update_and_draw_scrolling_overlay_layers();
+
 extern char novalis_four_scroll_layers[];
 /* The moby comes in $a0 and goes on to the delete, untouched. */
 void draw_four_scroll_layers(void *moby) {
@@ -1802,7 +1802,6 @@ void mushroom_underside_update(void *arg) {
 extern char novalis_pulse_scroll_layers[];
 extern int novalis_frame_count MACRO_ADDR;
 extern void DefaultVtbl_DeleteMoby_v(void *) __asm__("func_L00_00237B70");
-extern void update_and_draw_scrolling_overlay_layers(int, void *);
 
 /* draw callback: pulses three colour entries from a sine of the frame counter */
 void draw_level01_scroll_layers(void *moby) {
@@ -2026,7 +2025,7 @@ extern float explosive_moby_drag_min_speed SDATA(explosive_moby_drag_min_speed);
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern BlobHitInfo novalis_coll_hit;
-extern void draw_moby_offset_textured_quad(void);
+
 extern int coll_sphere(float, void *, int, void *);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
@@ -2148,7 +2147,6 @@ extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, f
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 
-extern void render_environment_mapped_object(void);
 #define fx_cutscene_D568 (*(CutsceneFx_D568 *)&D_L01_0016CD60)
 
 /* Spawns the camera targets, splashes and bursts of the Novalis cutscenes by scene and frame. */

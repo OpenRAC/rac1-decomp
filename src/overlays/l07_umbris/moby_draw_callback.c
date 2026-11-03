@@ -6,6 +6,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "game/render/draw.h"
+#include "game/system/space.h"
 
 typedef struct {
     char pad0[0x30];
@@ -16,7 +17,6 @@ typedef struct {
 
 extern int g_current_level_index MACRO_ADDR;
 extern Level07State umbris_cutscene_state;
-extern void render_environment_mapped_object(void *);
 
 /* Register the level draw callback for the target moby in state four. */
 void register_level07_moby_draw_callback(void) {

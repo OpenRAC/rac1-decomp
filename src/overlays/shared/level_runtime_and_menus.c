@@ -8,6 +8,9 @@
 #include "overlays/shared/map_menu_filters.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/ui/map.h"
+#include "game/ui/menu.h"
+#include "game/system/stash.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -349,10 +352,6 @@ void run_level_main_loop(void) {
 }
 extern struct DiscTable disc_table;
 
-int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
-
-extern void load_map_chunk(void *arg0, unsigned char *arg1, int arg2);
-extern void decode_map_mask(int *dst, unsigned char *src, short *offs);
 extern int map_menu_initial_value_pairs[];
 extern float map_points[];
 extern float map_coefficients[];
@@ -544,7 +543,6 @@ void update_map_icons(s32, s32);
 void start_audio_stream_read(s32, s32, s32);
 void update_audio_stream_until_idle(s32);
 void send_dma_to_stash_slot(s32, s32, s32, s32);
-void stash_receive_data(s32, s32, s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/00245c28.c, FUN_L00_002468b8. */
 void initialize_render_archive_transfer(void) {

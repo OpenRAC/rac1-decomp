@@ -34,6 +34,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/l18_veldin2/rockets_and_platforms.h"
+#include "overlays/shared/space_commando_and_door_lock.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -102,7 +103,8 @@ extern void mark_class_0630_moby_and_child_for_removal(void *);
 extern void lerp_vector(void *, void *, void *, float);
 extern int func_001FA898(float);
 
-extern void spawn_debris_moby(void *, void *, unsigned int, int, float, float, float, float, int);
+extern void spawn_debris_moby_v(void *, void *, unsigned int, int, float, float, float, float,
+                                int) __asm__("func_L01_002F9908");
 
 /* Moves a linked group of class 0x630 mobys together, then makes it fall once the hero leaves it. */
 void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
@@ -222,8 +224,8 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                     v[2] = 15.0f;
                     FastVecAdd(v, v, &g_hero.motion.pos);
                     n = scale_ticks(240);
-                    spawn_debris_moby(v, veldin2_zero_vec, 0x2B8, n, veldin2_moby_group_debris_scale, 2.0f, 1.0f, 0.75f,
-                                      0);
+                    spawn_debris_moby_v(v, veldin2_zero_vec, 0x2B8, n, veldin2_moby_group_debris_scale, 2.0f, 1.0f,
+                                        0.75f, 0);
                 }
             }
         }
@@ -890,11 +892,7 @@ extern void set_drek_boss_relative_aim_yaw();
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void set_ground_height_band(void *);
 
-extern void StartCutscene(int);
-
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void queue_movie_with_game_language(int i);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -2563,7 +2561,6 @@ void set_drek_boss_relative_aim_yaw(char *source, char *dest, L18Vector *from, L
         FastSubRots(fast_atan2(to_position.f[0] - from_position.f[0], to_position.f[1] - from_position.f[1]),
                     ((struct Moby *)source)->rot.z);
 }
-extern void SetTableEntryFlagIfKind18(char *moby);
 
 extern float ApproachWithVelocity_p(float *, float, float *, float, float, float) __asm__("func_00214D88");
 

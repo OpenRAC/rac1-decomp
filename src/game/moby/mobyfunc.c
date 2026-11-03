@@ -10,6 +10,7 @@
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
 #include "game/system/stub.h"
+#include "game/ui/pause.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -565,8 +566,6 @@ extern int graphics_setup_dma_chain_enabled MACRO_ADDR;
 extern int graphics_setup_tag_slot MACRO_ADDR;
 extern char graphics_setup_profile_label[];
 extern char graphics_setup_command_stream[];
-
-extern void submit_graphics_setup_command_stream(void *);
 
 /* The same splice as DmaMobyTextures, around build_shadow_command_stream/submit_graphics_setup_command_stream,
    at the tag slot graphics_setup_tag_slot; with graphics_setup_dma_chain_enabled clear the slot becomes a

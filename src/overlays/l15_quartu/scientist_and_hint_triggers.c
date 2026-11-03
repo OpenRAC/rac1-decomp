@@ -27,14 +27,13 @@
 #include "game/render/vuchain.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "game/system/memcard.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/shot_tracking.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
-extern void initialize_moby_grounding(char *);
-
 extern int fast_dec_timer(void *);
-
-extern void MusicRequestTrack(int, int);
 
 extern float vec_distance_xy(float *, float *);
 
@@ -924,7 +923,7 @@ extern PadState D_0013CA40;
 extern int func_L00_002E9870(char *);
 extern void func_L00_002E9838(char *);
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void func_L02_002F79D0(float, float, float);
+
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern void func_L00_002E9E20(void *, float, float);
 extern void func_L00_002E9900(int, float, float);

@@ -12,6 +12,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/system/stub.h"
 #include "callees.h"
+#include "overlays/shared/draw_buffers_and_walker_gait.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
@@ -172,7 +173,6 @@ void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
     rig->mode = 5;
     STUB_printf(rig_size_message, 0x250);
 }
-extern int func_L00_002A2680(int *a, float v);
 
 // Finds the entry of arg1's 13-pointer table whose first word equals arg0's byte at 0x52, then calls on it or returns
 // a byte.
@@ -461,7 +461,7 @@ extern void rig_animate_r(char *, char *, int, float) __asm__("func_L04_00293F08
 extern int update_leg_rig_height_and_tilt_r(char *, char *) __asm__("func_L04_002939E8");
 
 extern void divide_vector_xyz(void *, void *, float);
-extern void func_L00_002A2900(char *, char *, float, float, float, int);
+
 extern void rig_probe_setup(void *, int, int *, float *, float *, float *);
 
 extern float g_frame_time MACRO_ADDR;

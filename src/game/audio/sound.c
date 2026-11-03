@@ -10,6 +10,7 @@
 #include "game/math/fastfunc.h"
 #include "core/sound/989snd.h"
 #include "game/audio/music.h"
+#include "core/cdvd/callbacks.h"
 
 /*
  * sound.cpp in the original source; text 0x22D8C0-0x22F128.
@@ -633,8 +634,6 @@ s32 func_0022DD68_r(void) {
     voice_pool_DD68.pending_commands = 0;
     return 0;
 }
-
-extern void sce_cd_sync_s(int);
 
 /* Reentrancy-guarded: base+0x44 is held at 1 for the duration. The
    return value is snd_BankLoadByLoc's, captured in the delay slot of the

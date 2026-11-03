@@ -34,6 +34,8 @@
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "overlays/shared/blarg_commander.h"
+#include "overlays/shared/debug_menu_and_text.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -543,7 +545,8 @@ extern void vec_scale_to_length_r(float, void *, void *) __asm__("func_L00_001FF
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
+extern void *spawn_debris_moby_v(void *, void *, int, float, int, float, float, float,
+                                 int) __asm__("func_L01_002F9908");
 
 extern void SetDeathBits_r(void *, int, long) __asm__("func_L00_002584A8");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
@@ -615,7 +618,7 @@ void update_destructible_moby_with_radial_debris(struct Moby *moby) {
             radius = random_float_between(0.1f, 0.3f);
             duration = rand_range(60, 100);
             size = random_float_between(3.0f, 7.0f);
-            spawn_debris_moby(&offset, &velocity, *palette_entry, radius, duration, size, 0.15f, 2.0f, 1);
+            spawn_debris_moby_v(&offset, &velocity, *palette_entry, radius, duration, size, 0.15f, 2.0f, 1);
             i--;
         } while (i >= 0);
     }
@@ -631,7 +634,7 @@ void update_destructible_moby_with_radial_debris(struct Moby *moby) {
         size = random_float_between(0.75f, 1.25f);
         FastVecScale_r(size, &velocity, &velocity);
         duration = rand_range(60, 100);
-        effect = spawn_debris_moby(&offset, &velocity, 0xc9, radius, duration, 5.0f, radius, 2.0f, 1);
+        effect = spawn_debris_moby_v(&offset, &velocity, 0xc9, radius, duration, 5.0f, radius, 2.0f, 1);
         if (effect != 0)
             FastVecScale_r(0.35f, (char *)effect + 0x40, (char *)effect + 0x40);
     }
@@ -698,7 +701,8 @@ extern unsigned char gemlik_available[];
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
+extern void *spawn_debris_moby_v(void *, void *, int, float, int, float, float, float,
+                                 int) __asm__("func_L01_002F9908");
 
 extern void SetDeathBits(void *, int, int);
 
@@ -778,7 +782,7 @@ void update_destructible_moby_on_hit(struct Moby *moby) {
             radius = random_float_between(0.1f, 0.3f);
             life = rand_range(100, 160);
             size = random_float_between(3.0f, 7.0f);
-            spawn_debris_moby(&offset, &velocity, *color, radius, life, size, 0.15f, 2.0f, 1);
+            spawn_debris_moby_v(&offset, &velocity, *color, radius, life, size, 0.15f, 2.0f, 1);
         }
         clear_u64_value(&velocity);
         spawn_explosion(moby, &velocity, &center, 0.0f, 0.0f, 20, 3, 4, 10.0f, 5.0f, 100000.0f, 3.0f, 0, 15.0f, 1, 1,
@@ -1331,12 +1335,10 @@ extern UPath *quartu_paths[];
 extern void process_helicopter_hits();
 typedef int u128_6950 __attribute__((mode(TI)));
 
-extern char *create_blarg_commander_moby_from_source(char *a0);
 extern void FindNearestTargetMoby(void *, float *, float);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 
 extern char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, float f);
-extern void start_blarg_commander_knockback(void *, struct Moby *);
 
 extern void set_ground_height_band(void *);
 
@@ -2434,7 +2436,7 @@ void ultramech_unlimited_update(UMoby *m) {
         MobySphereHitDirectional((int)m, 2.5f, &m->pos, 0x10000, 40.0f, 1.0f, 0, 1, 0);
     }
 }
-extern void trooper_set_knockback(float *, float, float);
+
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
@@ -3125,8 +3127,6 @@ extern int quartu_cutscene_msg_x SDATA(quartu_cutscene_msg_x);
 extern int quartu_cutscene_msg_y SDATA(quartu_cutscene_msg_y);
 extern int quartu_cutscene_msg_color SDATA(quartu_cutscene_msg_color);
 extern int quartu_cutscene_msg_shadow_color SDATA(quartu_cutscene_msg_shadow_color);
-
-extern void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e);
 
 // Draws the score/progress readout for the current stage's step ranges, clamped to the current value.
 void draw_quartu_cutscene_messages(void) {

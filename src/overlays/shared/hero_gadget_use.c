@@ -26,6 +26,7 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/trigger_switches_and_hoverboard.h"
 extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -675,7 +676,6 @@ extern unsigned short usage_stats_entry27_count[] NOT_SDA;
 
 extern float vec_distance_xy(void *, void *);
 
-extern void create_rocket_1475_moby(void *, void *, void *, float, float);
 extern Moby *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;

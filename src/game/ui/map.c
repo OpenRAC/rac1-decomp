@@ -9,6 +9,7 @@
 #include "game/render/draw.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "game/ui/menu.h"
 
 /*
  * map.cpp in the original source; text 0x205520-0x2071A8.
@@ -377,7 +378,6 @@ void compose_bitmap_from_mask(unsigned char *dst, unsigned char *a, unsigned cha
     }
 }
 
-extern void DebugEnter_Nop(void);
 extern char g_controller_state[];
 
 /* Map screen pan/zoom update: returns 1 while the pad word (g_controller_state
@@ -563,11 +563,9 @@ extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
 
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64);
 
-extern void func_00208AB0(s32, void *);
 extern void world_to_map_coords_r(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
 /* EABI places floating and integer arguments in independent register banks. */
 extern void world_to_map_coords_xy_205E70(f32, f32, f32 *, f32 *, s32) __asm__("func_00208C38");
-extern void draw_map_markers(s32, s32, s32, s32);
 
 extern void *func_001153FC(void *, s32, u32);
 

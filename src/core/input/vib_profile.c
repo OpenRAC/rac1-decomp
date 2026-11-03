@@ -18,7 +18,7 @@ typedef struct {
     unsigned long d : 8;
 } Mode125218;
 
-extern int sceDbcReceiveData(int, Mode125218, int *, int);
+extern int sceDbcReceiveData_v(int, Mode125218, int *, int) __asm__("func_00124A70");
 
 /* Builds a mode word from bitfields and runs the sceDbcReceiveData round
    trip. The fields are 64-bit, so each insert is a doubleword and/or,
@@ -33,7 +33,7 @@ int sce_vib_get_profile(int arg0, int arg1) {
     m.b = 2;
     m.c = 3;
     m.d = 1;
-    r = sceDbcReceiveData(arg0, m, &out, arg1);
+    r = sceDbcReceiveData_v(arg0, m, &out, arg1);
     if (r >= 0) {
         return out;
     }

@@ -7,6 +7,11 @@
 #include "asm_functions/executable.h"
 #include "game/system/stub.h"
 #include "core/sound/989snd.h"
+#include "core/gs/put_draw_env.h"
+#include "core/cdvd/callbacks.h"
+#include "game/movie/videodec.h"
+#include "game/movie/audiodec.h"
+#include "game/movie/readbuf.h"
 
 extern int decoder_buffer_address MACRO_ADDR;
 extern int movie_play_step MACRO_ADDR;
@@ -49,25 +54,16 @@ typedef struct MvGlobals {
 } __attribute__((aligned(16))) MvGlobals;
 extern MvGlobals voice_pool;
 
-extern int sce_gs_sync_v(int);
-
-extern void videoDecAbort(char *);
-extern int readBufBeginPut(char *, int *);
 extern int read_cd_stream_sectors(int *, int, int, int);
-extern int readBufEndPut(char *, int);
+
 extern void proceedAudio(void);
 
-extern int readBufBeginGet(char *, int *);
 extern int sce_mpeg_demux_pss_ring_buffer(char *, int, int, char *, int);
-extern int readBufEndGet(char *, int);
+
 extern int voBufIsFull(char *);
 extern void startDisplay(int);
-extern void audioDecStart(char *);
-extern int videoDecGetState(char *);
-extern int videoDecFlush(char *);
-extern int videoDecIsFlushed(char *);
+
 extern void endDisplay(void);
-extern void audioDecReset(char *);
 
 /* No recovered name. Playback loop: feeds file data (*file bytes) through the
  * read buffer at `rb` into the video decoder `vd`, starts audio and display once
@@ -180,7 +176,6 @@ int read_mpeg(char *vd, char *rb, int *file) {
 void switchThread(void) {
     rotate_thread_ready_queue(1);
 }
-extern int is_state_field_large(char *);
 
 /* isAudioOK -- true when the audio decoder at offset 0xD9100 of the movie state holds 0x1000
  * bytes or more. */
@@ -207,10 +202,7 @@ extern int movie_decoder_thread_id MACRO_ADDR;
 extern char movie_open_error_text[];
 extern char gp_base[] MACRO_ADDR;
 extern void sce_mpeg_init(void);
-extern int readBufCreate(char *);
-extern int videoDecCreate(void *, int, int, void *, int, int, void *, int);
-extern int audioDecCreate(void *, void *, int, int);
-extern int videoDecSetStream(void *, int, int, void *, char *);
+
 extern void voBufCreate(void *, int, int, int);
 
 extern int set_state_fields(void *, int, int);
@@ -261,12 +253,9 @@ int initAll(int stream_source, int source_mode, int callback_context) {
     return opened;
 }
 extern int movie_thread_gp SDATA(D_00161310);
-extern int sce_cd_sync_s(int);
-extern void readBufDelete(char *);
+
 extern void voBufDelete(char *);
 
-extern int videoDecDelete(char *);
-extern int audioDecDelete(char *);
 extern int get_state_callback_result(char *);
 /* termAll(void): shuts down workers and decoders, then clears the DMA enable bit. */
 void termAll(void) {
@@ -293,7 +282,6 @@ extern char movie_error_message[];
 void ErrMessage(char *fmt) {
     STUB_printf(movie_error_message, fmt);
 }
-extern void audioDecSend(char *);
 
 /* proceedAudio(void) -- audioDecSend on the audio decoder at offset 0xD9100 of the movie state. */
 void proceedAudio(void) {

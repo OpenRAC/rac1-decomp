@@ -30,6 +30,7 @@
 #include "overlays/shared/bolts_and_wrench.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/walloper_and_beam_effects.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -186,12 +187,6 @@ extern void *libc_memset(void *, int, unsigned int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void save_state_fields_to_hero(char *);
-extern void restore_state_fields_from_hero(char *);
-extern void save_state_vector_and_fields_to_hero(char *);
-extern void restore_saved_state_fields_from_hero(char *);
-extern int probe_moby_raised_sphere_collision(char *, int, void *);
-
 extern u8 gold_weapon_purchased[40];
 extern int coll_hit_result[];
 extern M44 *g_coll_hit_moby;
@@ -207,12 +202,6 @@ extern void MobySpringTurn(void *, float *, float, float, float, float);
 extern int coll_sphere(float, void *, int, void *);
 extern void coll_sphere_mobys(float, void *, int, void *, void *);
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern M44 *select_class5_target_or_hero(void *, void *, void *, void *, int);
-extern float select_moby_heading_by_collision_probes(void *, void *, float, float, float, float, float, void *, void *,
-                                                     float);
-extern int try_start_moby_hop(void *, void *, void *, int);
-extern void initialize_moby_hop_trajectory(void *, void *, void *);
-extern int compute_moby_state_from_vertical_probe(void *);
 
 extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,

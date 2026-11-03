@@ -34,6 +34,7 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -703,7 +704,6 @@ extern float update_snagglebeast_rope(void *, void *);
 extern void rand_vec(float *, float, float);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern float jump_speed_4318(void *, void *, void *, float, float);
-extern char *spawn_on_path(void *, int, int, int);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);

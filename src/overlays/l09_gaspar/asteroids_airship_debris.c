@@ -32,6 +32,7 @@
 #include "game/system/stub.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -101,7 +102,6 @@ extern int FastBSphereCheck(char *, float);
 extern void set_scale_matrix_v(float, void *) __asm__("func_001FA1C0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
-extern void restore_view_after_textured_grid(void *);
 extern int textured_grid_view_settings_mode MACRO_ADDR;
 extern u64 gaspar_grid_tex0 MACRO_ADDR;
 extern unsigned short font_vu_program_tag[];
@@ -2564,12 +2564,10 @@ extern TurretBeam gaspar_colored_effect_slots[];
 extern struct Moby *spawn_class_4ea_projectile(void *, void *, void *, int);
 extern void set_level_state_flag_88(void);
 
-extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
-
 extern float vec_length_xy(void *);
 extern void divide_vector_xyz(void *, void *, float);
 
-extern void EffectQueue_Add(void *, int, int, int, int, int, float, float, float);
+extern void EffectQueue_Add_v(void *, int, int, int, int, int, float, float, float) __asm__("func_L00_001EE2E0");
 #define hero D_0013F450
 #define D_0015EED0_c D_0015EEDC
 #define a_2F10F8 ((void (*)(struct Moby *, Vec4 *))func_L09_002F10F8)
@@ -2808,7 +2806,7 @@ void turret_update(struct Moby *moby) {
                 dir.f[2] = FastAddRots(1.5707964f, moby->rot.z);
                 set_camera_rotation(&dir);
             }
-            EffectQueue_Add(moby, 0xFF0F0FFF, 0, 0xD, -1, 4, 1.0f, 0.0f, 90.0f);
+            EffectQueue_Add_v(moby, 0xFF0F0FFF, 0, 0xD, -1, 4, 1.0f, 0.0f, 90.0f);
             break;
     }
 }

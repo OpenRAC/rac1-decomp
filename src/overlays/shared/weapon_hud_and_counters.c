@@ -23,6 +23,7 @@
 #include "game/audio/music.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "overlays/shared/debug_menu_and_text.h"
 extern char g_hero[];
 extern char item_available[];
 extern int weapon_ammo_counts[];
@@ -2169,8 +2170,6 @@ extern int bolt_exclamation_color_from SDATA(bolt_exclamation_color_from);
 extern int bolt_exclamation_color_to SDATA(bolt_exclamation_color_to);
 extern int bolt_exclamation_pulse_ticks SDATA(bolt_exclamation_pulse_ticks);
 extern char bolt_exclamation_format[];
-
-extern void print_text_with_texture_3(int, int, int, char *, int);
 
 /* Draw the bolt counter panel sliding in with its fade; skipped in some hero states. */
 int draw_hud_bolt_exclamation_panel(HudElem *m) {

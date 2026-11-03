@@ -13,6 +13,10 @@
 #include "game/ui/hud.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/shared/draw_buffers_and_walker_gait.h"
+#include "overlays/shared/debug_menu_and_text.h"
+#include "game/ui/vendor.h"
 
 extern void *libc_memset(void *, int, int);
 
@@ -212,11 +216,8 @@ typedef struct {
     int a, b, c;
 } I3_2A;
 extern I3_2A vendor_purchase_panel_joint_ids __attribute__((section(".data")));
-extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
-extern void configure_capture_target(int, int, float);
 
 extern void draw_vendor_purchase_text(void *, int, int);
-extern void render_vendor_capture_texture_overlays_pass(int, float, float);
 
 extern long capture_texture_tex0 MACRO_ADDR;
 
@@ -401,10 +402,8 @@ extern A02b0_tab D_L00_001C92F0[];
 
 extern void DrawDebugProfiler_r(void) __asm__("func_001F3D78");
 
-extern s32 func_00122598(s32);
 extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
-extern void func_L00_001F9D40(s32);
 
 extern void InitMobyInstance_r(void *, s32) __asm__("func_0020D440");
 
@@ -412,14 +411,13 @@ extern void pack_render_command_fields_r(void *, s32, s32, s32, s32) __asm__("fu
 extern void func_L00_0029C9E8(void);
 extern void FastMemZero16_r(void *, s32) __asm__("func_001F99D8");
 extern s32 func_00217628(void *, s32, s32);
-extern void func_L00_002A2258(s32, u32, u32);
 
 extern void DrawMobysSetup_r(void) __asm__("func_0020E0C8");
 extern void InitMobyClassDists_r(void) __asm__("func_0020E040");
 extern void StashMobyClassDists_r(void) __asm__("func_0020E068");
 extern void DrawMobyList_r(void *, s32) __asm__("func_0020E180");
 extern void draw_vendor_hologram_cone_r(void) __asm__("func_L00_002A11E8");
-extern void func_0023AA38(s32);
+
 extern void draw_vendor_purchase_panel_r(void *) __asm__("func_L00_002A0F60");
 extern void draw_vendor_inset_quads_r(char *) __asm__("func_L00_002A0C20");
 extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");

@@ -32,6 +32,10 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "asm_functions/level_06.h"
+#include "overlays/shared/space_commando_and_door_lock.h"
+#include "overlays/shared/radial_particle_burst.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
 extern char level_moby_killed[];
 extern unsigned char saved_mission_state[];
 extern Hero g_hero;
@@ -109,7 +113,6 @@ extern struct Hero g_hero_r __asm__("D_0013F450");
 
 extern char *g_hero_moby;
 extern float g_frame_time MACRO_ADDR;
-extern unsigned char *spawn_spinning_moby_fragment(char *, float *, float *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002d8178. */
 void destroy_gadgebot_spawn_container(void *moby_ptr, void *target_ptr) {
@@ -1337,8 +1340,6 @@ extern GbStats blarg_gadgebot_command_count_base;
 
 extern float vec_distance_xy(void *, void *);
 
-extern void handle_gadgebot_hit_knockback(void *);
-
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern void update_gadgebot_glow_effects(char *);
@@ -1359,7 +1360,6 @@ extern char *spawn_source_attached_fading_effect_particle(float, char *, int, in
 extern int mine_fall(void *, void *);
 
 extern void PartType53Spawn_v(void *, int, float, float, int, int, int, float, void *) __asm__("func_L00_00272F00");
-extern int process_gadgebot_interactions(void *, int);
 
 extern void Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
@@ -2643,7 +2643,7 @@ extern int scale_ticks_r3(int) __asm__("func_001F9850");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 typedef unsigned int Q_2F4A70 __attribute__((mode(TI), aligned(16)));
 extern char *g_hero_moby_r2 __asm__("D_001414D0");
-extern void func_L03_00251A58(void *, float, float);
+
 extern void func_L00_0025BBA0(void *, float *, void *, void *);
 extern void InitKnockback_r(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
@@ -3083,8 +3083,6 @@ void update_energy_sphere_holder_beam_effects(char *m) {
             (unsigned char)random_integer_below(0xFF), 0, *(float *)&blarg_holder_spark_scale);
     }
 }
-
-extern void HeroL06_TrySetMoveState(int, int);
 
 /* Watches the moby's two 32-entry trigger lists against the hero and fires the matching events. */
 extern struct Hero hero_global __asm__("D_0013F450");

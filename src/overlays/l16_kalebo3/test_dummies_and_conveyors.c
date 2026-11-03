@@ -1043,7 +1043,7 @@ extern void update_test_dummy_damage_and_respawn(void *);
 extern void *find_nearest_test_dummy_door(int, void *);
 extern void refresh_test_dummy_door_timer(char *);
 extern int move_test_dummy_toward_position_and_heading(char *, void *, float);
-extern void reset_shot_tracking(char *);
+
 extern int IsFrameWithinWindow(char *, float);
 
 extern float jump_speed_4318(void *, void *, void *, float, float);
@@ -1053,7 +1053,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
-extern void collect_mobies_around_tracked_objects(char **, int, int);
+
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void SetDeathBits(void *, int, int);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);

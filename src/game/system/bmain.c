@@ -14,6 +14,10 @@
 #include "game/system/stub.h"
 #include "core/sound/989snd.h"
 #include "game/render/framebuf.h"
+#include "core/gs/put_draw_env.h"
+#include "core/cdvd/callbacks.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "game/system/space.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -40,9 +44,6 @@ extern char memory_card_state[];
 extern char level_resource_buffers[];
 
 extern void Movie_Play(int, int, int, int, int);
-extern void sce_cd_sync_s(int);
-extern void sce_gs_sync_v(int);
-extern void wait_for_graphics_pipeline_idle(int, int);
 
 extern void sceGsSyncVCallback(void (*)(void));
 
@@ -172,8 +173,6 @@ extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 extern s32 func_001EBB48(void);
 extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
 extern void sceGsResetGraph_r(s16, s16, s16, s16) __asm__("func_00121B78");
-
-extern void func_00233308(void);
 
 /* Start-up sequence before the first level: clears the level bss, shows the intro and
    loading images of the chosen language (PAL fades each in over eight frames) until they end

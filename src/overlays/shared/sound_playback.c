@@ -12,6 +12,7 @@
 #include "enums/level.h"
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
+#include "game/system/space.h"
 extern char gHeroPos[];
 extern char hero_vehicle_mode[];
 extern char gSpecialItems[];
@@ -165,9 +166,6 @@ extern int cinematic_mode MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
 
 extern int try_set_help_message(int, int);
-
-extern void render_environment_mapped_object(void);
-extern void draw_light_flare(void);
 
 /* Per-frame update of a pickup-like moby: pulses its colour, tracks the player's range and collects items. */
 void update_moby_proximity_interaction(unsigned char *m) {

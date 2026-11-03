@@ -35,6 +35,7 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -1146,7 +1147,6 @@ extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
 extern float func_001F9CE8(void *);
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
 extern int coll_line_r2(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern void func_L00_002C8680(float *pos, float *tgt, float *output, float speed, float unused, float range);
 
 /* Same camera step as compute_glove_of_doom_throw_velocity, writing the following vector in the target data. */
 void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
@@ -1237,11 +1237,8 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
                                           (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f);
 }
 
-extern int spawn_decoy(void *, void *, void *);
-
 extern int fast_dec_timer(int *);
 
-extern void release_moby_with_collision_check(float *, char *, void *);
 extern short decoy_list[];
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -1887,7 +1884,6 @@ extern unsigned char level_point_lights[];
 extern s16 scale_ticks_r(int) __asm__("func_001F9850");
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 /* moby class 639 update: runs its state machine and eases its tracked values toward their targets */
 void update_animated_point_light_moby(Moby *m) {

@@ -2,6 +2,7 @@
 #include "structs/misc.h"
 #include "data/executable.h"
 #include "core/newlib_types.h"
+#include "core/libc/stdio_ops.h"
 
 /*
  * core_text object 0x114518-0x1154C0. Boundaries are retail's linker fill
@@ -13,8 +14,6 @@
  * memmove.o and memset.o. Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like libc.a; _mbtowc_r is newlib's own text.
  */
-
-extern long __sseek(void *arg0, void *arg1, void *arg2);
 
 int _lseek_r(int *errOut, void *a, void *b, void *c) {
     int r;
@@ -38,7 +37,6 @@ struct _reent;
 extern void *_malloc_r(struct _reent *ptr, u32 bytes); /* _malloc_r */
 extern int libc_glue_isatty(int);                              /* isatty */
 extern void _cleanup_r(void);                             /* _cleanup_r */
-extern long __sseek(void *, void *, void *);           /* __sseek */
 
 typedef struct {
     short st_dev;

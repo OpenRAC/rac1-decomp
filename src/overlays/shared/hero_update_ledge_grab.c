@@ -24,6 +24,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -341,8 +342,6 @@ void update_hero_vehicle_attachments_and_effects(void) {
 }
 extern unsigned char g_hero[];
 extern s32 level_game_mode_q MACRO_ADDR;
-
-extern void HeroL06_TrySetMoveState(int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0021d0a0.c, FUN_L06_00227cf8. */
 void restore_hero_from_vehicle_mode(void) {

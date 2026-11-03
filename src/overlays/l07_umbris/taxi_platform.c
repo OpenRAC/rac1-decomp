@@ -30,6 +30,9 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "game/audio/music.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "game/system/space.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -487,7 +490,6 @@ extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 
-extern void func_L00_002664B0(int, int);
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
@@ -651,7 +653,6 @@ void update_umbris_scene_progression(Moby *moby) {
     }
 }
 extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
-extern void render_environment_mapped_object(void);
 
 /* Sets up an environment-mapped moby and registers its draw callback. */
 void InitEnvMappedMoby(char *arg) {
@@ -1633,7 +1634,6 @@ void update_linked_state_sliding_platform(unsigned char *moby) {
     }
 }
 extern char umbris_ocean_scaled_table[];
-extern void prepare_scaled_table_with_byte_128(void *, float);
 
 /* Umbris ocean moby: sets up its table, then queues the audio stream when outside the clip volume. */
 void ocean_umbris_update(unsigned char *moby) {
@@ -3478,7 +3478,7 @@ struct TimedLightObj {
     s32 light_color; /* 0x288 */
     s32 unk_28C; /* 0x28C */
 };
-extern int allocate_packed_color_point_light_slot(float *, float, float, int);
+
 extern char umbris_lights[];
 
 // Sets or updates a dynamic light slot (id at +0x280) with position, color, radius and fade.

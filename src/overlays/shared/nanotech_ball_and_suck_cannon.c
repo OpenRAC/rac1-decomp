@@ -36,6 +36,9 @@
 #include "overlays/shared/camera_modes_and_scripts.h"
 #include "overlays/shared/bolts_and_wrench.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
+#include "overlays/shared/collision_queries.h"
+#include "game/ui/vendor.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -1352,7 +1355,6 @@ extern void stop_suck_cannon_suction_effect(int);
 extern void update_suck_cannon_suction(u8 *, void *);
 
 extern int coll_line(void *, void *, int, int, int);
-extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
 
 extern float vec_length_xy(void *);
 typedef struct {
@@ -3121,8 +3123,6 @@ void stop_suck_cannon_suction_effect(int arg0) {
     suck_beam_queue_draw(arg0);
 }
 
-extern void try_collect_ammo_pickup(void *);
-
 /* Scatter a moby away from nearby positions in the hazard table. */
 void scatter_moby_from_hazards(Moby *m) {
     char *base;
@@ -3236,7 +3236,7 @@ void red_orb_update(char *m) {
             break;
     }
 }
-extern void update_instance_attachment_points_and_lengths(void *);
+
 /* Resets the quad moby's blend values when flagged, then updates its attachment points. */
 void quad_moby_update(Moby *a) {
     if (a->anim_flags & 2) {

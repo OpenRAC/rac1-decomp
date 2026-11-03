@@ -177,8 +177,6 @@ extern void coll_sphere_mobys(void *, float, int, void *, void *);
 
 extern int mine_fall(void *, void *);
 
-extern void trooper_set_knockback(float *p, float a, float b);
-
 extern void InitKnockback_b(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void MobySpringTurn_b(char *moby, float target, float k, float d, float max,
                              float *vel) __asm__("func_L00_002592B0");

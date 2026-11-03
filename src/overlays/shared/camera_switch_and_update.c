@@ -91,8 +91,6 @@ void initialize_camera_record_handoff_defaults(void) {
 /* Plain declarations SwitchCamera needs before it (the level names are macros in include/names.h). */
 extern u8 gCamPrevStateLvl[];
 
-extern void Camera_runSetupToNewCam(void *);
-
 extern s32 truncate_float_to_s32(f32);
 extern s32 D_0015EE84 MACRO_ADDR;
 
@@ -193,9 +191,6 @@ void SwitchCamera(Camera *next_camera) {
     previous_position[2] = position->z;
 }
 
-extern void Camera_runSetupToNewCam(void *);
-extern int Camera_ActivationCheckPriority(Camera *, Camera *);
-extern void Camera_handleCollWithHero(Camera *);
 extern void SwitchCamera(Camera *);
 extern void Camera_RunQueuedCallbacks(void);
 
@@ -265,8 +260,6 @@ void Camera_CaptureHeroRelativeView(void) {
 extern short D_L00_00166FF0 NOT_SDA;
 
 extern void Camera_CaptureHeroRelativeView(void);
-extern void save_camera_vectors(void);
-extern void restore_camera_vectors(void);
 
 /* Camera mode update: in blend phase 1 the blend's next_kind picks what is captured from the
    previous camera (from), other phases restore the pending transform; then the phase becomes 3
@@ -409,9 +402,6 @@ extern void Camera_PickCollisionMasksLvl(void);
 
 extern int UpdateAllCamerasLvl(void);
 extern void Camera_CaptureTransform(Camera *);
-extern void update_camera_blend(char *arg0);
-extern void apply_camera_shake(char *arg0, int arg1);
-extern void update_camera_underwater_flag(void);
 
 /* Camera update, once per frame: count the frame, run the camera steps, take the view from the target camera (mode 3
    blends it) unless frozen, refresh the angles and the derived vectors. Level copy of update_camera. Joined with
@@ -483,7 +473,6 @@ int find_camera_table_index_by_id(int key) {
     return i;
 }
 extern Camera *find_camera_record_by_id(int);
-extern void Camera_runSetupToNewCam(void *);
 
 extern char gCamCurStateLvl[];
 

@@ -42,6 +42,12 @@
 #include "game/system/loaders.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "game/ui/help.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/shared/music_track_requests.h"
+#include "core/cdvd/callbacks.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "overlays/shared/debug_menu_and_text.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -167,8 +173,6 @@ extern void Profile_Mark_b(void) __asm__("func_001E9768");
 
 extern void update_glints(void);
 
-extern void update_debug_camera(void);
-extern void update_hero_from_debug_camera(void);
 extern void UpdateAllPointLights(void);
 
 /* per-frame update of the in-level game: pause and cutscene triggers, then the subsystem updates. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297f78. */
@@ -343,8 +347,6 @@ extern void start_cutscene_chunk_read(int);
 
 extern int update_audio_stream_until_idle(int);
 
-extern int sce_gs_sync_v(int);
-
 typedef struct {
     char pad[0x30];
     int a30;
@@ -428,8 +430,6 @@ void StartCutscene(int arg) {
 }
 
 extern void reset_frame_counters(void);
-
-extern void music_set_active_track_value(int v);
 
 typedef struct {
     char pad[0x5A];
@@ -917,10 +917,6 @@ void queue_movie_with_game_language(int i) {
     prepare_movie_playback(b, a, g_game_language);
 }
 
-extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
-extern int sceGsExecLoadImage(void *, void *);
-extern int wait_for_graphics_pipeline_idle(int, unsigned short);
-
 typedef struct {
     int sector;
     int size;
@@ -1042,7 +1038,7 @@ void movie_exit_to_gameplay(void) {
 }
 
 extern void Movie_Play(int, int, int, int, int);
-extern int sce_cd_sync_s(int);
+
 extern void movie_exit_to_gameplay(void);
 extern int movie_request_source_mode MACRO_ADDR;
 extern int movie_request_audio_context MACRO_ADDR;

@@ -18,6 +18,8 @@
 #include "asm_functions/executable.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/collision_queries.h"
 extern char g_hero[];
 extern u8 gHeroPos[];
 extern PadState g_controller_state;
@@ -243,7 +245,7 @@ extern q_2eb938 gHeroPos_r __asm__("D_0013F4D0") NOT_SDA;
 extern E_2eb938 *camera_descriptors_r __asm__("D_L00_0015F050") MACRO_ADDR;
 extern char *g_current_follow_cam_r __asm__("D_L00_00166F00") NOT_SDA;
 extern char D_L00_00166F10[] NOT_SDA;
-extern char *func_L00_001EE530(void *, f32);
+
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern f32 FastCos_r(f32) __asm__("func_001F9F90");
 extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
@@ -412,7 +414,6 @@ void select_camera_mode_by_hero_vector_alignment(char *m) {
     h->f0 = 0.018f;
 }
 extern char *g_current_follow_cam;
-extern char *find_camera_record_by_id(int);
 
 /* Copies a vector into the current object's slot, switching to state 5 first. */
 void set_camera_position(char *src) {
@@ -480,7 +481,6 @@ void CameraScript(V_2ebf50 *pa, V_2ebf50 *pb, s32 mode, s32 w, s32 x) {
     *(s32 *)(e + 4) = w;
     *(s32 *)(n + 0xE0) = w;
 }
-extern void initialize_camera_record_handoff_defaults(void);
 
 extern char hero_globals_base[];
 
@@ -542,11 +542,8 @@ void initialize_camera_pose_springs(Camera *m) {
 }
 extern int fast_dec_timer(int *);
 
-extern void compute_spherical_offset_from_positions(void *, void *, void *);
+extern float Cam_InterpValues_v(void *, float, float, float, float, float) __asm__("func_001EC120");
 
-extern void compute_position_from_spherical_offset(void *, void *, void *);
-extern float Cam_InterpValues(void *, float, float, float, float, float);
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
 extern char hero_globals_base[] __attribute__((section(".data")));
 extern float camera_yaw;
 
@@ -602,9 +599,9 @@ void update_camera_pose_from_targets(void *arg) {
         }
     } else {
         if (*(short *)(d + 0x1C) == 1) {
-            F(m, 0x30) = Cam_InterpValues(d, F(m, 0x30), F(b, 0), F(d, 0x10), F(d, 0x14), F(d, 0x18));
-            F(m, 0x34) = Cam_InterpValues(d + 4, F(m, 0x34), F(b, 4), F(d, 0x10), F(d, 0x14), F(d, 0x18));
-            F(m, 0x38) = Cam_InterpValues(d + 8, F(m, 0x38), F(b, 8), F(d, 0x10), F(d, 0x14), F(d, 0x18));
+            F(m, 0x30) = Cam_InterpValues_v(d, F(m, 0x30), F(b, 0), F(d, 0x10), F(d, 0x14), F(d, 0x18));
+            F(m, 0x34) = Cam_InterpValues_v(d + 4, F(m, 0x34), F(b, 4), F(d, 0x10), F(d, 0x14), F(d, 0x18));
+            F(m, 0x38) = Cam_InterpValues_v(d + 8, F(m, 0x38), F(b, 8), F(d, 0x10), F(d, 0x14), F(d, 0x18));
         }
         if (*(short *)(a + 0x2C) == 1) {
             F(m, 0x40) = Camera_SmoothAngle(a, F(m, 0x40), F(b, 0x10), F(a, 0x20), F(a, 0x24), F(a, 0x28));
@@ -616,7 +613,7 @@ void update_camera_pose_from_targets(void *arg) {
     matrix_copy_rows(m, mtx);
 }
 extern void update_camera_pose_from_targets(void *);
-extern void resolve_camera_movement_collisions(void *, float);
+
 /* Update wrapper: runs the base camera update, then a follow-up call if a flag is set. */
 void update_camera_pose_with_optional_collision(Camera *a) {
     char *p = *(char **)&a->state_buf + 0xE0;
@@ -722,19 +719,19 @@ void update_orbit_camera_pose(char *camera_object) {
                                         camera_state->rate_b[0], camera_state->rate_c[0]);
     obj->angles[1] = Camera_SmoothAngle(camera_state->pos + 1, obj->angles[1], camera_state->target[1],
                                         camera_state->rate_a[1], camera_state->rate_b[1], camera_state->rate_c[1]);
-    obj->angles[2] = Cam_InterpValues(camera_state->pos + 2, obj->angles[2], camera_state->target[2],
-                                      camera_state->rate_a[2], camera_state->rate_b[2], camera_state->rate_c[2]);
+    obj->angles[2] = Cam_InterpValues_v(camera_state->pos + 2, obj->angles[2], camera_state->target[2],
+                                        camera_state->rate_a[2], camera_state->rate_b[2], camera_state->rate_c[2]);
     obj->angles[3] = Camera_SmoothAngle(camera_state->pos + 3, obj->angles[3], camera_state->target[3],
                                         camera_state->rate_a[3], camera_state->rate_b[3], camera_state->rate_c[3]);
     obj->angles[4] = Camera_SmoothAngle(camera_state->pos + 4, obj->angles[4], camera_state->target[4],
                                         camera_state->rate_a[4], camera_state->rate_b[4], camera_state->rate_c[4]);
     if (camera_state->eye_flag == 0) {
-        orbit_origin[0] = Cam_InterpValues(camera_state->eye, orbit_origin[0], camera_state->look_target[0],
-                                           camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
-        orbit_origin[1] = Cam_InterpValues(camera_state->eye + 1, orbit_origin[1], camera_state->look_target[1],
-                                           camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
-        orbit_origin[2] = Cam_InterpValues(camera_state->eye + 2, orbit_origin[2], camera_state->look_target[2],
-                                           camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
+        orbit_origin[0] = Cam_InterpValues_v(camera_state->eye, orbit_origin[0], camera_state->look_target[0],
+                                             camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
+        orbit_origin[1] = Cam_InterpValues_v(camera_state->eye + 1, orbit_origin[1], camera_state->look_target[1],
+                                             camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
+        orbit_origin[2] = Cam_InterpValues_v(camera_state->eye + 2, orbit_origin[2], camera_state->look_target[2],
+                                             camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
     } else {
         qcopy(orbit_origin, camera_state->look_target);
     }
@@ -826,7 +823,7 @@ one:
     return 1;
 }
 extern void initialize_orbit_camera_state(void *);
-extern void SwitchCamera(char *);
+
 extern int update_orbit_camera_from_target_moby(char *, char *);
 extern short camera_blend_phase[];
 extern char orbit_cam_mode6_params_a[];

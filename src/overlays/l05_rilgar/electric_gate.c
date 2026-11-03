@@ -29,6 +29,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "game/system/memcard.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/shot_tracking.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -834,7 +836,6 @@ extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
 
-extern void initialize_moby_launch_motion(struct Moby *, struct Moby *, void *, void *, int);
 extern void record_moby_context_bytes(void *, int, void *, int, void *);
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
 extern u8 *PartType53Spawn(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel, f32 f2);
@@ -1417,7 +1418,7 @@ void draw_ocean_grid_outside_clip_volumes(char *moby) {
     if (none)
         draw_textured_grid(rilgar_ocean_grid);
 }
-extern void prepare_scaled_table_with_byte_128(void *, float);
+
 extern void draw_ocean_grid_outside_clip_volumes_r(void) __asm__("func_L05_00317538");
 extern float rilgar_ocean_grid_r[] __asm__("D_L05_00211E60");
 
@@ -1700,10 +1701,6 @@ extern const char race_girl_dialogue_name[];
 extern HGVec rilgar_race_camera_vectors[];
 extern unsigned char gCheats[];
 
-extern void initialize_moby_grounding(char *);
-
-extern void MusicRequestTrack();
-
 extern float vec_length_xy(void *);
 extern void update_hoverboard_girl_cutscene_instances();
 extern void PlayBankSound();
@@ -1976,9 +1973,6 @@ void update_hoverboard_girl(Moby *moby) {
 #undef update_hoverboard_girl_cutscene_instances_r
 #undef update_hoverboard_girl_boobs_animation_r
 #undef func_0022EE28_x
-extern void attach_big_head_cheat_manipulator(char *);
-
-extern void initialize_moby_grounding(char *);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -2353,7 +2347,6 @@ void television_update(unsigned char *moby) {
 
 extern void PickNearestTargetSlot(char *);
 extern void select_taxi_route(char *);
-extern void request_moby_variant_help_message(char *);
 
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void SamplePathAt(int *, int, void *, float *, int, float);

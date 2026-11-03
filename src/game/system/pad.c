@@ -5,6 +5,7 @@
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
+#include "core/mc/memory_card.h"
 
 /*
  * pad.cpp in the original source; text 0x217F68-0x218928.
@@ -14,10 +15,8 @@
 
 extern char g_controller_state[];
 
-extern int sce_pad2_get_state(int);
-extern int sce_pad2_get_button_profile(int, void *);
 extern int sce_vib_get_profile(int, void *);
-extern int scePad2Read(int, void *);
+
 extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
 
 /* UpdatePad(PAD &): latches a few per-frame fields, then asks

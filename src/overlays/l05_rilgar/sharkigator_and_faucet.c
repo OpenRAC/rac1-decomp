@@ -35,6 +35,7 @@
 #include "overlays/shared/bolts_and_wrench.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/trigger_switches_and_hoverboard.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -2706,7 +2707,7 @@ void update_racer_jump_animations(unsigned char *moby) {
     }
 }
 extern void set_ground_height_band(void *);
-extern void add_moby_frames_for_group_proximity(char *moby);
+
 extern float ApproachValue(float *, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");

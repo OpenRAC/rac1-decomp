@@ -8,6 +8,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "asm_functions/executable.h"
 #include "game/audio/sound.h"
+#include "overlays/shared/music_track_requests.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -178,8 +179,6 @@ void update_listener_following_voice(int a0) {
         }
     }
 }
-
-extern void MusicRequestTrack(int, int);
 
 /* sound instance update: fade/stop test against a listener distance */
 void update_music_box_exit_trigger(int *moby) {

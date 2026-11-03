@@ -30,6 +30,7 @@
 #include "callees.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/collision_queries.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -1701,7 +1702,6 @@ extern char quartu_missile_index_list[];
 extern char quartu_coll_hit[];
 extern char *quartu_coll_sphere_moby_hits[];
 extern char quartu_player_camera[];
-extern void EffectQueue_Add(void *, int, float, float, void *, int, int, float, int);
 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
@@ -2123,7 +2123,6 @@ typedef struct {
 
 extern void spawn_owner_target_particle(int a0, void *a1, char *a2);
 extern void func_L00_0026AA10(void *, unsigned char, unsigned char, unsigned char, float, float, int);
-extern int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color);
 
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 

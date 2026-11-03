@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void SkyShellsEntryUpdate(void);
 extern void SkyShellsRotatePair(void);
 extern void draw_four_sky_shells_with_animated_particles(void);
 extern void draw_seven_sky_shells_with_modulo_40000_and_60000_rotation(void);
@@ -19,6 +20,8 @@ extern void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void)
 extern void draw_three_sky_shells_with_three_particle_types(void);
 extern void draw_two_sky_shells_with_particles(void);
 extern void render_three_shell_particle_sky(void);
+extern void sky_particles_init(int, int);
+extern void sky_particles_update(void);
 extern void sky_shells_rotate_two(void);
 extern void update_sky_shells_animated(void);
 extern void update_sky_shells_static(void);

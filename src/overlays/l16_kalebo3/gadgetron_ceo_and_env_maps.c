@@ -29,6 +29,7 @@
 #include "game/render/vuchain.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "game/system/memcard.h"
+#include "overlays/shared/music_track_requests.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -345,7 +346,7 @@ void gadgetron_ceo_update(Moby *m) {
 }
 
 extern void challenge_set_layout_param(float f);
-extern void MusicRequestTrack(int, int);
+
 extern float kalebo3_hero_fall_state_height MACRO_ADDR;
 
 // Sets up the flags of two rows of sub-objects, then a global and a call.

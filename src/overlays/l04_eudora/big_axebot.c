@@ -25,6 +25,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/radial_particle_burst.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -534,7 +535,7 @@ extern void RerollEffectCounter(void *m, short *p);
 extern void set_big_axebot_and_axe_animation_speed(char *, float);
 
 extern void InitKnockback(float, void *, void *, int, int, int);
-extern void trooper_set_knockback(float *p, float a, float b);
+
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void SetDeathBits(void *, int, int);
 

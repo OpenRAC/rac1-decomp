@@ -16,6 +16,9 @@
 #include "overlays/shared/follow_camera.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/draw_buffers_and_walker_gait.h"
 extern Hero g_hero;
 extern int frame_size;
 extern char gold_weapon_purchased[];
@@ -134,7 +137,7 @@ extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern char D_L00_001670E0[];
 extern char D_L00_001670F0[];
 extern char D_L00_00166ED0[];
-extern void func_L00_001EBDA0(void);
+
 extern void func_L00_001FF4B0(void *, void *, float);
 
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -1423,9 +1426,6 @@ void draw_framebuffer_with_timed_text(void) {
 extern int rendered_frame_count MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
 
-extern int sce_gs_sync_v(int);
-
-extern void transfer_draw_buffer_chunks(void *, int, int);
 /* Grabs the current frame buffer into A: syncs VU1, counts the grab in rendered_frame_count and downloads frame buffer
    draw_buffer_address (its height from screen_globals_base + 0x4AA, in 2 KB rows). */
 void capture_draw_buffer(void *a) {

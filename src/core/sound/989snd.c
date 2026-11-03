@@ -5,14 +5,13 @@
 #include "core/cdvd/read.h"
 #include "core/kernel/kprintf.h"
 #include "asm_functions/executable.h"
+#include "core/cdvd/callbacks.h"
 
 /*
  * 989snd.c (0x12DB68-0x12F308): 989 Studios' sound library. The
  * "/usr/local/989snd/ee/989snd.c" path string is used from 0x12DBE0 on.
  * Name and extent from the NTSC split, shifted +0x140.
  */
-
-extern int sce_cd_sync_s(int);
 
 /* snd_StartSoundSystem. Ported from Lombyte's project (GPL-3.0); exact for the whole
  * 989snd object with retail ps2eeas and explicit small-data declarations.
@@ -734,14 +733,14 @@ extern short snd_cd_sync_pending;
 
 extern CdSafeState sound_read_work;
 
-extern int sce_cd_read(int, int, int);
+extern int sce_cd_read_v(int, int, int) __asm__("func_00121750");
 
 /* snd_StreamSafeCdRead */
 int snd_StreamSafeCdRead(int arg0, int arg1, int arg2) {
     int local[3];
 
     if (*(int *)&snd_cd_stream_active == 0) {
-        return sce_cd_read(arg0, arg1, arg2);
+        return sce_cd_read_v(arg0, arg1, arg2);
     }
 
     if (snd_StreamSafeCdSync(1) == 1) {
@@ -784,8 +783,6 @@ int snd_StreamSafeCdSync(int arg0) {
     return 0;
 }
 
-extern int sce_cd_break(void);
-
 /* snd_StreamSafeCdBreak */
 int snd_StreamSafeCdBreak(void) {
     if (*(int *)&snd_cd_stream_active == 0) {
@@ -811,14 +808,14 @@ int snd_StreamSafeCdGetError(void) {
    (streaming-enabled flag, same as snd_StreamSafeCdGetError's) and
    gp 0x166D00 - 0x7F70 = 0x15ED90 (cached callback value). */
 extern short snd_cd_status_callback;
-extern int sce_cd_callback(void);
+extern int sce_cd_callback_v(void) __asm__("func_00120978");
 
 /* snd_StreamSafeCdCallback */
 int snd_StreamSafeCdCallback(int arg0) {
     int old;
 
     if (*(int *)&snd_cd_stream_active == 0) {
-        return sce_cd_callback();
+        return sce_cd_callback_v();
     }
     old = *(int *)&snd_cd_status_callback;
     *(int *)&snd_cd_status_callback = arg0;

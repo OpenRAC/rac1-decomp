@@ -1459,10 +1459,6 @@ done:
         AddDrawCallback(draw_fleet_backdrop_quads, moby);
     }
 }
-extern void update_moby_hit_stats_and_state(void *);
-
-extern void update_moby_trail_points(void *);
-extern void update_moby_path_transform(void *);
 
 extern int FastBSphereCheck(char *, float);
 

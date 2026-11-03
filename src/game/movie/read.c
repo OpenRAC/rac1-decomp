@@ -1,13 +1,14 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "game/movie/videodec.h"
+#include "game/movie/audiodec.h"
 
 extern char *decoder_state MACRO_ADDR;
 extern char str_pts_buffer_overflow[];
-extern void videoDecBeginPut(void *, char **, int *, char **, int *);
+
 extern int cpy2area(char *, int, char *, int, char *, int, char *, int);
-extern int videoDecPutTs(void *, long, long, void *, int);
+
 extern void ErrMessage(void *);
-extern void videoDecEndPut(void *, int);
 
 /* Copies wrapped input into free decoder spans, records timestamps, then submits the copied bytes. */
 int videoCallback(void *unused, char *entry, char *buffer) {
@@ -38,8 +39,6 @@ int videoCallback(void *unused, char *entry, char *buffer) {
     videoDecEndPut(decoder_state + 0xD9048, copied);
     return copied > 0;
 }
-extern void audioDecBeginPut(void *, char **, int *, char **, int *);
-extern void audioDecEndPut(void *, int);
 
 /* Skips the entry's 4-byte prefix, wraps the source at the ring size (+0x50008),
  * copies into the decoder's two free spans and reports whether anything was copied. */

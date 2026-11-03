@@ -30,6 +30,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -60,8 +61,6 @@ extern HeroSpeedBands blarg_hero_speed_bands;
 extern int HeroL06_TryApplyHitKnockback(int);
 
 extern int get_hero_help_value(int a);
-
-extern int HeroL06_TrySetMoveState(int a, int b);
 
 extern int func_001F9908(int *);
 

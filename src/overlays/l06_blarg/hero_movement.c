@@ -34,10 +34,9 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
-
-extern void HeroL06_TrySetMoveState(int, int);
 
 // Resolves the pending hero action id into input flags, then triggers a state change when its conditions hold.
 void apply_hero_ground_material_response(void) {
@@ -128,8 +127,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-
-void HeroL06_TrySetMoveState(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/ui_help_00222fb8.c, FUN_L06_00227e78. */
 s32 HeroL06_TryApplyHitKnockback(s32 arg) {

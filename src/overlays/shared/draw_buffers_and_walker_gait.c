@@ -13,8 +13,8 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
-
-extern void wait_for_graphics_pipeline_idle(int, int);
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
 
 // Copies the frame buffer out in 0x4000-sized strips.
 void transfer_draw_buffer_chunks(int a, int b, int n) {
@@ -32,7 +32,7 @@ void transfer_draw_buffer_chunks(int a, int b, int n) {
         wait_for_graphics_pipeline_idle(0, 0);
     }
 }
-extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+
 extern int *dma_packet_cursor MACRO_ADDR;
 
 /* Uploads a 64-wide image strip in 0x4000-sized chunks: each chunk is a DMA tag pair around a GS load image. */

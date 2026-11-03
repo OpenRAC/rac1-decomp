@@ -36,6 +36,10 @@
 #include "game/system/memcard.h"
 #include "game/audio/music.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/music_track_requests.h"
+#include "asm_functions/level_06.h"
+#include "overlays/shared/space_commando_and_door_lock.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -433,12 +437,10 @@ extern float vec_distance_xy(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern int HeroL06_TrySetMoveState(int, int);
 extern void spawn_moby_breakup_effect(char *, int);
 
-extern void draw_tube_mesh96_twin(void);
 extern void effect_quad_draw_single(void);
-extern void draw_tube_mesh64_twin(void);
+
 extern void draw_backdrop_mesh(void);
 
 extern int scripted_camera_sequence_active MACRO_ADDR;
@@ -637,7 +639,7 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void spawn_spinning_moby_fragment(void *, void *, void *);
+
 extern float blarg_tube_base_z SDATA(blarg_tube_base_z);
 
 /* Replaces the moby with a broken copy (type 0x43C); with burst set, also throws 50 pieces around it. */
@@ -886,10 +888,6 @@ typedef struct Busy {
 extern void attach_shared_manipulator_to_matching_class_moby(char *);
 
 extern void set_ground_height_band(void *);
-extern void set_moby_and_links_to_states_8_and_9(char *);
-extern void set_moby_and_links_to_states_4_and_5(char *);
-
-extern int check_all_listed_frog_states_fe_fd_or_10(int);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
@@ -1128,8 +1126,7 @@ void fred_update(Moby *moby) {
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->fC0, 2);
 }
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern void func_L06_002F5A20(int);
-extern void func_L06_002FAD78(int);
+
 extern int count_active_moby_group_members_r(int, int) __asm__("func_L01_0026EFB8");
 extern void begin_red_button_rotation_r(char *) __asm__("func_L06_00305BF8");
 extern int get_red_button_sequence_status_r(char *) __asm__("func_L06_00305C38");
@@ -1137,10 +1134,7 @@ extern void queue_moby_dialogue_line_r(char *, int) __asm__("func_L06_00303858")
 extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
 
 extern void set_moby_list_state_17_r(int) __asm__("func_L06_00301068");
-extern void func_L06_002EB260(int);
-extern void func_L06_002F59D0(int);
-extern void func_L06_002FADE0(int);
-extern void func_L06_002FDA60(unsigned char *);
+
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -1159,7 +1153,7 @@ extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int allocate_voice_for_group_entry_r(int, int, int) __asm__("func_0022EEB8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
-extern void func_L06_00303630(void);
+
 extern void set_moby_state_5_r(char *) __asm__("func_L06_003054C8");
 extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
@@ -1445,9 +1439,6 @@ extern int D_0015EF1D MACRO_ADDR;
 extern int D_0015EF1C MACRO_ADDR;
 extern void update_shuttle_route_selection_and_prompt(char *m);
 extern void mark_shuttle_linked_mobys_for_removal(char *moby);
-
-extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
-extern void MusicRequestTrack(int, int);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -2180,7 +2171,7 @@ extern void set_camera_position_r2(void *) __asm__("func_L00_002EBE88");
 extern void set_camera_rotation_r2(void *) __asm__("func_L00_002EBEE0");
 extern void Hero_ResetToPosition_r2(void *, void *, int, int) __asm__("func_L00_00217718");
 extern void CameraScript2_r2(int) __asm__("func_L00_002EC0C8");
-extern void func_L06_00304590(void *);
+
 extern void emit_red_button_particle_burst_r(void *, void *) __asm__("func_L06_00305C58");
 extern int allocate_voice_for_group_entry_r2(int, int, void *) __asm__("func_0022EEB8");
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
@@ -2383,7 +2374,6 @@ void emit_red_button_particle_burst(int unused, void *obj) {
 }
 
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void set_vec_to_origin_point(void *);
 
 extern void func_L00_00273F80(void *, void *, int, float, int, int, int);
 extern int vector_stream_fade_ticks MACRO_ADDR;
@@ -2594,7 +2584,6 @@ void test_moby_vector_stream_collision_lines(char *m) {
 
 extern int GetEffectTex(int);
 
-extern void blarg_draw_strand_strip(int *, float *);
 extern float vector_stream_matrix_scale SDATA(vector_stream_matrix_scale);
 extern int vector_stream_alpha_b SDATA(vector_stream_alpha_b);
 extern int vector_stream_alpha_a SDATA(vector_stream_alpha_a);

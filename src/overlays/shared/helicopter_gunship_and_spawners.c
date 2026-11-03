@@ -27,6 +27,8 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "callees.h"
 #include "game/audio/music.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/radial_particle_burst.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -88,11 +90,9 @@ struct FallingMobyVars {
     s32 fade_timer; /* 0x24: ticks left */
 };
 
-extern void build_interpolated_dma_packet(char *);
-
 extern void textured_grid_transform_cells(char *);
 extern void textured_grid_build_gif_packet(char *);
-extern void restore_view_after_textured_grid(char *);
+
 extern char kerwan_spr_upload_block[];
 
 /* Draw the textured grid moby: build and upload its DMA packet, draw, then restore the view. */
@@ -2032,7 +2032,6 @@ void qwark_rilgar_update(char *m) {
     EaseManipulatorOffsets(m, (char *)watch_data, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     EaseManipulatorOffsets(m, (char *)watch_data + 0x80, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
-extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
 
 extern char kerwan_ambient_stream_scaled_table[];
 
@@ -2162,8 +2161,6 @@ extern float gHeroPos[];
 extern float kerwan_camera_view_up_axis[];
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void rotate_vector_by_scaled_angle_between_vectors(float, float *, float *, float *, int);
 
 /* smooths a direction and rebuilds its orthogonal matrix axes */
 void smooth_transform_orientation_toward_hero(char *m) {

@@ -31,6 +31,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/ui/hud.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
+#include "overlays/shared/collision_queries.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -1804,8 +1806,6 @@ extern char *suck_moby_list MACRO_ADDR;
 
 extern int begin_bolt_attraction(void *, int, float, float);
 
-extern int try_collect_ammo_pickup(void *);
-
 /* Walk the moby list and trigger the first nearby one that accepts it. */
 void process_mobies_near_returning_wrench(char *a) {
     char *m = suck_moby_list;
@@ -1968,7 +1968,7 @@ extern Wrench48 *coll_sphere_moby_hits[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time_cube MACRO_ADDR;
 extern unsigned char voice_pool[];
-extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
+
 extern void draw_wrench_swing_effect(void *);
 extern int coll_line(void *, void *, int, int, int);
 
@@ -2465,7 +2465,7 @@ void *spawn_class_593_moby(int unused, void *pos, int c, float scale, float a, f
 }
 LINKER_REMNANT("asm/overlays", func_L00_002AAD28);
 typedef int u128 __attribute__((mode(TI)));
-extern int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color);
+
 extern int level_screen_fade_on MACRO_ADDR;
 extern int level_screen_overlay_on MACRO_ADDR;
 extern short tracked_class_5f3_moby;

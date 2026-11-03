@@ -29,6 +29,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/music_track_requests.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -394,8 +395,6 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern char *orxon_scene_points MACRO_ADDR;
 extern int orxon_relocation_reset_flag SDATA(orxon_relocation_reset_flag);
 extern int try_set_help_message(int, int);
-
-extern void MusicRequestTrack(int, int);
 
 // Level 10 update for moby class 22: links two Ent records, sets table bits, calls the spawn helpers.
 void update_hero_relocation_trigger(char *m) {
@@ -1470,7 +1469,6 @@ extern int STUB_printf_r(void *, int) __asm__("func_001E9730");
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 
 extern void PathSampleAtDistance_f(float, float, void *, int *, float *, void *) __asm__("func_L00_002633D8");
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 extern void spawn_path_spark_effect(char *, float *, int *, float, float, float);
 extern int Sound_PlayClassSound_v(int, int, void *, int) __asm__("func_L00_0028EF68");
@@ -1741,7 +1739,8 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern int Sound_PlayClassSound_v(int, int, void *, int) __asm__("func_L00_0028EF68");
 
-extern void spawn_debris_moby(void *, void *, unsigned int, float, int, float, float, float, int);
+extern void spawn_debris_moby_v(void *, void *, unsigned int, float, int, float, float, float,
+                                int) __asm__("func_L01_002F9908");
 
 /* Orxon moby update: destroys itself when its item is taken, else fires its effect once per pass. */
 void handle_moby_destruction(char *moby) {
@@ -1784,7 +1783,7 @@ void handle_moby_destruction(char *moby) {
             c16 = rand_range(0x3C, 0x78);
             f20 = random_float_between(2.0f, 3.0f);
             r2 = random_integer_below(4);
-            spawn_debris_moby(&v30, &v40, k, f21, c16, f20, 1.0f, 3.0f, r2 == 0);
+            spawn_debris_moby_v(&v30, &v40, k, f21, c16, f20, 1.0f, 3.0f, r2 == 0);
         } while (n >= 0);
         v30.q = 0;
         v30.f[0] = 2.8599999f;

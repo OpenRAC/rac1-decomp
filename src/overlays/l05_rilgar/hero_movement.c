@@ -105,8 +105,6 @@ extern int coll_line(void *, void *, int, int, int);
 
 extern int is_moby_in_class_range_500_to_540(int);
 
-extern void compute_hero_hoverboard_respawn_transform(void *, void *);
-
 struct HeroUpdateMovementVars {};
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 05 build). */

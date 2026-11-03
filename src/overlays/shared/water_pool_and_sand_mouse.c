@@ -35,6 +35,9 @@
 #include "game/system/memcard.h"
 #include "game/render/partupd.h"
 #include "game/render/framebuf.h"
+#include "overlays/shared/gold_bolts_and_teleporters.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
+#include "asm_functions/level_01.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -158,8 +161,6 @@ void RescaleFloatTable(float s) {
 }
 extern int ripple_cur_buffer SDATA(ripple_cur_buffer);
 extern int ripple_prev_buffer SDATA(ripple_prev_buffer);
-extern void ripple_heights_to_scratchpad(char *a, char *b);
-extern void ripple_patch_step(char *a, int i, int c, char *base);
 
 // steps the ripple simulation for each active entry, then swaps the two buffer indices
 void step_pool_wave_simulation(char *base, int n) {
@@ -180,7 +181,7 @@ void step_pool_wave_simulation(char *base, int n) {
     }
 }
 extern void step_pool_wave_simulation_r(char *, int) __asm__("func_L01_002B90E8");
-extern void ripple_lerp_buffers(char *, char *, char *, float);
+
 extern float pool_light[];
 extern int ripple_draw_buffer SDATA(ripple_draw_buffer);
 extern float ripple_sim_phase SDATA(ripple_sim_phase);
@@ -278,8 +279,6 @@ void build_height_grid_positions(float *pos) {
     }
 }
 extern f32 pool_light[];
-
-extern void ripple_emit_sub_block(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b8cb0. */
 void cull_and_submit_water_grid_tile(f32 *pos, s32 index, s32 mode) {
@@ -480,7 +479,7 @@ extern unsigned water_last_alpha2 SDATA(water_last_alpha2);
 extern unsigned water_last_alpha1 SDATA(water_last_alpha1);
 void build_water_render_setup_packet(void);
 extern void ripple_heights_to_scratchpad_r(void *, void *) __asm__("func_L01_00262BC0");
-extern void ripple_shade_vertices(f32 *);
+
 extern void update_animated_offset_pairs(f32 *);
 extern u64 GetEffectTex(s32);
 
@@ -953,9 +952,6 @@ extern char *camera_points MACRO_ADDR;
 extern unsigned char saved_mission_state[][16];
 extern float bolt_crank_pull_spring_vel SDATA(bolt_crank_pull_spring_vel);
 
-extern int Hero_SetMoveState(int, int);
-
-extern void set_camera_5_track_acceleration_yz(float, float);
 extern float ApproachValue(float *, float, float);
 extern void record_moby_context_bytes(void *, int, void *, int, void *);
 
@@ -1457,7 +1453,7 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
 }
 extern void *GetFlaggedPvarWord(void *);
 extern void *select_sand_mouse_spawn_target(void *, void *, void *, float, float, float, float, float, float);
-extern void spawn_sandmouse_projectile(void *, void *, float, float, float, float);
+
 extern float sand_mouse_target_range SDATA(sand_mouse_target_range);
 extern float sand_mouse_target_yaw_fov SDATA(sand_mouse_target_yaw_fov);
 extern float sand_mouse_target_pitch_fov SDATA(sand_mouse_target_pitch_fov);
@@ -1728,7 +1724,6 @@ extern void rig_probe_setup(void *, int, int *, float *, float *, int *);
 extern int func_001160D8(void);
 extern void MobySpringTurn_r(void *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
-extern int Hero_SetMoveState(int, int);
 
 extern int func_L00_0025A060(void *m, void *p, float *pos, float *v);
 extern int fast_dec_timer(void *);

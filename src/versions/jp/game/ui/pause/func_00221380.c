@@ -58,9 +58,9 @@ int draw_checking_memory_card_data_menu(struct Stream *menu) {
     }
     SetupGifPaging(0);
     if (menu->state < 4) {
-        texture = load_texture_file(menu->buffer[0]);
+        texture = load_texture_file_v(menu->buffer[0]);
     } else {
-        texture = load_texture_file(menu->buffer[1]);
+        texture = load_texture_file_v(menu->buffer[1]);
     }
     DrawTexturedQuad(0, 0, fs_aa_buffer[0xB0], fs_aa_buffer[0xB1], 0, 0, menu->tw, menu->th, 0x80808080L, texture);
     DoGifPaging();

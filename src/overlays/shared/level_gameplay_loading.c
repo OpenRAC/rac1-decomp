@@ -25,6 +25,10 @@
 #include "game/system/stub.h"
 #include "overlays/shared/sound_playback.h"
 #include "game/system/loaders.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "core/gs/load_image.h"
+#include "overlays/shared/debug_menu_and_text.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -68,10 +72,9 @@ extern int D_L00_00160628_240398 __asm__("D_L00_00160628") MACRO_ADDR;
 extern int D_L00_00160624_240398 __asm__("D_L00_00160624") MACRO_ADDR;
 extern int D_L00_0016062C_240398 __asm__("D_L00_0016062C") MACRO_ADDR;
 extern void FastMemCopy_r(void *, void *, int) __asm__("func_001F9A98");
-extern int func_00122630(void *, short, short, short, short, short, short, short);
+
 extern void flush_cache_r(int) __asm__("func_00118D80");
-extern int func_00122958(void *, void *);
-extern int func_00120858(int, unsigned short);
+
 extern void register_moby_class_r(void *, void *, void *, int) __asm__("func_00203E78");
 
 /* Loads a level's four packed images through the GS loader and registers the image records and their data blocks. */
@@ -468,8 +471,6 @@ extern int find_or_assign_bolt_source_slot(int, int);
 extern void store_current_level_table_value(int, int);
 
 extern void initialize_moby_state_record(char *);
-
-extern void Level_ResetGameplayGlobals(void);
 
 extern void setup_level_cameras(void);
 

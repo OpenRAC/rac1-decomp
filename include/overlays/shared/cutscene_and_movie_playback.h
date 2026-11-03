@@ -7,6 +7,10 @@
 
 extern void PlayMovieEntryIfIdle(int);
 extern void StartCutscene(int);
+extern void queue_language_zero_movie(int);
+extern void queue_movie_with_game_language(int);
+extern void reset_frame_counters(void);
 extern void start_slideshow(void);
+extern void update_game_frame_and_idle_counters(void);
 
 #endif /* OVERLAYS_SHARED_CUTSCENE_AND_MOVIE_PLAYBACK_H */

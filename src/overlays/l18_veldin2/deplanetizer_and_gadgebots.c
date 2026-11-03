@@ -18,6 +18,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/walloper_and_beam_effects.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -134,7 +135,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_length_xy(void *);
-extern void update_beam_ring_rail_and_pulse_effects(void *);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 

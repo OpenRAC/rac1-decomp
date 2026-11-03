@@ -35,6 +35,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "game/render/partupd.h"
+#include "overlays/l02_aridia/hero_idle_and_item_input.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -104,14 +105,13 @@ struct SharkEggVars {
     char *child; /* 0x60 */
 };
 
-extern void prepare_scaled_table_with_byte_128(void *);
+extern void prepare_scaled_table_with_byte_128_v(void *) __asm__("func_L02_002A52B0");
 
 /* Prepares the scaled table on a scratch buffer. */
 void prepare_scaled_table_on_stack(void) {
     char scratch[0x40];
-    prepare_scaled_table_with_byte_128(scratch);
+    prepare_scaled_table_with_byte_128_v(scratch);
 }
-extern void build_interpolated_dma_packet(void *);
 
 extern char aridia_spr_upload_block[];
 
@@ -1350,7 +1350,6 @@ extern void set_ground_height_band(void *);
 extern void handle_level02_bot_damage_and_retargeting(void *);
 extern int func_001160D8(void);
 
-extern void reset_shot_tracking(char *moby);
 /* The angle before the pointer: argument moves follow the parameter order, and retail loads $f12 before $a1 in state
    11. */
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
@@ -1361,7 +1360,7 @@ extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
-extern void collect_mobies_around_tracked_objects(char **slots, int a, int b);
+
 extern int mine_fall(void *, void *);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -2517,8 +2516,6 @@ extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
 extern void SamplePathAt(void *, int, void *, void *, int, float);
 
-extern void HeroL02_SetMoveState(int, int);
-extern void enter_hero_idle_or_stop(void);
 extern void set_vendor_camera_mode(int, int);
 
 #define G(i) ((char *)D_L02_00160058 + ((i) << 8))

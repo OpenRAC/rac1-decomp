@@ -28,6 +28,8 @@
 #include "game/audio/music.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/trigger_switches_and_hoverboard.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -1174,8 +1176,6 @@ extern int available_moby_slot_count MACRO_ADDR;
 extern char *batalia_scene_points MACRO_ADDR;
 extern float batalia_player_camera_r[] __asm__("D_L08_00167500");
 
-extern void initialize_moby_launch_motion(void *, int, void *, void *, int);
-
 typedef int u128_7010 __attribute__((mode(TI)));
 typedef struct {
     char pad0[0x21];
@@ -1374,7 +1374,6 @@ extern struct Hero g_hero_r2 __asm__("D_0013F450");
 extern short D_L08_00161A00_DB468 SDATA(D_L08_00161A00);
 extern float D_L08_001D7320[4];
 extern char batalia_zero_vec_r3[] __asm__("D_L08_0015F660") MACRO_ADDR;
-extern void func_L02_002A52B0(void *, float);
 
 extern int Sound_IsPlaying_r(struct Moby *, int) __asm__("func_L00_0028EB98");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
@@ -2532,7 +2531,6 @@ extern float ApproachValue(float *, float, float);
 extern int timer46(int *) __asm__("func_001F9908");
 extern void MobySpringTurn(void *, void *, float, float, float, float);
 
-extern void initialize_moby_launch_motion(void *, int, void *, void *, int);
 extern void spawn_rocket_explosion_and_debris(void *, int, int, int);
 
 /* Rocket guidance, route traversal, launch effects, and destruction. */

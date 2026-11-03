@@ -3,6 +3,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/gs/load_image.h"
 
 /*
  * hud.cpp in the original source; text 0x1FF668-0x201D58.
@@ -1055,9 +1056,7 @@ void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1, int u0, int v
 }
 
 extern int *g_render_packet_cursor MACRO_ADDR;
-extern void sceGsSetDefLoadImage(void *, int, int, int, int, int, int, int);
-
-extern void sceGsExecLoadImage(void *, void *);
+extern void sceGsSetDefLoadImage_v(void *, int, int, int, int, int, int, int) __asm__("func_00122630");
 
 /* Hud_sendTexture(char *tex, int x, int y, int levelShift, int sizeShift,
    int useStackBuf): builds a mip level count (clamped to >=1) and a
@@ -1104,7 +1103,7 @@ void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg
     p10 = 1 << arg3;
     p11 = 1 << arg4;
 
-    sceGsSetDefLoadImage(dst, p5, p6, p7, 0, 0, p10, p11);
+    sceGsSetDefLoadImage_v(dst, p5, p6, p7, 0, 0, p10, p11);
 
     if (arg5 == 0) {
         int *cur = g_render_packet_cursor;

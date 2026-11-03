@@ -27,6 +27,14 @@
 #include "game/system/stub.h"
 #include "game/audio/music.h"
 #include "game/render/partupd.h"
+#include "core/gs/put_draw_env.h"
+#include "core/cdvd/callbacks.h"
+#include "game/render/skyfunc.h"
+#include "game/ui/pause.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "game/ui/menu.h"
+#include "core/gs/load_image.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -48,13 +56,9 @@ extern int g_hero_moby NOT_SDA;
 
 extern int func_001160D8(void);
 
-extern void sce_gs_sync_v(int);
-
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
 extern char camera_position[];
-
-extern void sce_cd_sync_s(int);
 
 extern char render_sequence_c[] __asm__("D_0018CC20");
 extern float view_tan_half_fov;
@@ -802,7 +806,6 @@ extern s32 func_001FA898(f32);
 
 extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
 
-extern void draw_sky_shells();
 extern void build_resident_indexed_texture_warp_meshes(s32);
 extern void draw_resident_textured_quad();
 extern void draw_resident_textured_banner(s32);
@@ -2101,7 +2104,7 @@ extern int pal_mode MACRO_ADDR;
 extern int g_game_language MACRO_ADDR;
 extern int level_resource_buffer_base;
 extern int Movie_Play(int, int, int, int, int);
-extern void wait_for_graphics_pipeline_idle(int, int);
+
 extern void sceGsSyncVCallback(void *);
 
 /* Plays movie id, taking its {sector, size} from the WAD table of
@@ -2195,9 +2198,7 @@ struct CommonArchiveMemory {
 };
 
 extern s32 sce_cd_sync_s_r(s32 a0) __asm__("func_00120F30");
-extern s32 sceGsExecLoadImage(sceGsLoadImage *load_image, s32 image_address);
-extern s32 sceGsSetDefLoadImage(sceGsLoadImage *load_image, s32 block_offset, s32 buffer_width,
-                                s32 pixel_storage_format, s32 x, s32 y, s32 width, s32 height);
+
 extern s32 wait_for_graphics_pipeline_idle_r(s32 a0, s32 a1) __asm__("func_00120858");
 
 extern s32 Stream_SubmitRead(void *a0, u32 a1, u32 a2);
@@ -2309,13 +2310,10 @@ extern void read_file_entry_with_retry_r(s32) __asm__("func_0012F4A8");
 
 extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, u64, u64) __asm__("func_001F5800");
 
-extern void Menu_RunStateHandler(void);
-
 extern void append_scrolling_textured_quad_r(s32, s32, s32, s32, u64, u64, f32, f32, f32, f32) __asm__("func_00232A00");
 extern void prepare_loading_slide_textures(s32, s32, s32, u64 *, u64 *, u64 *);
 
 extern void VU1_addGSregister_r2(s32, u64) __asm__("func_00234C98");
-extern void sce_gs_sync_v(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/play_level_loading_slides.c, play_level_loading_slides. */
 void play_level_loading_slides(s32 language_index, s32 first_slide, s32 second_slide, s32 duration_ticks,
@@ -2457,7 +2455,6 @@ extern void initialize_level_runtime(void);
 extern int read_file_entry_with_retry(int);
 
 extern void update_resident_gameplay_state(void);
-extern void tick_space_transition(void);
 
 /* DoSpaceTransition: plays the level-to-level transition (dialogue screens, loading loop) and waits for the load. Adapted from Lombyte's project (GPL-3.0) for PAL: src/gameplay/state/do_space_transition.c, do_space_transition. */
 void DoSpaceTransition(void) {

@@ -7,9 +7,6 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
-extern long __sseek(void *arg0, void *arg1, void *arg2);
-extern void __sclose(void *arg0);
-
 void findfp_std(void *arg0, int arg1, int arg2, int arg3) {
     Node1E4 *self = (Node1E4 *)arg0;
     self->owner = (void *)arg3;

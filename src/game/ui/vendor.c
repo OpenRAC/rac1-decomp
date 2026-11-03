@@ -117,7 +117,7 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
 }
 
 extern int status_message_text_ids[];
-extern void set_scrolling_status_message(void *);
+
 extern void render_capture_scrolling_text(char *, int, int, float);
 
 /* Two base locals, one before the join and one after, make gcse share

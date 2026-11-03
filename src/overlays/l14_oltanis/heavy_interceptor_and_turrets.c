@@ -2900,7 +2900,6 @@ extern float flying_debris_drag SDATA(flying_debris_drag);
 extern float flying_debris_min_speed SDATA(flying_debris_min_speed);
 extern char oltanis_lights[];
 
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 extern void remove_flying_debris(char *);
 /* Flying debris update: drift with drag, spin, smoke, glow with a point light; remove on timeout. */
 void update_flying_debris(struct Moby *m) {
@@ -3384,8 +3383,6 @@ extern short muzzle_light_color_component_z;
 #define D_L14_00161A58 (*(float *)&D_L14_00161B28)
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
-
 /* Racer update: track the race path ahead of the hero, orient along it and fire its beam weapon. */
 void update_racer_path_and_weapon(struct Moby *m) {
     struct L14RacerVars *d = (struct L14RacerVars *)m->pvars;
@@ -3682,7 +3679,6 @@ void draw_racer_glow_quads(struct Moby *m) {
     draw_world_quad_r2(&pk, 0, 0);
 }
 extern float joint_effect_light_range SDATA(joint_effect_light_range);
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 extern void draw_racer_glow_quads(struct Moby *);
 

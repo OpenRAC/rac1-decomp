@@ -34,6 +34,7 @@
 #include "game/system/stub.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/music_track_requests.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -2861,8 +2862,6 @@ extern int try_set_help_message(int, int);
 extern void jet_animate(unsigned char *, float);
 
 extern void PlayerFighterFlight(void *, void *);
-
-extern void MusicRequestTrack(int, int);
 
 /* Handles fighter entry, flight, damage, exit, palette setup and audio cleanup. */
 void JetFighterUpdateL13(Jet47 *m) {

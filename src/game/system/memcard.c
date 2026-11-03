@@ -11,6 +11,7 @@
 #include "asm_functions/executable.h"
 #include "game/system/stub.h"
 #include "game/ui/help.h"
+#include "core/gs/put_draw_env.h"
 
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
@@ -57,10 +58,6 @@ void memcard_get_name(void *arg0) {
     libc_strncpy(memcard_slot_path_format, memcard_save_dir_name, 0xD);
 }
 
-extern int sce_mc_get_info(int, int, int *, int *, int *);
-
-extern void sce_gs_sync_v(int);
-extern int sce_mc_get_dir(int, int, char *, int, int, void *);
 extern char memcard_save_dir_name[];
 extern int memory_card_state_i[] __asm__("D_0013D390");
 
@@ -1368,7 +1365,6 @@ void memcard_MakeWholeSave(char *out) {
     }
 }
 
-extern int sce_mc_init(void);
 /* Unprototyped deliberately: this is the varargs function, so callers
    legitimately pass different argument counts/types, and two agents
    declared it incompatibly. Both callers are byte-exact and must not

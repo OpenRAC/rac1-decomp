@@ -22,6 +22,11 @@
 #include "game/ui/hud.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "core/gs/def_load_image.h"
+#include "core/gs/load_image.h"
+#include "game/render/tiefunc.h"
+#include "game/system/update.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -1420,11 +1425,6 @@ extern int draw_buffer_address MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_base MACRO_ADDR;
 
-extern int wait_for_graphics_pipeline_idle(int, int);
-
-extern int sceGsSetDefLoadImage(GsLoadImage *, s16, s16, s16, s16, s16, s16, s16);
-extern int sceGsExecLoadImage(GsLoadImage *, unsigned char *);
-
 /* Adapted from Lombyte's project (GPL-3.0): src/video/display/set_pal_mode.c, set_pal_mode. */
 void SetPalMode(void) {
     GsLoadImage image;
@@ -1614,9 +1614,6 @@ extern void BuildViewMatrices(void);
 extern void Transition_DrawSky(void);
 extern void DrawTfrag(void);
 
-extern void DrawTies_2(void);
-extern void DrawTies_1(void);
-
 extern void SetupGifPaging(int);
 extern void dispatch_callback_list_2(void);
 extern void DoGifPaging(void);
@@ -1634,18 +1631,12 @@ extern void dispatch_callback_list_4(void);
 extern void append_billboard_batch(void);
 extern void render_queued_rotated_sprites(void);
 
-extern void DebugProfiler_Hook(void);
-
 extern void draw_letterbox_bars(void);
 extern void draw_subtitles(void);
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern void draw_screen_effect(void);
 
 extern void PatchTfragGifs(void);
-extern void register_entity_render_resources(void);
-extern void copy_render_buffer_pair(void);
-
-extern void PatchTieGifs(void);
 
 extern void patch_shrub_gifs(void);
 
@@ -2171,8 +2162,6 @@ void draw_light_quads(void) {
         draw_world_quad_packet(m, 0, 0);
     }
 }
-
-extern int func_00122598(int);
 
 extern int game_frame_counter MACRO_ADDR;
 extern char second_clear_packet[];

@@ -30,6 +30,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
+#include "asm_functions/level_01.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -94,7 +96,7 @@ extern union PacketCursor D_L01_00161240 MACRO_ADDR;
 extern u8 D_L01_001CAF00[];
 extern s32 FastBSphereCheck_r(void *, f32) __asm__("func_L00_00200290");
 extern u64 func_001F4868(s32);
-extern void func_L01_002635C8(ScrollLayer *);
+
 extern void emit_textured_strip_packet_r(s32, s32, s32, s32, s32, s32) __asm__("func_L01_0021F9C8");
 
 void func_L01_002BA898_r(s32 count, ScrollLayer *l) __asm__("func_L01_002BA898");
@@ -610,8 +612,6 @@ extern int fast_dec_timer(void *);
 extern float vec_distance_xy(void *, void *);
 
 extern int coll_line(void *, void *, int, void *, void *);
-
-extern int Hero_SetMoveState(int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -2513,7 +2513,7 @@ void stationary_ship_update(Moby *m) {
     }
 }
 extern void DefaultVtbl_DeleteMoby_v(void *) __asm__("func_L00_00237B70");
-extern void update_and_draw_scrolling_overlay_layers(int, void *);
+
 extern char novalis_scroll_layers[];
 
 /* The moby comes in $a0 and goes on to the delete, untouched. */
@@ -3087,7 +3087,8 @@ typedef struct {
 extern SteamColors novalis_rising_emitter_debris_colors;
 extern SteamColors novalis_rising_emitter_puff_colors;
 
-extern void spawn_debris_moby(void *, void *, unsigned int, int, float, float, float, float, int);
+extern void spawn_debris_moby_v(void *, void *, unsigned int, int, float, float, float, float,
+                                int) __asm__("func_L01_002F9908");
 extern char *mine_debris_v(float f, char *a, char *b, int c, int d, int e, int g) __asm__("func_L00_0026CD70");
 
 // Emitter update: ticks timers, occasionally bursts a smoke puff and spawns two drifting smoke particles per frame. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8c58.
@@ -3126,8 +3127,8 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
         pos.f[2] = 0.0f;
         FastVecAdd(&pos, &pos, &m->pos);
         pos.f[2] += v->height;
-        spawn_debris_moby(&pos, &vel, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f,
-                          0.75f, 0);
+        spawn_debris_moby_v(&pos, &vel, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f,
+                            0.75f, 0);
     }
     for (i = 0; i < 2; i++) {
         colors = novalis_rising_emitter_puff_colors;
@@ -3257,8 +3258,8 @@ void falling_rock_update(Moby *falling_rock) {
         pos.f[1] = FastSin(debris_spawn_angle) * debris_spawn_radius;
         pos.f[2] = 0.0f;
         FastVecAdd(&pos, &pos, &falling_rock_vars->home);
-        spawn_debris_moby(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C),
-                          0.05f, 1.0f, 1.0f, 0.75f, 0);
+        spawn_debris_moby_v(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C),
+                            0.05f, 1.0f, 1.0f, 0.75f, 0);
     }
     switch (falling_rock->state) {
         case FALLING_ROCK_STATE_INITIALIZE:
