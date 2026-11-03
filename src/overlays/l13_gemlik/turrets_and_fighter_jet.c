@@ -35,6 +35,9 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/music_track_requests.h"
+#include "overlays/l13_gemlik/qwark_starfighter_and_forcefield.h"
+#include "overlays/l13_gemlik/moby_group_switches.h"
+#include "overlays/l13_gemlik/joint_particle.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -649,7 +652,6 @@ void blarg_turret_update(Moby *m) {
 
 extern float vec_distance_xy(void *, void *);
 
-extern char *spawn_gemlik_projectile(float, float *, float *, void *);
 extern int gemlik_frame_count MACRO_ADDR;
 extern int gemlik_turret_fire_interval SDATA(gemlik_turret_fire_interval);
 extern float gemlik_turret_shot_speed SDATA(gemlik_turret_shot_speed);
@@ -857,7 +859,6 @@ void blarg_gunner_update(unsigned char *raw) {
             break;
     }
 }
-extern void *create_moby_joint_particle(void *, int, int, float, float, int, float, int);
 
 /* Robosquawker: keep its joint particle alive while flagged visible, kill it otherwise. */
 void update_robosquawker_particle(unsigned char *moby, char *data) {
@@ -2414,7 +2415,6 @@ void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
     FastVecAdd(d, a, moby + 0x10);
     project_world_point_to_screen_pixels(d, obj + 0xE0, obj + 0xE4, 0);
 }
-extern int spawn_ship_rocket(void *, void *, float, int, void *, int);
 
 /* Fires a timed burst from a moby while a pad button is held and ammo remains. */
 void fire_fighter_jet_rocket(char *moby, char *obj) {
@@ -2853,9 +2853,6 @@ extern char jet_no_escape_path_msg[], jet_no_destination_path_msg[];
 extern int jet_palette_ready47 SDATA(D_L13_00161454);
 extern int *jet_palette47 SDATA(D_L13_00161450);
 extern short jet_boarding_group_ids_b;
-
-extern void jet_group_switch(short *, int, int, int);
-extern void jet_group_flag(int, int);
 
 extern int try_set_help_message(int, int);
 

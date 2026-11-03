@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void initialize_vendor_selected_item_mobys(void);
 extern void open_vendor_menu(void *);
 
 #endif /* OVERLAYS_SHARED_VENDOR_MENU_H */

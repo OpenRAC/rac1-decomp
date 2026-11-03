@@ -35,6 +35,7 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "game/system/memcard.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/morphoray_chicken_and_drones.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -503,7 +504,6 @@ extern int coll_sphere(float, void *, int, void *);
 
 extern void BuildSphericalOffset_57(float, float, float, void *) __asm__("func_00215C00");
 
-extern void *spawn_feather_moby(void *, void *, void *);
 extern int Moby_PlaySound_57(int, int, void *) __asm__("func_0022ED80");
 
 extern float reposition_effect_velocity_elevation_degrees SDATA(reposition_effect_velocity_elevation_degrees);

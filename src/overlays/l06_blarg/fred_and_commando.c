@@ -40,6 +40,7 @@
 #include "asm_functions/level_06.h"
 #include "overlays/shared/space_commando_and_door_lock.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -884,8 +885,6 @@ typedef struct Busy {
     char pad4[0x20];
     int f24;
 } Busy;
-
-extern void attach_shared_manipulator_to_matching_class_moby(char *);
 
 extern void set_ground_height_band(void *);
 

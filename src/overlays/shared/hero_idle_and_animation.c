@@ -36,6 +36,7 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/hero_item_input_and_hud.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -827,8 +828,6 @@ void update_hero_bone_attachment(void) {
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
 
-extern void hero_update_transitions(void);
-
 extern void update_hero_easing_records(void);
 extern void update_hero_vehicle_moby(void);
 extern void update_hero_scalar_pulse(void);
@@ -1319,8 +1318,6 @@ extern void update_hero_in_vehicle_mode(void);
 
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
-
-extern void hero_update_transitions(void);
 
 extern void update_hero_easing_targets_and_point_effects(void);
 extern void update_hero_collision_ease_target(void);

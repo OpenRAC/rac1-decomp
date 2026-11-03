@@ -33,6 +33,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/trespasser_and_throwing_gloves.h"
 #include "overlays/shared/collision_queries.h"
+#include "overlays/shared/glint_effects.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -899,7 +900,6 @@ extern void func_001F9C08(void *, void *, void *, float);
 extern int begin_bolt_attraction_r(void *, void *, float, float) __asm__("func_L00_002A84B0");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
-extern int func_L00_001FE940(void *, int, float);
 
 extern void func_L00_002607A8(void *, float);
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");

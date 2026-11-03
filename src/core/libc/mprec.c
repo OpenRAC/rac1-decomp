@@ -2,6 +2,7 @@
 #include "structs/misc.h"
 #include "core/libc/mprec.h"
 #include "core/newlib_types.h"
+#include "core/libc/atoi_calloc.h"
 
 /*
  * core_text object 0x1154C0-0x116070. Boundaries are retail's linker fill
@@ -32,7 +33,6 @@ void __malloc_unlock(void) {
  * (7/168); an `fl` local assigned in the test and re-read from
  * ptr->_freelist after the calloc NULL test gives retail's order.
  */
-extern void *_calloc_r(void *, int, int);
 
 typedef struct {
     char pad[0x4C];

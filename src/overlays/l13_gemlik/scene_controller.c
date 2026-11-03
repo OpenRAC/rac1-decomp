@@ -20,6 +20,8 @@
 #include "game/system/memcard.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
+#include "overlays/shared/moby_path_advance.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -95,7 +97,6 @@ extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
-extern void func_L00_0028FB78(void *);
 
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
 void update_gemlik_scene_controller(Moby *moby) {
@@ -259,8 +260,6 @@ void update_gemlik_scene_controller(Moby *moby) {
 
 extern int gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-
-extern int compute_advanced_moby_path_position(void *, void *, void *, int, int, float);
 
 /* Follows its target moby along a path: snaps to the nearest path point, then walks the path segments. */
 void update_moby_path_follower(char *m) {

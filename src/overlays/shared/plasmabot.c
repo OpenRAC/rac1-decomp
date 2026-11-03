@@ -24,6 +24,8 @@
 #include "game/system/stub.h"
 #include "overlays/shared/sound_playback.h"
 #include "game/render/partupd.h"
+#include "asm_functions/level_14.h"
+#include "overlays/shared/vendor_beam.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -1339,7 +1341,6 @@ extern f32 g_frame_scale_sq MACRO_ADDR;
 extern float spinning_debris_drag_min_speed SDATA(spinning_debris_drag_min_speed);
 extern float spinning_debris_drag SDATA(spinning_debris_drag);
 extern float spinning_debris_gravity SDATA(spinning_debris_gravity);
-extern void draw_spinning_debris(struct MobyDf *);
 
 extern int fast_dec_timer(void *);
 
@@ -2060,7 +2061,6 @@ extern void start_vendor_beam_pulse(char *);
 
 extern void apply_vendor_beam_damage(char *);
 extern void update_vendor_beam_animation(char *);
-extern void draw_vendor_beam(char *);
 
 /* Moby update for a timed effect that triggers when the hero is near. */
 void update_vendor_beam(unsigned char *m) {

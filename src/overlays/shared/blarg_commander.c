@@ -12,6 +12,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
 #include "game/render/vuchain.h"
+#include "asm_functions/level_12.h"
 
 /* Blarg commander shot (Blarg Commander): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
@@ -22,7 +23,6 @@ struct CommanderShotVars {
 };
 
 extern int FastBSphereCheck(char *, float);
-extern void compute_reflection_env_uvs(int, int, int, int);
 
 extern int *hoven_dma_packet_cursor MACRO_ADDR;
 extern char hoven_effect_list_setup_packet[];

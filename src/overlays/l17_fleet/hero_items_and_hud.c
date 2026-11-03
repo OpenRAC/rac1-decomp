@@ -32,6 +32,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "overlays/l17_fleet/hero_idle_and_items.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -59,10 +60,6 @@ extern HeroIdleFidget fleet_idle_fidgets[];
 extern HeroItemDefView fleet_item_defs[];
 extern HeroAttackRecord fleet_attack_records[];
 extern HeroSpeedBands fleet_hero_speed_bands;
-
-extern int HeroL17_TryTakeHit(int);
-
-extern int HeroL17_SetMoveState(int, int);
 
 extern int func_001F9908(int *);
 

@@ -25,6 +25,12 @@
 #include "overlays/shared/camera_modes_and_scripts.h"
 #include "overlays/shared/bolts_and_wrench.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/scoutbot_and_paratrooper.h"
+#include "overlays/l08_batalia/hero_idle_and_items.h"
+#include "overlays/shared/geometry_quad_packet.h"
+#include "overlays/l08_batalia/bomb_and_scoutbot.h"
+#include "overlays/l08_batalia/commando_deserter_and_effects.h"
+#include "overlays/l08_batalia/axis_roll_matrix.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -487,7 +493,6 @@ extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void func_L00_001FF328(void *, void *, float);
 
-extern void func_L08_00307FF0(char *, int);
 extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 
@@ -503,10 +508,10 @@ extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void *CreateMoby_r(int) __asm__("func_0020D348");
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
-extern void func_L08_002E9288(void *, void *, void *, int);
+
 extern int sound52(int, int, void *) __asm__("func_0022ED80");
 extern char *func_L00_0026EBC0(char *, char *, int, int, float);
-extern void func_L08_00315068(void);
+
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 
@@ -920,7 +925,6 @@ void update_batalia_cannon(Moby *moby) {
         moby_build_matrix_r(data->visual);
     }
 }
-extern void Hero_TryMoveStateL08(int, int);
 
 /* Sets byte +0xBC of the moby to 1 and calls Hero_TryMoveStateL08(0x32, 1). */
 void request_batalia_cannon_mount(char *arg) {
@@ -1339,7 +1343,6 @@ extern void vec_scale_to_length(void *, void *, f32);
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
-extern struct Moby *spawn_rocket_435_projectile(void *, struct Moby *, void *, f32, f32);
 extern void process_gunship_part_hits(struct Moby *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002deee0.c, FUN_L08_002e24e8. */
@@ -1892,8 +1895,6 @@ extern void draw_batalia_bolt_pickup_rotating_quad(char *m);
 extern int coll_line(void *, void *, int, int, int);
 
 extern unsigned char *moby_get_ride_transform(int);
-
-extern void build_axis_roll_matrix(void *, void *, float);
 
 extern float step_angle_toward_target_v(float *, float, float, int) __asm__("func_L00_0025CC58");
 extern void rand_vec(void *, float, float);
@@ -2457,7 +2458,7 @@ typedef int u128 __attribute__((mode(TI)));
 extern int truncate_float_to_s32(float);
 
 extern int GetEffectTex(int);
-extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
+
 extern char batalia_screen_projection_base[];
 extern float bolt_pickup_quad_center_offset_along_moby_e0 SDATA(bolt_pickup_quad_center_offset_along_moby_e0);
 extern float bolt_pickup_quad_center_offset_along_moby_c0 SDATA(bolt_pickup_quad_center_offset_along_moby_c0);

@@ -25,6 +25,9 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/l05_rilgar/hero_idle_and_items.h"
+#include "overlays/l05_rilgar/electric_gate.h"
+#include "asm_functions/level_05.h"
 extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
@@ -322,7 +325,6 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
         moby->glow_color = rilgar_faucet_rest_color;
     }
 }
-extern void Hero_TryMoveStateL05(int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -909,7 +911,6 @@ void blarg_gun_update(Moby *moby) {
     }
 }
 extern char *FindMobyByDataId(void *, int);
-extern void PickNearestTargetSlot(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b3840.c, FUN_L05_00319510. */
 void reset_selected_moby_to_current_placement(void *moby_v) {
@@ -1925,8 +1926,6 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     vec_cross_32B1F8(&m->side, &m->up, &m->fwd);
 }
 extern char *rilgar_camera_init_source;
-
-extern void reset_hero_follow_camera_from_preset(void *);
 
 /* Copies the matrix at rilgar_camera_init_source into out and finishes with reset_hero_follow_camera_from_preset. */
 void reset_camera_from_source_transform(char *out) {

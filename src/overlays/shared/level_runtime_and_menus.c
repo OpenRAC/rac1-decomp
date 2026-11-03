@@ -11,6 +11,8 @@
 #include "game/ui/map.h"
 #include "game/ui/menu.h"
 #include "game/system/stash.h"
+#include "game/gameplay/missionfunc.h"
+#include "overlays/shared/stash_slots.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -539,10 +541,9 @@ typedef struct {
 extern RenderArchiveState map_menu_state;
 extern u8 gHaveMapOMatic NOT_SDA;
 void Profile_Mark_v(void) __asm__("func_001E9768");
-void update_map_icons(s32, s32);
+
 void start_audio_stream_read(s32, s32, s32);
 void update_audio_stream_until_idle(s32);
-void send_dma_to_stash_slot(s32, s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/00245c28.c, FUN_L00_002468b8. */
 void initialize_render_archive_transfer(void) {
@@ -672,7 +673,6 @@ extern s32 map_reveal_alt_projection_flag SDATA(map_reveal_alt_projection_flag);
 extern MapFilter map_filter_range_table[19][16] NOT_SDA;
 extern MapFilterCallback map_filter_callback_table[19][8] NOT_SDA;
 extern s32 map_filter_unlocked_flags[] NOT_SDA;
-extern void map_world_to_uv(f32, f32, f32 *, f32 *, s32);
 
 void reveal_map_around_position(f32 *position) {
     s32 filters[16];

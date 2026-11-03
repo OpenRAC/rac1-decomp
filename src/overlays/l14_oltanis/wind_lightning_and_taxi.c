@@ -37,6 +37,9 @@
 #include "overlays/shared/follow_camera.h"
 #include "game/system/memcard.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "asm_functions/level_14.h"
+#include "overlays/shared/tracked_moby_show.h"
+#include "overlays/l14_oltanis/bolt_thief_and_path_cameras.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -1137,7 +1140,6 @@ extern int lightning_arc_remaining_frames MACRO_ADDR;
 extern float lightning_arc_start_pos[] MACRO_ADDR;
 extern float lightning_arc_end_pos[] MACRO_ADDR;
 
-extern void show_tracked_moby(void);
 extern int fast_dec_timer(void *);
 extern int FastBSphereCheck(void *, float);
 
@@ -2569,7 +2571,6 @@ void request_taxi_stop_prompt(char *moby) {
 extern void set_ground_height_band(void *);
 
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
-extern void mark_elevator_collected(void *);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -3476,7 +3477,7 @@ extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
 extern void func_L00_0025F4A8_2FF040(void *, void *, void *, float, float, int, int, int, float, float, float, int,
                                      float, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_IsPlaying_r4(void *, int) __asm__("func_L00_0028EB98");
-extern void func_L14_002FF358(struct Moby *);
+
 extern int Moby_PlaySound_r5(int, int, int) __asm__("func_0022ED80");
 extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
 extern s32 scale_ticks_r4(s32) __asm__("func_001F9850");

@@ -36,6 +36,9 @@
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/shot_tracking.h"
 #include "overlays/shared/radial_particle_burst.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
+#include "overlays/shared/moby_context_table.h"
+#include "asm_functions/level_03.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -1338,7 +1341,6 @@ extern char kerwan_helga_dialogue_script[];
 extern LevelState_hg kerwan_current_level_state;
 extern u8 kerwan_mission_group_state[];
 extern char *kerwan_camera_points SDATA(kerwan_camera_points);
-extern void record_moby_context_bytes(void *, int, struct Moby *, int, void *);
 
 #define LINK_HELPER(M, V)                                                  \
     t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058);             \
@@ -1631,7 +1633,7 @@ extern struct RailPath *kerwan_paths_r3[] __asm__("D_L03_001B08B0");
 extern f32 D_L03_00161C40_DC648 SDATA(D_L03_00161C40);
 extern int truncate_float_to_s32(float);
 extern void func_0020D678_DC648(char *) __asm__("func_0020D678");
-struct Moby *spawn_path_mover(struct RailPath *path, float dist);
+
 struct RailSpawnerVars {
     s32 path; /* index into D_L03_001B05B0, -1 for none */
     s32 timer;
@@ -1686,7 +1688,6 @@ void update_path_mover_spawner(struct RailSpawnerMoby *moby) {
 }
 extern u8 menu_item_enabled_115[];
 extern u8 race_gates_base[];
-extern void attach_shared_manipulator_to_matching_class_moby(struct Moby *);
 
 struct TalkRecord_gd {
     u8 pad0[4];
@@ -2779,8 +2780,6 @@ typedef struct CameraEntryECD40 {
 extern CameraEntryECD40 *kerwan_camera_descriptors_camera __asm__("D_L03_0015F050") MACRO_ADDR;
 
 extern int kerwan_player_camera_field_2f4;
-
-extern void rebuild_hero_relative_camera_transform(void *);
 
 /* ActivateCamera_14: seed the camera's smoothing state from the current camera table entry */
 void initialize_hero_relative_camera(char *m) {

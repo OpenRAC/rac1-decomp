@@ -14,6 +14,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/l17_fleet/hero_idle_and_items.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -67,8 +68,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-
-void HeroL17_SetMoveState(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l17/ui_help_002020a8.c, FUN_L17_0020dbe8. */
 s32 HeroL17_TryTakeHit(s32 arg) {

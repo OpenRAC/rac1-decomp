@@ -30,6 +30,7 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "game/system/memcard.h"
 #include "overlays/shared/music_track_requests.h"
+#include "overlays/l16_kalebo3/test_dummies_and_conveyors.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -345,8 +346,6 @@ void gadgetron_ceo_update(Moby *m) {
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }
 
-extern void challenge_set_layout_param(float f);
-
 extern float kalebo3_hero_fall_state_height MACRO_ADDR;
 
 // Sets up the flags of two rows of sub-objects, then a global and a call.
@@ -367,7 +366,6 @@ void activate_gadgetron_ceo_challenge_environment(char *moby) {
     challenge_set_layout_param(76.0f);
     MusicRequestTrack(2, 6);
 }
-extern void challenge_set_layout_param(float);
 
 // Resets the moby's two arrays of handles, then starts the follow-up effect.
 void restore_gadgetron_ceo_non_challenge_environment(char *moby) {
@@ -967,11 +965,7 @@ void gadgetron_sign_update(unsigned char *moby_bytes) {
     }
 }
 extern char *find_group_morphoray_chicken_moby_in_state_6(int);
-extern void request_target_reposition(void *);
 
-extern int get_target_reposition_status(void *);
-
-extern void reposition_moby_with_collision_check(void *, void *);
 /* Repositions a target at random intervals while the hero is in the clip volume. */
 void update_target_reposition_cycle(char *moby) {
     char *g = &g_hero.motion.pos;
@@ -1020,7 +1014,6 @@ void update_target_reposition_cycle(char *moby) {
             break;
     }
 }
-extern int is_moby_in_state_6(void *);
 
 // Finds the first moby of type 0x10E in a level's id list that passes the check.
 char *find_group_morphoray_chicken_moby_in_state_6(int idx) {

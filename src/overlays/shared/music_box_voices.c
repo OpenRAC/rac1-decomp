@@ -9,6 +9,7 @@
 #include "asm_functions/executable.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/requested_state_changes.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -130,7 +131,6 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
 }
 
 extern int func_001FA898(float);
-extern void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e);
 
 /* reverb box sound update: starts or stops the sound as the listener enters or leaves the box */
 void update_requested_state_from_box_position(char *moby) {

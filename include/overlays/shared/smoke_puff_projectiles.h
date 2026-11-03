@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void *spawn_class_b8_projectile(void *, void *, void *, int);
 extern void *spawn_moby_attachment(void *, void *);
 extern void spawn_moby_table_puff_pattern(void *);
 

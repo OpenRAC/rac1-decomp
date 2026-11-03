@@ -16,12 +16,11 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/l16_kalebo3/hero_idle_animation.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void Hero_TryMoveState(int, int);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
 void HeroL16_UpdateStateFlags(void) {

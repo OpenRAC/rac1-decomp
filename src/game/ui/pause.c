@@ -38,6 +38,7 @@
 #include "core/gs/put_draw_env.h"
 #include "game/system/update.h"
 #include "game/system/stash.h"
+#include "game/gameplay/missionfunc.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -1983,7 +1984,7 @@ extern s32 fast_decompress_r() __asm__("func_0020C468");
 extern s64 register_8bit_texture_r() __asm__("func_00205660");
 
 extern void flush_pending_texture_uploads_r() __asm__("func_0020C2F8");
-extern void func_0020CDE0();
+
 extern void Moby_PlaySound_r3() __asm__("func_0022ED80");
 
 /* Map screen of the pause menu: pad input (close, back, the mission page, warp to the shown
@@ -2162,15 +2163,14 @@ s32 DrawMapScreen(MenuScreen *screen) {
 extern int selected_level_index;
 extern int selected_mission_id;
 extern int selected_mission_index;
-extern void update_mission_list(void *);
-extern int collect_mission_ids(void *, void *, void *, int);
+extern void update_mission_list_v(void *) __asm__("func_0020C7A0");
 
 /* Enter hook for the mission list: rebuilds the list, collects the mission ids into
    scratchpad and loads the selected level's entry into selected_mission_id / selected_mission_index. */
 int enter_menu_mission_list(void *arg0) {
     int *p;
 
-    update_mission_list((void *)arg0);
+    update_mission_list_v((void *)arg0);
     *(int *)((char *)arg0 + 0x7C) = collect_mission_ids((void *)0x70000000, (void *)0, (void *)0x70000100, 1);
     p = (int *)((char *)arg0 + 0x30);
     p += selected_level_index;

@@ -36,6 +36,7 @@
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "game/render/partupd.h"
 #include "overlays/l02_aridia/hero_idle_and_item_input.h"
+#include "overlays/l02_aridia/background_ship_and_skid.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -2516,8 +2517,6 @@ extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
 extern void SamplePathAt(void *, int, void *, void *, int, float);
 
-extern void set_vendor_camera_mode(int, int);
-
 #define G(i) ((char *)D_L02_00160058 + ((i) << 8))
 #define HP ((float *)gHeroPos)
 /* Transport pod state machine: boarding, rail moves, ride camera and disembarking. */
@@ -3021,7 +3020,6 @@ extern int rocket_launcher_glow_end_color SDATA(rocket_launcher_glow_end_color);
 extern void play_rocket_launcher_delayed_shot_sounds(char *moby);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern void vec_scale_to_length(void *, void *, float);
-extern char *spawn_projectile_moby(char *src, void *pos, float *dir);
 
 typedef struct SwivelTurretVars {
     f32 yaw_vel; /* 0x00 */

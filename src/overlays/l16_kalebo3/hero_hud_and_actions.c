@@ -32,6 +32,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "overlays/l16_kalebo3/hero_idle_animation.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -59,8 +60,6 @@ extern HeroIdleFidget kalebo3_idle_fidgets[];
 extern HeroItemDefView kalebo3_item_defs[];
 extern HeroAttackRecord kalebo3_attack_records[];
 extern HeroSpeedBands kalebo3_hero_speed_bands;
-
-extern int Hero_TryMoveState(int, int);
 
 extern int func_001F9908(int *);
 

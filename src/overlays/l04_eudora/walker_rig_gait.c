@@ -13,6 +13,8 @@
 #include "game/system/stub.h"
 #include "callees.h"
 #include "overlays/shared/draw_buffers_and_walker_gait.h"
+#include "overlays/shared/animation_frame_range.h"
+#include "overlays/shared/rig_probe_setup.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
@@ -108,9 +110,6 @@ typedef struct {
 } LegRig_p;
 extern char invalid_animation_message[];
 extern char rig_size_message[];
-
-extern float animation_start(int, int);
-extern float animation_end(int, int);
 
 /* Sets up a two-legged rig on a moby. */
 void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
@@ -462,8 +461,6 @@ extern int update_leg_rig_height_and_tilt_r(char *, char *) __asm__("func_L04_00
 
 extern void divide_vector_xyz(void *, void *, float);
 
-extern void rig_probe_setup(void *, int, int *, float *, float *, float *);
-
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;
 typedef int u128_96938 __attribute__((mode(TI)));
@@ -681,8 +678,6 @@ typedef struct {
     /* 0x0F0 */ LegRigLeg legs[2];
 } LegRig;
 extern u8 eudora_leg_rig_anim_b7_values[13][4];
-
-extern float animation_start(int, int);
 
 extern int rig_pick_mode_r2(struct Moby *m, LegRig *rig, float t) __asm__("func_L04_00293990");
 

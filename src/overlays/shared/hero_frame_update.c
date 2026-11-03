@@ -13,9 +13,8 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/system/stub.h"
+#include "overlays/l03_kerwan/hero_items_and_hud.h"
 extern Hero g_hero;
-
-extern void HeroL03_UpdateStateTransitions(void);
 
 /* Per-frame driver: validates the cursor, then runs each update pass in order. */
 void HeroL03_FrameUpdate(void) {

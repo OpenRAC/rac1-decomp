@@ -37,6 +37,8 @@
 #include "overlays/shared/music_track_requests.h"
 #include "asm_functions/level_06.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/shared/hero_update_ledge_grab.h"
+#include "overlays/l06_blarg/fred_and_commando.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -3328,8 +3330,6 @@ typedef struct {
 } Flags;
 extern int try_set_help_message(int, int);
 
-extern void restore_hero_from_vehicle_mode(void);
-
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
 extern unsigned char D_0013D5CA[];
@@ -3556,10 +3556,6 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
     FastVecAdd(&v0, &v0, &moby->pos);
     update_entity_matrix(d->f20, &v0, &v10, &moby->rot);
 }
-
-extern void draw_dual_texture_50_quad_mesh(void);
-extern void draw_dual_texture_58_quad_mesh(void);
-extern void draw_dual_texture_864_quad_mesh(void);
 
 /* Registers the moby's draw callbacks, choosing by its four slot ids. */
 void enqueue_moby_draw_callbacks_by_clip_volume(char *moby) {

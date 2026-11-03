@@ -12,6 +12,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "overlays/l04_eudora/big_axebot.h"
 
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad_B0068 __attribute__((mode(TI)));
@@ -200,7 +201,6 @@ void update_class_b8_projectile(struct Moby *m) {
     DeleteMoby(m);
 }
 
-extern void spawn_smoke_puff_trail_with_endpoint_bursts(void *, void *, void *, int, float, float);
 extern char eudora_puff_segment_points[];
 extern float eudora_segment_puff_size_scale SDATA(eudora_segment_puff_size_scale);
 

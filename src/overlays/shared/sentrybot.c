@@ -31,6 +31,9 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/collision_queries.h"
+#include "overlays/shared/animation_frame_range.h"
+#include "asm_functions/level_08.h"
+#include "overlays/shared/owner_target_particles.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -171,7 +174,6 @@ extern void begin_sentrybot_turn_toward_point(char *moby, void *a, float *point,
 
 extern void mark_moby_killed_and_release_owned_voice(int);
 
-extern float animation_end(int a, unsigned int b);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern int move_sentrybot_toward_point(char *moby, float *point, float arg);
@@ -183,7 +185,7 @@ extern int can_sentrybot_approach_linked_moby(void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_length_xy(void *);
-extern char *spawn_class_3a6_moby(char *, float *, char *, char *);
+extern char *spawn_class_3a6_moby_v(char *, float *, char *, char *) __asm__("func_L15_002E5970");
 extern int mine_fall(void *, void *);
 
 extern void SetDeathBits(void *, int, int);
@@ -725,9 +727,9 @@ void sentrybot_update(unsigned char *moby) {
                     if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f ||
                         FastDiffRots(fast_atan2(vec_length_xy(va), va[2]), fast_atan2(vec_length_xy(vb), vb[2])) >
                             0.7853982f) {
-                        spawn_class_3a6_moby((char *)moby, va, (char *)pos, (char *)&data->aim_point);
+                        spawn_class_3a6_moby_v((char *)moby, va, (char *)pos, (char *)&data->aim_point);
                     } else {
-                        spawn_class_3a6_moby((char *)moby, vb, (char *)pos, (char *)&data->aim_point);
+                        spawn_class_3a6_moby_v((char *)moby, vb, (char *)pos, (char *)&data->aim_point);
                     }
                     data->fired = 1;
                 }
@@ -776,9 +778,9 @@ void sentrybot_update(unsigned char *moby) {
                     if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f ||
                         FastDiffRots(fast_atan2(vec_length_xy(va), va[2]), fast_atan2(vec_length_xy(vb), vb[2])) >
                             0.7853982f) {
-                        spawn_class_3a6_moby((char *)moby, va, (char *)pos, (char *)&data->aim_point);
+                        spawn_class_3a6_moby_v((char *)moby, va, (char *)pos, (char *)&data->aim_point);
                     } else {
-                        spawn_class_3a6_moby((char *)moby, vb, (char *)pos, (char *)&data->aim_point);
+                        spawn_class_3a6_moby_v((char *)moby, vb, (char *)pos, (char *)&data->aim_point);
                     }
                     data->fired = 1;
                 }
@@ -1298,7 +1300,6 @@ extern void StepColorFade(void *, void *);
 
 #define func_002140F8_r func_002140F8
 
-extern int update_float_countdown(void *);
 #define func_L08_00211A38_r func_L08_00211A38
 extern int truncate_float_to_s32(float);
 #define truncate_float_to_s32_r func_001FA898
@@ -2121,7 +2122,6 @@ typedef struct {
     PartSub29FF90 sub;
 } Part29FF90;
 
-extern void spawn_owner_target_particle(int a0, void *a1, char *a2);
 extern void func_L00_0026AA10(void *, unsigned char, unsigned char, unsigned char, float, float, int);
 
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
@@ -2594,7 +2594,6 @@ extern void mark_moby_killed_and_release_owned_voice_r(void *) __asm__("func_L15
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
 extern void draw_spark_emitter_effect_quads_r(void) __asm__("func_L15_002A4318");
-extern unsigned char *func_L15_002655D0(void *, void *, void *, int, int, int, int, int, void *);
 
 /* True when save bit id of the current level is still clear. */
 static inline int save_flag_clear_2A3DD0(unsigned short id) {

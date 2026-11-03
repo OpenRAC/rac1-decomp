@@ -33,6 +33,7 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/walloper_and_beam_effects.h"
+#include "overlays/shared/morphoray_chicken_and_drones.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -1223,7 +1224,7 @@ extern float FastCos_r2(float) __asm__("func_001F9F90");
 extern float FastSin_r2(float) __asm__("func_001F9FA8");
 
 extern void coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void func_L00_002CC3C0(void *, float, float, float, float, void *, void *);
+
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");

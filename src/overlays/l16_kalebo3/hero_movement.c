@@ -36,6 +36,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/l16_kalebo3/hero_collision.h"
 extern int g_controller_state_no_direction;
 
 typedef int u128 __attribute__((mode(TI)));
@@ -109,7 +110,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern int is_moby_in_class_range_500_to_540(int);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
-extern void compose_and_limit_hero_velocity(void);
 
 struct HeroUpdateStatePhysicsVars {};
 

@@ -32,8 +32,6 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern int get_hero_help_value(int a);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 

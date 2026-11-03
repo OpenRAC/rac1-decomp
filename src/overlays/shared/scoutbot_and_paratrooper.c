@@ -27,6 +27,8 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/type_49_particle.h"
+#include "overlays/shared/span_particle.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -2000,7 +2002,7 @@ extern void *D_L08_001623E8_3091B0 SDATA(D_L08_001623E8);
 extern float D_L08_001623EC_3091B0 SDATA(D_L08_001623EC);
 extern float D_L08_001602E0_3091B0 SDATA(D_L08_001602E0);
 extern void randomize_ground_particle_scatter_parameters_r(int) __asm__("func_L08_00309050");
-extern int func_L08_00211A38(float *);
+
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void fast_add_rotations_cf_r(void *, void *, float, float, float) __asm__("func_L00_00263D68");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
@@ -2009,7 +2011,6 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 
 extern void spawn_span_particle_r(void *, void *, float, void *) __asm__("func_L08_00273A80");
-extern void func_L08_002803B8(void *, void *, float, void *);
 
 /* moby class 1400 update: steers the offset vectors from the mode, fans them out to the object over counted loops */
 void scatter_ground_particles(Moby *m) {
@@ -2215,8 +2216,6 @@ void scatter_ground_particles(Moby *m) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern float ground_particle_scatter_spawn_vector_y_bias MACRO_ADDR;
-
-extern void spawn_span_particle(void *, void *, void *, float);
 
 /* While the player is within range, scatters spawned particles around the moby on a random disc. */
 void spawn_moby_radial_particles(char *moby) {

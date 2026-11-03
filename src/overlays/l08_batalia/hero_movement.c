@@ -33,13 +33,12 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/l08_batalia/hero_idle_and_items.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int D_0015EE84 MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void Hero_TryMoveStateL08(int, int);
 
 // Handles a pending state change: clears the request and sets per-state flags.
 void HeroL08_ResetActionState(void) {

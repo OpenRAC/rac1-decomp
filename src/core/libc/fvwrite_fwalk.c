@@ -1,6 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/libc/write_wsetup.h"
 
 /*
  * core_text object 0x114060-0x1144D0. Boundaries are retail's linker fill
@@ -58,8 +59,6 @@ struct __suio {
     int uio_iovcnt;
     int uio_resid;
 };
-
-extern int libc_swsetup(FILE_fvw *);                           /* __swsetup */
 
 #define _CONST const
 #define FILE FILE_fvw

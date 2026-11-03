@@ -25,6 +25,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/hero_update_ground_material.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/l06_blarg/hero_movement.h"
+#include "overlays/l06_blarg/hero_items_and_hud.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -67,10 +69,6 @@ int get_hero_help_value(int a) {
         return blarg_item_defs[i].v;
     }
 }
-
-extern void apply_hero_ground_material_response(void);
-
-extern void HeroL06_UpdateStateTransitions(void);
 
 extern float ApproachValue(float *, float, float);
 

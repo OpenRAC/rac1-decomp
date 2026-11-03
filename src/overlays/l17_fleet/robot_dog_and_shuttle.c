@@ -34,6 +34,8 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "asm_functions/level_08.h"
+#include "overlays/l17_fleet/hero_idle_and_items.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -168,7 +170,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 extern int func_001FA898(float);
-extern void update_float_countdown(float *);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void HeadingFromVector(void *, float *, void *, void *);
@@ -994,8 +996,6 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
 LINKER_REMNANT("asm/overlays", func_L17_002F4208);
 
 extern int PlayBankSound(int, int, int);
-
-extern void HeroL17_SetMoveState(int, int);
 
 extern int fast_dec_timer_i(int *) __asm__("func_001F9908");
 

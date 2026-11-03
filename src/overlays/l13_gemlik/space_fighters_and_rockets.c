@@ -33,6 +33,8 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/l13_gemlik/scene_controller.h"
+#include "overlays/l13_gemlik/voice_position.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -495,8 +497,6 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
     }
 }
 extern void update_hovering_rocket_attacker_common(unsigned char *);
-extern int create_attached_rocket(void *, int);
-extern void launch_attached_rocket(char *, char *, int, float);
 
 extern float ApproachWithVelocity(float *, float, float *, float, float, float);
 
@@ -1983,10 +1983,7 @@ typedef int u128z_2D0298 __attribute__((mode(TI)));
 extern int g_current_level_index MACRO_ADDR;
 extern int linked_state_flags[];
 
-extern char *spawn_scaled_owned_moby(char *, void *, float);
-
 #define Moby_PlaySound_s ((int (*)(int, int, int))Moby_PlaySound_r)
-extern int set_voice_position(int, const void *);
 
 #define func_L00_0026AA10_C4748 func_L00_0026AA10
 extern int IsFrameWithinWindow(char *, float);

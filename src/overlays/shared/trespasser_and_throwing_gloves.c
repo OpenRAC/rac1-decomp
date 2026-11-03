@@ -31,6 +31,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/walloper_and_beam_effects.h"
+#include "overlays/shared/morphoray_chicken_and_drones.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -3124,7 +3125,6 @@ extern void compute_glove_of_doom_throw_velocity_r(struct Moby *, CarrierVars_2C
                                                    Vec4 *) __asm__("func_L00_002C88A8");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern unsigned char *spawn_glove_of_doom_held_moby_r(int, u128_2C8DB8 *, u128_2C8DB8 *) __asm__("func_L00_002C9578");
-extern void func_L00_002C96D0(Vec4 *, u8 *, void *);
 
 /* Carrier: keeps its grip point in front of it, hands the held moby over when the hero asks, and
  * picks a new one up when get_ammo allows.

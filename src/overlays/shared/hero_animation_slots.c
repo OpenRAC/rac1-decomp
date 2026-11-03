@@ -29,6 +29,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/bolts_and_wrench.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/visibomb_and_pyrocitor.h"
+#include "overlays/shared/hero_water_and_ground_motion.h"
 extern u8 gHeroPos[];
 extern char g_hero_pos_z[];
 extern char g_hero_rot[];
@@ -1155,8 +1157,6 @@ extern char help_stats_base[] NOT_SDA;
 extern int rendered_frame_count MACRO_ADDR;
 extern int g_game_language[] MACRO_ADDR;
 extern unsigned char gHaveMapOMatic[] NOT_SDA;
-
-extern void spawn_indexed_class_a7_moby(int);
 
 /* HeroItemsCreate: spawns the mobys for the hero's equipped item slots. */
 void spawn_hero_item_mobies(void) {
@@ -2608,7 +2608,7 @@ extern struct PadState D_0013CA40;
 
 extern float get_capped_hero_stick_magnitude_a(void) __asm__("func_L00_00211EE8");
 extern float vec_length_xy_a(void *) __asm__("func_001F9CE8");
-extern void func_L00_002180F8(void);
+
 extern void euler_to_matrix_a(void *, void *) __asm__("func_001FA218");
 
 extern void update_hero_collision_capsule_dimensions_a(void) __asm__("func_L00_00211A38");

@@ -31,6 +31,8 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/space_commando_and_door_lock.h"
+#include "asm_functions/level_18.h"
+#include "overlays/l18_veldin2/hero_idle_and_items.h"
 extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
@@ -547,7 +549,6 @@ void draw_rocket_target_pulse_quad(char *moby) {
 }
 extern short D_L18_00161A6C __asm__("D_0015EE6C");
 extern float D_L18_6C_m __asm__("D_0015EE6C") MACRO_ADDR;
-extern void update_mine_568_detonation(void *);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -1420,7 +1421,7 @@ extern float floating_platform_motion_scale_input_start_gp SDATA(floating_platfo
 extern float floating_platform_motion_scale_input_end_gp SDATA(floating_platform_motion_scale_input_end_gp);
 
 extern void spawn_floating_platform_sparks_r(struct Moby *) __asm__("func_L18_002D9CA8");
-extern void HeroL18_SetMoveState(int, int);
+
 extern void update_entity_matrix(void *, void *, void *, void *);
 
 extern int Moby_PlaySound_r2(int, int, struct Moby *) __asm__("func_0022ED80");
@@ -2560,7 +2561,7 @@ extern float target_effect_second_rotation_rate_degrees_gp SDATA(target_effect_s
 extern float homing_spark_bolt_jitter SDATA(homing_spark_bolt_jitter);
 extern float homing_spark_travel_speed SDATA(homing_spark_travel_speed);
 extern void spawn_explosion_burst(void *);
-extern void initialize_electric_bolt_effect_if_requested(void *);
+
 extern void update_electric_bolt_geometry_and_particles(void *);
 extern void homing_spark_draw(char *);
 extern void MobySphereHitDirectional_r(int, void *, float, int, float, float, int, int,

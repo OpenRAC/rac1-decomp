@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void RipplePatch_ToFixedPoint(void *, void *);
 extern void RipplePatchesInit(void *, s32);
 
 #endif /* OVERLAYS_SHARED_RIPPLE_PATCHES_H */

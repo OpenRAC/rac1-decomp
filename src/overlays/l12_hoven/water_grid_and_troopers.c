@@ -35,6 +35,9 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/homing_missile_and_water_sheet.h"
 #include "overlays/shared/shot_tracking.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
+#include "overlays/l12_hoven/moby_heading_moves.h"
+#include "overlays/l12_hoven/reservoir_turret_planetbuster.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -117,7 +120,6 @@ extern float g_frame_time MACRO_ADDR;
 extern char hoven_camera_pos[];
 extern char hoven_ripple_patches[];
 
-extern void RipplePatch_ToFixedPoint(float *in, int *out);
 extern void initialize_level_12_slot_grid_neighbors(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
@@ -1600,7 +1602,6 @@ void HovenPlatformUpdate(Moby *moby) {
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r2(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
-extern void update_moby_bone_attachment(void *, void *, int);
 typedef struct Data_2E7FC8 {
     char pad00[0x20];
     char activation[0x40]; /* 0x20 */
@@ -1806,7 +1807,6 @@ extern void FindNearestTargetMoby(char *, float *, float);
 
 extern int func_001160D8(void);
 
-extern int test_point_within_moby_limits(void *, void *, float, float, float);
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float max_angle, float approach_speed);
@@ -1820,7 +1820,7 @@ extern int is_moby_in_class_range_500_to_540(void *);
 extern int IsFrameWithinWindow(void *, float);
 
 extern int truncate_float_to_s32(float);
-extern void spawn_class_b8_projectile(void *, void *, void *, int);
+
 extern int mine_fall(void *, void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -2513,7 +2513,6 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 typedef int OvlQuad __attribute__((mode(TI)));
 
 extern void SteerAngleWithVelocity(void *, void *, float, float, float, float);
-extern void move_moby_along_heading(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e8808. */
 void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float max_angle, float approach_speed) {
@@ -2606,12 +2605,10 @@ extern void Manipulator_ApplyScale(float, void *, int, void *);
 extern void process_blarg_helicopter_hits(char *);
 typedef int (*Fn_ED80)(int, int, void *);
 
-extern void cache_consecutive_point_distances(int);
 extern int follow_blarg_helicopter_path(struct Moby *, int);
 
 extern float SpringTurn(float *, float, float, float, float, float);
 extern void update_blarg_helicopter_motion_tilt(char *);
-extern char *spawn_rocket(void *, void *, void *, int, float, float, float);
 
 extern void set_ground_height_band(void *);
 
@@ -3249,8 +3246,6 @@ typedef struct Helper {
     char pad36[0xA];
     float rot[4]; /* 0x40 */
 } Helper;
-
-extern void attach_shared_manipulator_to_matching_class_moby(char *);
 
 extern Helper *CreateMoby_r2(int) __asm__("func_0020D348");
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);

@@ -34,13 +34,12 @@
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/l14_oltanis/hero_idle_animation.h"
 extern int g_controller_state_no_direction;
 extern int pad_held;
 
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void Hero_TryMoveStateL14(int, int);
 
 /* Resolve the hero's surface reaction for the frame from the previous state and flags. */
 extern struct Hero hero __asm__("D_0013F450");
@@ -130,8 +129,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-
-void Hero_TryMoveStateL14(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/ui_help_0021dd30.c, FUN_L14_00222aa8. */
 s32 process_hero_hit_reaction(s32 arg) {
@@ -313,8 +310,6 @@ extern HeroSpeedBands oltanis_hero_speed_bands;
 extern float oltanis_hero_ledge_shimmy_frame_speeds[];
 
 extern int fast_dec_timer(int *);
-
-extern int hero_get_gadget_anim_id(int);
 
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);

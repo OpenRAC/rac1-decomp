@@ -31,6 +31,8 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "overlays/l14_oltanis/hero_idle_animation.h"
+#include "overlays/l14_oltanis/hero_movement.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -57,10 +59,6 @@ extern HeroIdleFidget oltanis_idle_fidgets[];
 extern HeroItemDefView oltanis_item_defs[];
 extern HeroAttackRecord oltanis_attack_records[];
 extern HeroSpeedBands oltanis_hero_speed_bands;
-
-extern int process_hero_hit_reaction(int);
-
-extern int Hero_TryMoveStateL14(int a, int b);
 
 extern int func_001F9908(int *);
 

@@ -30,6 +30,9 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "game/system/memcard.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/spawner_and_chase_enemies.h"
+#include "overlays/shared/gadgebot_containers_and_frog.h"
+#include "overlays/l10_orxon/platforms_doors_and_bombthrower.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -161,8 +164,6 @@ extern s32 is_moby_in_class_range_500_to_540(s32);
 extern s32 truncate_float_to_s32(f32);
 
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-
-extern void activate_waiting_moby_group_members(unsigned char *m);
 
 extern int fast_dec_timer(void *);
 extern float vec_distance_xy(void *, void *);
@@ -1274,7 +1275,7 @@ extern float SpringTurn(float *vel, float cur, float target, float k, float d, f
 
 extern int IsFrameWithinWindow(char *, float);
 
-extern char *create_rocket(void *vel, void *pos, int a, int b, int c, float scale);
+extern char *create_rocket_v(void *vel, void *pos, int a, int b, int c, float scale) __asm__("func_L10_002CD578");
 extern void ClampVectorLength(void *, float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
@@ -1406,7 +1407,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
                     FastVecScale(&E, &B, multiply_global_factor(3.0f));
                     add_vectors(&D, &E, &C);
                     emit_radial_particle_burst(m, &E, 0);
-                    create_rocket(&B, &C, (int)m, (int)tgt, scale_ticks(300), 1.0f);
+                    create_rocket_v(&B, &C, (int)m, (int)tgt, scale_ticks(300), 1.0f);
                 }
             } else if (m->b52 == 3 && m->b53 != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(10));
@@ -1523,7 +1524,6 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern void RerollEffectCounter(void *, short *);
 
 extern void StepColorFade(void *, void *);
-extern void select_hero_or_gadgebot_target(float, void *, void *);
 
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern char *orxon_paths[];
@@ -1917,7 +1917,7 @@ extern LevelState_e9648 orxon_collected_flags_base;
    delete the targets and set the saved-collected bits); the meaning of spawn_class_4ea_projectile and of the
    0x4/0x8/0xC/0x14 data slots is guessed, the operations follow the assembly. */
 extern float SpringTurn(float *, float, float, float, float, float);
-extern int spawn_class_4ea_projectile(void *, void *, void *, int);
+
 #define FIRST ((char *)D_L10_00160058)
 #define GPT ((char *)D_L10_00160058)
 

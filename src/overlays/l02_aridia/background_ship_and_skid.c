@@ -31,6 +31,9 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/shot_tracking.h"
+#include "asm_functions/level_02.h"
+#include "overlays/l02_aridia/hud_frame_and_sky_shells.h"
+#include "overlays/l02_aridia/sand_shark.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -516,9 +519,6 @@ void SkidMcMarxAridiaUpdate(char *m) {
 extern char gHeroPos[];
 extern char *aridia_mobys MACRO_ADDR;
 
-extern void update_hud_counter_transition(void);
-extern void draw_hud_counter(void);
-
 /* Three-state controller (data+0x180): 0 waits for its trigger, 1 runs timed effects until released, then moves the
    moby to its spawn point, sets the two linked mobys' flags and enters state 2.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/entities/002e0dc0.c, FUN_L02_002e1fb8. */
@@ -736,7 +736,7 @@ extern char aridia_ocean_zone1_part2[];
 extern char aridia_ocean_zone1_part3[];
 extern char aridia_ocean_zone1_part4[];
 extern char aridia_ocean_frame_state[];
-extern void func_L02_002A59F8(float, float, float, float, int, int, int, int, int, int, void *);
+
 extern void prepare_scaled_table_on_stack_r(void) __asm__("func_L02_002A59D8");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void RefreshPointLight_r(void *) __asm__("func_00202790");
@@ -766,8 +766,6 @@ void func_L02_002EB480_r(Moby *m) {
     }
     prepare_scaled_table_on_stack_r();
 }
-extern void prepare_scaled_table_on_stack(float);
-extern void draw_aridia_ocean_parts(void);
 
 /* Aridia ocean update: sets the ocean speed once, then queues its draw callback each frame. */
 void ocean_aridia_update(unsigned char *moby) {

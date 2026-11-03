@@ -36,6 +36,9 @@
 #include "core/libc/sprintf.h"
 #include "overlays/shared/blarg_commander.h"
 #include "overlays/shared/debug_menu_and_text.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
+#include "overlays/l15_quartu/moby_sphere_collision.h"
+#include "overlays/l15_quartu/scientist_and_hint_triggers.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -1079,7 +1082,7 @@ typedef struct {
 } SteeringVars_4f88;
 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern void move_moby_with_sphere_collision(float, float, struct Moby *, void *, int);
+
 /* Steers a flying moby toward goal while facing look. */
 void steer_helicopter(struct Moby *moby, Vec4 *goal, Vec4 *look) {
     Vec4 target;
@@ -1337,8 +1340,6 @@ typedef int u128_6950 __attribute__((mode(TI)));
 
 extern void FindNearestTargetMoby(void *, float *, float);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-
-extern char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, float f);
 
 extern void set_ground_height_band(void *);
 
@@ -1945,8 +1946,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
 extern int fast_dec_timer(int *);
 extern int IsFrameWithinWindow(char *, float);
-
-extern char *func_L10_002CD578(void *vel, float scale, void *pos, int a, int b, int c);
 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
@@ -2818,8 +2817,6 @@ void PoisonVesselUpdate(Moby *moby) {
     }
 }
 
-extern void emit_moby_sprite_particles(char *);
-
 extern float bolt_grabber_scale SDATA(bolt_grabber_scale);
 extern unsigned char race_gates_base[];
 extern int quartu_dialogue_message_duration MACRO_ADDR;
@@ -3266,7 +3263,6 @@ extern int quartu_codebot_slot_done;
 extern unsigned char special_items_base[];
 extern void set_moby_list_visibility(int, int);
 
-extern int can_spawn_codebot_slot_effect(int);
 extern char *spawn_codebot_slot_effect(char *pos, char *vec);
 extern int count_missing_or_dying_mobys_in_list(int);
 

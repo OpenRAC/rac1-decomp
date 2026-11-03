@@ -36,6 +36,11 @@
 #include "game/system/stub.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/animation_frame_range.h"
+#include "overlays/l17_fleet/robot_dog_and_shuttle.h"
+#include "overlays/l17_fleet/hero_idle_and_items.h"
+#include "overlays/l17_fleet/trail_particles.h"
+#include "overlays/l17_fleet/moby_class_flag_update.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -122,8 +127,6 @@ struct MagnetElevatorVars {
 };
 
 typedef int v128 __attribute__((mode(TI)));
-extern float animation_start(int a, unsigned int b);
-extern float animation_end(int a, unsigned int b);
 
 extern int coll_line(void *, void *, int, void *, void *);
 
@@ -132,8 +135,6 @@ extern void lerp_vector(void *, void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int FastBSphereCheck(char *, float);
-
-extern unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec);
 
 extern void draw_fleet_beam_quad(char *moby);
 extern char *fleet_camera_points MACRO_ADDR;
@@ -404,7 +405,6 @@ extern char *spawn_class_558_moby_toward_target(char *src, char *pos, float *v, 
 extern void FindNearestTargetMoby(void *, void *, float);
 extern int fast_dec_timer(void *);
 
-extern char *try_activate_blarg_ship_from_list(int list);
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
 
@@ -1172,7 +1172,7 @@ void StopsPlatformUpdate(char *m) {
             break;
     }
 }
-extern unsigned char *create_drone_flight_trail_record(char *pos, int mode, int step);
+
 extern int coll_sphere(float, void *, int, void *);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern char fleet_coll_hit_result[];
@@ -1892,7 +1892,7 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
     FastVecAdd(d, a, moby + 0x10);
     project_world_point_to_screen_pixels(d, obj + 0xE0, obj + 0xE4, 0);
 }
-extern int spawn_ship_rocket(void *, void *, int, void *, float, int);
+extern int spawn_ship_rocket_v(void *, void *, int, void *, float, int) __asm__("func_L13_002E7E90");
 extern float fleet_jet_rocket_speed SDATA(fleet_jet_rocket_speed);
 extern int fleet_jet_rocket_fire_delay SDATA(fleet_jet_rocket_fire_delay);
 
@@ -1927,8 +1927,8 @@ void try_fire_fighter_jet_rocket(char *moby, char *ship_vars) {
             FastVecAdd(projectile_spawn_position, projectile_spawn_position, projectile_spawn_offset);
             projectile_scale = fleet_jet_rocket_speed * fleet_frame_scale;
             scaled_frame_count = scale_ticks(300);
-            if (spawn_ship_rocket(moby, projectile_spawn_position, ((FighterJetVars *)ship_vars)->rocket_target,
-                                  projectile_initial_rotation, projectile_scale, scaled_frame_count)) {
+            if (spawn_ship_rocket_v(moby, projectile_spawn_position, ((FighterJetVars *)ship_vars)->rocket_target,
+                                    projectile_initial_rotation, projectile_scale, scaled_frame_count)) {
                 Moby_PlaySound(2, 0, (int)moby);
                 hero->ship_ammo -= 1;
                 ((FighterJetVars *)ship_vars)->fire_timer = fleet_jet_rocket_fire_delay;
@@ -2309,11 +2309,8 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
                                                -FastAddRots(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
 
-extern int HeroL17_SetMoveState(int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-
-extern void update_moby_class_flags_and_link(int, int, int, int);
 
 extern int try_set_help_message(int, int);
 
@@ -3151,14 +3148,10 @@ typedef struct {
     int c2B8;
     int c2BC;
 } Vars1382;
-extern void update_robot_dog_hit_reaction_and_target_detection(void *, int);
-extern void update_robot_dog_aim_joint(void *);
-extern void update_robot_dog_glow_effects(void *);
 
 extern void set_ground_height_band(void *);
 
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern int move_robot_dog_toward_position(char *moby, float *target, float speed);
 
 extern int mine_fall(void *, void *);
 

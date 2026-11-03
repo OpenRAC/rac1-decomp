@@ -14,6 +14,7 @@
 #include "core/gs/put_draw_env.h"
 #include "core/cdvd/read.h"
 #include "core/mc/memory_card.h"
+#include "core/libc/find_substring.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
@@ -370,8 +371,6 @@ extern s32 gBolts MACRO_ADDR;
 extern u8 D_0013D5C8[];
 extern u8 items_acquired[];
 extern u8 gSpecialItems[];
-
-extern char *find_substring(char *, char *);
 
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2);
 

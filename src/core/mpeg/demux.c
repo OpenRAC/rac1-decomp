@@ -6,6 +6,7 @@
 #include "asm_functions/executable.h"
 #include "core/mpeg/csc.h"
 #include "core/mpeg/ipu.h"
+#include "core/mpeg/ipu_dma_restart.h"
 
 /*
  * core_text object 0x12AC80-0x12CC70. Boundaries are retail's linker fill
@@ -498,8 +499,6 @@ extern void mpeg_clear_once(void *);
 
 extern int sce_mpeg_clear_ref_buff(void *);
 extern void mpeg_work_area_set_mark(void *);
-extern void mpeg_stop_ipu_dma(void);
-extern void mpeg_restart_ipu_dma(void);
 
 /*
  * sceMpegCreate (libmpeg.a:mpeg.o): clear the caller's work area

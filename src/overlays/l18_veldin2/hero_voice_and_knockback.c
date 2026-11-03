@@ -17,12 +17,11 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/l18_veldin2/hero_idle_and_items.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void HeroL18_SetMoveState(int, int);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void HeroL18_UpdateStateFlags(void) {
@@ -179,8 +178,6 @@ extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
-
-void HeroL18_SetMoveState(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/ui_help_00213b40.c, FUN_L18_00218a90. */
 s32 HeroL18_TryTakeHit(s32 arg) {

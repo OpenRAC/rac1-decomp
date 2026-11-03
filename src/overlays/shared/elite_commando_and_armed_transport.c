@@ -23,6 +23,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/sentrybot.h"
+#include "overlays/l16_kalebo3/gadgetron_ceo_and_env_maps.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -182,8 +184,6 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
     return moby;
 }
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-
-extern void spawn_rocket_trail_spark(char *);
 
 extern float vec_length_xy(void *);
 
@@ -1595,7 +1595,7 @@ void group_trigger_nearest(int idx) {
         }
     }
 }
-extern void draw_level16_reflection_mesh_batch(void);
+
 /* Draw-only moby update: after init, queue the reflection mesh draw every frame. */
 void moby_update_draw_only(unsigned char *moby) {
     switch (moby[0x20]) {

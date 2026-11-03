@@ -402,8 +402,6 @@ extern float hoven_hero_ledge_shimmy_frame_speeds[];
 
 extern int fast_dec_timer(int *);
 
-extern int hero_get_gadget_anim_id(int);
-
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 

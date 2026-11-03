@@ -1,6 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "core/libc/strtol.h"
+#include "core/libc/lseek_malloc.h"
 
 /*
  * core_text object 0x112380-0x112468. Boundaries are retail's linker fill
@@ -15,7 +16,6 @@ int libc_atoi(int arg0) {
     return (int)strtol(arg0, 0, 10);
 }
 
-extern void *_malloc_r(void *, unsigned int);          /* _malloc_r */
 extern void *libc_memset_c(void *, int, unsigned int) __asm__("func_001153FC"); /* memset */
 
 /* newlib's MALLOC_ZERO (mallocr.c, dlmalloc 2.6.5, public domain),

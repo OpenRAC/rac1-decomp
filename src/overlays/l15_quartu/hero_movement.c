@@ -36,13 +36,12 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/l15_quartu/hero_idle_animation.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void HeroQuartu_TrySetMoveState(int, int);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void Hero_UpdateAimFlags(void) {
@@ -195,8 +194,6 @@ extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
-
-void HeroQuartu_TrySetMoveState(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/ui_help_002044c8.c, FUN_L15_00208e10. */
 s32 process_hero_incoming_hit(s32 arg) {

@@ -21,6 +21,7 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/l02_aridia/hero_idle_and_item_input.h"
+#include "overlays/l02_aridia/hero_movement.h"
 extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
@@ -52,8 +53,6 @@ void update_hero_stick_target_magnitude(void) {
 typedef int Q_222D18 __attribute__((mode(TI)));
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void Hero_UpdateGroundContact(void);
 
 extern float vec_length_xy(void *);
 

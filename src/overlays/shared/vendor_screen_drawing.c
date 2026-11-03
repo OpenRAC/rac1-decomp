@@ -17,6 +17,7 @@
 #include "overlays/shared/draw_buffers_and_walker_gait.h"
 #include "overlays/shared/debug_menu_and_text.h"
 #include "game/ui/vendor.h"
+#include "overlays/shared/vendor_menu.h"
 
 extern void *libc_memset(void *, int, int);
 
@@ -408,7 +409,7 @@ extern void VU1_swapChain_r(void) __asm__("func_00234948");
 extern void InitMobyInstance_r(void *, s32) __asm__("func_0020D440");
 
 extern void pack_render_command_fields_r(void *, s32, s32, s32, s32) __asm__("func_0020E340");
-extern void func_L00_0029C9E8(void);
+
 extern void FastMemZero16_r(void *, s32) __asm__("func_001F99D8");
 extern s32 func_00217628(void *, s32, s32);
 

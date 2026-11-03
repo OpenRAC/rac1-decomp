@@ -29,6 +29,7 @@
 #include "game/audio/music.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
 #include "overlays/shared/radial_particle_burst.h"
+#include "overlays/shared/type_31_particle.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -89,9 +90,6 @@ struct FallingMobyVars {
     s32 fade_total; /* 0x20: full fade time */
     s32 fade_timer; /* 0x24: ticks left */
 };
-
-extern void textured_grid_transform_cells(char *);
-extern void textured_grid_build_gif_packet(char *);
 
 extern char kerwan_spr_upload_block[];
 
@@ -1648,7 +1646,6 @@ extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void create_type_31_part(void *, void *, void *, void *, int);
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);

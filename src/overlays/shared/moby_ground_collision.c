@@ -20,6 +20,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "core/vu0/vector.h"
 extern char gold_weapon_purchased[];
 
 extern int func_001160D8(void);
@@ -1351,7 +1352,7 @@ extern void f_vadd_BCF8(void *, void *, void *) __asm__("func_001F9BD8");
 extern void f_vsub_BCF8(void *, void *, void *) __asm__("func_001F9BF0");
 extern void f_vscale_BCF8(float, void *, void *) __asm__("func_001F9C30");
 extern void func_001F9C48(float, void *, void *);
-extern void func_00125328(float, void *, void *);
+
 extern float f_vlen_BCF8(void *) __asm__("func_001F9CB8");
 extern float f_sqrt_BCF8(float) __asm__("func_001F9B50");
 extern void f_vrot_BCF8(void *, void *, void *) __asm__("func_001F9EC0");

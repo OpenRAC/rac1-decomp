@@ -36,6 +36,7 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
+#include "overlays/l05_rilgar/electric_gate.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -2299,7 +2300,7 @@ typedef struct {
     char _pad00[0x10];
     unsigned char nframes; /* 0x10 */
 } AnimSeq_065D0;
-extern void *select_candidate_by_max_float_2c(void *, void *, void *, int);
+
 extern void ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void SetDeathBits(void *, int, int);
@@ -3145,9 +3146,6 @@ extern float rilgar_flood_water_z SDATA(rilgar_flood_water_z);
 extern int rilgar_flood_checkpoint_reached SDATA(rilgar_flood_checkpoint_reached);
 extern float rilgar_water_gate_accel SDATA(rilgar_water_gate_accel);
 extern float rilgar_water_gate_max_speed SDATA(rilgar_water_gate_max_speed);
-
-extern void RipplePatch_ToFixedPoint(float *, int *);
-extern void record_grid_entry_neighbor_indices(int);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void synchronize_group_water_heights(char *);

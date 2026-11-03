@@ -673,8 +673,6 @@ void transport_ship_update(void *m) {
 }
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern void initialize_leg_rig_angle_defaults(void *, char *);
-extern void initialize_leg_rig(void *, char *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/002ca420.c, FUN_L04_002d1418. */
 void initialize_woodcut_bot_movement_data(void *m) {
@@ -777,8 +775,6 @@ extern void initialize_woodcut_bot_movement_data(void *);
 extern void *libc_memset(void *, int, int);
 
 extern int IsFrameWithinWindow(void *, float);
-
-extern int leg_walker_update(void *, void *, float, float, float);
 
 extern float SpringTurn(float, float, void *, float, float, float);
 extern int mine_fall(void *, void *);

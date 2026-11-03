@@ -25,6 +25,10 @@
 #include "core/gs/load_image.h"
 #include "game/render/tiefunc.h"
 #include "game/system/stash.h"
+#include "game/render/tfragfunc.h"
+#include "game/render/shrubfunc.h"
+#include "game/system/bmain.h"
+#include "game/gameplay/freeze.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -1105,14 +1109,6 @@ extern u64 GetEffectTex();
 
 extern s32 truncate_float_to_s32(f32);
 
-extern s32 draw_freeze_message_box();
-
-extern s32 patch_shrub_gifs();
-extern void DrawShrubs();
-
-extern s32 PatchTfragGifs();
-extern void DrawTfrag();
-
 extern s32 VU1_addGSregister_r() __asm__("func_00234C98");
 
 void Transition_DefaultDraw(s32 *arg0);
@@ -1289,7 +1285,7 @@ extern s32 is_active_BB48(s32, s32) __asm__("func_001EBAF0");
 
 extern void update_gameplay_BB48(void) __asm__("func_001EB458");
 extern void default_draw_BB48(void) __asm__("func_001EB7C0");
-extern void func_001E9808(s32);
+
 extern void parse_space_scene_BB48(s32) __asm__("func_00205220");
 extern void vu1_init_chain_BB48(void) __asm__("func_002348E8");
 extern void fade_to_black_BB48(s32) __asm__("func_001F4E08");

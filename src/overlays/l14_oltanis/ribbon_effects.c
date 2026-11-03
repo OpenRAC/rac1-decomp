@@ -12,10 +12,9 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
+#include "overlays/l14_oltanis/wind_lightning_and_taxi.h"
 
 struct Moby;
-
-void draw_ribbon_effect(char *m);
 
 typedef struct RibbonPoint {
     f32 x;                              /* 0x00 */

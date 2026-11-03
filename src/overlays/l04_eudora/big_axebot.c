@@ -26,6 +26,9 @@
 #include "game/system/stub.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/radial_particle_burst.h"
+#include "overlays/l04_eudora/polygon_edge_collision.h"
+#include "overlays/l04_eudora/snow_plow_and_woodcut_bot.h"
+#include "asm_functions/level_04.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -178,7 +181,6 @@ extern void *libc_memset(void *, int, unsigned int);
 
 extern float vec_distance_xy(float *, float *);
 
-extern void update_moby_movement_with_sphere_collision(f32, struct PMoby *, void *, void *);
 extern struct Path5BD0 *eudora_paths[];
 extern f32 eudora_swarm_steer_params[8];
 extern int eudora_swarm_initialized SDATA(eudora_swarm_initialized);
@@ -543,8 +545,6 @@ extern void *libc_memset(void *, int, unsigned int);
 
 extern float SpringTurn(float cur, float target, float *vel, float k, float d, float max);
 
-extern void leg_walker_update(void *, void *, float, float, float);
-
 extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
 
 extern int mine_fall(void *, void *);
@@ -552,8 +552,6 @@ extern int mine_fall(void *, void *);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void StepColorFade(void *, void *);
 extern void fast_dec_timer(int *arg0);
-
-extern void *spawn_axe_moby(void *, void *);
 
 extern float eudora_camera_pos[4];
 extern int eudora_game_mode MACRO_ADDR;
@@ -1534,7 +1532,6 @@ typedef struct {
     int f18;
 } G_35F0;
 
-extern void update_circular_saw_engine_sound(void *);
 extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 extern void vec_scale_to_length(void *, void *, float);
@@ -2256,7 +2253,6 @@ extern int MoveKeepingOverGround_o(void *, void *, void *, float, float, float, 
                                    int) __asm__("func_L00_002594C8");
 
 extern float vec_length_xy(void *);
-extern void spawn_class_b8_projectile(void *, void *, void *, int);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 

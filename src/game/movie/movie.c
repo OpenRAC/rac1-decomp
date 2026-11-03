@@ -12,6 +12,9 @@
 #include "game/movie/videodec.h"
 #include "game/movie/audiodec.h"
 #include "game/movie/readbuf.h"
+#include "game/movie/vobuf.h"
+#include "game/movie/strfile.h"
+#include "game/movie/disp.h"
 
 extern int decoder_buffer_address MACRO_ADDR;
 extern int movie_play_step MACRO_ADDR;
@@ -54,16 +57,9 @@ typedef struct MvGlobals {
 } __attribute__((aligned(16))) MvGlobals;
 extern MvGlobals voice_pool;
 
-extern int read_cd_stream_sectors(int *, int, int, int);
-
 extern void proceedAudio(void);
 
 extern int sce_mpeg_demux_pss_ring_buffer(char *, int, int, char *, int);
-
-extern int voBufIsFull(char *);
-extern void startDisplay(int);
-
-extern void endDisplay(void);
 
 /* No recovered name. Playback loop: feeds file data (*file bytes) through the
  * read buffer at `rb` into the video decoder `vd`, starts audio and display once
@@ -203,10 +199,6 @@ extern char movie_open_error_text[];
 extern char gp_base[] MACRO_ADDR;
 extern void sce_mpeg_init(void);
 
-extern void voBufCreate(void *, int, int, int);
-
-extern int set_state_fields(void *, int, int);
-
 extern int enable_dmac_atomic(int);
 extern void vblankHandler();
 extern void handler_endimage();
@@ -254,9 +246,6 @@ int initAll(int stream_source, int source_mode, int callback_context) {
 }
 extern int movie_thread_gp SDATA(D_00161310);
 
-extern void voBufDelete(char *);
-
-extern int get_state_callback_result(char *);
 /* termAll(void): shuts down workers and decoders, then clears the DMA enable bit. */
 void termAll(void) {
     sce_cd_sync_s(0);

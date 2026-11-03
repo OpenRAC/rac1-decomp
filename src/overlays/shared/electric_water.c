@@ -32,6 +32,8 @@
 #include "overlays/shared/walloper_and_beam_effects.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
 #include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/sentrybot.h"
+#include "overlays/l15_quartu/gates_helicopters_ultramechs.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -111,8 +113,6 @@ extern float quartu_fog_far_intensity MACRO_ADDR;
 extern void reset_electric_water_switch(char *);
 
 extern int truncate_float_to_s32(float);
-
-extern int hero_is_near_ground(void);
 
 extern void initialize_electric_water_bolt_effect(char *);
 extern void update_electric_water_bolt_effect(Moby *);
@@ -978,7 +978,7 @@ extern int fast_dec_timer(void *);
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
 extern void SpawnExplosionFx_v(void *, void *, float, float, int) __asm__("func_L00_00260108");
 
-extern void spawn_moby_point_offset_particle(void *, float, int, float);
+extern void spawn_moby_point_offset_particle_v(void *, float, int, float) __asm__("func_L07_0029C6A8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002e4380. */
 void update_spinning_projectile(unsigned char *m) {
@@ -1010,7 +1010,7 @@ void update_spinning_projectile(unsigned char *m) {
     }
     qcopy(m + 0x10, next);
     if (quartu_frame_count % 3 == 0)
-        spawn_moby_point_offset_particle(m, 30000.0f, 0, 0.1f);
+        spawn_moby_point_offset_particle_v(m, 30000.0f, 0, 0.1f);
 }
 
 extern float vec_length_xy(void *);
@@ -1207,7 +1207,6 @@ void underwater_ring_update(unsigned char *moby) {
 }
 
 extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
-extern void draw_moby_radial_ripple_mesh_buffers(void);
 
 // First call sets up and marks the moby; later calls queue a draw callback and set a flag.
 void ripple_strips_moby_update(struct Moby *moby) {

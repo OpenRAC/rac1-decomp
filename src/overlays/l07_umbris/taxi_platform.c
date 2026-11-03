@@ -33,6 +33,12 @@
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
 #include "game/system/space.h"
+#include "overlays/shared/ripple_patches.h"
+#include "asm_functions/level_07.h"
+#include "overlays/shared/projectile_expiry_particles.h"
+#include "overlays/l07_umbris/menu_cache_entry.h"
+#include "overlays/l07_umbris/moby_group_first.h"
+#include "overlays/shared/pivot_reorientation.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -494,7 +500,7 @@ extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L07_00270BE0(int x, int y0, int w, int h);
+
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
 
 extern void initialize_global_state_entry_r(int) __asm__("func_0022F4A0");
@@ -1237,11 +1243,10 @@ extern char discount_purchase_pricing[];
 extern void RipplePatchesInit_r(void *, int) __asm__("func_L01_002B8C00");
 extern void func_L01_002B90A8(float);
 
-extern void func_L01_002B8E20(void *, void *);
 extern void func_L01_002B9440(void *, int, float, float, float, float);
 extern void initialize_level07_water_grid_neighbors_r(int) __asm__("func_L07_0030E128");
 extern void set_moby_list_state_r(int, int) __asm__("func_L01_0026F090");
-extern int func_L07_00282EB0(void *, int, int, int);
+
 extern float func_00214D28(float *, float, float);
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 
@@ -2087,7 +2092,7 @@ char *spawn_moby_class_1049(char *pos, char *vec, int arg) {
     return m;
 }
 extern char *debris_target_p __asm__("D_L07_00173F58");
-extern void spawn_moby_point_offset_particle(char *, int, float, float);
+
 extern int coll_line(void *, void *, int, int, int);
 extern int coll_sphere_f(float, void *, int, int) __asm__("func_L00_001F10E0");
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -2245,8 +2250,7 @@ void func_L07_0030FC38_r(void *moby, LaunchParams_30FC38 *l, Vec4f *dir) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void start_sharkigator_hit_knockback(void *, void *, void *);
-extern void start_sharkigator_death_knockback(void *, void *, void *);
+
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, short *);
 
@@ -3204,8 +3208,6 @@ extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-
-extern void func_L07_00289960(void *, void *, void *, void *, void *);
 
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");

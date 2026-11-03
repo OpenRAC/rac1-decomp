@@ -33,6 +33,9 @@
 #include "overlays/shared/gold_bolts_and_teleporters.h"
 #include "asm_functions/level_01.h"
 #include "game/system/space.h"
+#include "overlays/shared/moby_context_table.h"
+#include "overlays/l01_novalis/spark_particles.h"
+#include "overlays/shared/tracked_moby_show.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -748,11 +751,9 @@ extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
 extern void queue_planet_unlock_message_r(int) __asm__("func_L00_00263DB0");
-extern void func_L01_0029C2A0(void *, int, void *, int, void *);
+
 extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
-
-extern void func_L01_002A3680(void);
 
 /* Agnogg ship update (moby classes 730, 731, 790 on level 01): state machine on moby->state. */
 void agnogg_ship_front_update(Moby *moby) {
@@ -1064,13 +1065,10 @@ extern PoolTile *pool_draw_tiles MACRO_ADDR;
 extern u8 *pool_draw_tex MACRO_ADDR;
 extern s32 pool_draw_count MACRO_ADDR;
 
-extern void RipplePatch_ToFixedPoint(void *, void *);
-
 extern void pool_ripple(f32, f32, f32, f32, void *, s32);
 
 extern char *pool_drip(void *position, float scale);
-extern void pool_bubble(void *, void *, f32);
-extern void pool_bubbles(void *, void *, f32, f32);
+
 extern u8 novalis_water_tint_r[4] MACRO_ADDR;
 extern u8 novalis_water_tint_g[4] MACRO_ADDR;
 extern u8 novalis_water_tint_b[4] MACRO_ADDR;

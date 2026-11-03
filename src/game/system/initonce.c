@@ -17,6 +17,10 @@
 #include "core/gs/load_image.h"
 #include "game/system/stash.h"
 #include "core/mpeg/ipu.h"
+#include "core/sif/reset_iop.h"
+#include "core/storage/wad.h"
+#include "game/system/init.h"
+#include "game/system/bloaders.h"
 
 /*
  * initonce.cpp in the original source; text 0x201E10-0x202260.
@@ -58,24 +62,13 @@ void InitMemSlots(void) {
     level_resource_buffers[10] = 0x7200000;
 }
 
-extern int sce_sif_reboot_iop(void *);
-extern int sce_sif_sync_iop(void);
-
 extern void sceSifInitRpc(int);
 
 extern void sce_sif_init_iop_heap(void);
 
 extern int sce_fs_reset(void);
-extern int wad_GetSectors_FiiPv(int lba, int sectors, void *buf);
 
-extern int load_disc_sectors_into_global_buffer(void);
-
-extern int LoadIRXModule(void *arg0, void *arg1);
 extern void init_pads(void);
-
-extern int sceGsSyncVCallback(void *arg0);
-
-extern void LoadDebugFont(void);
 
 extern char iop_reboot_image_path[]; /* "cdrom0:\\IOPRP243.IMG;1" */
 extern char rebooted_iop_message[]; /* "Rebooted IOP\n" */

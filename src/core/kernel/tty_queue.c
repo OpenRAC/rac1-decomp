@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/kernel/threads_deci2.h"
 
 /*
  * core_text object 0x119868-0x119D88. Boundaries are retail's linker fill
@@ -169,9 +170,6 @@ struct Mmio {
 };
 extern struct TtyState tty_info_r __asm__("D_00154B50");
 extern u8 tty_send_packet[];
-extern s32 sceDeci2ReqSend(s32, s32);
-
-extern void sceDeci2Poll(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/debug/sce_tty_write.c, sceTtyWrite. */
 s32 sceTtyWrite(s8 *text, s32 text_len) {

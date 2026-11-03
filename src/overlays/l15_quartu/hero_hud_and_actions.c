@@ -33,6 +33,8 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "overlays/l15_quartu/hero_idle_animation.h"
+#include "overlays/l15_quartu/hero_movement.h"
 
 typedef struct {
     char p0[0x160];
@@ -66,10 +68,6 @@ extern HeroIdleFidget quartu_idle_fidgets[];
 extern HeroItemDefView quartu_item_defs[];
 extern HeroAttackRecord quartu_attack_records[];
 extern HeroSpeedBands quartu_hero_speed_bands;
-
-extern int process_hero_incoming_hit(int);
-
-extern int HeroQuartu_TrySetMoveState(int, int);
 
 extern int func_001F9908(int *);
 

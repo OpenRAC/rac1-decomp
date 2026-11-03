@@ -19,6 +19,9 @@
 #include "core/gs/put_draw_env.h"
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/draw_buffers_and_walker_gait.h"
+#include "overlays/shared/pause_menu.h"
+#include "game/gameplay/freeze.h"
+#include "overlays/shared/global_state_pointer.h"
 extern Hero g_hero;
 extern int frame_size;
 extern char gold_weapon_purchased[];
@@ -1359,9 +1362,6 @@ void draw_debug_profiler_if_enabled(void) {
         DrawDebugProfiler();
     }
 }
-extern int get_global_state_pointer(void);
-extern void draw_pause_menu_pages(int);
-extern void draw_freeze_message_box(void);
 
 /* Debug-overlay render hook: in overlay mode 0 sets up the large font and draws the profiler, in mode 3 draws the
    pause-menu pages; draw_freeze_message_box runs either way. Nothing while skip_frame (loading) is set. */

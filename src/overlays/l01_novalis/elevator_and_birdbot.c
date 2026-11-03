@@ -32,6 +32,9 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/l01_novalis/hero_idle_and_items.h"
 #include "asm_functions/level_01.h"
+#include "overlays/l01_novalis/spark_particles.h"
+#include "overlays/l01_novalis/rocks_and_sandmouse.h"
+#include "overlays/l01_novalis/range_centered_on_value.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -198,7 +201,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
 extern int FastBSphereCheck(void *, f32);
 
-extern void create_spark_particle(void *, void *, f32, f32, f32, f32, f32, f32, f32, f32, f32, s32, u8, u8, u8);
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 
 f32 func_001FA748_BE2C8b(f32 a, f32 b) __asm__("func_001FA748");
@@ -617,8 +619,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_length_xy(void *);
 
-extern char *spawn_colored_half_scale_moby(void *, void *, void *, float, float, int);
-
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern int mine_fall(void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
@@ -627,7 +627,6 @@ extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, f
 extern void SetDeathBits(void *, int, int);
 
 extern void StepColorFade(void *, void *);
-extern void set_range_centered_on_value(char *arg, float value);
 
 /* Birdbot update: follows its path, turns on and shoots at the hero, flees when hurt, and blows up when it dies or
    leaves the level. */
@@ -2152,8 +2151,6 @@ void cave_door_update(char *m) {
 extern short novalis_tethered_mine_min_scale, novalis_tethered_mine_far_distance, novalis_tethered_mine_near_distance;
 extern unsigned char menu_item_enabled_115_k __asm__("D_0013D50F") NOT_SDA;
 extern void PlayBankSound(int, int, int);
-
-extern void SpawnDebrisMoby(char *, void *, float);
 
 /* Floating mine: scales with the camera distance; when hit it explodes (unlocks the first-mine hint
  * once), deletes its four tethers and itself; otherwise it bobs and fades out with height. */

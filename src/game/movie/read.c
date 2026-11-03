@@ -2,13 +2,12 @@
 #include "structs/misc.h"
 #include "game/movie/videodec.h"
 #include "game/movie/audiodec.h"
+#include "game/movie/movie.h"
 
 extern char *decoder_state MACRO_ADDR;
 extern char str_pts_buffer_overflow[];
 
 extern int cpy2area(char *, int, char *, int, char *, int, char *, int);
-
-extern void ErrMessage(void *);
 
 /* Copies wrapped input into free decoder spans, records timestamps, then submits the copied bytes. */
 int videoCallback(void *unused, char *entry, char *buffer) {

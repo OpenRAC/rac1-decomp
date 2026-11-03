@@ -30,6 +30,11 @@
 #include "game/system/stub.h"
 #include "overlays/shared/follow_camera.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "asm_functions/level_14.h"
+#include "overlays/shared/plasmabot.h"
+#include "overlays/l14_oltanis/wind_lightning_and_taxi.h"
+#include "overlays/l14_oltanis/bolt_thief_and_path_cameras.h"
+#include "overlays/l14_oltanis/ribbon_effects.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -1773,7 +1778,6 @@ extern void MobySetAnimation_r(void *, int, int) __asm__("func_00213D28");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int func_L00_00260D30(void *, void *, float);
-extern char *func_L14_002EE150(void *, float *, int, int);
 
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -2233,18 +2237,15 @@ extern void update_minibomber_target(char *moby);
 extern void ease_minibomber_position_and_heading(char *moby, float *target, float a, float b, float c, float d, float e,
                                                  float f, float g);
 extern void update_minibomber_oscillation(char *moby);
-extern void emit_minibomber_exhaust_puffs(char *m);
 
 extern void initialize_minibomber_path_segment_lengths(char *moby);
 extern void hide_minibomber_and_release_voice(char *moby);
 
-extern void initialize_minibomber_path_following(char *moby);
 extern int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, float *v, float *vel, float f12,
                                          float f13, float f14, float f15, float f16, float f17, float f18);
 
-extern void initialize_minibomber_path_retrace(char *moby);
 extern int IsFrameWithinWindow(void *, float);
-extern char *func_L14_00302968(int a0, float *a1, float *a2, float f, int a3);
+
 extern void emit_minibomber_bomb_release_effects(char *m, float *input, float angle);
 extern unsigned char *spawn_flying_debris(char *owner, float angle, char *posp);
 extern void func_L00_0025F4A8_2B5938(void *, void *, void *, float, float, int, int, int, float, float, float, float,
@@ -3115,8 +3116,6 @@ extern s32 level14_racer_exit_debris_path_initialization_scale_gp
 extern int fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 extern void MobySetAnimation_r3(struct Moby *, s32, s32) __asm__("func_00213D28");
 
-extern unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
-extern void spawn_path_or_ballistic_debris(struct Moby *, s32 *, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 void func_L14_002D7668_D7250(struct Moby *m) __asm__("func_L14_002D7668");
@@ -3839,10 +3838,6 @@ void update_platform_tilt_basis(char *moby) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern void initialize_ribbon_effect_state(char *);
-
-extern void register_hero_hit_in_clip_volume(char *);
-
-extern void animate_ribbon_effect_paths(char *);
 
 /* Updates a gem-lock sentry: picks up a sound slot and fires when the player is near. */
 void update_ribbon_effect_moby(char *moby) {

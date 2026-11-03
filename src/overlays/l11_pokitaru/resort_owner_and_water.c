@@ -43,6 +43,9 @@
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/shared/homing_missile_and_water_sheet.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
+#include "overlays/l11_pokitaru/ship_flight_and_oil_tanker.h"
+#include "overlays/l11_pokitaru/hero_idle_animation.h"
+#include "asm_functions/level_11.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -380,7 +383,6 @@ extern void set_ground_height_band(void *);
 extern void update_resort_owner_state_actions(char *);
 extern void apply_resort_owner_movement(void *);
 extern void update_resort_owner_state_transitions(void *);
-extern void update_resort_owner_look_tracking(void *);
 
 /* Per-frame resort owner update: ground band when near the camera, then actions, motion, looks. */
 void resort_owner_update(unsigned char *moby) {
@@ -950,8 +952,6 @@ int try_update_resort_owner_path_target(char *moby, char *other) {
 }
 extern int pokitaru_moby_group_count SDATA(pokitaru_moby_group_count);
 extern int pokitaru_moby_group_count_m __asm__("D_L11_00160074") MACRO_ADDR;
-
-extern int is_moby_in_bob_target_exclusion_state(char *);
 
 /* One target-set entry: the moby group it names, then two bytes of padding. */
 struct TargetSetEntry {
@@ -2722,8 +2722,6 @@ extern int pokitaru_water_tint2_g MACRO_ADDR;
 extern int pokitaru_water_tint2_b MACRO_ADDR;
 extern float pokitaru_camera_pos_z;
 
-extern void RipplePatch_ToFixedPoint(void *, void *);
-
 extern void render_level_11_water_grids(void);
 extern void populate_water_tile_neighbor_indices(int);
 #define D_L11_001DA880_pv ((Ent_pv *)D_L11_001DAB40)
@@ -3018,7 +3016,7 @@ extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void matrix_from_basis_rows_r2(void *, void *) __asm__("func_001FA4A0");
 extern void transform_vector_r2(void *, void *, void *) __asm__("func_001F9EE8");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
-extern void func_L11_0024E240(int, int);
+
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern void update_entity_matrix_r2(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 
@@ -3406,7 +3404,6 @@ void func_L11_00311318_r(struct Moby *m, unsigned char *d, float *t) {
     }
     StepColorFade_r(m, d + 0x60);
 }
-extern void handle_owner_linked_moby_hits(void *, void *, void *);
 
 // Per-tick update of moby class 1219: state machine over states 0 to 4.
 void update_owner_linked_moby_state(unsigned char *moby) {
@@ -3499,8 +3496,7 @@ extern float SteerAngleWithVelocity_r2(float *p, float a, float *v, float b, flo
 extern int IsFrameWithinWindow_r(void *, float) __asm__("func_00215B18");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
-extern void *func_L11_0031A180(void *src, void *pos, int ticks);
-extern void func_L11_0031A308(void *arg, void *src);
+
 extern int func_L00_0025D6F0(void *, void *);
 extern int IsPointInPolygon_r(void *, void *, int) __asm__("func_L00_0025A778");
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
@@ -3694,7 +3690,7 @@ extern int g_hero_moby_r2 __asm__("D_001414D0");
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 extern void vec_scale_to_length_r3(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r5(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_L11_0031A2E8(int, void *);
+
 extern Info *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r2(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");

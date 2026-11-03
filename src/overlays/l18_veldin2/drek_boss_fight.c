@@ -35,6 +35,9 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/l18_veldin2/rockets_and_platforms.h"
 #include "overlays/shared/space_commando_and_door_lock.h"
+#include "asm_functions/level_18.h"
+#include "overlays/l18_veldin2/deplanetizer_and_gadgebots.h"
+#include "overlays/l18_veldin2/flagged_pvar_word.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -98,7 +101,6 @@ extern float veldin2_zero_vec[] MACRO_ADDR;
 extern void apply_linked_moby_relative_transforms_v(char *, void *, int) __asm__("func_L12_0027C368");
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern int fast_dec_timer(int *);
-extern void mark_class_0630_moby_and_child_for_removal(void *);
 
 extern void lerp_vector(void *, void *, void *, float);
 extern int func_001FA898(float);
@@ -232,7 +234,6 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
     }
 }
 extern void mark_block_entries_within_transform_xy_bounds(int, int);
-extern void set_group_class_0630_moby_byte_bc(int, int);
 
 /* Activates a class 0x565 moby in state 1: marks block entries in its bounds and wakes its group. */
 void activate_drek_boss_class_0565_moby(unsigned char *moby) {
@@ -257,8 +258,6 @@ typedef struct {
     char pad33C[8];
     int field344;
 } Level18VendorData;
-
-extern void apply_linked_moby_relative_transforms(Moby *, void *, int);
 
 /* Reset this vendor moby's counters before its per-frame update. */
 void reset_drek_boss_class_0565_moby(Moby *moby) {
@@ -877,7 +876,7 @@ extern int drek_boss_camera_move_hold_ticks SDATA(drek_boss_camera_move_hold_tic
 extern int drek_boss_class_3d7_ticks SDATA(drek_boss_class_3d7_ticks);
 extern void count_drek_boss_platform_event_once(char *moby);
 extern void update_drek_boss_damage_and_phase_transitions(char *moby);
-extern void update_drek_boss_arena_circling_movement(char *moby);
+
 extern void update_drek_boss_hero_follow_movement(char *m);
 extern void update_drek_boss_state_dependent_scalars(char *moby);
 extern void render_drek_boss_joint_glows(char *moby);
@@ -906,8 +905,6 @@ extern float vec_distance_xy(void *, void *);
 
 extern float vec_length_xy(void *);
 
-extern int launch_first_idle_group_gadgebot_1906_moby(int idx, float *pos, float *dir, float speed);
-extern int count_group_gadgebot_1906_mobys_not_in_state_8(int idx);
 /* Parameter order as retail sets the arguments up (the floats before the last integers); the definition of
    launch_mine_568_moby_from_list in vendor_002A8400.c lists its float first, with the same registers. */
 
@@ -1988,7 +1985,6 @@ typedef struct {
     char pad40[0x40];
 } L18Node;
 
-extern void func_L18_00267000(void *, float);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);

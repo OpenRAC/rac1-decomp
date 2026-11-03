@@ -29,6 +29,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/ui/hud.h"
+#include "overlays/l02_aridia/hero_movement.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern MoveUsageTable usage_stats;
@@ -1543,8 +1544,6 @@ extern HeroIdleFidget aridia_idle_fidgets[];
 extern HeroItemDefView aridia_item_defs[];
 extern HeroAttackRecord aridia_attack_records_rec[] __asm__("D_L02_0017C2A8");
 extern HeroSpeedBands aridia_hero_speed_bands;
-
-extern int HeroL02_TryKnockback(int);
 
 extern int HeroL02_SetMoveState(int a, int b);
 

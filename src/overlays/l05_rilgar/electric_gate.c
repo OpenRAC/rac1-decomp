@@ -31,6 +31,8 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/shared/shot_tracking.h"
+#include "overlays/shared/moby_context_table.h"
+#include "overlays/l05_rilgar/velocity_particles.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -742,7 +744,7 @@ void drain_cover_update(Moby *moby) {
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void create_particle_with_velocity_and_lifetime(float, void *, void *, int, int, int);
+
 extern float drain_cover_spray_spacing SDATA(drain_cover_spray_spacing);
 extern float drain_cover_spray_size_min SDATA(drain_cover_spray_size_min);
 extern float drain_cover_spray_size_max SDATA(drain_cover_spray_size_max);
@@ -836,7 +838,6 @@ extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
 
-extern void record_moby_context_bytes(void *, int, void *, int, void *);
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
 extern u8 *PartType53Spawn(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel, f32 f2);
 extern char rilgar_saved_moby_bytes[];
@@ -1018,7 +1019,6 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 
-extern void func_L05_0029CCB8(float, float, float, void *, void *, int, int);
 extern void func_L00_00272770(float, float, void *, void *, void *);
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern short D_0015EE84_165B8 SDATA(D_0015EE84);

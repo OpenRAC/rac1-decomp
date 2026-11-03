@@ -24,6 +24,7 @@
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
 #include "overlays/shared/debug_menu_and_text.h"
+#include "overlays/shared/particle_type_registry.h"
 extern char g_hero[];
 extern char item_available[];
 extern int weapon_ammo_counts[];
@@ -2681,8 +2682,6 @@ extern char tie_class_slot_flags[];
 extern char shrub_class_slot_by_id[];
 extern char shrub_class_slot_records[];
 extern char shrub_class_slot_flags[];
-
-extern void register_part_types(void);
 
 extern void init_level_item_inventory(void);
 

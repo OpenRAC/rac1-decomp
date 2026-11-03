@@ -29,6 +29,12 @@
 #include "core/gs/def_load_image.h"
 #include "core/gs/load_image.h"
 #include "overlays/shared/debug_menu_and_text.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/map_menu_filters.h"
+#include "overlays/shared/light_header_loading.h"
+#include "overlays/shared/level_camera_setup.h"
+#include "overlays/shared/help_message_removal.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -465,14 +471,6 @@ extern void copy_memory_by_alignment_v(void *, void *, int) __asm__("func_L00_00
 extern void scale_vector(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
-
-extern int find_or_assign_bolt_source_slot(int, int);
-
-extern void store_current_level_table_value(int, int);
-
-extern void initialize_moby_state_record(char *);
-
-extern void setup_level_cameras(void);
 
 extern Lvl173F00_422D8 lvl_resource_buffers;
 extern int pal_mode MACRO_ADDR;
@@ -1886,15 +1884,11 @@ extern void Profile_Mark_v(void *, s32) __asm__("func_001E9768");
 
 extern void copy_memory_by_alignment_v(void *, void *, s32) __asm__("func_L00_001FF040");
 
-extern void load_two_int_two_float_header(char *);
-extern void relocate_counted_pointer_table(char *);
 extern char *load_level_texture_bank(char *, s32 *);
 extern void resolve_level_asset_block_pointers(char *);
 extern void print_moby_class_sizes(int *, int);
 extern char *load_level_gameplay(s32);
-extern void restore_or_clear_level_state(void);
 
-extern void link_and_update_all_mobys(UpdD244 *);
 /* level archive load state; the shared header pointer at +4 is level_root */
 extern struct {
     u16 stage;

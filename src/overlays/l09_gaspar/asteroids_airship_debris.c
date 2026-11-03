@@ -33,6 +33,12 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "game/render/partupd.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/scoutbot_and_paratrooper.h"
+#include "overlays/shared/moby_path_advance.h"
+#include "asm_functions/level_09.h"
+#include "overlays/shared/spawner_and_chase_enemies.h"
+#include "overlays/l09_gaspar/sky_shells.h"
+#include "overlays/l09_gaspar/shuttle_and_breakables.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -1074,7 +1080,7 @@ extern void update_fading_asteroid_debris(unsigned char *m);
 extern Moby *spawn_path_following_asteroid_r(void *m) __asm__("func_L09_002EBD30");
 extern Moby *spawn_falling_asteroid_r(void) __asm__("func_L09_002EBA58");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern int func_L09_00295880(void *, void *, void *, int, int, float);
+
 extern float FastVecDot_r(void *, void *) __asm__("func_001F9C78");
 
 /* Asteroid belt update: falling rocks go to their own updates; the belt sets up its ring once, keeps spawning rocks,
@@ -1469,7 +1475,6 @@ void update_tumbling_debris(Moby *moby) {
         FastVecAdd_r2(pos, gaspar_coll_hit_normal_r - 0x20, gaspar_coll_hit_normal_r);
     }
 }
-extern void draw_level09_scrolling_textured_strips(void *, float, int, int, int);
 
 extern void build_packet_and_draw_scaled_entries(void *, void *, int);
 extern int gaspar_frame_count MACRO_ADDR;
@@ -2140,7 +2145,6 @@ void func_L09_00304EE0_r(Moby *moby, VendorVars *vars, f32 *health) {
     }
     StepColorFade(moby, vars->anim);
 }
-extern void handle_refueling_station_damage(char *, char *, char *);
 
 extern int gaspar_mobys_m __asm__("D_L09_00160058") MACRO_ADDR;
 extern int Moby_PlaySound_r_r(int, int, char *) __asm__("func_0022ED80");
@@ -2561,8 +2565,6 @@ typedef struct {
 
 extern TurretShake gaspar_camera;
 extern TurretBeam gaspar_colored_effect_slots[];
-extern struct Moby *spawn_class_4ea_projectile(void *, void *, void *, int);
-extern void set_level_state_flag_88(void);
 
 extern float vec_length_xy(void *);
 extern void divide_vector_xyz(void *, void *, float);
@@ -3207,7 +3209,6 @@ typedef struct {
 
 #define frame_time D_0015EE6C
 #define hero (*&g_hero)
-extern int advance_shuttle_along_path(struct Moby *);
 
 #define attach_manipulator func_0020D960
 #define scale_vector_00309c08 ((void (*)(f32, void *, void *))func_001F9C30)

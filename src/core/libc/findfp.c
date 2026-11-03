@@ -1,6 +1,8 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "core/libc/stdio_ops.h"
+#include "core/libc/fvwrite_fwalk.h"
+#include "core/libc/exit_fflush.h"
 
 /*
  * core_text object 0x113A70-0x113B70. Boundaries are retail's linker fill
@@ -23,9 +25,6 @@ void findfp_std(void *arg0, int arg1, int arg2, int arg3) {
     self->self = self;
     self->unk00 = 0;
 }
-
-extern void libc_fflush(void);
-extern void _fwalk(void *, void *);
 
 /* Retail is a bare tail jump: Sony's 2.9-ee, which builds this SDK object,
    emits it for a void function that ends in a call. */

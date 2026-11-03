@@ -32,6 +32,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "overlays/l08_batalia/hero_idle_and_items.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -59,8 +60,6 @@ extern HeroIdleFidget batalia_idle_fidgets[];
 extern HeroItemDefView batalia_item_info[];
 extern HeroAttackRecord batalia_attack_records[];
 extern HeroSpeedBands batalia_hero_speed_bands;
-
-extern int Hero_TryMoveStateL08(int, int);
 
 extern int func_001F9908(int *);
 

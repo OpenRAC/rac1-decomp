@@ -26,6 +26,9 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/l15_quartu/hero_idle_animation.h"
+#include "overlays/l15_quartu/hero_movement.h"
+#include "overlays/l15_quartu/hero_hud_and_actions.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -34,9 +37,6 @@ extern unsigned char gHaveMorphORay[];
 extern int quartu_frame_count MACRO_ADDR;
 
 extern float quartu_hero_bones_28_scale, quartu_hero_bones_30_scale;
-
-extern void Hero_UpdateAimFlags(void);
-extern void HeroL15_UpdateStateTransitions(void);
 
 extern int truncate_float_to_s32(float);
 extern unsigned int FastTweenColor_v(float, unsigned int, unsigned int) __asm__("func_001FA8A8");
@@ -196,8 +196,6 @@ void update_hero_bobbing_and_target_position(void) {
     }
 }
 extern int quartu_game_mode MACRO_ADDR;
-
-extern void HeroQuartu_TrySetMoveState(int, int);
 
 /* Reset the help prompt state and show the default message unless the level is in a special phase. */
 void restore_saved_hero_moby_and_clear_vehicle_mode(void) {

@@ -4,6 +4,7 @@
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
 #include "data/executable.h"
+#include "core/kernel/threads_deci2.h"
 
 /*
  * core_text object 0x119D88-0x11CCE0. Boundaries are retail's linker fill
@@ -38,7 +39,6 @@ int kputchar(int c) {
     return c;
 }
 
-extern void kputs(char *);
 extern int deci2_putchar_count;
 extern char deci2_putchar_buffer[];
 

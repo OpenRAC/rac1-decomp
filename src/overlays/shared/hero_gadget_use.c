@@ -27,6 +27,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
+#include "overlays/l05_rilgar/hero_idle_and_items.h"
+#include "overlays/l05_rilgar/hero_collision.h"
 extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -459,7 +461,6 @@ extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
 extern CollisionHit_4C558 rilgar_coll_hit_r __asm__("D_L05_00174340") NOT_SDA;
 extern u8 D_L05_00174360[] NOT_SDA;
 extern u8 D_L05_0017AC20[] NOT_SDA;
-extern void func_L05_00241AA0(void);
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
@@ -546,8 +547,6 @@ extern short rilgar_frame_count;
 extern float rilgar_coll_hit_z;
 
 extern int coll_line(void *, void *, int, int, int);
-
-extern void Hero_TryMoveStateL05(int, int);
 
 /* Decides whether the hero's current motion warrants the swing effect, running a probe when the conditions line up. */
 int try_apply_hero_water_and_ground_transitions(void) {

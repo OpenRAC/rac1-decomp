@@ -19,6 +19,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/random_scaled_vectors.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -1426,7 +1427,7 @@ extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548
 extern float FastVecLength_r3(void *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern int rand_range_r3(int, int) __asm__("func_L00_00258BC8");
-extern void func_L09_00278690(float *, float);
+
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern float random_float_between_r5(float, float) __asm__("func_002140F8");
 extern float ProbeGroundHeight_r2(void *, int, float) __asm__("func_00214358");

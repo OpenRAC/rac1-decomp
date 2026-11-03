@@ -1446,7 +1446,7 @@ void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
     }
 }
 
-extern void draw_geometry_quad_5188(void *, void *, void *, u64, int);
+extern void draw_geometry_quad_5188_v(void *, void *, void *, u64, int) __asm__("func_L02_0020BF88");
 extern s32 D_L06_001624A4_FF000 SDATA(D_L06_001624A4);
 extern s32 D_L06_001624A8_FF000 SDATA(D_L06_001624A8);
 extern s32 D_L06_001624AC_FF000 SDATA(D_L06_001624AC);
@@ -1511,7 +1511,7 @@ void draw_projected_fading_quad(char *moby) {
     corners[3] += (y + radius) << 16;
     corners[3] += x - radius;
     texture = GetEffectTex(D_L06_001624A4_FF000);
-    draw_geometry_quad_5188(corners, uvs, colors, texture, 1);
+    draw_geometry_quad_5188_v(corners, uvs, colors, texture, 1);
     VU1_addGSregister(0x47, 0x5360B);
 }
 extern char *blarg_camera_descriptors MACRO_ADDR;

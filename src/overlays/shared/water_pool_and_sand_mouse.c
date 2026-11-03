@@ -38,6 +38,9 @@
 #include "overlays/shared/gold_bolts_and_teleporters.h"
 #include "overlays/l01_novalis/hero_idle_and_items.h"
 #include "asm_functions/level_01.h"
+#include "overlays/shared/moby_context_table.h"
+#include "overlays/shared/rig_probe_setup.h"
+#include "overlays/shared/vendor_screen_init.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -953,7 +956,6 @@ extern unsigned char saved_mission_state[][16];
 extern float bolt_crank_pull_spring_vel SDATA(bolt_crank_pull_spring_vel);
 
 extern float ApproachValue(float *, float, float);
-extern void record_moby_context_bytes(void *, int, void *, int, void *);
 
 extern void divide_vector_xyz(void *, void *, float);
 
@@ -1278,8 +1280,6 @@ extern s32 gold_weapon_case_items[];
 extern u8 gold_weapon_purchased[];
 extern ItemPrice novalis_item_price_table[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-
-extern void initialize_vendor_screen(struct Moby *, s32, ItemPrice *);
 
 struct Moby;
 
@@ -1720,7 +1720,6 @@ extern int sand_mouse_fade_particle_color_alpha_gp SDATA(sand_mouse_fade_particl
 extern float sand_mouse_fade_particle_time_squared_coefficient_gp
     SDATA(sand_mouse_fade_particle_time_squared_coefficient_gp);
 
-extern void rig_probe_setup(void *, int, int *, float *, float *, int *);
 extern int func_001160D8(void);
 extern void MobySpringTurn_r(void *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");

@@ -38,6 +38,9 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "game/system/memcard.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "overlays/l08_batalia/cannon_gunship_bolt_thief.h"
+#include "overlays/l08_batalia/offset_effects.h"
+#include "overlays/l08_batalia/bomb_and_scoutbot.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -133,11 +136,6 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
-
-extern struct Moby *func_L08_002DF758(void *, struct Moby *, void *, f32, f32);
-extern void func_L08_002EA930(struct Moby *);
-extern void func_L08_002EAB30(struct Moby *);
-extern void func_L08_002EADF0(struct Moby *);
 
 /* Swarm leader: cruises or circles along its waypoint path with its parts in tow, fires at its target, and in
  * state 0x63 scatters the parts and removes itself.
@@ -442,7 +440,6 @@ void update_swing_gate_from_driver(struct Moby *moby) {
 }
 
 extern int GetEffectTex(int);
-extern void draw_scrolled_mesh_batch(int);
 
 extern int scrolled_mesh_unscaled_fixed_alpha SDATA(scrolled_mesh_unscaled_fixed_alpha);
 extern int offset_mesh_first_pass_fixed_alpha SDATA(offset_mesh_first_pass_fixed_alpha);
@@ -764,8 +761,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float SmoothNoise(float, char *);
 
 extern void draw_world_quad(void *, void *, int);
-extern unsigned char *func_L08_0027C218(void *, float, void *, void *, short, unsigned char, unsigned char,
-                                        unsigned char, unsigned char);
 
 /* Builds the animated grid, draws its quads, and updates attached effects. */
 void draw_flickering_mesh_effect(M45 *moby) {
@@ -1616,7 +1611,6 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
     }
 }
 extern void attach_batalia_plumber_class_manipulator(char *moby);
-extern void request_batalia_cannon_mount(char *arg);
 
 extern int fast_dec_timer(int *arg0);
 
@@ -1944,7 +1938,6 @@ void update_batalia_selected_moby_effects(struct Moby *moby) {
     }
 }
 
-extern void spawn_effect_with_initial_motion(float *, float *, int, float);
 extern float g_frame_time MACRO_ADDR;
 
 // Per-frame update: for each entry, builds a rotated vector from the moby's data and spawns an effect.

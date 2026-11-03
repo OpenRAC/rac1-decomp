@@ -33,13 +33,12 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/l11_pokitaru/hero_idle_animation.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int D_0015EE84 MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void Hero_TrySetMoveStateL11(int, int);
 
 /* Per-frame update of the player state flags from the current state. */
 void update_hero_surface_condition_flags(void) {

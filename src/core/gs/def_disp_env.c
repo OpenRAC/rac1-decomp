@@ -4,6 +4,7 @@
 #include "core/kernel/kprintf.h"
 #include "asm_functions/executable.h"
 #include "core/cdvd/read.h"
+#include "core/libc/atoi_calloc.h"
 
 /*
  * core_text object 0x121D18-0x122140. Boundaries are retail's linker fill
@@ -19,7 +20,7 @@ extern void scePrintf();
 extern int sceOpen(void *path, int mode);
 
 extern void sceClose(int fd);
-extern int libc_atoi(void *arg0);
+
 extern char romver_path[];
 
 /* Read a small text file a byte at a time into a 0x100-byte stack buffer,

@@ -4,6 +4,9 @@
 #include "game/movie/movie.h"
 #include "game/system/stub.h"
 #include "game/movie/vibuf.h"
+#include "game/movie/vobuf.h"
+#include "game/movie/disp.h"
+#include "game/movie/read.h"
 
 /* Retail-disassembly reconstruction of decoder buffer operations. */
 extern int sce_mpeg_create(void *, unsigned char *, int);
@@ -119,7 +122,7 @@ typedef struct MoviePutSpans {
     int secondSize;
 } MoviePutSpans;
 extern MovieFourBytes mpeg_sequence_end_code;
-extern int cpy2area(unsigned char *, int, unsigned char *, int, void *, int, void *, int);
+
 extern void movie_end_put(void *, int) __asm__("func_0023DFE0");
 
 /* videoDecFlush(VideoDec *) */
@@ -153,7 +156,6 @@ int videoDecIsFlushed(VideoDec *dec) {
 }
 /* Decoder control reconstructed from retail disassembly. */
 
-extern void voBufReset(void *);
 extern int sceMpegGetPicture(VideoDec *);
 /* videoDecMain(void *) */
 void videoDecMain(VideoDec *dec) {
@@ -176,14 +178,10 @@ typedef struct MovieFrameState {
     int count;
 } MovieFrameState;
 extern char str_mpeg_get_picture_error[], str_decode_thread_aborted[];
-extern char *voBufGetData(void *);
-extern void voBufIncCount(void *);
+
 extern int sce_mpeg_get_picture(void *, void *, int);
 extern int sce_mpeg_is_end(void *);
 
-extern void ErrMessage(char *);
-
-extern void setImageTag(void *, void *, int, int);
 /* sceMpegGetPicture(VideoDec *) */
 int sceMpegGetPicture(VideoDec *dec) {
     int result = 1;

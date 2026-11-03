@@ -5,6 +5,8 @@
 
 #include "common.h"
 
+extern void DrawTfrag(void);
+extern void PatchTfragGifs(void);
 extern void SetTfragDists(void);
 
 #endif /* GAME_RENDER_TFRAGFUNC_H */

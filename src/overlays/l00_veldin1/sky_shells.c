@@ -16,11 +16,10 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
 #include "game/system/space.h"
+#include "overlays/l00_veldin1/sky_particles.h"
 
 extern int D_0015EE84 MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
-
-extern void draw_sky_shells_with_particles_and_rotating_shell(void);
 
 extern void b8f8_a(void) __asm__("func_L00_0028B8F8");
 extern void b8f8_b(void) __asm__("func_L00_0028B8F8");

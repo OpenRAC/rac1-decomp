@@ -38,6 +38,9 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/l11_pokitaru/hero_idle_animation.h"
+#include "asm_functions/level_11.h"
+#include "overlays/l11_pokitaru/resort_owner_and_water.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -573,7 +576,6 @@ extern void fast_dec_timer(int *arg0);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int spawn_ship_projectile(void *, void *, int, void *, float, int);
 extern int Moby_PlaySound_i(int, int, int) __asm__("func_0022ED80");
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern unsigned char pad_globals_base[];
@@ -935,12 +937,11 @@ void update_player_ship_flight(void *a0, void *a1) {
     r = angle_add_313D00(o->f28, -o->f6C / 7.0f);
     wings_313D00(moby, o, r, -angle_add_313D00(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
-extern int Hero_TrySetMoveStateL11(int, int);
 
 extern int try_set_help_message(int, int);
 
 extern void update_player_ship_flight(void *, void *);
-extern int count_listed_blarg_ships_in_state_5(int);
+
 extern char *activate_listed_blarg_ship(int idx);
 
 extern float ApproachValue(float *p, float target, float maxstep);
@@ -2072,7 +2073,7 @@ typedef struct Data_316DD8 {
 
 extern void spawn_color_swapped_explosion_burst_r(void *, void *, int, float, float) __asm__("func_L00_00260460");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern int func_L11_0030BC00(void *);
+
 extern Hit_316DD8 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
@@ -3203,8 +3204,6 @@ void spawn_energy_sphere_spark(char *moby) {
 }
 
 extern float randf_sym(float lo, float hi);
-
-extern char *spawn_moby_with_random_yaw(void *position, void *vector, int id);
 
 extern int FastBSphereCheck(char *, float);
 

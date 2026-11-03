@@ -36,6 +36,7 @@
 #include "core/gs/put_draw_env.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "game/system/update.h"
+#include "game/render/lights.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -1211,7 +1212,6 @@ extern void close_vendor_menu();
 
 extern void draw_vendor_inset_quads();
 
-extern void UpdateAllPointLights();
 extern void decompress_and_relocate_vendor_moby_assets();
 extern void handle_vendor_auxiliary_moby_event();
 

@@ -15,14 +15,13 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/l05_rilgar/hero_idle_and_items.h"
 extern char gHeroPos[];
 extern unsigned char g_hero[] NOT_SDA;
 
 extern unsigned char g_hero[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void Hero_TryMoveStateL05(int, int);
 
 #define GB(o) (*(unsigned char *)(g + (o)))
 #define GH(o) (*(short *)(g + (o)))

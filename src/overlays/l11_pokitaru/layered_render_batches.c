@@ -13,10 +13,10 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/render/vuchain.h"
+#include "overlays/l11_pokitaru/ship_flight_and_oil_tanker.h"
 
 extern int GetEffectTex(int);
 
-extern void emit_level11_layered_effect_batches_with_pair_offset(int);
 extern int layered_effect_texture_2c_fixed_alpha SDATA(layered_effect_texture_2c_fixed_alpha);
 extern int layered_effect_texture_2a_pair_zero_fixed_alpha SDATA(layered_effect_texture_2a_pair_zero_fixed_alpha);
 extern int layered_effect_texture_2b_fixed_alpha SDATA(layered_effect_texture_2b_fixed_alpha);

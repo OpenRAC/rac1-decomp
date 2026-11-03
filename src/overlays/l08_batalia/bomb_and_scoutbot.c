@@ -30,6 +30,8 @@
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
+#include "asm_functions/level_08.h"
+#include "overlays/l08_batalia/offset_effects.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -130,7 +132,6 @@ struct PathMoverFallVars {
     Vec4A velocity; /* 0x10: fall velocity after a hit */
 };
 
-extern int spawn_moby_offset_effect(char *);
 extern float batalia_bolt_spin_min SDATA(batalia_bolt_spin_min);
 extern float batalia_bolt_spin_max SDATA(batalia_bolt_spin_max);
 
@@ -2530,8 +2531,6 @@ extern float ApproachValue(float *, float, float);
 
 extern int timer46(int *) __asm__("func_001F9908");
 extern void MobySpringTurn(void *, void *, float, float, float, float);
-
-extern void spawn_rocket_explosion_and_debris(void *, int, int, int);
 
 /* Rocket guidance, route traversal, launch effects, and destruction. */
 void update_rocket(M46 *m) {

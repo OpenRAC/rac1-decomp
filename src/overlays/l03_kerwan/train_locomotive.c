@@ -30,6 +30,10 @@
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
 #include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
+#include "asm_functions/level_03.h"
+#include "overlays/l03_kerwan/taxi_and_mine_layer.h"
+#include "overlays/l03_kerwan/rotate_point_about_axis.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -451,10 +455,6 @@ extern int fast_dec_timer(int *);
 
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
                                      float) __asm__("func_L00_0025EFC0");
-
-extern void set_moby_state_14(unsigned char *);
-
-extern int is_moby_class_23e_in_state_14(char *);
 
 /* Update of the Metropolis train locomotive (moby Metropolis Train Locomotive): waits for the hero, rides its path,
    hands over to the next path. */
@@ -1010,8 +1010,6 @@ void maintain_emitter_sound_voice(unsigned char *moby) {
             break;
     }
 }
-
-extern void spawn_emitter_child_effect(void *, void *, int, int, float, float, int);
 
 // Per-class steering update for a level 3 moby: runs its path loops and writes the flag bytes at data+0x12E/0x12F.
 void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
@@ -2235,16 +2233,12 @@ typedef struct Data2C8398 {
 } Data2C8398;
 extern void FindNearestTargetMoby(void *, void *, float);
 
-extern void update_kerwan_path_enemy_hit_reaction(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern int is_point_inside_clip_volume_cf(int);
 
-extern void is_value_within_interpolated_window_cf(void *);
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void compute_interpolated_record_value_cf(void *, void *, void *, int, float, float, float);
 
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 
@@ -2257,7 +2251,6 @@ extern int coll_sphere(float, void *, int, void *);
 extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
 
 extern unsigned char *moby_get_ride_transform(int);
-extern void RotatePointAboutAxis(void *, void *, float);
 
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;

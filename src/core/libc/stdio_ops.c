@@ -2,6 +2,8 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/libc/stdio_ops.h"
+#include "core/libc/lseek_malloc.h"
+#include "core/libc/close_dtoa.h"
 
 /*
  * core_text object 0x1162B8-0x116CC0: the C library's stdio internals
@@ -12,8 +14,6 @@
 
 extern long __sseek(void *arg0, void *arg1, void *arg2);
 extern int __sclose(void *arg0);
-
-extern int _lseek_r(int *errOut, void *a, void *b, void *c);
 
 /* Reclaimed from a banked revert. The old note blamed retail's
    dsll32/dsra32 on a sign-extension this compiler "does not emit for an
@@ -76,8 +76,6 @@ long __sseek(void *arg0, void *arg1, void *arg2) {
     }
     return r;
 }
-
-extern int _close_r(int *errOut, int arg1);
 
 /* newlib's __sclose. It returns the close result: 2.9-ee tail-calls a
    void function that ends in a call, which retail does not have here. */

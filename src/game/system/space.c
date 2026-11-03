@@ -35,6 +35,9 @@
 #include "core/gs/def_load_image.h"
 #include "game/ui/menu.h"
 #include "core/gs/load_image.h"
+#include "core/gs/dma_and_sync_v.h"
+#include "game/movie/movie.h"
+#include "core/storage/wad.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -2103,9 +2106,6 @@ extern DiscTable disc_table_t __asm__("D_00137C80");
 extern int pal_mode MACRO_ADDR;
 extern int g_game_language MACRO_ADDR;
 extern int level_resource_buffer_base;
-extern int Movie_Play(int, int, int, int, int);
-
-extern void sceGsSyncVCallback(void *);
 
 /* Plays movie id, taking its {sector, size} from the WAD table of
    contents (from the second table when pal_mode is set). */
@@ -2452,7 +2452,6 @@ extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
 
 extern void play_level_loading_slides(int, int, int, int, int);
 extern void initialize_level_runtime(void);
-extern int read_file_entry_with_retry(int);
 
 extern void update_resident_gameplay_state(void);
 

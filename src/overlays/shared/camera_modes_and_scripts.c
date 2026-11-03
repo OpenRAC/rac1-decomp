@@ -20,6 +20,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/collision_queries.h"
+#include "overlays/shared/small_word_helpers.h"
+#include "overlays/shared/fast_vector_math.h"
 extern char g_hero[];
 extern u8 gHeroPos[];
 extern PadState g_controller_state;
@@ -639,9 +641,7 @@ void initialize_orbit_camera_pose(void *arg) {
     euler_to_matrix(m, ((Camera *)a)->type_data);
     matrix_copy_rows(a, m);
 }
-extern void copy_five_floats_with_rotation_offset(void *, void *, float);
-extern void zero_five_words(void *);
-extern void clear_twelve_bytes(void *);
+
 extern void initialize_orbit_camera_pose(void *);
 /* Sets up a camera moby from the vectors c and b and the value f. */
 void initialize_orbit_camera_from_parameters(char *a, void *b, void *c, float f) {

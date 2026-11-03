@@ -8,6 +8,7 @@
 #include "structs/gs.h"
 #include "game/render/vuchain.h"
 #include "core/gs/put_draw_env.h"
+#include "core/gs/put_disp_env.h"
 
 /*
  * framebuf.cpp in the original source; text 0x1FAA28-0x1FBC80.
@@ -205,7 +206,6 @@ void SetBackgroundColor(int arg0, int arg1, int arg2) {
 }
 
 extern void *active_fs_aa_buffer MACRO_ADDR;
-extern void sce_gs_put_disp_env(void *);
 
 /* PutDispBuffer(void) */
 void PutDispBuffer(void) {

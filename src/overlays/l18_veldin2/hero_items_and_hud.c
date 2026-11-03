@@ -34,6 +34,8 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "overlays/l18_veldin2/hero_idle_and_items.h"
+#include "overlays/l18_veldin2/hero_voice_and_knockback.h"
 
 typedef struct {
     char p0[0x160];
@@ -68,10 +70,6 @@ extern HeroIdleFidget veldin2_idle_fidgets[];
 extern HeroItemDefView veldin2_item_defs[];
 extern HeroAttackRecord veldin2_attack_records[];
 extern HeroSpeedBands veldin2_hero_speed_bands;
-
-extern int HeroL18_TryTakeHit(int);
-
-extern int HeroL18_SetMoveState(int, int);
 
 extern int func_001F9908(int *);
 

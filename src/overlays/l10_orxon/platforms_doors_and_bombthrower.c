@@ -30,6 +30,8 @@
 #include "game/system/stub.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/music_track_requests.h"
+#include "asm_functions/level_10.h"
+#include "overlays/l10_orxon/toxic_crabs_and_gates.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -1470,7 +1472,6 @@ extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 
 extern void PathSampleAtDistance_f(float, float, void *, int *, float *, void *) __asm__("func_L00_002633D8");
 
-extern void spawn_path_spark_effect(char *, float *, int *, float, float, float);
 extern int Sound_PlayClassSound_v(int, int, void *, int) __asm__("func_L00_0028EF68");
 
 /* Electric spark: runs along its wire path with a light and a buzzing sound, then rests for a random time. */
@@ -1733,7 +1734,7 @@ inactive:
     set_moby_color(moby, 8, 8, 8);
 }
 extern char *spawn_fixed_height_destruction_moby(char *owner);
-extern char *spawn_destruction_replacement_moby(char *owner);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);

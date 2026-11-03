@@ -31,6 +31,7 @@
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/l06_blarg/hero_movement.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -58,15 +59,9 @@ extern HeroItemDefView blarg_item_defs[];
 extern HeroAttackRecord blarg_attack_records[];
 extern HeroSpeedBands blarg_hero_speed_bands;
 
-extern int HeroL06_TryApplyHitKnockback(int);
-
-extern int get_hero_help_value(int a);
-
 extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
-
-extern void quantize_hero_input_target_speed(void);
 
 extern int truncate_float_to_s32(float);
 

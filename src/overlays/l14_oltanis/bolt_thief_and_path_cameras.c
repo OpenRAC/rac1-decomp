@@ -33,6 +33,7 @@
 #include "game/system/memcard.h"
 #include "game/audio/music.h"
 #include "overlays/shared/blarg_commander.h"
+#include "overlays/l14_oltanis/heavy_interceptor_and_turrets.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -2151,8 +2152,6 @@ extern VendorView_5290 oltanis_view_params;
 extern int Spline_AdvanceByDistance_r2(char *path, float *out, void *seg, void *t, int dir,
                                        float step) __asm__("func_L00_0025E860");
 
-extern void reset_racer_group_to_hero_path_position(struct Moby *m);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00315290. */
 void update_path_camera(struct UpdateCam *cam) {
     float dir[4];
@@ -2274,7 +2273,6 @@ void update_path_camera(struct UpdateCam *cam) {
     vec_scale_to_length(&cam->m1, &cam->m1, 1.0f);
     FastVecCross(&cam->m2, &cam->m1, &cam->m0);
 }
-extern int check_descriptor_hero_trigger(void *);
 
 typedef struct CameraRule {
     u8 pad00[0x38];

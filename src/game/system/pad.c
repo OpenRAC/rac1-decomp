@@ -6,6 +6,7 @@
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
 #include "core/mc/memory_card.h"
+#include "core/input/vib_profile.h"
 
 /*
  * pad.cpp in the original source; text 0x217F68-0x218928.
@@ -14,8 +15,6 @@
  */
 
 extern char g_controller_state[];
-
-extern int sce_vib_get_profile(int, void *);
 
 extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
 

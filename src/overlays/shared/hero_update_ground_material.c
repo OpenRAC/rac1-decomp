@@ -31,6 +31,7 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/l01_novalis/hero_idle_and_items.h"
+#include "overlays/l01_novalis/hero_items_and_hud.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -84,7 +85,6 @@ extern float novalis_lean_state_30_scale;
 extern int truncate_float_to_s32(float);
 
 extern void update_hero_ground_material_effects(void);
-extern void HeroL01_UpdateStateTransitions(void);
 
 typedef struct {
     char pad0[0x80];
@@ -206,7 +206,6 @@ extern void hero_frame_update(void);
 
 extern void update_hero_ground_material_effects(void);
 extern void update_hero_ledge_probe(void);
-extern void HeroL01_UpdateStateTransitions(void);
 
 extern void update_hero_blink_and_gold_weapon_tint(void);
 

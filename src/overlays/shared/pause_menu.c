@@ -35,6 +35,9 @@
 #include "core/gs/put_draw_env.h"
 #include "overlays/shared/draw_buffers_and_walker_gait.h"
 #include "game/system/update.h"
+#include "game/gameplay/missionfunc.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
+#include "overlays/shared/level_runtime_and_menus.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -151,11 +154,7 @@ extern unsigned char help_stats_base NOT_SDA;
 extern struct HEnt *menu_preview_mobys[];
 extern char player_camera[];
 
-extern void update_mission_list(void);
-
 extern void initialize_menu_stream_buffers(int);
-
-extern void initialize_render_archive_transfer(void);
 
 /* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
 void initialize_pause_menu(void) {
@@ -548,8 +547,6 @@ extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 extern float render_view_tan_half_fov;
 extern unsigned char level_transition_target_fmt[];
-
-extern void prepare_target_level_transition(int);
 
 extern int sound_update(void); /* sound update: ends in `return 0`, so it returns a value */
 extern void initialize_pause_menu(void);

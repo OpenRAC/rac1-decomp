@@ -30,6 +30,7 @@
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/collision_queries.h"
+#include "overlays/shared/follow_camera_angle_blend.h"
 extern char g_hero[];
 extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
@@ -3686,7 +3687,7 @@ void set_follow_camera_angle_blend_from_direction(void *a, float x, float y) {
         }
     }
 }
-extern void update_follow_camera_angle_blend_from_position(char *, int, float);
+
 /* Asks the hero camera to swing toward point A: stores X at +0x1BC of the state buffer and measures the swing with
    update_follow_camera_angle_blend_from_position(camera, A, Y); only while the current camera's id is 0. */
 void set_follow_camera_angle_blend_from_position(int a, float x, float y) {

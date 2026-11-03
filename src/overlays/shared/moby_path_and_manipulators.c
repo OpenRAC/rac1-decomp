@@ -19,6 +19,7 @@
 #include "overlays/shared/bolts_and_wrench.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "overlays/shared/particle_type_registry.h"
 extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
@@ -1009,7 +1010,6 @@ extern S166D player_camera;
 extern V collision_hit_point;
 extern int coll_line(void *, void *, int, int, int);
 extern float vec_length_xy(void *);
-extern void spawn_timed_effect_particle(char *, int);
 
 /* spawns impact sparks at a point on the ground near the camera. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_002634f8. */
 void spawn_ground_contact_effect_particle(V *v) {

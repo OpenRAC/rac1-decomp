@@ -19,6 +19,8 @@
 #include "game/render/vuchain.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/walloper_and_beam_effects.h"
+#include "asm_functions/level_18.h"
+#include "overlays/l18_veldin2/bone_glow_quads.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -143,7 +145,6 @@ extern char *PartType23Spawn_c(void *, int, void *, float, float, float, float, 
 extern void draw_three_scaled_camera_facing_quads(void);
 extern void draw_moby_two_tint_glow_quads(struct Moby *m);
 extern void draw_moby_three_scaled_two_tint_quads_r(void *) __asm__("func_L18_002FB318");
-extern void draw_moby_color_cycling_bone_glows(void);
 
 /* Class 1563 update: a cutscene director that times its effects (part flashes, fades, bursts) off the level script
    state. */
@@ -958,7 +959,6 @@ extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern float ApproachValue(float *p, float target, float maxstep);
 
-extern void draw_gadgebot_launch_glow_quad(void);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char gadgebot_params_block;

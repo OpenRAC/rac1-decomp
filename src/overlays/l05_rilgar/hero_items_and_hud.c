@@ -30,6 +30,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "overlays/l05_rilgar/hero_idle_and_items.h"
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -56,8 +57,6 @@ extern HeroIdleFidget rilgar_idle_fidgets[];
 extern HeroItemDefView rilgar_item_defs[];
 extern HeroAttackRecord rilgar_attack_records[];
 extern HeroSpeedBands rilgar_hero_speed_bands;
-
-extern int Hero_TryMoveStateL05(int, int);
 
 extern int func_001F9908(int *);
 

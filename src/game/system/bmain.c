@@ -18,6 +18,11 @@
 #include "core/cdvd/callbacks.h"
 #include "core/gs/vif1_gif_reset.h"
 #include "game/system/space.h"
+#include "core/gs/dma_and_sync_v.h"
+#include "game/movie/movie.h"
+#include "game/ui/transition.h"
+#include "game/system/initonce.h"
+#include "game/gameplay/actuator.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -42,10 +47,6 @@ extern Globals137C80 disc_table_g __asm__("D_00137C80");
 extern char voice_pool[];
 extern char memory_card_state[];
 extern char level_resource_buffers[];
-
-extern void Movie_Play(int, int, int, int, int);
-
-extern void sceGsSyncVCallback(void (*)(void));
 
 /* Start level `level`: pick its two load parameters from the level
    table in disc_table (the alternate set while pal_mode is set), stop
@@ -148,8 +149,6 @@ extern u8 D_0016044C[] MACRO_ADDR;
 extern s32 D_0015F6E4 MACRO_ADDR;
 extern u8 D_0013E130[];
 
-extern void func_00201E88(void);
-extern void func_001E94A8(void);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern void DMAC_VIF1_Enable_r(void) __asm__("func_00235018");
 
@@ -170,7 +169,6 @@ extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
 extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 
-extern s32 func_001EBB48(void);
 extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
 extern void sceGsResetGraph_r(s16, s16, s16, s16) __asm__("func_00121B78");
 

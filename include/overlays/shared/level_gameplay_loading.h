@@ -5,6 +5,8 @@
 
 #include "common.h"
 
+extern void load_chunks_with_optional_fade(int, int);
 extern void load_scene_chunks_with_fade(s32);
+extern void start_cutscene_chunk_read(int);
 
 #endif /* OVERLAYS_SHARED_LEVEL_GAMEPLAY_LOADING_H */

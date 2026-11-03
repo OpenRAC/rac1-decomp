@@ -27,6 +27,10 @@
 #include "core/gs/load_image.h"
 #include "game/render/tiefunc.h"
 #include "game/system/update.h"
+#include "game/render/shrubfunc.h"
+#include "game/ui/transition.h"
+#include "game/render/effects.h"
+#include "game/render/drawquad.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -1611,34 +1615,24 @@ extern void UpdateFog_v(void) __asm__("func_001F2930");
 
 extern void BuildViewMatrices(void);
 
-extern void Transition_DrawSky(void);
-extern void DrawTfrag(void);
-
 extern void SetupGifPaging(int);
 extern void dispatch_callback_list_2(void);
 extern void DoGifPaging(void);
 
-extern void DrawShrubs(void);
 extern void draw_fogged_fullscreen_sprite(char *);
 extern void draw_debug_font(void);
 extern void dispatch_callback_list_3(void);
 
 extern void dispatch_callback_list_1(void);
-extern void draw_lens_flare(void);
+
 extern void draw_light_quads(void);
 
 extern void dispatch_callback_list_4(void);
-extern void append_billboard_batch(void);
-extern void render_queued_rotated_sprites(void);
 
 extern void draw_letterbox_bars(void);
 extern void draw_subtitles(void);
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern void draw_screen_effect(void);
-
-extern void PatchTfragGifs(void);
-
-extern void patch_shrub_gifs(void);
 
 /* Draws the whole frame: each world layer's DMA chain in order, then the fades and the per-layer profiler bars. Adapted from Lombyte's project (GPL-3.0) for PAL: rendering/draw_debug_profiler.c, draw_debug_profiler. */
 void DrawDebugProfiler(void) {

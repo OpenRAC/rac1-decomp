@@ -41,6 +41,8 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/l01_novalis/hero_idle_and_items.h"
+#include "overlays/shared/moby_context_table.h"
+#include "overlays/shared/visibomb_and_pyrocitor.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -807,8 +809,6 @@ extern void set_ground_height_band(void *);
 
 extern void unlock_planet(int);
 
-extern void record_moby_context_bytes(char *, int, char *, int, void *);
-
 extern float vec_distance_xy(void *, void *);
 
 extern float vec_length_xy(void *);
@@ -1141,8 +1141,6 @@ extern char *novalis_moby_list MACRO_ADDR;
 extern int visibomb_outside_zone_overlay_enabled SDATA(visibomb_outside_zone_overlay_enabled);
 extern void draw_visibomb_outside_zone_overlay(char *);
 extern int IsPointInPolygon(void *, void *, int);
-
-extern void terminate_visibomb_missile(void *, void *);
 
 typedef struct {
     int zone;

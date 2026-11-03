@@ -36,6 +36,9 @@
 #include "game/render/partupd.h"
 #include "game/render/framebuf.h"
 #include "overlays/l02_aridia/hero_idle_and_item_input.h"
+#include "asm_functions/level_02.h"
+#include "overlays/shared/geometry_quad_packet.h"
+#include "overlays/shared/camera_update_callbacks.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -185,7 +188,7 @@ extern void BuildViewMatrices_r(void) __asm__("func_001F2608");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void VU1_addDataRef_r(void *, int) __asm__("func_00234B48");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void func_L02_00250C78(void *, void *, void *, void *, void *, int, float);
+
 extern char aridia_view_params_r[] __asm__("D_L02_0016D0C0");
 extern int D_L02_0015F558 MACRO_ADDR;
 extern float textured_grid_saved_fog_near_distance_r __asm__("D_L02_00161378") MACRO_ADDR;
@@ -1078,7 +1081,6 @@ void draw_tresspasser_puzzle(char *moby) {
 extern short trespasser_arc_uv_0, trespasser_arc_uv_1, trespasser_arc_uv_2, trespasser_arc_uv_3;
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
 
 /* Draws an elliptical arc from angle a to b (radii rx, ry, around the screen centre) as five sprite
  * segments in colour col. */
@@ -2524,7 +2526,6 @@ void initialize_camera_offset_effect_state(void) {
 extern float camera_offset_effect_strength;
 extern void Cam_SetEyeOffset(int, float, float);
 extern void update_camera_offset_effect_state(void);
-extern void register_camera_update_callback(void (*)(void));
 
 /* Start the timed effect while its duration is nonzero. */
 void apply_camera_offset_effect(void) {
