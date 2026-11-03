@@ -402,14 +402,14 @@ def rename_in_fragments(sources, variants, symbols):
     """A file's fragments are spliced into it, so they follow its aliases. Returns [(path, old text)] to undo."""
     edits = []
     for rel, mine in variants.items():
-        names = {}
-        for symbol in mine & symbols:
-            names.update(variant_names(sources, symbol))
-        if not names:
+        if not mine & symbols:
             continue
         for path in fb.fragments_of(rel):
             old = path.read_text(errors="surrogateescape")
-            new = mt.rename_code(old, names)
+            new = old
+            for symbol in sorted(mine & symbols):
+                # A fragment's own declaration needs the label as well as the new name.
+                new = use_variant(new, sources, symbol) or mt.rename_code(new, variant_names(sources, symbol))
             if new != old:
                 edits.append((path, old))
                 path.write_text(new, errors="surrogateescape")
