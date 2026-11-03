@@ -21,6 +21,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -43,8 +44,6 @@ extern void *MobyGetHitMessage(void *, int, int);
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void RippleDisturb(void *, int, int, float, float, float, float);
 
 extern int veldin2_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

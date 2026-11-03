@@ -33,6 +33,8 @@
 #include "game/audio/sound.h"
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -65,10 +67,6 @@ extern unsigned char gSkillPoints[];
 extern short cd_read_state[];
 
 extern char g_controller_state[];
-
-extern void *msg_string(void);
-
-extern void memcard_MakeWholeSave(char *out);
 
 extern struct CameraSystem gCamera_r __asm__("D_00187040");
 extern s32 active_camera_basis_column1_x;
@@ -948,8 +946,6 @@ extern int menu_label_marquee_gap SDATA(menu_label_marquee_gap);
 extern int pal_mode MACRO_ADDR;
 extern char *current_menu_page NOT_SDA;
 
-extern void find_help_entry(int, int, void *);
-extern int sprintf(char *, const char *, ...);
 extern void libc_memset(void *, int, int);
 
 extern int fade_menu_color(int, int, int);
@@ -3692,7 +3688,6 @@ extern char *msg_string_r3(s32) __asm__("func_001FE540");
 extern void draw_hud_rect_blended_r3(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 
 extern void *libc_memset_r(void *, s32, u32) __asm__("func_001153FC");
-extern int sprintf(char *, const char *, ...);
 
 extern char *libc_strcpy_r(char *, const char *) __asm__("func_001166FC");
 extern u32 libc_strlen_r(const char *) __asm__("func_00116810");
@@ -3798,7 +3793,7 @@ extern const float gold_bolt_marker_y_offset_f SDATA(D_001603A4);
 extern char fmt_gold_bolt_count_line[];
 extern int map_gold_bolt_totals[];
 extern int g_screen_extent[];
-extern int sprintf(char *, const char *, ...);
+
 extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6CF8");
 
 /* DrawGBsShipMenu (maybe): parks the marker object at arg0+0x44 by the
@@ -3849,7 +3844,7 @@ void rotate_preview_moby_x(Moby *arg0) {
    mobyfunc.c); the (int, int) declaration below this point is kept for
    the functions matched against it. */
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-extern int sprintf(char *, const char *, ...); /* sprintf */
+
 extern int weapon_ammo_counts[];
 extern char vendor_item_prices[];
 extern char fmt_decimal[]; /* "%d" */
@@ -5773,9 +5768,6 @@ extern char restart_confirm_page[];
 extern unsigned char gold_bolts_collected_18[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char selector_available[] MACRO_ADDR;
-
-extern void memcard_RestoreGame(int);
-extern void memcard_Save(int, int);
 
 extern unsigned char g_hero[];
 
@@ -7855,9 +7847,6 @@ extern s16 dialogue_playback_phase[];
 extern s32 g_game_language MACRO_ADDR;
 extern s32 D_0015EF20 MACRO_ADDR;
 
-extern void relocateObjectPointers(char *, int);
-
-extern s32 Music_ContinueStreamIfReady(void);
 extern int start_audio_stream_read(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_002256e8.c, update_streamed_moby_animation. */
@@ -8183,7 +8172,7 @@ extern Tbl_q disc_table_q[] __asm__("D_00137C80");
 extern char *moby_class_resources[] NOT_SDA;
 
 extern int start_audio_stream_read(int, int, int);
-extern void relocateObjectPointers(char *, int);
+
 extern int advance_preview_animation_queue(void);
 extern void load_preview_resource_bindings(s32, s32);
 

@@ -32,6 +32,9 @@
 #include "game/audio/sound.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "game/render/framebuf.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -388,8 +391,6 @@ union PacketCursor {
 extern union PacketCursor l01_packet MACRO_ADDR;
 
 typedef int u128_2BA150 __attribute__((mode(TI)));
-
-extern void AA_BlurPass(void);
 
 extern int novalis_font_vu_state MACRO_ADDR;
 extern unsigned short font_vu_program_tag NOT_SDA;
@@ -860,7 +861,6 @@ extern int coll_sphere_mobys(float, void *, int, int, void *);
 extern void PostHitMessage_v(float, void *, void *, int, void *, void *) __asm__("func_L00_0025AC00");
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void spawn_type_14_particle(int, void *);
 
 extern s32 novalis_shot_trail_mode SDATA(novalis_shot_trail_mode);
 extern f32 novalis_shot_hit_radius SDATA(novalis_shot_hit_radius);
@@ -1284,7 +1284,7 @@ extern ItemPrice novalis_item_price_table[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
 extern void initialize_vendor_screen(struct Moby *, s32, ItemPrice *);
-extern s32 memcard_Save(s32, s32);
+
 struct Moby;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002e1ac0. */
@@ -2103,7 +2103,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern int mine_fall(void *, void *);
 
 extern void PostHitMessage_r(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
-extern int CarriedMobyUpdate(void *, void *);
+
 extern void SetDeathBits(void *, int, int);
 extern int IsFrameWithinWindow(float, void *);
 
@@ -2852,7 +2852,6 @@ extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern int FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
 extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002ef770. */
 void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
@@ -2924,7 +2923,7 @@ int process_amoeboid_suck_cannon_suction(Moby *moby, void *pos, void *target) {
     }
     return value;
 }
-extern int func_L00_002DCFD0(void *, void *, void *, float);
+
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
@@ -3321,16 +3320,7 @@ extern void *gunship_follow_path_fn_ptr MACRO_ADDR;
 
 extern s32 get_first_moby_in_group(struct Moby **, s32, s32, s32);
 extern s32 get_next_moby_in_group(struct Moby **, struct Moby *, s32, s32);
-extern void initialize_path_descriptor(PathCursor *);
-extern s32 select_point_index_by_distance(void *, PathNodes *, f32);
-extern void compute_path_node_tangent(QVec *, PathCursor *, s32, f32, f32);
-extern f32 compute_sampled_spline_path_lengths(f32, f32, PathCursor *, s32, struct Moby *);
 
-extern s32 advance_path_node_index(PathCursor *);
-extern s32 resolve_path_node_index(PathCursor *, s32);
-extern void evaluate_cubic_hermite_segment(f32, QVec *, QVec *, QVec *, QVec *, QVec *);
-
-extern void spawn_type_10_particle(QVec *, QVec *);
 extern void spawn_explosion(struct Moby *, QVec *, QVec *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
                             s32, s32, s32);
 

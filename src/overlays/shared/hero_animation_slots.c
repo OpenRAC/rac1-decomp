@@ -27,6 +27,8 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 extern u8 gHeroPos[];
 extern char g_hero_pos_z[];
 extern char g_hero_rot[];
@@ -2193,8 +2195,6 @@ extern void cancel_hero_item_animation(void);
 
 extern void update_hero_collision_capsule_dimensions();
 
-extern void HeroEnterMoveState(int, int);
-
 /* sets up the player/object state for a new mode (a0 = mode, a1 = id, a2 = object) */
 void enter_hero_vehicle_mode(int mode, int id, char *obj) {
     struct Hero *p;
@@ -2332,9 +2332,7 @@ s32 truncate_float_to_s32(f32);
 
 void func_001F9BF0_113A0(void *, void *, void *) __asm__("func_001F9BF0");
 
-void HeroEnterMoveState(s32, s32);
 void func_L00_00217570_113A0(s32, s32) __asm__("func_L00_00217570");
-void remove_tracked_class_5f3_moby(void);
 
 void func_L00_00211338_113A0(void *, s32, f32, f32) __asm__("func_L00_00211338");
 
@@ -2614,8 +2612,6 @@ extern void func_L00_002180F8(void);
 extern void euler_to_matrix_a(void *, void *) __asm__("func_001FA218");
 
 extern void update_hero_collision_capsule_dimensions_a(void) __asm__("func_L00_00211A38");
-extern void func_L00_00221A98(void);
-extern void func_L00_00221D50(void);
 
 /* Hero per-frame input update: the stick axes from the pad (the d-pad bits stand in below 0.25), the
    voice and input history rings, then the hero's matrices. */

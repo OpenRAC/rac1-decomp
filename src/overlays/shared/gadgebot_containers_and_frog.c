@@ -29,6 +29,9 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern char level_moby_killed[];
 extern unsigned char saved_mission_state[];
 extern Hero g_hero;
@@ -389,7 +392,6 @@ void gadgebot_spawn_pad_update(Moby *moby) {
         moby->glow_color = FastTweenColor(moby->glow_color, 0x80464646, 0.1f);
     }
 }
-extern void initialize_moby_particle_effect(char *);
 
 /* Sets the moby to state 2 and calls initialize_moby_particle_effect. */
 void initialize_moby_particle_effect_state(char *moby) {
@@ -981,8 +983,6 @@ void move_frog_with_collision_resolution(void *moby, void *out, int use_path, fl
 }
 typedef u32 u128_EB360 __attribute__((mode(TI), aligned(16)));
 
-extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
-
 /* Bursts 4 then 8 particles up from the moby, then removes the moby stored at vars+0x20C.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002e9f30. */
 void destroy_frog_child_moby(struct Moby *moby) {
@@ -1056,7 +1056,6 @@ extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int FastTweenColor_r2(int, int, float) __asm__("func_001FA8A8");
 extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 
 /* Throws blarg_frog_spark_burst_count bursts of sparks from around the moby: each burst gets a random heading, speed
    and rise on

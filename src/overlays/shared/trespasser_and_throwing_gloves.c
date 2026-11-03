@@ -27,6 +27,9 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -772,15 +775,11 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
-extern int HeroEnterMoveState(int, int);
 extern int fast_dec_timer(int *);
 
 extern float vec_length_xy(void *);
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern void initialize_moby_motion_at_position(void *, void *, void *);
-
-extern struct Moby *spawn_mine(void *, void *, void *);
 
 typedef struct {
     u8 pad0[0x40];
@@ -1057,8 +1056,7 @@ extern DeliveryStats item_usage;
 extern struct Moby *active_mobies[];
 extern u8 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
 extern struct PadState g_controller_state;
-extern struct Moby *spawn_bomb(struct Moby *, void *);
-extern void launch_bomb(void *, struct Moby *, void *);
+
 extern s32 gameplay_event_frame_count MACRO_ADDR;
 extern CollisionHit_C39D0 coll_hit_result_r2 __asm__("D_L00_00173F40");
 extern Vec4 g_debug_camera_r2 __asm__("D_L00_00166EC0");
@@ -1068,8 +1066,6 @@ extern s32 fast_dec_timer(s32 *);
 extern s32 coll_line_r2(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 
 extern f32 vec_length_xy(void *);
-
-extern int HeroEnterMoveState(int, int);
 
 /* Updates the grip, chooses a throw target, and handles the held moby states.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c26c8. */

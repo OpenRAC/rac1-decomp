@@ -53,8 +53,6 @@ extern HeroItemDefView pokitaru_item_defs[];
 extern HeroAttackRecord pokitaru_attack_records[];
 extern HeroSpeedBands pokitaru_hero_speed_bands;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern int Hero_TrySetMoveStateL11(int, int);
 
 extern int func_001F9908(int *);

@@ -20,6 +20,8 @@
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
 #include "game/ui/hud.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -50,7 +52,6 @@ extern DrawTextRec font_text_slots[];
 extern char *font_text_cursor SDATA(font_text_cursor);
 extern int font_text_slot_index SDATA(font_text_slot_index);
 extern char font_text_format[];
-extern int sprintf();
 
 /* Queues one text item: font_text_slots[n] = {x, y, colour, pool position},
    then sprintf(pool, "%s", str) (font_text_format is "%s") advances the
@@ -174,8 +175,6 @@ extern char camera_sample_dir[];
 extern char camera_sample_text_name[];
 extern char camera_sample_line_format[];
 extern char camera_sample_alt_line_format[];
-
-extern void SetBackgroundColor(int, int, int);
 
 extern float vec_length_xy(void *);
 
@@ -1422,10 +1421,7 @@ extern int depth_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_base MACRO_ADDR;
 
 extern int wait_for_graphics_pipeline_idle(int, int);
-extern void SetupFS_AA_buffer(int, int, int, int, int, int);
 
-extern void append_gif_transfer_packet(void);
-extern void PutDispBuffer(void);
 extern int sceGsSetDefLoadImage(GsLoadImage *, s16, s16, s16, s16, s16, s16, s16);
 extern int sceGsExecLoadImage(GsLoadImage *, unsigned char *);
 
@@ -1612,7 +1608,7 @@ extern char shrub_scratchpad_copy[];
 extern void ProfileMarker_End_a(void *, int) __asm__("func_001F2558");
 extern void ProfileMarker_Begin_a(void *, int) __asm__("func_001F2560");
 extern void UpdateFog_v(void) __asm__("func_001F2930");
-extern void append_gif_transfer_packet(void);
+
 extern void BuildViewMatrices(void);
 
 extern void Transition_DrawSky(void);
@@ -1637,10 +1633,9 @@ extern void draw_light_quads(void);
 extern void dispatch_callback_list_4(void);
 extern void append_billboard_batch(void);
 extern void render_queued_rotated_sprites(void);
-extern void AA_BlurPass(void);
+
 extern void DebugProfiler_Hook(void);
 
-extern void draw_help(void);
 extern void draw_letterbox_bars(void);
 extern void draw_subtitles(void);
 extern void emit_rgba_draw_packet(int, int, int, int);

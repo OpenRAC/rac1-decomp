@@ -34,6 +34,8 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/render/partupd.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -1550,8 +1552,6 @@ extern void RotateWithMoby(struct Moby *, void *, void *, void *, void *, void *
 extern void move_4318(struct Moby *, void *, float, float, float, int);
 extern float randf_sym(float, float);
 
-extern int CarriedMobyUpdate(struct Moby *, void *);
-
 /* Update for the Puffoid creature: spawns on a path or a carrier moby, wanders, chases and attacks the target, jumps
    between path points, and smokes while it dies.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/0030c788.c, FUN_L11_00314318. */
@@ -2308,13 +2308,13 @@ int is_moby_in_bob_target_exclusion_state(struct Moby *m) {
 struct Manip;
 struct GifEntry;
 struct AnimSeq;
-extern int process_moby_suck_cannon_suction(void *, void *, void *);
+extern int process_moby_suck_cannon_suction_v(void *, void *, void *) __asm__("func_L00_002DCDA8");
 
 /* Grabbed check: while held, park the moby in state 0x14 (remembering its state) unless it cannot be grabbed; restore
    the saved state once released.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_00316160. */
 int Moby_ParkIfGrabbed(struct Moby *moby, void *position, void *target) {
-    int r = process_moby_suck_cannon_suction(moby, position, target);
+    int r = process_moby_suck_cannon_suction_v(moby, position, target);
     if (r != 0) {
         if (moby->state == 2 || moby->state == 4 || moby->state == 5 || moby->state == 6 || moby->state == 0xE ||
             moby->state == 0xF || moby->state == 0x10 || moby->state == 0x14) {
@@ -2331,7 +2331,6 @@ int Moby_ParkIfGrabbed(struct Moby *moby, void *position, void *target) {
     return r;
 }
 
-extern void *func_L00_002DCFD0(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
@@ -3119,7 +3118,6 @@ void set_moby_state_two_data_and_timer(char *arg, void *src) {
     dst->timer = scale_ticks(0x3C);
 }
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int energy_sphere_spawn_spark_start_color SDATA(energy_sphere_spawn_spark_start_color);
 extern int energy_sphere_spawn_spark_end_color SDATA(energy_sphere_spawn_spark_end_color);
 extern int energy_sphere_spawn_spark_time1 SDATA(energy_sphere_spawn_spark_time1);

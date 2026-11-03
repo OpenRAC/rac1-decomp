@@ -32,6 +32,9 @@
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -1893,7 +1896,7 @@ typedef struct {
 void copy_hoverboard_dummy_path_node(Level16VendorVectorMoby *moby, int index, void *out) {
     qcopy(out, moby->data->vectors + index * 16 + 16);
 }
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern int offset_path_index(char *, int, int, int);
 
 typedef struct {
@@ -2803,8 +2806,6 @@ int get_target_reposition_status(Moby *m) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L16_002E22DC);
-
-extern int memcard_Save(int, int);
 
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
@@ -3795,7 +3796,7 @@ extern float move_chomper_toward_position(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int IsFrameWithinWindow(char *, float);
 extern void collect_mobies_in_sphere_at_moby_point(void *, int, int, float, float, float, int, int, int);
-extern int CarriedMobyUpdate(void *, void *);
+
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern short chomper_move_params;
 /* Update the wandering helper's motion, animations, interaction and damage states. */

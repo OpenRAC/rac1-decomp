@@ -30,6 +30,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/ui/hud.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -1974,7 +1975,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern void vec_set_length_xy(void *, void *, float);
 
 extern int func_L00_001F2BE8(void *, float, int, void *, void *);
-extern int HeroEnterMoveState(int, int);
 
 extern int fast_dec_timer(int *);
 

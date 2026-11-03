@@ -23,6 +23,8 @@
 #include "callees.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/render/partupd.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -938,7 +940,7 @@ typedef struct {
 extern void func_L00_0026B890(void *, void *, int, int, int, int, int, int, float, float);
 
 extern int truncate_float_to_s32(float);
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
+
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern Pair falling_debris_smoke_choices;
@@ -1587,8 +1589,6 @@ extern void MobySpringTurn(char *moby, float *vel, float target, float k, float 
 extern void ClampVectorLength(void *a, float x);
 
 extern float vec_distance_xy(void *, void *);
-
-extern int begin_bolt_attraction(void *, int, float, float);
 
 extern int mine_fall(void *, void *);
 

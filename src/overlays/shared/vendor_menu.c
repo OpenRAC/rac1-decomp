@@ -31,6 +31,8 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "callees.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "game/ui/help.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -42,8 +44,6 @@ extern s32 weapon_ammo_counts[];
 extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
-
-extern void relocateObjectPointers(char *arg0, int idx);
 
 // load a table of 16 offsets relative to the base pointer and register each entry
 void decompress_and_relocate_vendor_moby_assets(void) {
@@ -242,11 +242,7 @@ extern char hero_globals_base[];
 extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
 extern s32 vendor_auxiliary_moby_load_pending MACRO_ADDR;
 
-extern void music_Pause(s32);
-
 extern void build_vendor_menu_rows(s32);
-
-extern s32 HeroEnterMoveState(s32, s32);
 
 extern short vendor_camera_eye_local_offset;
 extern f32 vendor_camera_eye_local_offset_z MACRO_ADDR;
@@ -373,8 +369,6 @@ void open_vendor_menu(VendorMoby_pv *m) {
     vendor_auxiliary_moby_active = 0;
     vendor_auxiliary_moby_load_pending = 0;
 }
-
-extern int HeroEnterMoveState(int, int);
 
 extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode SDATA(cinematic_mode);
@@ -518,7 +512,6 @@ extern struct T_29ad08 item_defs_r[] __asm__("D_L00_00179BC0");
 
 extern float ProbeGroundHeight_v(float, void *, s32) __asm__("func_00214358");
 
-extern void Music_ContinueStreamIfReady(void);
 extern void sce_gs_sync_v(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_0029ad08. */
@@ -853,7 +846,6 @@ extern s32 vendor_quantity_decrease_hold_frames MACRO_ADDR;
 extern s32 vendor_quantity_increase_hold_frames MACRO_ADDR;
 extern char level_render_state_base[];
 
-extern s32 msg_string();
 extern void set_scrolling_status_message();
 
 /* vendor buy dialog: quantity selection with held-button repeat, confirm and purchase */
@@ -1229,7 +1221,6 @@ extern void handle_vendor_auxiliary_moby_event();
 
 extern void update_resident_dialogue_animation_state();
 
-extern s32 msg_string();
 extern void set_scrolling_status_message();
 
 extern void update_vendor_purchase();

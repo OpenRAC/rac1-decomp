@@ -29,6 +29,7 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "overlays/shared/follow_camera.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -2695,7 +2696,6 @@ void ease_minibomber_position_and_heading(char *moby, float *target, float a, fl
 
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
 
-extern void mine_camera_blast(void *, void *, int, int);
 extern float oltanis_zero_vector[] MACRO_ADDR;
 extern char minibomber_drop_blast_params[];
 

@@ -13,6 +13,7 @@
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
 #include "core/sound/989snd.h"
+#include "game/render/framebuf.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -152,20 +153,17 @@ extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern void DMAC_VIF1_Enable_r(void) __asm__("func_00235018");
 
 extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
-extern void func_001FB470(void);
 
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
 extern void flush_cache_r(s32) __asm__("func_00118D80");
 
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
-extern void func_001FB530(void);
 
 extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
-extern void func_001FB8A8(void);
+
 extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
 
-extern s32 func_00209BB8(void);
 extern void UpdatePad_r(void) __asm__("func_00218908");
 extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");

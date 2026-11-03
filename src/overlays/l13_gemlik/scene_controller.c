@@ -17,6 +17,8 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -94,7 +96,6 @@ extern void func_L00_002664B0(int, int);
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
 extern void func_L00_0028FB78(void *);
-extern int func_0020BFC8(int, int);
 
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
 void update_gemlik_scene_controller(Moby *moby) {
@@ -516,7 +517,6 @@ extern float moby_spark_first_batch_vertical_acceleration_base_gp
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern int func_001FA898(float);
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 extern int coll_line(void *, void *, int, int, int);
 

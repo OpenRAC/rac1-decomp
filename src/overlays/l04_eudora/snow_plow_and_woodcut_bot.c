@@ -26,6 +26,9 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -232,8 +235,6 @@ typedef struct {
 extern VehicleCamera eudora_camera;
 
 extern s32 truncate_float_to_s32(float);
-
-extern void gunship_follow_path(VehicleMoby *);
 
 extern void MobySpringTurn(void *, void *, float, float, float, float);
 extern float vec_distance_xy(void *, void *);
@@ -777,8 +778,6 @@ extern void initialize_woodcut_bot_movement_data(void *);
 extern void *libc_memset(void *, int, int);
 
 extern int IsFrameWithinWindow(void *, float);
-
-extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
 
 extern int leg_walker_update(void *, void *, float, float, float);
 
@@ -1863,7 +1862,6 @@ void update_suck_cannon_particles(char *m) {
     }
 }
 
-extern int memcard_Save(int, int);
 extern char eudora_lieutenant_respawn_point[];
 extern unsigned char saved_mission_state[];
 

@@ -28,6 +28,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -70,7 +71,6 @@ extern void set_ground_height_band(void *);
 extern void restore_gadgetron_ceo_non_challenge_environment(char *);
 extern void activate_gadgetron_ceo_challenge_environment(char *);
 
-extern int memcard_Save(int, int);
 extern int PlayBankSound(int, int, int);
 
 extern float vec_distance_xy(void *, void *);

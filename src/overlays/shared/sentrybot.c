@@ -28,6 +28,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "callees.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -1582,7 +1584,7 @@ void ProjectileUpdate(unsigned char *m) {
 extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
+
 extern short quartu_rocket_trail_start_color, quartu_rocket_trail_end_color,
     rocket_trail_spark_first_vector_fourth_component_gp, rocket_trail_spark_second_vector_fourth_component_gp;
 extern short quartu_rocket_trail_time1_min, quartu_rocket_trail_time1_max, quartu_rocket_trail_time2_min,
@@ -1620,7 +1622,7 @@ void spawn_rocket_trail_spark(char *moby) {
     PartType02Spawn(moby + 0x10, v0, v1, *(int *)&quartu_rocket_trail_start_color,
                     *(int *)&quartu_rocket_trail_end_color, a, b, c, *(int *)&quartu_rocket_trail_texture);
 }
-extern void spawn_glow_particle(char *, char *, int, int, float, int, int, int, int);
+extern void spawn_glow_particle_v(char *, char *, int, int, float, int, int, int, int) __asm__("func_L00_002ADBB0");
 extern float quartu_zero_vec[] MACRO_ADDR;
 extern int quartu_rocket_glow_life_ticks SDATA(quartu_rocket_glow_life_ticks);
 extern float quartu_rocket_glow_size SDATA(quartu_rocket_glow_size);
@@ -1633,8 +1635,8 @@ extern unsigned char quartu_rocket_glow_alpha;
 void spawn_rocket_detonation_glow(char *moby) {
     char *pos = moby + 0x10;
     int t = scale_ticks(quartu_rocket_glow_life_ticks);
-    spawn_glow_particle(moby, pos, (int)&quartu_zero_vec, t, quartu_rocket_glow_size, quartu_rocket_glow_red,
-                        quartu_rocket_glow_green, quartu_rocket_glow_blue, quartu_rocket_glow_alpha);
+    spawn_glow_particle_v(moby, pos, (int)&quartu_zero_vec, t, quartu_rocket_glow_size, quartu_rocket_glow_red,
+                          quartu_rocket_glow_green, quartu_rocket_glow_blue, quartu_rocket_glow_alpha);
 }
 typedef int u128_29E8A0 __attribute__((mode(TI)));
 typedef struct {
@@ -1711,8 +1713,6 @@ extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(v
                                                                                int, int, int);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, float, int, int);
-
-extern void mine_camera_blast(void *, void *, int, int);
 
 /* update of moby class 256: a homing missile that leads its target, trails smoke and explodes on contact */
 void update_target_leading_missile(M_29E8A0 *m) {
@@ -2018,14 +2018,14 @@ void update_target_leading_missile(M_29E8A0 *m) {
                     }
                 }
                 if (missile_distant_gray_glow_gate < 0.95f && 9.0f < dist) {
-                    ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(
+                    ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle_v)(
                         m, m->pos, v70, 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
-                    ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(
+                    ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle_v)(
                         m, m->pos, v70, 4.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
                 }
-                ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(
+                ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle_v)(
                     m, m->pos, v70, 4.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
-                ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle)(
+                ((void (*)(void *, void *, void *, float, int, int, int, int, int))spawn_glow_particle_v)(
                     m, m->pos, v70, 2.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
                 vel[0] = 0.0f;
                 cam = quartu_player_camera;

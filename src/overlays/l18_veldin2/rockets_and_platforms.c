@@ -28,6 +28,8 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
 extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
@@ -1597,7 +1599,6 @@ int request_floating_platform_tilt(unsigned char *moby, int a1, int a2) {
 }
 INCLUDE_ASM("asm/overlays", func_L18_002D9C90);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern short floating_platform_spark_start_speed;
 extern short floating_platform_spark_end_speed;
 extern short floating_platform_spark_gravity;
@@ -2787,8 +2788,7 @@ void spawn_sparks_along_target_direction(char *moby) {
 extern void spawn_timed_projected_sprite_effect(void *, int, int, int);
 
 extern int truncate_float_to_s32(float);
-extern char *spawn_glow_particle(void *, void *, void *, float, int, unsigned char, unsigned char, unsigned char,
-                                 unsigned char);
+
 extern short homing_spark_particle_texture, homing_spark_burst_spark_count, homing_spark_burst_speed_min,
     homing_spark_burst_speed_max, explosion_burst_spark_initial_color_gp, explosion_burst_spark_second_color_gp;
 extern short homing_spark_burst_life, homing_spark_burst_time2, homing_spark_burst_time3,

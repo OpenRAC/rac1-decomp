@@ -19,6 +19,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -30,16 +31,12 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
 extern int truncate_float_to_s32(float);
 
 extern void *MobyGetHitMessage(void *, int, int);
-
-extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern int pokitaru_cinematic_mode MACRO_ADDR;
 extern int pokitaru_pool_draw_tiles MACRO_ADDR;

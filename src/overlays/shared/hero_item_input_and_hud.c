@@ -61,8 +61,6 @@ extern HeroItemDefView item_defs[];
 extern HeroAttackRecord attack_records[];
 extern HeroSpeedBands hero_speed_bands;
 
-extern int HeroEnterMoveState(int, int);
-
 extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");

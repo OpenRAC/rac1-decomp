@@ -17,6 +17,7 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -944,7 +945,6 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVd058;
 
-extern int CarriedMobyUpdate(void *, void *);
 extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
@@ -1463,7 +1463,7 @@ void draw_group_gadgebot_1906_joint_glows(unsigned char *moby) {
         }
     }
 }
-extern int func_L00_002DCDA8(void *, void *, void *, float);
+
 /* Runs process_moby_suck_cannon_suction on the moby and switches state 7 accordingly; returns its result. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as

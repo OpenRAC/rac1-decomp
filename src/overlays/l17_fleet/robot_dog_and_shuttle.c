@@ -33,6 +33,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -266,7 +267,6 @@ int move_robot_dog_toward_position(char *moby, float *target, float speed) {
     return vec_distance_xy(moby + 0x10, target) < 0.2f;
 }
 
-extern int func_L00_002DCDA8(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */

@@ -57,8 +57,6 @@ extern HeroItemDefView rilgar_item_defs[];
 extern HeroAttackRecord rilgar_attack_records[];
 extern HeroSpeedBands rilgar_hero_speed_bands;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern int Hero_TryMoveStateL05(int, int);
 
 extern int func_001F9908(int *);

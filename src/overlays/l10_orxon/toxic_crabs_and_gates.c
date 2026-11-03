@@ -28,6 +28,8 @@
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -777,8 +779,6 @@ extern int toxic_crab_debris_time1 SDATA(toxic_crab_debris_time1);
 extern int toxic_crab_debris_time2 SDATA(toxic_crab_debris_time2);
 extern int toxic_crab_debris_time3 SDATA(toxic_crab_debris_time3);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 // Per-frame update of the moby in arg0: builds two vectors from its position and the trig helpers, then calls the
 // level's helpers for each of its entries.
@@ -1685,8 +1685,6 @@ void emit_moby_directional_particles(char *m) {
 
 extern int try_set_help_message(int, int);
 
-extern int memcard_Save(int, int);
-
 extern unsigned char special_items_base[];
 
 extern int orxon_cinematic_mode MACRO_ADDR;
@@ -2400,8 +2398,6 @@ extern int FastBSphereCheck(char *, float);
 
 extern void rand_vec(float *, float, float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Emits sparks from pos in bursts: the burst timer alternates between a pause (counting up to 0) and an
  * active window, and during the window a particle goes out on each emit-timer tick when the camera is near. */

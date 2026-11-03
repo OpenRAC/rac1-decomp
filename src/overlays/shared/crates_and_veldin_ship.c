@@ -30,6 +30,11 @@
 #include "overlays/shared/sound_playback.h"
 #include "callees.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -560,13 +565,10 @@ extern int truncate_float_to_s32(float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *pos, void *rot, int type, int n,
-                                         float lo, float hi);
-
 extern void rand_vec(float *, float, float);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
+
 extern int level_frame_counter MACRO_ADDR;
 extern int crate_break_sound_frame MACRO_ADDR;
 extern int crate_break_effect_frame MACRO_ADDR;
@@ -1236,7 +1238,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
 }
 
 extern int spawn_decoy(void *, void *, void *);
-extern void HeroEnterMoveState(int, int);
+
 extern int fast_dec_timer(int *);
 
 extern void release_moby_with_collision_check(float *, char *, void *);
@@ -1565,7 +1567,7 @@ extern s32 trunc_2D4398(f32) __asm__("func_001FA898");
 extern f32 rand_2D4398(f32, f32) __asm__("func_002140F8");
 extern void rotate_2D4398(void *, void *, void *) __asm__("func_001F9EC0");
 extern void func_L00_00260958(void *, f32);
-extern void func_L00_002A86D8(void *, void *, void *, s32, s32, s32);
+
 extern void increment_metal_detector_collection_counter_r(unsigned char *) __asm__("func_L00_002D42D8");
 extern void remove_2D4398(void *) __asm__("func_0020D678");
 extern void release_2D4398(s32) __asm__("func_L00_0028EBF0");
@@ -2276,7 +2278,6 @@ extern void set_ground_height_band(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern int CarriedMobyUpdate(void *, void *);
 
 extern float SteerAngleWithVelocity_r(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float move_horny_toad_toward_position(unsigned char *m, float *t, float vel);
@@ -2727,7 +2728,6 @@ float move_horny_toad_toward_position(unsigned char *m, float *t, float vel) {
     return 37.0f;
 }
 
-extern int func_L00_002DCDA8(void *, void *, void *, float);
 /* Runs the process_moby_suck_cannon_suction check and switches the moby to or from state 9; returns its result. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
@@ -2994,7 +2994,6 @@ extern s32 RotateWithMoby(struct Moby *, struct Moby *, void *, void *, void *, 
 
 extern void queue_planet_unlock_message(s32);
 
-extern void memcard_Save(s32, s32);
 extern void DeleteMoby(void);
 
 extern void vec_scale_to_length(void *, void *, f32);
@@ -3450,7 +3449,6 @@ extern float smoke_fire_far_culling_distance_gp SDATA(smoke_fire_far_culling_dis
 extern Vec4f g_debug_camera_r2 __asm__("D_L00_00166EC0");
 void func_0020D678_D83D8(P *) __asm__("func_0020D678");
 
-int fetch_and_add_global_accumulator(int);
 int random_integer_below(int);
 
 void func_L00_002D9208_D83D8(P *, int) __asm__("func_L00_002D9208");

@@ -27,6 +27,7 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern char g_hero[];
 extern char item_usage[];
 extern unsigned int pad_held;
@@ -566,8 +567,6 @@ extern void *MobyGetHitMessage(void *, int, int);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern int cinematic_mode MACRO_ADDR;
 extern int water_patches MACRO_ADDR;

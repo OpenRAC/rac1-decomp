@@ -38,6 +38,10 @@
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
 #include "core/sound/989snd.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/system/loaders.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "game/ui/help.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -158,7 +162,6 @@ extern char level_profile_mark_after_sound[];
 extern void prepare_level_transition_with_help_cleanup(void);
 extern void count_expired_mobys(void);
 
-extern void update_ambience_target_cycle(void);
 extern void Profile_Mark_a(void *, int) __asm__("func_001E9768");
 extern void Profile_Mark_b(void) __asm__("func_001E9768");
 
@@ -167,8 +170,6 @@ extern void update_glints(void);
 extern void update_debug_camera(void);
 extern void update_hero_from_debug_camera(void);
 extern void UpdateAllPointLights(void);
-
-extern void Help_Update(void);
 
 /* per-frame update of the in-level game: pause and cutscene triggers, then the subsystem updates. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297f78. */
 void handle_pause_input(void) {
@@ -338,14 +339,10 @@ extern unsigned char player_camera[];
 extern char *active_scene_trigger_target;
 extern char *level_menu_system_target;
 
-extern void music_Pause(int);
-
 extern void start_cutscene_chunk_read(int);
 
-extern void Music_ContinueStreamIfReady(void);
 extern int update_audio_stream_until_idle(int);
-extern void update_world_object_animation(void);
-extern int HeroEnterMoveState(int, int);
+
 extern int sce_gs_sync_v(int);
 
 typedef struct {
@@ -431,8 +428,6 @@ void StartCutscene(int arg) {
 }
 
 extern void reset_frame_counters(void);
-
-extern int HeroEnterMoveState(int, int);
 
 extern void music_set_active_track_value(int v);
 
@@ -751,9 +746,9 @@ extern VendorCutscene cutscene_state_r __asm__("D_L00_0016C960");
 extern s32 challenge_mode SDATA(challenge_mode);
 extern s32 decode_mode MACRO_ADDR;
 extern void apply_level_specific_cutscene_moby_effects(void);
-extern void Music_ContinueStreamIfReady(void);
+
 extern s32 update_audio_stream_until_idle(s32);
-extern void update_world_object_animation(void);
+
 extern void start_cutscene_chunk_read(s32);
 
 /* Per-frame update while the cutscene in D_L00_0016C860 plays: runs the debug-gated subsystem updates, fades, advances
@@ -988,8 +983,6 @@ void prepare_movie_playback(int sector, int size, int arg2) {
 }
 extern int movie_request_decoder_state MACRO_ADDR;
 extern void sceGsSyncVCallback(void *);
-
-extern void music_StartTrack(int, int, int);
 
 /* Leaves movie playback: restores the GS and draw buffers and returns to the game. */
 void movie_exit_to_gameplay(void) {

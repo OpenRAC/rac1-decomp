@@ -20,6 +20,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
@@ -471,7 +472,7 @@ struct CamK_72D8 {
     short ids[8];
     float vals[9];
 };
-extern void HeroEnterMoveState(int, int);
+
 extern char *orxon_camera_descriptors MACRO_ADDR;
 extern char *orxon_paths[];
 extern char orxon_view_params[];
@@ -652,7 +653,6 @@ extern float orxon_player_camera_fade_rate;
 extern char orxon_view_params[];
 extern float orxon_player_camera_matrix[];
 
-extern void HeroEnterMoveState(int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 
 extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");

@@ -619,8 +619,6 @@ extern float aridia_hero_anim_frame_speeds[];
 
 extern int fast_dec_timer(int *);
 
-extern int get_hero_idle_animation_index(int);
-
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 

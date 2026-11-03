@@ -34,6 +34,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -260,7 +262,6 @@ void initialize_hero(void) {
 }
 extern unsigned char g_hero[] NOT_SDA;
 
-extern void HeroEnterMoveState(int, int);
 /* Resets the hero's tuning values and reinitialises the hero. */
 void reset_hero_to_idle(void) {
     struct Hero *hero_state = &g_hero_r;
@@ -2488,7 +2489,7 @@ extern struct Hero D_0013F450_0A320 __asm__("D_0013F450");
 extern f32 g_frame_time MACRO_ADDR;
 
 extern s32 rand_range(s32, s32);
-extern void spawn_burst_moby(Vec4 *, f32);
+
 extern void spawn_moving_resizing_height_snapped_alpha_fade_particle_r(Vec4 *, f32 *, s32, f32,
                                                                        f32) __asm__("func_L00_00272488");
 extern void PartType35Spawn_r(Vec4 *, Vec4 *, s32, s32) __asm__("func_L00_002703E8");

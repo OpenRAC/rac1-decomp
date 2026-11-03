@@ -8,6 +8,9 @@
 #include "game/ui/hud.h"
 #include "asm_functions/executable.h"
 #include "game/system/stub.h"
+#include "game/audio/music.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
@@ -85,7 +88,6 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
 }
 
 extern void sce_gs_sync_v(int);
-extern void music_Update(void);
 
 /*
  * Close, not exact (15/124), same size so inert. Semantics confirmed:
@@ -186,8 +188,6 @@ void music_channel_ready_callback(int arg0, long arg1) {
     }
 }
 
-extern void music_start_track_by_id(short, short, short);
-
 /* Stream callback: store the voice handle and advance the channel, or restart the secondary track. */
 void music_secondary_start_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
@@ -204,8 +204,6 @@ void music_secondary_start_callback(int arg0, long arg1) {
         music_start_track_by_id(b[0x2A], b[0x2C], b[0x2B]);
     }
 }
-
-extern void music_PreseekTrack(short, short, short);
 
 /* Stream callback: store the voice handle and advance the channel, or redo the primary preseek. */
 void music_primary_preseek_callback(int arg0, long arg1) {
@@ -373,10 +371,7 @@ extern u8 D_0013D5C8[];
 extern u8 items_acquired[];
 extern u8 gSpecialItems[];
 
-extern void *msg_string(s32);
-
 extern char *find_substring(char *, char *);
-extern s32 sprintf(char *, const char *, ...);
 
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2);
 

@@ -10,6 +10,7 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "game/audio/music.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -57,7 +58,6 @@ struct BridgeVars {
 extern void prepare_scaled_float_table_with_target_byte(void *, int, float);
 
 extern char umbris_ambient_stream_scaled_table[];
-extern char register_audio_stream_callback[];
 
 /* Umbris ambient stream moby: sets up its table, then queues the audio stream. */
 void AmbientStreamL07Update(unsigned char *moby) {

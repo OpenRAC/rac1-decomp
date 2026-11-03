@@ -10,6 +10,7 @@
 #include "data/executable.h"
 #include "asm_functions/executable.h"
 #include "game/system/stub.h"
+#include "game/ui/help.h"
 
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
@@ -123,7 +124,7 @@ void memcard_RestoreGame(int arg0) {
 }
 
 extern int disc_table[];
-extern void calculate_ring_buffer_bounds(int, void *, void *);
+
 extern void update_audio_stream_until_idle(int);
 
 extern void memcard_RestoreGame(int);

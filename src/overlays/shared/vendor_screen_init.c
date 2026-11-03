@@ -40,8 +40,6 @@ extern void Hero_SetMoveState(int, int);
 
 extern int sce_gs_sync_v(int);
 
-extern int Music_ContinueStreamIfReady(void);
-
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it
    closes. */
 void initialize_vendor_screen(char *m, int lvl) {

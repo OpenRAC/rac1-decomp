@@ -23,6 +23,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/hero_update_ground_material.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -589,8 +590,6 @@ extern f32 g_frame_time MACRO_ADDR;
 extern s32 fast_dec_timer(s32 *);
 
 extern void restore_hero_from_vehicle_mode(void);
-
-extern void enter_hero_vehicle_mode_and_set_moby(s32, s32, struct Moby *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_002348d0. */
 void update_hero_timers_and_spatial_state(void) {

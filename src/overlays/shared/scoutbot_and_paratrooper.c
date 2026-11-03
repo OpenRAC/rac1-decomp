@@ -24,6 +24,9 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/render/partupd.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -134,7 +137,6 @@ extern float animframe_3DF8(void *) __asm__("func_0020D830");
 extern int func_00215B18(void *, float);
 extern void shoot_3DF8(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
-extern int func_L00_002DDEA0(void *, void *);
 extern void explode_3DF8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void delete_3DF8(void *) __asm__("func_0020D678");
@@ -616,7 +618,6 @@ void update_scoutbot_movement(char *m) {
         FastVecAdd((float *)(m + 0x10), (float *)(m + 0x10), tmp);
     }
 }
-extern void *cancel_suck_cannon_suction(void *);
 
 struct EnterScoutbotReturnHomeStateVars {
     u8 pad_00[0xC8];
@@ -710,7 +711,6 @@ extern float vec_length_xy(void *);
 extern void *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 
-extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int batalia_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float homing_shot_lifetime SDATA(homing_shot_lifetime);
@@ -817,7 +817,6 @@ extern int truncate_float_to_s32(float);
 extern int fast_dec_timer(int *);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void ClampVectorLength(float, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -1090,7 +1089,7 @@ void advance_scroll_entry(int i) {
 extern int fast_dec_timer(int *);
 
 extern int truncate_float_to_s32(float);
-extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
+
 extern s32 spark_emitter_lower SDATA(spark_emitter_lower);
 extern s32 spark_emitter_upper SDATA(spark_emitter_upper);
 extern f32 spark_emitter_start_rise SDATA(spark_emitter_start_rise);
@@ -1207,7 +1206,6 @@ extern void sound302618(float, void *, int, void *) __asm__("func_L00_00264B40")
 extern void wake302618(void *) __asm__("func_L00_0025B178");
 extern int hero_anim302618(int) __asm__("func_002140B0");
 
-extern int func_L01_0028C2D8(void *, void *, float);
 extern void func_L00_0025A060(void *, void *, void *, void *);
 extern int range302618(int, int) __asm__("func_L00_00258BC8");
 extern void subtract302618(void *, void *, void *) __asm__("func_001F9BF0");

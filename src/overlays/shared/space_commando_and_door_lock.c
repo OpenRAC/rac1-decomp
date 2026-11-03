@@ -20,6 +20,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "callees.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/render/partupd.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -881,7 +883,7 @@ void DrawBeam(char *moby) {
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void lerp_vector(void *, void *, void *, float);
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
+
 extern short beam_spark_initial_word_gp, beam_spark_second_word_gp, space_commando_beam_spark_start_w,
     space_commando_beam_spark_end_w, space_commando_beam_spark_time_a_min, space_commando_beam_spark_time_a_max;
 extern short space_commando_beam_spark_time_b_min, space_commando_beam_spark_time_b_max,
@@ -1231,7 +1233,6 @@ extern int g_current_level_index SDATA(g_current_level_index);
 extern int level_mobys_q SDATA(level_mobys_q);
 extern int truncate_float_to_s32(float);
 
-extern void PartType41Spawn(void *, void *, int, unsigned int, int, int, int, float);
 /* Return color with blue placed in the blue channel. */
 static inline unsigned int or_blue_channel_p(int blue, unsigned int color) {
     return blue * 0x10000 | color;

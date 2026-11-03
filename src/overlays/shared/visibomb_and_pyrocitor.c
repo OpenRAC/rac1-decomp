@@ -29,6 +29,9 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -151,7 +154,6 @@ extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
-extern void func_L00_002B2DD8(Moby *);
 extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
 extern void matrix_from_basis_rows_r(void *, void *) __asm__("func_001FA4A0");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
@@ -181,9 +183,6 @@ extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00
 extern float FastArcSin_r(float) __asm__("func_001F9FC0");
 
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern void func_L00_002B30C8(void *);
-extern void *func_L00_002B0F58(void *, void *, void *, float, float, float, float, float);
-extern float func_L00_002B1238(int);
 
 extern void start_equipped_item_animation_r(void) __asm__("func_L00_0020EB60");
 extern float FastCos_r(float) __asm__("func_001F9F90");
@@ -1614,7 +1613,6 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb) {
 
 extern int hero_control_mode_11_flag NOT_SDA;
 
-extern void HeroEnterMoveState(int, int);
 extern void moby_restore_globals_state(int, int);
 
 /* Ends Visibomb control: deletes the missile, restores the camera and the hero's move state. */
@@ -1668,7 +1666,7 @@ void update_attached_moby_transform(Moby *m, unsigned char *o) {
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
-extern void spawn_glow_particle(void *, void *, void *, int, int, int, int, int, float);
+extern void spawn_glow_particle_v(void *, void *, void *, int, int, int, int, int, float) __asm__("func_L00_002ADBB0");
 extern float g_frame_time MACRO_ADDR;
 
 extern IntVec6 glow_burst_spark_colors_a;
@@ -1719,12 +1717,12 @@ void spawn_moby_particle_and_glow_burst(Moby *m, int flag) {
             } while (--i);
         }
         if (cpu_frame_load < 0.95f) {
-            spawn_glow_particle(m, &m->pos, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
-            spawn_glow_particle(m, &m->pos, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
+            spawn_glow_particle_v(m, &m->pos, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
+            spawn_glow_particle_v(m, &m->pos, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
         }
-        spawn_glow_particle(m, &m->pos, n, scale_ticks(20), 0x7F, 0x40, 0, 0x30, 3.0f);
-        spawn_glow_particle(m, &m->pos, n, scale_ticks(27), 0x60, 0x10, 0, 0x40, 2.0f);
-        spawn_glow_particle(m, &m->pos, n, scale_ticks(29), 0x20, 0, 0, 0x20, 1.0f);
+        spawn_glow_particle_v(m, &m->pos, n, scale_ticks(20), 0x7F, 0x40, 0, 0x30, 3.0f);
+        spawn_glow_particle_v(m, &m->pos, n, scale_ticks(27), 0x60, 0x10, 0, 0x40, 2.0f);
+        spawn_glow_particle_v(m, &m->pos, n, scale_ticks(29), 0x20, 0, 0, 0x20, 1.0f);
     }
 }
 typedef int u128_2B7430 __attribute__((mode(TI)));
@@ -2734,8 +2732,6 @@ extern int pyrocitor_flame_particle_count SDATA(pyrocitor_flame_particle_count);
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void rand_vec(float *, float, float);
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 // Updates the effect moby's 15 slots: spawns and releases spark particles around live children.
 void update_pyrocitor_flame_effect_slots(char *m) {

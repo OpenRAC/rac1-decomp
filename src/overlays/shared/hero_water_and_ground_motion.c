@@ -82,7 +82,6 @@ extern int fast_dec_timer(int *);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 
-extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void vec_scale_to_length(void *, void *, float);

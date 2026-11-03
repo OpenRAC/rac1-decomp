@@ -36,6 +36,7 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -1193,8 +1194,6 @@ void update_flickering_mesh_effect(struct Moby *m) {
 }
 
 extern void set_ground_height_band(void *);
-
-extern int memcard_Save(int, int);
 
 extern float vec_distance_xy(void *, void *);
 

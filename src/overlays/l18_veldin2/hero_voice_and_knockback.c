@@ -16,6 +16,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
@@ -180,8 +181,6 @@ extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
 
 void HeroL18_SetMoveState(s32, s32);
-
-void remove_tracked_class_5f3_moby(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/ui_help_00213b40.c, FUN_L18_00218a90. */
 s32 HeroL18_TryTakeHit(s32 arg) {

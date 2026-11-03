@@ -14,6 +14,8 @@
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/follow_camera.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 extern Hero g_hero;
 extern int frame_size;
 extern char gold_weapon_purchased[];
@@ -500,7 +502,6 @@ extern s32 sound_update(void);
 
 extern float vec_length_xy(void *);
 
-extern s32 sprintf(char *, const char *, ...);
 extern double func_00120778(float);
 extern s32 sceOpen(char *, s32, ...);
 
@@ -949,10 +950,9 @@ typedef struct {
 extern u8 help_stats_base[];
 extern s32 skip_frame MACRO_ADDR;
 extern volatile s32 debug_text_flush_wait_flag MACRO_ADDR;
-extern void append_gif_transfer_packet(void);
+
 extern void flush_debug_text_queue(void);
 
-extern int sprintf(char *, const char *, ...);
 extern double promote_float60(float) __asm__("func_00120778");
 extern char debug_menu_title[];
 extern char debug_menu_title_underline[];
@@ -1475,7 +1475,6 @@ void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale,
     Font_EnableColorCodes();
 }
 typedef void (*LabelFn)(int, int, int, float, float, unsigned char *);
-extern unsigned char *msg_string(int);
 
 /* Draws a line-wrapped text entry with fade-in/out at its scroll edges (newline codes become " - " or start a new
    row). */

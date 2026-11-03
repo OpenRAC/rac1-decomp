@@ -26,6 +26,10 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/audio/music.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -135,8 +139,6 @@ struct SharkigatorVars {
 };
 
 extern int func_001FA898(float);
-
-extern void HeroEnterMoveState(int, int);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -492,7 +494,7 @@ extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void func_L07_00270BE0(int x, int y0, int w, int h);
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
-extern int func_0020BFC8(int, int);
+
 extern void initialize_global_state_entry_r(int) __asm__("func_0022F4A0");
 
 /* Update for moby class 436 on level 07: steps the moby's state byte through its table of cases. */
@@ -717,7 +719,6 @@ extern void RerollEffectCounter(void *, short *);
 extern void StepColorFade(void *, void *);
 extern int get_first_moby_in_group(int *, int, int, int);
 
-extern int select_point_index_by_distance(void *, void *, float);
 extern int get_next_moby_in_group(int *, int, int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern void jet_animate(unsigned char *, float);
@@ -1243,7 +1244,6 @@ extern int func_L07_00282EB0(void *, int, int, int);
 extern float func_00214D28(float *, float, float);
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 
-extern void func_L00_002A5158(void *, int, int, float, float, float, float);
 extern int is_point_inside_clip_volume_r2(void *, int) __asm__("func_00215570");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
@@ -1634,8 +1634,6 @@ void update_linked_state_sliding_platform(unsigned char *moby) {
 }
 extern char umbris_ocean_scaled_table[];
 extern void prepare_scaled_table_with_byte_128(void *, float);
-
-extern void register_audio_stream_callback(void);
 
 /* Umbris ocean moby: sets up its table, then queues the audio stream when outside the clip volume. */
 void ocean_umbris_update(unsigned char *moby) {

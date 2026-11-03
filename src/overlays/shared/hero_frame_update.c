@@ -15,13 +15,7 @@
 #include "game/system/stub.h"
 extern Hero g_hero;
 
-extern void hero_frame_update(void);
-
-extern void update_hero_ground_material_effects(void);
-
 extern void HeroL03_UpdateStateTransitions(void);
-
-extern void update_hero_blink_and_gold_weapon_tint(void);
 
 /* Per-frame driver: validates the cursor, then runs each update pass in order. */
 void HeroL03_FrameUpdate(void) {

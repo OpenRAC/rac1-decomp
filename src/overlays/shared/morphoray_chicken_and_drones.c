@@ -24,6 +24,9 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -192,7 +195,6 @@ extern s32 coll_line_r(void *, void *, s32, void *, s32) __asm__("func_L00_001EF
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern void ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
 
-extern void func_L00_002ADE90(void);
 extern unsigned char *GetFlaggedPvarWord_r(int) __asm__("func_L00_00261448");
 extern s32 CollType_r(void) __asm__("func_L00_001F3958");
 
@@ -726,7 +728,7 @@ extern float dist3_CB(void *, void *) __asm__("func_001F9D10");
 extern void func_L00_002592B0(void *, float *, float, float, float, float);
 extern float ground_CB(void *, int, float) __asm__("func_00214358");
 extern float fabs_CB(float) __asm__("func_001F9B88");
-extern int func_L00_002DDEA0(void *, void *);
+
 extern void vsub_CB(void *, void *, void *) __asm__("func_001F9BF0");
 extern float vlen_CB(void *) __asm__("func_001F9CB8");
 extern void vscale_CB(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -1110,7 +1112,6 @@ void update_morphoray_chicken(Moby *m) {
     }
 }
 
-extern int func_L00_002DCDA8(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
@@ -1139,7 +1140,7 @@ int launch_suck_cannon_projectile_and_update_moby_state(char *m, int a, int b, f
     }
     return r;
 }
-extern int cancel_suck_cannon_suction(void *);
+
 /* Cancel the moby's suck cannon suction and set it to state 5; return the cancel result. */
 int cancel_suck_cannon_suction_and_set_moby_state_5(char *a) {
     int r = cancel_suck_cannon_suction(a);
@@ -1835,7 +1836,7 @@ extern int use_ammo_2CDAB8(int, int) __asm__("func_L00_00234638");
 extern float distance_2CDAB8(void *, void *) __asm__("func_001F9D10");
 extern float fabs_2CDAB8(float) __asm__("func_001F9B88");
 extern void func_L00_001EE2E0(Moby *, int, float, float, float *, int, int, float, int);
-extern void func_L00_00222B80(int, int);
+
 extern void fire_start_2CDAB8(void) __asm__("func_L00_0020EB60");
 extern void fire_end_2CDAB8(void) __asm__("func_L00_0020ED30");
 extern void apply_mat4_2CDAB8(float *, float *, void *) __asm__("func_001F9EE8");
@@ -3011,15 +3012,11 @@ extern s32 level_frame_counter MACRO_ADDR;
 extern void *g_hero_moby;
 extern s32 hero_control_mode;
 extern s32 is_moby_in_class_range_500_to_540(void *);
-extern void update_crate_stack_motion(struct Moby *);
+
 extern Contact *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, int *, int *, int);
-extern void ground_attached_update(struct Moby *);
-extern void create_linked_class_0326_moby(struct Moby *);
 
 extern s32 truncate_float_to_s32(f32);
-
-extern void break_crate(struct Moby *, int, Contact *);
 
 extern s32 coll_sphere_mobys(f32, void *, s32, void *, void *);
 extern int FastBSphereCheck(void *, float);

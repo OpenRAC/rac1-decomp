@@ -10,6 +10,7 @@
 #include "game/moby/mobyutil.h"
 #include "structs/pad.h"
 #include "game/render/vuchain.h"
+#include "game/audio/music.h"
 
 /*
  * help.cpp in the original source; text 0x1FDF10-0x1FF668.
@@ -320,7 +321,6 @@ __asm__(".section .text\n\tnop\n");
 
 extern int func_001F9908(int *arg0);
 
-extern int Music_ContinueStreamIfReady(void);
 extern int pad_held;
 extern int pad0_pressed;
 extern int g_game_mode MACRO_ADDR;

@@ -2,6 +2,7 @@
    are matched. Starts at 0x00282F48 (was pause_00282F48.c). */
 #include "common.h"
 #include "include_asm.h"
+#include "game/system/memcard.h"
 
 typedef struct {
     char pad0[0xE0];
@@ -9,7 +10,6 @@ typedef struct {
 } Level18PauseState;
 
 extern Level18PauseState veldin2_whole_save_buffer_base;
-extern void memcard_MakeWholeSave(char *);
 
 /* Serialize save data once and retain its destination buffer. */
 void serialize_whole_save_once(char *save_data) {

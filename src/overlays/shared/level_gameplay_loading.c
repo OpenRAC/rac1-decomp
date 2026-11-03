@@ -24,6 +24,7 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "overlays/shared/sound_playback.h"
+#include "game/system/loaders.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -1883,17 +1884,6 @@ extern UpdD244 active_scene_trigger;
 extern void Profile_Mark_v(void *, s32) __asm__("func_001E9768");
 
 extern void copy_memory_by_alignment_v(void *, void *, s32) __asm__("func_L00_001FF040");
-
-extern void ParseParticleTexs(void *, char *, void *, s32);
-extern void unpack_point_records(void *, s32);
-extern void relocate_sky_definition(char *);
-extern void LoadHudBanks(void);
-extern void upload_texture_images(void *, s32, void *);
-extern void relocateObjectPointers(Class244110 *, s32);
-extern void register_moby_class(char *, void *, void *, s32);
-extern void register_object_render_class(char *, void *, void *, s32);
-extern void register_shrub_render_class(char *, void *, void *, void *, s32);
-extern void initialize_tfrag_render_data(char *, void *);
 
 extern void load_two_int_two_float_header(char *);
 extern void relocate_counted_pointer_table(char *);

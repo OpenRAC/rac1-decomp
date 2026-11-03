@@ -29,6 +29,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -1353,8 +1354,6 @@ extern float jump_speed_4318(void *, void *, void *, float, float);
 
 extern int move_w(void *, void *, void *, void *, float);
 
-extern int CarriedMobyUpdate(void *, void *);
-
 extern void set_ground_height_band(void *);
 
 /* Peckbot update: wanders and hops after the hero, flies in a hurt arc when hit, dies with a burst of parts. */
@@ -2155,7 +2154,6 @@ extern unsigned char menu_item_enabled_115_k __asm__("D_0013D50F") NOT_SDA;
 extern void PlayBankSound(int, int, int);
 
 extern void SpawnDebrisMoby(char *, void *, float);
-extern void gunship_follow_path(char *);
 
 /* Floating mine: scales with the camera distance; when hit it explodes (unlocks the first-mine hint
  * once), deletes its four tethers and itself; otherwise it bobs and fades out with height. */

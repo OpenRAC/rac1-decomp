@@ -33,6 +33,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/render/partupd.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -987,7 +989,6 @@ void extend_group_sand_shark_timers(char *arg) {
     }
 }
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int sand_shark_particle_emission_throttle_input MACRO_ADDR;
 extern short sand_shark_burst_rise_min, sand_shark_burst_rise_max, sand_shark_burst_end_rise_min,
     sand_shark_burst_end_rise_max;
@@ -2516,7 +2517,6 @@ extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
 extern void SamplePathAt(void *, int, void *, void *, int, float);
 
-extern void PartType41Spawn(void *, void *, int, int, int, int, int, float);
 extern void HeroL02_SetMoveState(int, int);
 extern void enter_hero_idle_or_stop(void);
 extern void set_vendor_camera_mode(int, int);

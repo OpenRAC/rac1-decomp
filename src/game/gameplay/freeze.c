@@ -19,6 +19,7 @@
 #include "game/math/fastfunc.h"
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
+#include "core/libc/sprintf.h"
 
 /*
  * freeze.cpp in the original source; text 0x1FBC80-0x1FDF10.
@@ -29,9 +30,6 @@
 extern int space_load_in_progress MACRO_ADDR;
 
 extern int GetEffectTex(int);
-
-extern void music_Pause(int);
-extern int msg_string(int);
 
 extern int g_game_mode MACRO_ADDR;
 extern int memory_card_request;
@@ -198,8 +196,6 @@ extern char g_screen_extent[];
 extern s32 truncate_float_to_s32(f32);
 
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
-
-extern s32 sprintf(char *, const char *, ...);
 
 /* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */
 static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, struct TextRegionP box) {
@@ -671,10 +667,7 @@ extern char memory_card_state[];
 extern char g_controller_state[];
 extern char D_00141150[];
 
-extern void memcard_Save(int, int);
 extern void Profile_Mark_v(void) __asm__("func_001E9768");
-
-extern void Music_QueueTrack(int, int);
 
 #define R (*(Freeze *)D_00193400)
 #define PAD (D_0013CBE4[0])

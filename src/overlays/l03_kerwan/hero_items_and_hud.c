@@ -57,8 +57,6 @@ extern HeroItemDefView kerwan_item_defs[];
 extern HeroAttackRecord kerwan_attack_records[];
 extern HeroSpeedBands kerwan_hero_speed_bands;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern int HeroL03_SetMoveState(int, int);
 
 extern int func_001F9908(int *);

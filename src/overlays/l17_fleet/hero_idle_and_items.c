@@ -23,6 +23,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/audio/sound.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -45,8 +46,6 @@ extern void *MobyGetHitMessage(void *, int, int);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern int fleet_game_mode MACRO_ADDR;
 extern int fleet_water_patches MACRO_ADDR;

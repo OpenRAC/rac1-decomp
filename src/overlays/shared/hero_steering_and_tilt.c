@@ -23,6 +23,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -992,8 +993,6 @@ void update_hero_delayed_voice_requests(void) {
     }
 }
 extern int hero_control_mode_11_flag NOT_SDA;
-
-extern void HeroEnterMoveState(int, int);
 
 /* resets the level state from two vectors: sets up camera matrices, clears flags, starts sound bank */
 void Hero_ResetToPosition(void *a, void *b, int c, int d) {

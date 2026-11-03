@@ -25,6 +25,9 @@
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/audio/music.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -1373,10 +1376,9 @@ extern float D_L08_001D7320[4];
 extern char batalia_zero_vec_r3[] __asm__("D_L08_0015F660") MACRO_ADDR;
 extern void func_L02_002A52B0(void *, float);
 
-extern void func_00216270(void *);
 extern int Sound_IsPlaying_r(struct Moby *, int) __asm__("func_L00_0028EB98");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
-extern char *func_L00_002D9340(void *, float);
+
 extern float random_angle_radians_r2(void) __asm__("func_00214158");
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
 extern float FastCos_r2(float) __asm__("func_001F9F90");
@@ -3015,7 +3017,7 @@ typedef int u128 __attribute__((mode(TI)));
 extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
+
 extern float batalia_motion_spark_vel_scale SDATA(batalia_motion_spark_vel_scale);
 extern float batalia_motion_spark_accel_scale SDATA(batalia_motion_spark_accel_scale);
 extern float batalia_motion_spark_accel_jitter SDATA(batalia_motion_spark_accel_jitter);

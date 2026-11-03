@@ -31,6 +31,8 @@
 #include "game/system/stub.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -1321,7 +1323,7 @@ typedef struct Data_2C56B0 {
 } Data_2C56B0;
 
 extern int STUB_printf_d(void *, ...) __asm__("func_001E9730");
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern int Moby_PlaySound_s(int, int, int) __asm__("func_0022ED80");
 extern int update_blarg_space_fighter_path_following_r(void *, void *, int) __asm__("func_L13_002C5248");
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
@@ -1750,12 +1752,10 @@ typedef struct {
     unsigned char b[24];
 } Blk24;
 
-extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
-
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
+
 extern float gemlik_zero_vec[] MACRO_ADDR;
 extern Blk24 forcefield_tower_debris_start_colors;
 extern Blk24 forcefield_tower_debris_end_colors;

@@ -25,6 +25,9 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern char g_hero[];
 extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
@@ -165,7 +168,6 @@ INCLUDE_ASM("asm/overlays", func_L00_002E17D4);
 extern int scripted_camera_move_active MACRO_ADDR;
 extern int gFadeLvl SDATA(gFadeLvl);
 
-extern void HeroEnterMoveState(int, int);
 /* Level camera hook for moby A: when the moby's state is 4, clears scripted_camera_move_active and the fade level and
    runs camera
    script 3; then, if the hero's control mode is 0x13, puts the hero back into move state 0. */
@@ -227,12 +229,8 @@ extern u8 saved_mission_state[];
 extern s32 g_hero_pending_item_2[];
 extern u8 item_available[];
 
-extern void initialize_moby_particle_effect(void *);
-
 extern void emit_moby_color_cycling_particles_r(void *) __asm__("func_L00_002E1C38");
 extern f32 vec_distance_xy(void *, void *);
-
-extern void memcard_Save(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e03a0. */
 void pilots_helmet_update(M_2e03a0_2e03a0 *m) {

@@ -11,12 +11,10 @@
 #include "game/render/draw.h"
 #include "game/render/vuchain.h"
 #include "game/ui/hud.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 
 extern void *libc_memset(void *, int, int);
-
-extern char *msg_string(int);
-
-extern int sprintf(char *str, const char *fmt, ...);
 
 typedef struct {
     int i0;
@@ -401,7 +399,6 @@ extern u128_2A1540 player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern char D_L00_00166D80[];
 extern A02b0_tab D_L00_001C92F0[];
 
-extern void func_001FB530(void);
 extern void DrawDebugProfiler_r(void) __asm__("func_001F3D78");
 
 extern s32 func_00122598(s32);

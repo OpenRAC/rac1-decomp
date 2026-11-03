@@ -31,6 +31,9 @@
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -543,8 +546,6 @@ extern s32 truncate_float_to_s32(f32);
 
 extern int DefaultVtbl_DeleteMoby_r(int, int, f32) __asm__("func_L00_00237B70");
 
-extern void mine_camera_blast(void *, void *, int, int);
-
 /* l03 mine update: falls until it lands, sticks to or homes on its target, arms, and explodes on contact (debris,
    camera shake, blast) or shrinks away when old.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cbea8. */
@@ -810,8 +811,6 @@ extern s32 D_0015EE84_D4560 SDATA(D_0015EE84);
 extern L03LevelState kerwan_checkpoint_level_state;
 extern u32 pad0_pressed;
 extern s32 D_L03_0015F674_D4560 SDATA(D_L03_0015F674);
-
-extern void PartType41Spawn(void *, struct Moby *, s32, u32, s32, s32, s32, f32);
 
 extern void request_hero_target_pose_v(void *, float, int) __asm__("func_L00_00234768");
 
@@ -1341,8 +1340,6 @@ extern char *kerwan_camera_points SDATA(kerwan_camera_points);
 extern void record_moby_context_bytes(void *, int, struct Moby *, int, void *);
 
 extern void initialize_moby_grounding(struct Moby *);
-
-extern void memcard_Save(int, int);
 
 #define LINK_HELPER(M, V)                                                  \
     t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058);             \

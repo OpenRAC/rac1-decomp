@@ -16,6 +16,9 @@
 #include "game/moby/mobyfunc.h"
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
@@ -39,7 +42,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int SegmentCrossPolyline(int, void *, void *, void *);
 
-extern void spawn_bolt_by_value(void *, void *, void *, int, int, int);
 struct MobyBound;
 struct MobyBound *GetFlaggedPvarWord(struct Moby *);
 
@@ -1255,7 +1257,6 @@ void draw_trail(void *p0, void *p1, void *vel, float a, float b) {
 }
 extern int banner_display_ticks MACRO_ADDR;
 extern char banner_text_buffer[];
-extern int msg_string(int);
 
 /* Shows message arg0 in the on-screen text box for arg1 ticks. */
 void ShowBanner(int arg0, int arg1) {
@@ -1266,7 +1267,7 @@ void ShowBanner(int arg0, int arg1) {
     banner_display_ticks = arg1;
 }
 extern char banner_text_buffer[] NOT_SDA;
-extern void sprintf(void *, int, int);
+
 /* Like ShowBanner, but draws message a with parameter b. */
 void queue_formatted_dialogue_message(int a, int b, int c) {
     if (c == -1)

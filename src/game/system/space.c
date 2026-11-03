@@ -25,6 +25,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/system/stub.h"
+#include "game/audio/music.h"
+#include "game/render/partupd.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -33,8 +35,6 @@
  */
 
 extern char voice_pool[];
-
-extern void append_gif_transfer_packet(void);
 
 extern int GetEffectTex(int);
 
@@ -799,7 +799,7 @@ extern s32 render_sequence_time[];
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 
 extern s32 func_001FA898(f32);
-extern void append_gif_transfer_packet();
+
 extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
 
 extern void draw_sky_shells();
@@ -883,8 +883,6 @@ void render_level_frame(void) {
 
 extern float flare_spark_offsets[][6][4];
 extern float g_frame_time MACRO_ADDR;
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Spawns six particles around a moby: random velocity and a position taken from the flare corner table, transformed by the moby's matrices. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/effects/fun_0022f5b0.c, FUN_0022f5b0. */
 void emit_six_spark_effects(char *m, float z) {
@@ -1884,14 +1882,6 @@ extern u8 level_init_cleared_block2[];
 
 extern s32 Stream_SubmitRead(void *buf, u32 lsn, u32 sectors);
 
-extern void upload_texture_images(s32 arg0, s32 count, s32 p);
-
-extern void relocate_sky_definition(s32 f);
-extern void register_moby_class(s32 moby, s32 arg1, s32 arg2, s32 oclass);
-extern void unpack_point_records(s32 src, s32 count);
-extern void ParseParticleTexs(s32 hdr, s32 base, s32 src, s32 count);
-extern s32 upload_mip_texture(s32, void *);
-
 extern void SoundBank_StoreHandle();
 #define sequence (*(f32 *)&D_0015F53C)
 #define D_001413D0 ((s32 *)&D_001414D0)
@@ -2319,7 +2309,6 @@ extern void read_file_entry_with_retry_r(s32) __asm__("func_0012F4A8");
 
 extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, u64, u64) __asm__("func_001F5800");
 
-extern s32 service_level_archive_load(void);
 extern void Menu_RunStateHandler(void);
 
 extern void append_scrolling_textured_quad_r(s32, s32, s32, s32, u64, u64, f32, f32, f32, f32) __asm__("func_00232A00");
@@ -2463,19 +2452,12 @@ extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
 
 extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
 
-extern void music_Stop(void);
-
-extern void SetBackgroundColor(int, int, int);
-extern int load_level_chunk_from_disc(void);
-
 extern void play_level_loading_slides(int, int, int, int, int);
 extern void initialize_level_runtime(void);
 extern int read_file_entry_with_retry(int);
-extern void append_palette_transfer_packet(void);
 
 extern void update_resident_gameplay_state(void);
 extern void tick_space_transition(void);
-extern int service_level_archive_load(void);
 
 /* DoSpaceTransition: plays the level-to-level transition (dialogue screens, loading loop) and waits for the load. Adapted from Lombyte's project (GPL-3.0) for PAL: src/gameplay/state/do_space_transition.c, do_space_transition. */
 void DoSpaceTransition(void) {

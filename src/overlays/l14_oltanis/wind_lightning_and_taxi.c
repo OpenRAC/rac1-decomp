@@ -35,6 +35,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/follow_camera.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -404,8 +406,6 @@ extern f32 path_lift_hero_pull_speed SDATA(path_lift_hero_pull_speed);
 extern float g_frame_time MACRO_ADDR;
 
 extern void STUB_printf_v(const char *, short) __asm__("func_001E9730");
-
-extern void gunship_follow_path(void *);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -2570,7 +2570,6 @@ extern void set_ground_height_band(void *);
 
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
 extern void mark_elevator_collected(void *);
-extern int memcard_Save(int, int);
 
 extern float vec_distance_xy(void *, void *);
 

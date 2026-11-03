@@ -13,6 +13,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
+#include "core/libc/sprintf.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
@@ -152,7 +153,6 @@ void render_capture_effect_pass(void) {
 extern char fmt_thousands_grouped_int[];
 extern char fmt_plain_int[];
 /* Unprototyped: the two call sites pass different argument counts. */
-extern void sprintf();
 
 /* Formats a number into a string, with a thousands separator from 1000 up. */
 void format_scaled_display_value(void *arg0, int arg1) {

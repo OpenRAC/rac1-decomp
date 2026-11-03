@@ -18,6 +18,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -671,7 +672,7 @@ extern int func_L00_00259B88(Moby *, int *, void *, void *, float);
 extern float angle_dist_2E39E0(float, float) __asm__("func_001FA850");
 extern void func_L00_0025AC00(Moby *, Moby *, int, void *, void *, float);
 extern int knock_update_2E39E0(Moby *, void *) __asm__("func_L00_0025D6F0");
-extern int func_L00_002DDEA0(Moby *, void *);
+
 extern void zero_2E39E0(void *) __asm__("func_001F9BC0");
 
 extern float angle_add_2E39E0(float, float) __asm__("func_001FA748");

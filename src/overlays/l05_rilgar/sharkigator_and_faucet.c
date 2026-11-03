@@ -32,6 +32,9 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "callees.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -492,7 +495,6 @@ void spawn_sharkigator_surface_effects(char *moby) {
         }
     }
 }
-extern char *spawn_burst_moby(void *, float);
 
 extern void rand_vec(float *, float, float);
 
@@ -1036,8 +1038,6 @@ void spawn_amoeboid_particles(unsigned char *moby) {
     }
 }
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Explosion debris: 20 bursts thrown out along dir with random spread, each trailing 10 smoke puffs. */
 void spawn_amoeboid_hit_sparks(void *m, void *dir) {
@@ -2507,7 +2507,7 @@ void copy_racer_path_node(char *moby, int idx, float *out) {
     out[0] = out[0] + FastCos(a) * 0.0f;
     out[1] = out[1] + FastSin(a) * 0.0f;
 }
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern int offset_path_index(char *, int, int, int);
 
 extern void copy_racer_path_node(char *moby, int idx, float *out);
@@ -3145,15 +3145,12 @@ extern int rilgar_flood_checkpoint_reached SDATA(rilgar_flood_checkpoint_reached
 extern float rilgar_water_gate_accel SDATA(rilgar_water_gate_accel);
 extern float rilgar_water_gate_max_speed SDATA(rilgar_water_gate_max_speed);
 
-extern void RescaleFloatTable(float);
 extern void RipplePatch_ToFixedPoint(float *, int *);
 extern void record_grid_entry_neighbor_indices(int);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void synchronize_group_water_heights(char *);
-extern void RippleDisturb(void *, int, int, float, float, float, float);
 
-extern void RippleSimClock(char *, int);
 extern void DrawRipplePatches(void);
 
 /* Update of the level 05 water mobys: sets up the 48-record water chain, moves the surface by state and keeps its

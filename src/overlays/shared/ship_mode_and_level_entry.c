@@ -18,6 +18,8 @@
 #include "game/math/fastfunc.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/sound_playback.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 extern char cd_read_state[];
 extern char *level_render_state;
 
@@ -109,12 +111,10 @@ typedef struct {
     short x5a;
 } S_171b;
 
-extern int HeroEnterMoveState(int, int);
-
 extern void load_chunks_with_optional_fade(int, int);
 
 extern int sce_gs_sync_v(int);
-extern void Music_ContinueStreamIfReady(void);
+
 // Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
 void initialize_level_transition_with_audio(int a) {
     O_28e9c8 *o;
@@ -220,7 +220,6 @@ extern char cutscene_state[];
 extern int pal_mode MACRO_ADDR;
 extern int memcard_last_save_slot MACRO_ADDR;
 extern short level_transition_ticks_by_variant;
-extern int memcard_Save(int, int);
 
 /* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
 void prepare_target_level_transition(int dest) {

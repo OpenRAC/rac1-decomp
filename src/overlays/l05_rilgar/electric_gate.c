@@ -27,6 +27,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -550,7 +552,6 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 
@@ -1703,8 +1704,6 @@ extern void initialize_moby_grounding(char *);
 
 extern void MusicRequestTrack();
 
-extern int memcard_Save(int, int);
-
 extern float vec_length_xy(void *);
 extern void update_hoverboard_girl_cutscene_instances();
 extern void PlayBankSound();
@@ -1980,8 +1979,6 @@ void update_hoverboard_girl(Moby *moby) {
 extern void attach_big_head_cheat_manipulator(char *);
 
 extern void initialize_moby_grounding(char *);
-
-extern int memcard_Save(int, int);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);

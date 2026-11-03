@@ -7,6 +7,7 @@
 #include "structs/memcard.h"
 #include "asm_functions/executable.h"
 #include "game/ui/hud.h"
+#include "game/ui/help.h"
 
 /*
  * menu.cpp in the original source; text 0x2071A8-0x209A60.
@@ -886,7 +887,6 @@ void downsample_map_coverage(void *arg0) {
     dst[0] = (dst[0] & 0xFE) | 2;
 }
 
-extern void *func_001FE540(int);
 extern char menu_item_price_fmt[]; /* "%d" */
 extern char menu_token_error_text[]; /* "error" */
 extern char vendor_item_prices[];

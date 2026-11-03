@@ -26,6 +26,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
@@ -35,7 +36,6 @@ extern int fast_dec_timer(void *);
 
 extern void MusicRequestTrack(int, int);
 
-extern int memcard_Save(int, int);
 extern float vec_distance_xy(float *, float *);
 
 extern int truncate_float_to_s32(float);

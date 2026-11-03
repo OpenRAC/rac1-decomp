@@ -11,6 +11,7 @@
 #include "game/math/fastfunc.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "core/libc/sprintf.h"
 
 // Ticks two small counters up or down depending on a random roll; copies a value.
 void update_hud_counter_transition(char *m) {
@@ -57,7 +58,6 @@ typedef struct {
 } HudElem;
 
 extern s32 truncate_float_to_s32(f32);
-extern int sprintf(char *str, const char *fmt, ...);
 
 extern s32 frame_size[];
 extern s32 pal_mode MACRO_ADDR;

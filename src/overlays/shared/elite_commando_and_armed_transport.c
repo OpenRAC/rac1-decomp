@@ -21,6 +21,8 @@
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -881,7 +883,7 @@ void select_blarg_elite_commando_movement_animation(char *moby) {
 }
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
-extern void spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
+
 extern float blarg_elite_commando_extra_glow_gate SDATA(blarg_elite_commando_extra_glow_gate);
 typedef struct {
     int values[6];
@@ -1009,7 +1011,6 @@ void update_blarg_elite_commando_joint_aim(char *m) {
 
 extern void rand_vec(float *, float, float);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 /* Emit randomized joint particles while the moby is active. */
 void emit_blarg_elite_commando_joint_sparks(char *m) {
     float matrix[16], velocity[4], acceleration[4], scatter[4];

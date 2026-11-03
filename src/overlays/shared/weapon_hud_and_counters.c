@@ -20,6 +20,9 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/ui/hud.h"
+#include "game/audio/music.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 extern char g_hero[];
 extern char item_available[];
 extern int weapon_ammo_counts[];
@@ -805,9 +808,6 @@ typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) HudPoint;
 
-extern void *msg_string(int);
-extern int sprintf(char *, const char *, ...);
-
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int race_record_panel_end_y MACRO_ADDR;
@@ -1272,9 +1272,6 @@ typedef struct {
 } TI_238C30;
 
 extern void HudFrame(char *, int, int, int, int, int);
-extern int sprintf(char *, const char *, ...);
-
-extern void *msg_string(int);
 
 extern unsigned char screen_globals_base[];
 extern short quick_select_pulse_period;
@@ -2172,7 +2169,6 @@ extern int bolt_exclamation_color_from SDATA(bolt_exclamation_color_from);
 extern int bolt_exclamation_color_to SDATA(bolt_exclamation_color_to);
 extern int bolt_exclamation_pulse_ticks SDATA(bolt_exclamation_pulse_ticks);
 extern char bolt_exclamation_format[];
-extern int sprintf(char *str, const char *fmt, ...);
 
 extern void print_text_with_texture_3(int, int, int, char *, int);
 
@@ -2285,7 +2281,6 @@ extern int weapon_hud_text_x SDATA(weapon_hud_text_x);
 extern int weapon_hud_text_y SDATA(weapon_hud_text_y);
 
 extern void HudFrame(char *, int, int, int, int, int);
-extern int sprintf(char *, const char *, ...);
 
 /* Draws the weapon HUD tile: three-part frame, weapon icon and ammo text with shadow, faded by the slide-in timers. */
 int draw_weapon_ammo_hud_panel(char *m) {
@@ -2687,8 +2682,6 @@ extern char tie_class_slot_flags[];
 extern char shrub_class_slot_by_id[];
 extern char shrub_class_slot_records[];
 extern char shrub_class_slot_flags[];
-
-extern void register_audio_stream_callback(void);
 
 extern void register_part_types(void);
 

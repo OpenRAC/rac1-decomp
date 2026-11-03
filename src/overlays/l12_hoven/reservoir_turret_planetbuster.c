@@ -34,6 +34,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -127,7 +129,7 @@ extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
+
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern void draw_water_reservoir_r(char *) __asm__("func_L12_002EDE40");
 
@@ -983,7 +985,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
-extern int func_0020BFC8(int, int);
 extern void draw_hoven_turret_hud();
 extern void draw_hoven_turret_destruction_fade();
 

@@ -31,6 +31,10 @@
 #include "game/system/stub.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "game/render/framebuf.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -339,7 +343,6 @@ void build_interpolated_dma_packet(Arg *arg) {
     g_gs_texture_allocation_cursor += 0x4000;
 }
 
-extern void AA_BlurPass(void);
 extern float textured_grid_saved_fog_near_distance MACRO_ADDR;
 extern float textured_grid_saved_fog_far_distance MACRO_ADDR;
 extern float textured_grid_saved_fog_near_intensity MACRO_ADDR;
@@ -383,7 +386,7 @@ void trackdrive_left_update(struct Moby *moby) {
         moby->flags |= 0x40;
     }
 }
-extern int func_L00_002DCDA8(void *, void *, void *, float);
+
 /* Calls process_moby_suck_cannon_suction(a) and sets state 9 from its result; returns the result. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
@@ -1634,8 +1637,6 @@ extern void initialize_collectible_sprite_state(char *moby);
 extern void update_collectible_sprite_effect(char *m);
 extern float vec_distance_xy(void *, void *);
 
-extern int memcard_Save(int, int);
-
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -2081,7 +2082,7 @@ void background_ship_1_update(char *moby) {
 extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
+
 extern float background_ship_1_spark_start_vel_scale SDATA(background_ship_1_spark_start_vel_scale);
 extern float background_ship_1_spark_end_vel_scale SDATA(background_ship_1_spark_end_vel_scale);
 extern float background_ship_1_spark_jitter SDATA(background_ship_1_spark_jitter);

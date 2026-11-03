@@ -30,6 +30,10 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -2811,11 +2815,9 @@ void PoisonVesselUpdate(Moby *moby) {
         DeleteMoby_r2(moby);
     }
 }
-extern void initialize_moby_particle_effect(char *);
 
 extern void emit_moby_sprite_particles(char *);
 
-extern int memcard_Save(int, int);
 extern float bolt_grabber_scale SDATA(bolt_grabber_scale);
 extern unsigned char race_gates_base[];
 extern int quartu_dialogue_message_duration MACRO_ADDR;
@@ -3064,8 +3066,6 @@ extern unsigned char saved_mission_state[];
 extern int quartu_alarm_on SDATA(quartu_alarm_on);
 extern char *quartu_cuboids MACRO_ADDR;
 
-extern int memcard_Save(int slot, int flags);
-
 extern void draw_quartu_cutscene_messages(void);
 
 /* UpdateMoby_1419: state machine for a timed object */
@@ -3125,8 +3125,6 @@ extern int quartu_cutscene_msg_x SDATA(quartu_cutscene_msg_x);
 extern int quartu_cutscene_msg_y SDATA(quartu_cutscene_msg_y);
 extern int quartu_cutscene_msg_color SDATA(quartu_cutscene_msg_color);
 extern int quartu_cutscene_msg_shadow_color SDATA(quartu_cutscene_msg_shadow_color);
-extern int msg_string(int);
-extern int sprintf(char *str, const char *fmt, ...);
 
 extern void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e);
 

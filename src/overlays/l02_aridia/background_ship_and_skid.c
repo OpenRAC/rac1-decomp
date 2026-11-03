@@ -27,6 +27,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -86,7 +88,6 @@ extern int truncate_float_to_s32(float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int memcard_Save(int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -1196,7 +1197,6 @@ extern void rand_vec_r2(void *, float, float) __asm__("func_L00_00258DB0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 
-extern void *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 

@@ -40,8 +40,6 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 

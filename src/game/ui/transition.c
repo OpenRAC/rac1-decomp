@@ -15,6 +15,8 @@
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
 #include "core/sound/989snd.h"
+#include "game/system/loaders.h"
+#include "game/render/framebuf.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -156,8 +158,6 @@ typedef struct {
     int x0;
     unsigned char *x4;
 } S160E9EC8;
-
-extern void SetBackgroundColor(int, int, int);
 
 extern void scale_vector(void *, void *, float);
 
@@ -695,14 +695,7 @@ extern void InitViewContext_r(void) __asm__("func_001F3008");
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
 
 extern void InitMemSlots_r(void) __asm__("func_00201E10");
-extern void func_00202F00(u8 *, u8 *, u8 *, s32);
-extern void func_00203038(u8 *, s32);
-extern void func_00203118(u8 *);
-extern void func_00203958(u8 *, s32, u8 *);
-extern void func_00203E78(u8 *, u8 *, u8 *, s32);
-extern void func_00203F68(u8 *, u8 *, u8 *, s32);
-extern void func_00204340(u8 *, u8 *, u8 *, u8 *, s32);
-extern void func_00204918(u8 *, u8 *);
+
 extern void parse_space_scene_chunk_r(s32) __asm__("func_00205220");
 
 extern void func_00217628(u8 *, s32, s32);
@@ -1107,8 +1100,7 @@ extern s32 Transition_UpdateMovieCamera_r2() __asm__("func_001EB338");
 extern u64 GetEffectTex();
 
 extern s32 truncate_float_to_s32(f32);
-extern s32 append_gif_transfer_packet();
-extern s32 AA_BlurPass();
+
 extern s32 draw_freeze_message_box();
 
 extern void render_level_effects_and_screen_sprites();
@@ -1283,7 +1275,6 @@ extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
 extern void func_00233FF8(void);
 extern void func_00234018(void);
 
-extern void func_002032D0(void);
 extern s32 func_00122598(s32);
 extern s32 scale_frames_BB48(s32) __asm__("func_001F98C0");
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
@@ -1292,7 +1283,7 @@ extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
 extern void vu1_send_chain_BB48(void) __asm__("func_002349B8");
 extern void swap_chain_BB48(void) __asm__("func_00234948");
 extern void put_draw_small_BB48(void) __asm__("func_001FB598");
-extern void func_001FB8A8(void);
+
 extern void put_draw_large_BB48(void) __asm__("func_001FB498");
 extern s32 memcard_update_BB48(void) __asm__("func_00209E68");
 extern s32 func_00209070(void);

@@ -26,6 +26,7 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "callees.h"
+#include "game/audio/music.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -2033,7 +2034,6 @@ void qwark_rilgar_update(char *m) {
 }
 extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
 
-extern void register_audio_stream_callback(void);
 extern char kerwan_ambient_stream_scaled_table[];
 
 /* moby update: state 0 plays a sound and arms state 1, state 1 registers a draw callback */

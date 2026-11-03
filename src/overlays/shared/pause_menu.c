@@ -30,6 +30,8 @@
 #include "game/audio/sound.h"
 #include "game/ui/hud.h"
 #include "game/system/stub.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/render/framebuf.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -156,8 +158,6 @@ extern void initialize_render_archive_transfer(void);
 extern void transfer_draw_buffer_chunks(int, int, int);
 
 extern Moby_277208 *create_menu_preview_moby(int);
-
-extern void quad_moby_update(void);
 
 /* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
 void initialize_pause_menu(void) {
@@ -770,7 +770,7 @@ L2:
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void append_gif_transfer_packet(void);
+
 extern void append_draw_buffer_upload_packets(int a, int b, int n);
 
 extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
@@ -1470,8 +1470,6 @@ extern unsigned char *level_mobys_end MACRO_ADDR;
 extern void raise_kernel_trap(void);
 
 extern void euler_rotation_basis(void *, void *);
-
-extern void register_audio_stream_callback(void);
 
 /* loads the saved pause-menu state block into the game globals */
 void restore_or_clear_level_state(void) {

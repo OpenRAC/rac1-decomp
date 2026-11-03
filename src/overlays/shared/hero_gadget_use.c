@@ -25,6 +25,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
 extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -1749,7 +1750,6 @@ extern float g_frame_time MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int select_point_index_by_distance(void *, void *, float);
 extern int offset_path_index(void *, int, int, int);
 
 typedef struct {

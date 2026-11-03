@@ -30,6 +30,8 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "game/audio/music.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -550,7 +552,6 @@ int update_bolt_thief_path_movement(char *moby) {
     return r;
 }
 
-extern int memcard_Save(int, int);
 extern float vec_distance_xy(void *, void *);
 
 extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
@@ -930,7 +931,7 @@ char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
     return (char *)moby;
 }
 extern char oltanis_scaled_float_table[];
-extern void register_audio_stream_callback(void);
+
 extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
 
 /* Moby update: init once, then draw each frame. */

@@ -34,6 +34,8 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/follow_camera.h"
 #include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -1348,7 +1350,6 @@ extern int is_suck_cannon_suction_blocked_by_hero_state(void);
 
 extern void stop_suck_cannon_suction_effect(int);
 extern void update_suck_cannon_suction(u8 *, void *);
-extern void HeroEnterMoveState(int, int);
 
 extern int coll_line(void *, void *, int, int, int);
 extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
@@ -1979,7 +1980,7 @@ typedef struct {
 } Cam;
 extern Cam player_camera_r __asm__("D_L00_00166D80");
 
-extern char *mine_camera_blast(char *, char *, int, char *);
+extern char *mine_camera_blast_v(char *, char *, int, char *) __asm__("func_L00_002D4CE8");
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 /* Explosion burst for a moby: debris sprays, sparks, coloured flashes, camera shake and an optional damage area. */
@@ -2124,7 +2125,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     }
     player_camera_r.f160 = (f23 < 20.0f) ? 0.4f - f23 * 0.0175f : 0.050000012f;
     player_camera_r.i168 = scale_ticks(25);
-    mine_camera_blast((char *)&blk, (char *)&((Moby *)self)->pos, 0, 0);
+    mine_camera_blast_v((char *)&blk, (char *)&((Moby *)self)->pos, 0, 0);
     if (gold_weapon_purchased[9]) {
         k = coll_sphere_mobys_r(3.0f, &((Moby *)self)->pos, 0x10, self, 0);
         *(u128_DD3D8 *)e = *(u128_DD3D8 *)&((Moby *)self)->pos;
@@ -3120,7 +3121,6 @@ void stop_suck_cannon_suction_effect(int arg0) {
     suck_beam_queue_draw(arg0);
 }
 
-extern void begin_bolt_attraction(void *, int, float, float);
 extern void try_collect_ammo_pickup(void *);
 
 /* Scatter a moby away from nearby positions in the hazard table. */

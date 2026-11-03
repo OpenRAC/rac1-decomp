@@ -9,6 +9,8 @@
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -394,8 +396,6 @@ extern char rilgar_fmt_label[];
 extern char rilgar_fmt_progress_number[];
 extern char rilgar_fmt_rank_label[];
 
-extern char *msg_string(int);
-extern int sprintf(char *, char *, ...);
 extern void print_text_with_texture_3(int, int, long, char *, int);
 
 /* Screen-bottom offset minus a HUD element's Y, using the PAL or NTSC margin. */

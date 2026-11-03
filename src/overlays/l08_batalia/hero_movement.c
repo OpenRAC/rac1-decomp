@@ -32,6 +32,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -187,12 +188,9 @@ extern float batalia_hero_anim_frame_speeds[];
 
 extern int fast_dec_timer(int *);
 
-extern int get_hero_idle_animation_index(int);
-
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 
-extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void vec_scale_to_length(void *, void *, float);

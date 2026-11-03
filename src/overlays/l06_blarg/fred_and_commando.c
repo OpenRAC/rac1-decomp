@@ -33,6 +33,9 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "game/audio/music.h"
+#include "game/render/partupd.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -888,8 +891,6 @@ extern void set_moby_and_links_to_states_4_and_5(char *);
 
 extern int check_all_listed_frog_states_fe_fd_or_10(int);
 
-extern int memcard_Save(int, int);
-
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -1134,7 +1135,7 @@ extern void begin_red_button_rotation_r(char *) __asm__("func_L06_00305BF8");
 extern int get_red_button_sequence_status_r(char *) __asm__("func_L06_00305C38");
 extern void queue_moby_dialogue_line_r(char *, int) __asm__("func_L06_00303858");
 extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
-extern int func_00216960(void);
+
 extern void set_moby_list_state_17_r(int) __asm__("func_L06_00301068");
 extern void func_L06_002EB260(int);
 extern void func_L06_002F59D0(int);
@@ -1892,7 +1893,6 @@ int update_shuttle_path_ride(char *moby, int path) {
 extern void rand_vec(void *, float, float);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern unsigned char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 extern char scatter_explode_spark_colors_start[];
 extern char scatter_explode_spark_colors_end[];
@@ -2013,7 +2013,6 @@ extern void rand_vec(void *, float, float);
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
 
 extern int truncate_float_to_s32(float);
-extern u8 *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 struct BreakApartShuttleLinkedMobysVars {
     u8 pad_00[0xCC];

@@ -34,6 +34,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -3156,8 +3157,6 @@ extern void update_robot_dog_aim_joint(void *);
 extern void update_robot_dog_glow_effects(void *);
 
 extern void set_ground_height_band(void *);
-
-extern int CarriedMobyUpdate(void *, void *);
 
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern int move_robot_dog_toward_position(char *moby, float *target, float speed);

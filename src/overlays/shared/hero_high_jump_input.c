@@ -119,8 +119,6 @@ int pick_idle_fidget(int *index) {
     return 0;
 }
 
-extern int HeroEnterMoveState(int, int);
-
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern void ClampVectorLength(void *a, float x);
 
@@ -186,7 +184,6 @@ void update_hero_locomotion_state(void) {
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 
-extern int HeroEnterMoveState(int, int);
 extern int HeroEnterMoveState_b(int, int) __asm__("func_L00_00222B80");
 
 // Tries the crouch-jump style moves in priority order and starts the first whose conditions hold. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_00229660.
@@ -283,8 +280,6 @@ typedef struct {
     char pad2[0x24];
 } Rec;
 extern Rec item_defs[] __attribute__((section(".data")));
-
-extern int HeroEnterMoveState(int, int);
 
 /* starts the pending global action if conditions hold; returns 1 on success */
 int try_start_hero_item_idle_animation(void) {

@@ -31,6 +31,9 @@
 #include "game/render/vuchain.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/hero_update_ground_material.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -485,7 +488,6 @@ extern float spark_spread SDATA(spark_spread);
 extern int FastBSphereCheck(char *, float);
 
 extern void rand_vec(float *, float, float);
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Level 6 moby update: aims a vector at its target, runs the chain of distance and angle helpers, and hands the result
    to PartType02Spawn. */
@@ -832,7 +834,6 @@ extern void enter_hero_idle_state_for_current_vehicle_mode_r(void) __asm__("func
 extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern int Help_Request_r(int, int) __asm__("func_L00_00203F20");
 extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
-extern int func_0020BFC8(int, int);
 
 /* Level 6 drawbridge (class 1028): spawns its two rows of deck pieces, waits for the hero's switch, then
    lowers through three hinge stages (drawbridge_slide/0C/10) while the camera follows the path nodes. */
@@ -3333,8 +3334,6 @@ extern int try_set_help_message(int, int);
 
 extern void restore_hero_from_vehicle_mode(void);
 extern void MusicRequestTrack(int, int);
-
-extern void enter_hero_vehicle_mode_and_set_moby(int, int, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");

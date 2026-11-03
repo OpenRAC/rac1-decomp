@@ -31,6 +31,9 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -475,7 +478,6 @@ void add_random_xy_offset(float *out, float value) {
 }
 extern void *collect_snagglebeast_navigation_ids(void *, void *, void *);
 extern int follow_path_v(void *, void *, int, float, void *, void *, void *) __asm__("func_L01_00277FD8");
-extern int select_point_index_by_distance(void *, void *, float);
 
 /* Finds where a path leaves the object's current segment and copies the point out. */
 void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
@@ -673,11 +675,9 @@ extern void process_snagglebeast_damage(void *, void *, void *);
 extern void FindNearestTargetMoby(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
-extern void suck_beam_queue_draw(int);
 
 extern void AddDrawCallback_v(void (*)(), void *) __asm__("func_001F49B0");
 
-extern void suck_reset(void *);
 extern int func_001160D8(void);
 extern int fast_dec_timer(int *);
 
@@ -699,7 +699,7 @@ extern void RerollEffectCounter(void *, short *);
 extern void SetDeathBits(void *, int, int);
 
 extern float update_snagglebeast_rope(void *, void *);
-extern void HeroEnterMoveState(int, int);
+
 extern void rand_vec(float *, float, float);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern float jump_speed_4318(void *, void *, void *, float, float);
@@ -2356,7 +2356,6 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void suck_beam_queue_draw(int arg0);
 
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");

@@ -30,6 +30,8 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "game/render/partupd.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -353,8 +355,6 @@ typedef union {
 
 extern void SetDeathBits(void *, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 extern int rand_range(int, int);
 
@@ -1858,8 +1858,6 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
 extern LevelState gaspar_collected_flags_base;
 extern int gaspar_moby_killed[];
 extern int g_current_level_index MACRO_ADDR;
-
-extern void HeroEnterMoveState(int, int);
 
 extern float vec_distance_xy(void *, void *);
 

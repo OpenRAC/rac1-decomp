@@ -27,6 +27,8 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "core/libc/sprintf.h"
 extern Hero g_hero;
 extern int g_screen_extent[];
 extern char help_records[];
@@ -56,8 +58,6 @@ extern unsigned char gSpecialItems_1[];
 extern char pokitaru_pickup_message_buffer[];
 extern char pokitaru_raritanium_acquired_text[];
 extern int proximity_removal_frame_count MACRO_ADDR;
-
-extern int sprintf(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8830.c, FUN_L11_002cb790. */
 void remove_moby_when_near_hero(char *a0) {
@@ -1204,7 +1204,7 @@ void project_world_point_to_screen_pixels(void *pt, int *outx, int *outy, int yo
 typedef int u128_312780 __attribute__((mode(TI)));
 
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern void spawn_type_74_particle(void *, float *, float *, void *, int);
+
 extern float g_frame_time MACRO_ADDR;
 extern float joint_trail_reference_speed SDATA(joint_trail_reference_speed);
 extern short joint_trail_particle_cfg_a;

@@ -9,6 +9,7 @@
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
 #include "core/sound/989snd.h"
+#include "game/audio/music.h"
 
 /*
  * sound.cpp in the original source; text 0x22D8C0-0x22F128.
@@ -147,8 +148,6 @@ extern int playback_mode MACRO_ADDR;
 extern int music_volume MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 
-extern void reset_music(void);
-
 /* Reset the voice pool, set up the sound library, voices and volumes, and reset music. */
 void initialize_gameplay_sound_system(void) {
     s32 i;
@@ -273,7 +272,7 @@ extern void FastVecScale_DD68(void *, void *, f32) __asm__("func_001F9C30");
 
 extern f32 IntToFloat_DD68(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32_DD68(f32) __asm__("func_001FA898");
-extern void func_00217130();
+
 extern void Sound_PickOcclusionOrigin_DD68(void *) __asm__("func_0022D8C0");
 extern u8 Sound_LineTest_DD68(VoiceSlot_DD68 *, void *) __asm__("func_0022D970");
 extern s32 Sound_ApplyDistanceFade_DD68(VoiceSlot_DD68 *, Vec4 *) __asm__("func_0022DB00");

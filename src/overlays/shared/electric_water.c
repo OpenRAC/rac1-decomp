@@ -27,6 +27,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -1222,7 +1223,6 @@ void ripple_strips_moby_update(struct Moby *moby) {
 extern void initialize_collectible_sprite_state(char *);
 extern void update_collectible_sprite_effect(char *);
 
-extern int memcard_Save(int, int);
 extern int g_current_level_index MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
 extern int quartu_dialogue_message_duration MACRO_ADDR;

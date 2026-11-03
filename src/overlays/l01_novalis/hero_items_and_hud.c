@@ -55,8 +55,6 @@ extern HeroSpeedBands novalis_hero_speed_bands;
 
 extern int handle_hero_gadget_button(void);
 
-extern int get_hero_idle_animation_index(int a);
-
 extern int Hero_SetMoveState(int, int);
 
 extern int func_001F9908(int *);

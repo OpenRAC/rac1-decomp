@@ -22,6 +22,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/ui/hud.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -1216,7 +1217,6 @@ int get_ammo(int id) {
         return 1;
     return weapon_ammo_counts[id];
 }
-extern void HeroEnterMoveState(int, int);
 
 /* Records a target: POS at g_hero + 0x1640, ARG at +0x1650 and T at
    +0x164C, and unless the state (+0x2084) is already 0x65-0x67, enters

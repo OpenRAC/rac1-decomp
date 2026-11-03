@@ -18,6 +18,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern char gold_weapon_purchased[];
 
 extern int func_001160D8(void);
@@ -1932,7 +1934,6 @@ void InitKnockback(float ang, char *o, float *s, int a, int b, int c) {
 extern float frame_scale_m __asm__("D_0015EE60") MACRO_ADDR;
 extern int *coll_sphere_moby_hits[];
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern char *spawn_burst_moby(void *, float);
 
 /* The falling state mine_fall steps (a moby's pvars + 0x20 in the blarg commander shot). */
 struct FallState {
@@ -2892,8 +2893,7 @@ extern CameraSystem player_camera_r2 __asm__("D_L00_00166D80");
 extern float blast_spawn_params[] NOT_SDA;
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
-extern void mine_camera_blast(void *, void *, int, int);
+
 extern int FastBSphereCheck_r2(void *, float) __asm__("func_L00_00200290");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
@@ -2958,8 +2958,6 @@ extern S6y10 color_swapped_burst_fade_colors;
 
 extern unsigned swap_packed_color_channels(unsigned, int);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
-extern void mine_camera_blast(void *, void *, int, int);
 
 // Spawn three bursts of coloured sparks around a point, then optional glow pieces and a flash.
 void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {

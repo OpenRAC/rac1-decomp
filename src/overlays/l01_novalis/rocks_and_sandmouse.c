@@ -24,6 +24,12 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/render/vuchain.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -375,9 +381,9 @@ extern char D_L01_001E3720[];
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern int rand_range_r2(int lo, int hi) __asm__("func_L00_00258BC8");
 extern void func_L00_0026B890(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32);
-extern s32 func_L00_002ADBB0(void *, void *, void *, f32, s32, s32, s32, s32, s32);
+
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
-extern void func_L00_002D4CE8(void *, void *, s32, s32);
+
 extern f32 random_float_between_r2(f32, f32) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
@@ -743,7 +749,7 @@ extern void queue_planet_unlock_message_r(int) __asm__("func_L00_00263DB0");
 extern void func_L01_0029C2A0(void *, int, void *, int, void *);
 extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
-extern int func_0020BFC8(int, int);
+
 extern void func_L01_002A3680(void);
 
 /* Agnogg ship update (moby classes 730, 731, 790 on level 01): state machine on moby->state. */
@@ -1057,10 +1063,8 @@ extern u8 *pool_draw_tex MACRO_ADDR;
 extern s32 pool_draw_count MACRO_ADDR;
 
 extern void RipplePatch_ToFixedPoint(void *, void *);
-extern void RescaleFloatTable(f32);
-extern void RippleSimClock(void *, s32);
+
 extern void pool_ripple(f32, f32, f32, f32, void *, s32);
-extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern void Moby751Draw(void);
 
@@ -1586,9 +1590,6 @@ extern int pool_draw_tiles_s __asm__("D_L01_00161350") MACRO_ADDR;
 extern int pool_draw_count_s __asm__("D_L01_00161358") MACRO_ADDR;
 extern float D_L01_00174368 NOT_SDA;
 
-extern void RippleDisturb(int, int, int, float, float, float, float);
-extern char *spawn_burst_moby(void *, float);
-
 /* Falling chunk: drops and spins; on its first landing it splashes (sound, splash and 16 drops) and
  * bounces up smaller, then fades out when its timer ends. Deleted if it lands out of bounds. */
 void update_falling_splash_moby(char *m) {
@@ -1851,7 +1852,6 @@ extern Moby *novalis_moby_list MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int hero_max_health MACRO_ADDR;
 
-extern int is_moby_in_state_one(void *);
 extern int check_scaled_vector_bsphere_v(float, void *) __asm__("func_L01_00276680");
 /* Shows Novalis tutorial help messages based on what the player has used so far. */
 void update_level01_tutorial_hints(Moby *moby) {

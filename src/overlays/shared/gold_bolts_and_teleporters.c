@@ -36,6 +36,9 @@
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -304,7 +307,6 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
 extern void spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int, int,
                                                                               int, int);
 
@@ -804,7 +806,6 @@ extern void set_ground_height_band(void *);
 extern void unlock_planet(int);
 
 extern void record_moby_context_bytes(char *, int, char *, int, void *);
-extern int memcard_Save(int, int);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -2629,7 +2630,6 @@ void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars *p) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern void spawn_type_74_particle(void *, void *, void *, void *, int);
 extern char sandmouse_trail_particle_cfg_a, sandmouse_trail_particle_cfg_b, sandmouse_trail_particle_cfg_c;
 
 // If the moby's flag byte is set, builds a vector and runs three manipulator calls.
@@ -2715,7 +2715,7 @@ extern f32 sandmouse_dust_accel SDATA(sandmouse_dust_accel);
 extern void MobySpringTurn(void *, f32, void *, f32, f32, f32);
 extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void jet_animate(void *, f32);
-extern void compute_sand_mouse_approach_target(void *, void *);
+
 extern int Hero_SetMoveState(int, int);
 extern void set_hero_animation_v(f32, int, int) __asm__("func_L00_00232C10");
 

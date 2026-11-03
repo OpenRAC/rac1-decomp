@@ -23,6 +23,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -34,16 +35,12 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
 extern int truncate_float_to_s32(float);
 
 extern void *MobyGetHitMessage(void *, int, int);
-
-extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern int novalis_game_mode MACRO_ADDR;
 extern int pool_draw_tiles MACRO_ADDR;

@@ -11,6 +11,7 @@
 #include "asm_functions/executable.h"
 #include "game/audio/sound.h"
 #include "game/system/stub.h"
+#include "game/system/memcard.h"
 
 /*
  * initonce.cpp in the original source; text 0x201E10-0x202260.
@@ -65,15 +66,12 @@ extern int sce_cd_mmode(int);
 extern int sce_fs_reset(void);
 extern int wad_GetSectors_FiiPv(int lba, int sectors, void *buf);
 
-extern void memcard_get_name(void *arg0);
-
 extern int load_disc_sectors_into_global_buffer(void);
 
 extern int LoadIRXModule(void *arg0, void *arg1);
 extern void init_pads(void);
 
 extern int sceGsSyncVCallback(void *arg0);
-extern void memcard_Init(void);
 
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *src, void *dst);

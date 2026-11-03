@@ -38,6 +38,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/follow_camera.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/system/memcard.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -132,7 +134,6 @@ struct HeroIndexTriggerVars {
 };
 
 extern float vec_distance_xy(void *, void *);
-extern int memcard_Save(int, int);
 
 extern float g_frame_time MACRO_ADDR;
 extern unsigned char gHaveHeliPack[];
@@ -2721,14 +2722,10 @@ extern int pokitaru_water_tint2_g MACRO_ADDR;
 extern int pokitaru_water_tint2_b MACRO_ADDR;
 extern float pokitaru_camera_pos_z;
 
-extern void RescaleFloatTable(float);
 extern void RipplePatch_ToFixedPoint(void *, void *);
 
 extern void Group_CopyZToTableSlots(struct Moby *);
 
-extern void RippleDisturb(void *, int, int, float, float, float, float);
-
-extern void RippleSimClock(void *, int);
 extern void render_level_11_water_grids(void);
 extern void populate_water_tile_neighbor_indices(int);
 #define D_L11_001DA880_pv ((Ent_pv *)D_L11_001DAB40)

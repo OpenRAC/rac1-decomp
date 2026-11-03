@@ -23,6 +23,7 @@
 #include "game/render/vuchain.h"
 #include "game/system/stub.h"
 #include "overlays/shared/sound_playback.h"
+#include "game/render/partupd.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -2147,7 +2148,6 @@ extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
 extern float vec_distance_xy(void *, void *);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern char *oltanis_clip_volumes MACRO_ADDR;
 extern float g_frame_time;
 extern int vendor_beam_min_ticks SDATA(vendor_beam_min_ticks);

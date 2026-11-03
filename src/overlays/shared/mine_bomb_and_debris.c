@@ -26,6 +26,9 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -196,15 +199,10 @@ extern unsigned char *part_type_textures[];
 
 extern unsigned char *GetFlaggedPvarWord(unsigned char *);
 extern unsigned char *moby_get_ride_transform(unsigned char *);
-extern int predict_mine_impact(W910 *, M910 *, int);
 
 extern float resolve_camera_surface_height(float *, void *);
 
 extern int coll_line(void *, void *, int, int, int);
-
-extern void RippleDisturb(int, int, int, float, float, float, float);
-
-extern char *spawn_burst_moby(void *, float);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
 
@@ -231,7 +229,6 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern int truncate_float_to_s32(float);
 
-extern char *mine_camera_blast(char *a, char *b, int c, char *d);
 extern void jet_animate(unsigned char *, float);
 
 /* Mine (moby Mine) update: falls and bounces, sticks to what it hits, homes on a nearby target and explodes. */
@@ -1508,8 +1505,6 @@ extern int bomb_trail_spark_count SDATA(bomb_trail_spark_count);
 extern int bomb_trail_spark_texture SDATA(bomb_trail_spark_texture);
 extern int predict_throw_landing(void *, void *, int);
 extern void rand_vec(float *, float, float);
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 

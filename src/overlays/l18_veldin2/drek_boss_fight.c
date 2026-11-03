@@ -33,6 +33,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/l18_veldin2/rockets_and_platforms.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -907,28 +908,10 @@ extern float vec_distance_xy(void *, void *);
 
 extern float vec_length_xy(void *);
 
-extern void set_thruster_pack_lock_green_list_data_fields(int idx);
-extern void moby_init_action_mode(void *moby);
-extern void request_thruster_pack_lock_red_wait(unsigned char *arg, int value);
-extern void end_thruster_pack_lock_red_wait(unsigned char *arg);
-extern void start_position_and_rotation_transition(char *moby, void *v0, void *v1, void *v2, void *v3, void *v4, int a6,
-                                                   int a7, int a8);
-extern void refresh_moby_position_and_activate(unsigned char *arg, void *src, void *position, int active, float speed);
-extern void refresh_ring_effect(char *moby, void *pos, float f);
-extern void spawn_class_270_moby(char *pos, float *vec, int arg, float fa, float fb);
-extern char *find_nearest_thruster_pack_lock_green_moby_in_list(void *pos, int idx);
-extern void *find_thruster_pack_lock_green_moby_with_largest_xy_angle_in_list(float *a, float *b, int idx);
-extern char *create_class_274_ring_effect(void *owner, void *vector, float value);
-extern char *create_class_3d7_moby(void *owner, void *vector, int value);
-extern float get_position_and_rotation_transition_progress(void *moby);
-extern int classify_moby_state_two_or_three(void *moby);
-extern int activate_drek_fight_missiles_in_group(char *moby, int idx, float *pos);
 extern int launch_first_idle_group_gadgebot_1906_moby(int idx, float *pos, float *dir, float speed);
 extern int count_group_gadgebot_1906_mobys_not_in_state_8(int idx);
 /* Parameter order as retail sets the arguments up (the floats before the last integers); the definition of
    launch_mine_568_moby_from_list in vendor_002A8400.c lists its float first, with the same registers. */
-extern char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b, int frames, int kind);
-extern char *launch_mine_568_moby_from_list(int owner, int idx, float *from, float *to, float speed, int frames);
 
 /* Update of the final boss robot (Drek Final Boss Robot): one step of its state machine, then its bob, aim and tint. */
 void drek_final_boss_robot_update(Moby *moby) {
@@ -2015,7 +1998,7 @@ extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
 
 extern int FindNearestEligibleMoby(float a, char *m, char *b, int c, int d, int *e, int f);
-extern int poll_moby_state_and_rearm(char *);
+
 extern char *create_class_274_ring_effect_v(void *, void *, float) __asm__("func_L18_002DD7D0");
 extern void reset_drek_boss_class_0565_moby_v(void *) __asm__("func_L18_002F30C8");
 extern void start_position_and_rotation_transition_v(char *, void *, void *, void *, void *, void *, int, int,
@@ -2429,8 +2412,6 @@ void func_L18_002F7F00_r(Moby *moby) {
     advance_drek_boss_planar_position_toward_target_r((char *)moby, speed * g_frame_time_r, &goal);
     ApproachValue_r(&v->pos.f[2], ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[2], g_frame_time_r * 4.0f);
 }
-extern int request_floating_platform_sink(void *obj);
-extern void request_floating_platform_tilt(void *, int, int);
 
 extern float drek_boss_platform_target_radius SDATA(drek_boss_platform_target_radius);
 extern int drek_boss_platform_tilt_ticks SDATA(drek_boss_platform_tilt_ticks);

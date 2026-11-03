@@ -29,6 +29,10 @@
 #include "game/audio/sound.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/render/partupd.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -111,16 +115,10 @@ extern float g_frame_time MACRO_ADDR;
 extern char hoven_camera_pos[];
 extern char hoven_ripple_patches[];
 
-extern void RescaleFloatTable(float s);
-
 extern void RipplePatch_ToFixedPoint(float *in, int *out);
 extern void initialize_level_12_slot_grid_neighbors(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void Group_CopyZToTableSlots(char *moby);
-
-extern void RippleDisturb(void *, int, int, float, float, float, float);
-
-extern void RippleSimClock(char *p, int n);
 
 extern void render_level_12_water_grids(void);
 
@@ -434,7 +432,6 @@ extern int spark_scatter_color_b SDATA(spark_scatter_color_b);
 extern int spark_scatter_sprite SDATA(spark_scatter_sprite);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Scatters 27 particles around a point with random offsets and velocities. */
 void spawn_spark_scatter(void *pos) {
@@ -1601,8 +1598,6 @@ void HovenPlatformUpdate(Moby *moby) {
 
 extern void initialize_moby_grounding(void *);
 
-extern int memcard_Save(int, int);
-
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r2(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
@@ -1815,7 +1810,7 @@ extern int func_001160D8(void);
 
 extern int test_point_within_moby_limits(void *, void *, float, float, float);
 extern int coll_line(void *, void *, int, void *, void *);
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float max_angle, float approach_speed);
 extern void set_blarg_trooper_aim_yaw_offsets(char *moby, float *pos);
 extern void ease_blarg_trooper_height_to_ground(char *moby);
@@ -3533,7 +3528,6 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
 
 extern int check_scaled_vector_bsphere_i(char *vec, float scale) __asm__("func_L01_00276680");
 extern void process_helicopter_hits_and_reactivation(char *m, int flag);
-extern void initialize_path_descriptor(char *p);
 
 extern float helicopter_path_speed SDATA(helicopter_path_speed);
 extern float helicopter_path_bank_scale SDATA(helicopter_path_bank_scale);

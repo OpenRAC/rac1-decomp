@@ -26,6 +26,9 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "game/system/stub.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -213,7 +216,6 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
     ((struct Moby *)coupling)->flags |= 6;
 }
 extern float vec_distance_xy(void *, void *);
-extern void gunship_follow_path(char *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
@@ -1357,13 +1359,7 @@ extern int truncate_float_to_s32(float);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
 
-extern int select_point_index_by_distance(void *, void *, float);
-extern int resolve_path_node_index(void *, int);
-extern int advance_path_node_index(char *);
-extern void initialize_path_descriptor(char *);
-extern void compute_path_node_tangent(void *out, int *l, int idx, float a, float b);
-extern void evaluate_cubic_hermite_segment(float t, void *out, void *p1, void *p2, void *p3, void *p4);
-extern void compute_sampled_spline_path_lengths(void *, int, void *, float, float);
+extern void compute_sampled_spline_path_lengths_v(void *, int, void *, float, float) __asm__("func_L01_0028C958");
 extern void add_moby_rotation_based_offsets_r(char *, char *) __asm__("func_L03_0029DA60");
 extern void STUB_printf_r2(void *, int, int) __asm__("func_001E9730");
 
@@ -1502,7 +1498,7 @@ void red_ship_1_update(char *moby) {
                 data->wobble_phase = random_angle_radians();
             }
             *(OvlQuad *)&data->cur_pos.x = *(OvlQuad *)&data->p1.x;
-            compute_sampled_spline_path_lengths(pm, 0, moby, data->unk_104, data->unk_108);
+            compute_sampled_spline_path_lengths_v(pm, 0, moby, data->unk_104, data->unk_108);
             if (data->timer > 0) {
                 moby[0x20] = 3;
             } else {
@@ -1691,7 +1687,7 @@ extern int func_001160D8(void);
 extern int move_w(void *, void *, void *, void *, float);
 extern int ClassifyTargetInCone_r(char *m, char *p, char *pos, char *v) __asm__("func_L00_0025A060");
 extern int mine_fall(void *, void *);
-extern int CarriedMobyUpdate(void *, void *);
+
 extern int FindNearestTargetMoby_r(char *, char *, float) __asm__("func_L00_00260D30");
 extern int is_point_inside_clip_volume_cf(int id);
 
