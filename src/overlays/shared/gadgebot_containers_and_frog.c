@@ -165,7 +165,6 @@ void destroy_gadgebot_spawn_container(void *moby_ptr, void *target_ptr) {
     moby->command = (unsigned char)scale_ticks(15);
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-extern void moby_build_matrix(void *);
 
 /* Spawns moby Gadgebot Spawn Container at the owner's position, copying its fields. */
 char *spawn_gadgebot_spawn_container(char *owner) {
@@ -187,7 +186,7 @@ char *spawn_gadgebot_spawn_container(char *owner) {
 extern int blarg_frame_count MACRO_ADDR;
 
 extern char *MobyGetHitMessage(void *, int, int);
-extern int fast_subtract_rotations_cf(void *);
+
 extern void DeleteMoby(void *);
 extern void destroy_gadgebot_spawn_container(void *, void *);
 extern void draw_gadgebot_spawn_container(char *);
@@ -3151,8 +3150,6 @@ void update_hero_trigger_volume_monitor(char *m) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_energy_sphere_destruction_particles(char *m);
 extern int Moby_PlaySound(int, int, int);
-
-extern void set_moby_color(void *, int, int, int);
 
 extern int Sound_IsPlaying(void *, int);
 extern short blarg_energy_sphere_spin_x_deg, blarg_energy_sphere_spin_y_deg, blarg_energy_sphere_spin_z_deg,

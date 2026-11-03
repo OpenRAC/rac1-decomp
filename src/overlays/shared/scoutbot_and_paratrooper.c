@@ -698,8 +698,7 @@ void draw_scoutbot_glow_quad(char *arg) {
 typedef u32 u128_E9288 __attribute__((mode(TI), aligned(16)));
 extern f32 g_frame_time MACRO_ADDR;
 extern char *CreateMoby(int);
-extern void set_moby_color(void *, int, int, int);
-extern void moby_build_matrix(void *);
+
 extern float vec_length_xy(void *);
 
 extern void *PartType21Spawn(void *, void *, int, int, int, int, float);
@@ -944,8 +943,6 @@ extern int batalia_mesh13_positions[];
 
 extern char batalia_scrolled_uvs[];
 extern IntPair batalia_uv_scroll[];
-
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
 /* Runs the two per-entry update calls over a 13-entry table. */
 void draw_scrolled_mesh_batch(int a) {
@@ -1859,7 +1856,6 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
 extern char *CreateMoby(int);
 
 extern float vec_length_xy(void *);
-extern void moby_build_matrix(void *);
 
 // Create a moby (class 0x50C) at pos with an orientation vector, and two ints and an angle arg stored in its data.
 char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4, int a5) {

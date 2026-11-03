@@ -695,7 +695,6 @@ void update_blarg_turret_target_and_state(unsigned char *moby) {
         ((Moby *)moby)->state = ((Moby *)moby)->command;
 }
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a Blarg Gunner child moby that copies its parent's placement and scale. */
 char *spawn_blarg_turret_child(char *parent) {

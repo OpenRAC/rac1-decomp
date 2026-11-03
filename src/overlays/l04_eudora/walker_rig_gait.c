@@ -396,7 +396,7 @@ typedef struct {
 extern void MobyTransformScaledVertex_r(struct Moby *, int, float *) __asm__("func_0020DAF8");
 
 extern float SpringTurn(float, float, float *, float, float, float);
-extern void axis_rotation_2d48(float *, int, float);
+
 extern void multiply_quaternions(float *, float *, float *);
 extern f32 frame_scale MACRO_ADDR;
 
@@ -467,7 +467,6 @@ extern int update_leg_rig_height_and_tilt_r(char *, char *) __asm__("func_L04_00
 extern void divide_vector_xyz(void *, void *, float);
 extern void func_L00_002A2900(char *, char *, float, float, float, int);
 extern void rig_probe_setup(void *, int, int *, float *, float *, float *);
-extern int coll_capsule(float, float, void *, int, void *);
 
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;

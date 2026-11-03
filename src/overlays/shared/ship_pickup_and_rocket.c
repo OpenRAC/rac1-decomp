@@ -6,6 +6,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 /* Ship rocket: homes in on a target. Same layout as Rocket below (defined after use). */
 struct ShipRocketVars {
@@ -114,7 +115,6 @@ float interpolate_value_with_repeated_squaring(int flag, int n, float x, float b
     return r;
 }
 extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a ship pickup moby of the given class at position. */
 unsigned char *spawn_ship_pickup(char *position, int moby_class) {

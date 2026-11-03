@@ -9,6 +9,7 @@
 #include "data/level_01.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 // Fills a jump pattern record with its default constants.
@@ -288,7 +289,6 @@ void spawn_proximity_gated_bolts(char *moby) {
 }
 LINKER_REMNANT("asm/overlays", func_L01_00279AC0);
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* spawns a moby of a class copying the source moby's placement, scaled */
 void spawn_moby_from_placement(struct Moby *src, int oClass) {

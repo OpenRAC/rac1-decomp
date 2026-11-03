@@ -140,8 +140,7 @@ extern char *kerwan_mobys_t __asm__("D_L03_00160058") MACRO_ADDR;
 extern float kerwan_train_car_spacing SDATA(kerwan_train_car_spacing);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Places a train: puts the engine at `at` facing ang (offset back by its length), then lays each linked
@@ -213,7 +212,6 @@ extern void gunship_follow_path(char *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern int STUB_printf();
 extern void DeleteMoby(void *);
@@ -1015,7 +1013,7 @@ void maintain_emitter_sound_voice(unsigned char *moby) {
 }
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
-extern int fast_subtract_rotations_cf(void *);
+
 extern void spawn_emitter_child_effect(void *, void *, int, int, float, float, int);
 
 // Per-class steering update for a level 3 moby: runs its path loops and writes the flag bytes at data+0x12E/0x12F.

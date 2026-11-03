@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "game/ui/hud.h"
+#include "asm_functions/shared_levels.h"
 
 extern int timed_hud_visible MACRO_ADDR;
 extern int timed_hud_frames_left MACRO_ADDR;
@@ -20,7 +21,6 @@ int remove_help_message_for_selector(int a) {
     }
     return 0;
 }
-
 
 /*
  * Builds the frame's moby update list from the level's moby array, then
@@ -42,9 +42,6 @@ typedef struct MobyRecord {
 extern int active_mobies;
 extern MobyRecord *suck_moby_list MACRO_ADDR;
 extern MobyRecord *moby_array_start MACRO_ADDR;
-
-extern void MobyAnimAdvance(MobyRecord *);
-extern void moby_build_matrix(MobyRecord *);
 
 void link_and_update_all_mobys(void) {
     MobyRecord *cur;

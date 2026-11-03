@@ -101,8 +101,6 @@ extern int truncate_float_to_s32(float);
 
 extern int hero_is_near_ground(void);
 
-extern void set_moby_color(void *, int, int, int);
-
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 extern void initialize_electric_water_bolt_effect(char *);
 extern void update_electric_water_bolt_effect(Moby *);
@@ -110,8 +108,6 @@ extern void update_electric_water_bolt_effect(Moby *);
 extern void draw_electric_water_countdown(char *);
 extern void AddDrawCallback(void *, void *);
 extern int Sound_PlayClassSound(int, int, void *, int);
-
-extern void vec_set_length_xy(void *, void *, float);
 
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
@@ -1016,7 +1012,7 @@ void update_spinning_projectile(unsigned char *m) {
 extern char *CreateMoby(int);
 
 extern float vec_length_xy(void *);
-extern void moby_build_matrix(void *);
+
 extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);
 
 // Spawns a moby of class 0x3A6 aimed along a direction, copying position and flags from the caller.
@@ -1048,7 +1044,7 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
-extern void set_moby_color(void *, int, int, int);
+
 extern void set_moby_list_state(int list, int state);
 extern char quartu_collected_flags_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -1209,7 +1205,7 @@ void underwater_ring_update(unsigned char *moby) {
         }
     }
 }
-extern void set_moby_color(void *, int, int, int);
+
 extern void AddDrawCallback(void *, void *);
 extern void draw_moby_radial_ripple_mesh_buffers(void);
 

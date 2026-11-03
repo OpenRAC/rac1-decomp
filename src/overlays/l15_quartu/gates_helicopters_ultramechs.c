@@ -23,6 +23,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -534,8 +535,6 @@ extern Colors quartu_debris_effect_colors;
 extern void vec_scale_to_length_r(float, void *, void *) __asm__("func_L00_001FF4B0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
-extern void add_vectors(void *, void *, void *);
-
 extern int DefaultVtbl_DeleteMoby(float, int, int);
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
@@ -694,8 +693,6 @@ extern u32 quartu_hit_effect_colors[3];
 extern unsigned char gemlik_available[];
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void add_vectors(void *, void *, void *);
 
 extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
 
@@ -1077,8 +1074,6 @@ typedef struct {
     float height;
 } SteeringVars_4f88;
 
-extern float fast_atan2(float, float);
-
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern void move_moby_with_sphere_collision(float, float, struct Moby *, void *, int);
 /* Steers a flying moby toward goal while facing look. */
@@ -1178,8 +1173,6 @@ typedef struct {
 extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern float fast_atan2(float, float);
 
 /* Flocking step toward goal (cf. FUN_L15_002cf110): separates from live same-class mobys within 10 units and keeps ~15
    units off the goal while another moby is closer to it (~10 otherwise); writes the steering point to out and returns
@@ -1345,17 +1338,15 @@ extern void AttachManipulator(char *, int, unsigned char *);
 
 extern float IntToFloat(int);
 
-extern void vec_set_length_xy(void *, void *, float);
 extern char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, float f);
 extern void start_blarg_commander_knockback(void *, struct Moby *);
 extern void DetachManipulator(void *, void *);
 extern void set_ground_height_band(void *);
 
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *, void *);
+extern void moby_build_matrix_v(void *, void *) __asm__("func_L00_00251E30");
 
 extern float vec_length_xy(void *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern float helicopter_bob_amplitude SDATA(helicopter_bob_amplitude);
 extern float helicopter_bob_period SDATA(helicopter_bob_period);
 
@@ -1722,7 +1713,7 @@ void helicopter_update(HMoby_6950 *m) {
         d->child->pos.q = m->pos.q;
         d->child->rot.q = m->rot.q;
         MobyAnimAdvance(d->child);
-        ((void (*)(void *))moby_build_matrix)(d->child);
+        ((void (*)(void *))moby_build_matrix_v)(d->child);
         d->child->flags |= 6;
     }
     if (d->shot == 0 || d->shot->oclass != 0x350 || d->shot->state == 0xFE || d->shot->state == 0xFD) {
@@ -1947,8 +1938,6 @@ extern void process_ultramech_hits_and_update_target(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern int func_001160D8(void);
 
-extern void vec_set_length_xy(void *, void *, float);
-
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1960,7 +1949,6 @@ extern int fast_dec_timer(int *);
 extern int IsFrameWithinWindow(char *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern char *func_L10_002CD578(void *vel, float scale, void *pos, int a, int b, int c);
-extern void add_vectors(void *, void *, void *);
 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
@@ -2695,7 +2683,7 @@ void SideDriftUpdate(char *moby) {
 }
 extern char *CreateMoby(int);
 
-extern void moby_build_matrix(void *, void *);
+extern void moby_build_matrix_v(void *, void *) __asm__("func_L00_00251E30");
 
 /* Creates a Poison Vessel moby at vector and returns it, or 0 if none is free. */
 char *spawn_poison_vessel(void *unused, void *vector) {
@@ -2713,7 +2701,7 @@ char *spawn_poison_vessel(void *unused, void *vector) {
         qcopy(&moby->pos, vector);
         field = *(char **)&moby->pclass;
         *(int *)&moby->collision = *(int *)(field + 0x10);
-        moby_build_matrix(moby, field);
+        moby_build_matrix_v(moby, field);
     }
     return (char *)moby;
 }
@@ -2920,10 +2908,7 @@ void update_poison_vessel_spawner(Moby *moby) {
 }
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-extern void get_moby_color(void *, void *, void *, void *);
-extern float fast_fmod(float, float);
 
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int quartu_frame_count MACRO_ADDR;
 extern short quartu_ripple_strip_counts;
 extern short quartu_ripple_position_bufs;

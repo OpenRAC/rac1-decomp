@@ -1609,7 +1609,7 @@ extern int memcard_Save(int, int);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r2(float, float, void *, void *, int) __asm__("func_L00_00263950");
-extern void moby_build_matrix(void *);
+
 extern void update_moby_bone_attachment(void *, void *, int);
 typedef struct Data_2E7FC8 {
     char pad00[0x20];
@@ -2633,7 +2633,6 @@ extern float SpringTurn(float *, float, float, float, float, float);
 extern void update_blarg_helicopter_motion_tilt(char *);
 extern char *spawn_rocket(void *, void *, void *, int, float, float, float);
 
-extern void MobyAnimAdvance(void *);
 extern void set_ground_height_band(void *);
 
 #define M_U8(p, o) (*(unsigned char *)((char *)(p) + (o)))
@@ -3628,7 +3627,6 @@ void helicopter_336_update(Moby *m) {
     }
 }
 extern float vec_distance_xy(void *, void *);
-extern int fast_subtract_rotations_cf(void *);
 
 /* Idle critter: waits a random time, then plays one of its fidget animations (or reacts when the hero comes close). */
 void crane_arm_update(Moby *m) {

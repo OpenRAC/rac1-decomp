@@ -18,6 +18,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -674,7 +675,7 @@ struct AnimTimer {
     f32 frames;
     s16 length;
 };
-extern void func_L00_00251B58(struct Moby *, u32);
+
 extern void copy_hero_moby_field_38_r(struct Moby *) __asm__("func_L00_0025E210");
 extern struct AnimTimer *func_L00_0025D390(struct Moby *);
 
@@ -949,11 +950,8 @@ void boltcrate_possibly_for_metal_detector_update(char *m) {
 }
 extern void *CreateMoby(int);
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
-extern void vec_set_length_xy(void *, void *, float);
-extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 
-extern void moby_build_matrix(void *);
+extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 
 struct SpawnMachinegunTurretProjectileVars {
     u8 pad_00[0x18];
@@ -1011,7 +1009,7 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void spawn_projectile_expiry_particle_r(void *, void *) __asm__("func_L07_0029B070");
-extern void vec_reflect(void *, void *, void *);
+
 extern char *PartType27Spawn(char *, char *, int c, int d, float f);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void DeleteMoby(void *);
@@ -1076,8 +1074,6 @@ void update_linear_projectile(Moby *m) {
     }
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-
-extern void moby_build_matrix(void *);
 
 struct SpawnBombomaticProjectileVars {
     u8 pad_00[0x10];
@@ -1669,7 +1665,6 @@ extern void FindNearestTargetMoby(void *, void *, float);
 extern void AttachManipulator(char *, int, void *);
 extern void RerollEffectCounter(void *, short *);
 
-extern void axis_rotation_2d48(void *, int, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
@@ -1904,7 +1899,7 @@ typedef struct {
     char b[0x90];
 } __attribute__((aligned(16))) Pkt;
 extern long GetEffectTex(int);
-extern float split_float_fraction(void *, float);
+
 extern void draw_world_quad(void *, int, int);
 
 struct DrawFadingRingEffectVars {
@@ -2066,7 +2061,6 @@ void update_fading_ring_effect(unsigned char *m) {
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 
-extern void moby_build_matrix(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);
 
 struct SpawnMobyClass1049Vars {
@@ -2617,7 +2611,7 @@ found:
     return 1;
 }
 extern void Manipulator_ApplyScale(void *, int, void *, float);
-extern int CollType(void);
+
 extern float resolve_camera_surface_height(void *, int);
 extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
@@ -3404,7 +3398,6 @@ void update_command_triggered_falling_platform(Moby *m) {
     FastVecAdd_r2(&v1, &v1, &m->pos);
     update_entity_matrix_r(d->a60, &v1, &v2, &m->rot);
 }
-extern void set_moby_color(void *, int, int, int);
 
 /* Falling leaf: drops off its branch after a random delay, swaying, then falls faster and vanishes near the ground. */
 void update_hero_triggered_falling_platform(Moby *m) {
@@ -3602,7 +3595,7 @@ void update_timed_point_light_color(struct TimedLightObj *a) {
     }
 }
 extern int fast_dec_timer(int *arg0);
-extern void clamp_vec_length_xy(float, void *, void *);
+
 extern void configure_timed_point_light(float, void *, void *, short, void *, short, unsigned int, int);
 
 /* steps a hit-effect emitter: orient, spawn a puff, and reseed the timer */

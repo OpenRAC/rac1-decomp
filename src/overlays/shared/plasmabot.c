@@ -1046,7 +1046,6 @@ void scale_and_apply_plasmabot_planar_velocity(char *moby) {
 }
 
 extern float SteerAngleWithVelocity_r2(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
-extern void axis_rotation_2d48(void *, int, float);
 
 extern float vec_length_xy(void *);
 
@@ -1424,8 +1423,6 @@ extern float plasmabot_debris_max_spin SDATA(plasmabot_debris_max_spin);
 extern unsigned char *CreateMoby(int);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void moby_build_matrix(void *);
 
 // Spawns moby 0x145 from an owner and a position, orienting its data vectors and randomising its parameters.
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {

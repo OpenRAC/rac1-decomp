@@ -678,7 +678,7 @@ typedef struct {
 extern int hero_slot_item_id(int);
 extern unsigned short help_records_131_count[] NOT_SDA;
 extern unsigned short usage_stats_entry27_count[] NOT_SDA;
-extern int fast_subtract_rotations_cf(void *);
+
 extern int Help_Request(int a, int b);
 
 extern float vec_distance_xy(void *, void *);

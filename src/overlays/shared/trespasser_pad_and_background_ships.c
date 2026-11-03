@@ -1502,7 +1502,7 @@ extern float versatarget_sparkle_lifetime SDATA(versatarget_sparkle_lifetime);
 extern int versatarget_sparkle_color SDATA(versatarget_sparkle_color);
 extern float versatarget_sparkle_size SDATA(versatarget_sparkle_size);
 extern float versatarget_sparkle_offset SDATA(versatarget_sparkle_offset);
-extern void set_moby_color(void *, int, int, int);
+
 extern void initialize_camera_offset_effect_state_c(char *) __asm__("func_L02_002FBB10");
 extern void try_select_camera_offset_effect_moby_c(char *) __asm__("func_L02_002FBC00");
 extern float func_L00_0025CE58(float *, float, float *, float, float, float);

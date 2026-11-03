@@ -13,6 +13,7 @@
 #include "structs/voice.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -1175,7 +1176,7 @@ extern f32 FastVecDist_r3(void *, void *) __asm__("func_001F9D10");
 extern f32 vec_distance_xy_r3(void *, void *) __asm__("func_001F9D48");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void func_L00_001FF500(void *, void *, f32);
+
 extern s32 Moby_PlaySound_r3(s32, s32, void *) __asm__("func_0022ED80");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 extern s32 FastDecTimer_r(s16 *) __asm__("func_001F9938");
@@ -1601,8 +1602,6 @@ void spawner_1885_update(char *moby) {
 }
 extern void *CreateMoby(int);
 
-extern void moby_build_matrix(void *);
-
 /* Spawns a Spawner Egg moby and initialises its data. */
 char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsigned char b) {
     char *m = (char *)CreateMoby(0x75E);
@@ -1645,7 +1644,7 @@ void remove_spawner_egg(void *moby, char *data) {
 }
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern f32 fast_atan2(f32, f32);
+
 void remove_spawner_egg(void *moby, char *data);
 
 typedef struct {
@@ -1665,15 +1664,13 @@ extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern CollisionHit gaspar_coll_hit;
 extern s32 coll_line(void *, void *, s32, struct Moby *, s32);
-extern s32 CollType(void);
 
 extern f32 vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern s32 Moby_PlaySound(s32, s32, struct Moby *);
 extern s32 coll_sphere(f32, void *, s32, struct Moby *);
-extern void fast_subtract_rotations_cf(void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern void jet_animate(struct Moby *, f32);
 extern f32 normalize_angle(f32);
 extern struct Moby *respawn_spawner_child(struct Moby *, Vec4 *);

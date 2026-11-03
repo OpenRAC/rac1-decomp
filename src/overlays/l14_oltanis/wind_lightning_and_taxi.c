@@ -406,7 +406,6 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, void *);
 
-extern void axis_rotation_2d48(void *, int, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 
 #define MB(m) ((u8 *)(m))
@@ -995,7 +994,6 @@ extern char *func_0020D348(int);
 extern float vec_length_xy(void *);
 
 extern void MobyBlendAnimation(void *, int, int, int);
-extern void moby_build_matrix(void *);
 
 /* Spawn a projectile moby at a, aimed along b, with two parameters. */
 char *spawn_flying_bolt(void *a, float *b, int c, int d) {
@@ -1036,7 +1034,6 @@ typedef struct {
 extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
-extern void vec_set_length_xy(void *, void *, f32);
 
 extern int coll_line(void *, void *, int, void *, void *);
 extern void InitDirectionalHitQuery_v(void *, struct Moby *, s32, void *, f32) __asm__("func_L00_0025A8C0");

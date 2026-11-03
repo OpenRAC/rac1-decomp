@@ -27,6 +27,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -572,7 +573,6 @@ extern char gHeroPos[];
 extern f32 batalia_zero_vec[] MACRO_ADDR;
 extern s32 MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern f32 vec_distance_xy(void *, void *);
-extern f32 fast_atan2(f32, f32);
 
 extern void vec_scale_to_length(void *, void *, f32);
 
@@ -760,7 +760,7 @@ extern int fast_dec_timer(int *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float SmoothNoise(float, char *);
-extern float split_float_fraction(void *, float);
+
 extern void draw_world_quad(void *, void *, int);
 extern unsigned char *func_L08_0027C218(void *, float, void *, void *, short, unsigned char, unsigned char,
                                         unsigned char, unsigned char);
@@ -1204,7 +1204,6 @@ extern void queue_planet_unlock_message(int);
 extern int memcard_Save(int, int);
 extern void DeleteMoby(void *);
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
 
 extern int fast_dec_timer(int *arg0);
 
@@ -1629,7 +1628,6 @@ extern void attach_batalia_plumber_class_manipulator(char *moby);
 extern void request_batalia_cannon_mount(char *arg);
 
 extern void DeleteMoby(void *);
-extern float fast_atan2(float, float);
 
 extern int fast_dec_timer(int *arg0);
 
@@ -1985,7 +1983,6 @@ void spawn_batalia_moby_effects_with_random_motion(char *moby) {
     }
 }
 
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int batalia_textured_scrolled_uvs_r[] __asm__("D_L08_001F8820");
 extern int batalia_textured_mesh8_uv_sources[];
 extern int batalia_textured_mesh8_counts_r[] __asm__("D_L08_001F4F20");

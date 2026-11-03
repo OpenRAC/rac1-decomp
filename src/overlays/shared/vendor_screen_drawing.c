@@ -6,6 +6,7 @@
 #include "game/system/update.h"
 #include "structs/level_records.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 extern void *libc_memset(void *, int, int);
 extern void DrawMobyList(int, int);
@@ -410,7 +411,7 @@ extern void func_L00_001F9D40(s32);
 extern void func_001F2608(void);
 
 extern void InitMobyInstance_r(void *, s32) __asm__("func_0020D440");
-extern void func_L00_00251E30(void *);
+
 extern void pack_render_command_fields_r(void *, s32, s32, s32, s32) __asm__("func_0020E340");
 extern void func_L00_0029C9E8(void);
 extern void FastMemZero16_r(void *, s32) __asm__("func_001F99D8");

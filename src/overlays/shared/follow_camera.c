@@ -3151,7 +3151,6 @@ int reject_follow_camera_first_step_backward_hit(void *arg0, int arg1, float *ar
 typedef float V4[4] __attribute__((aligned(16)));
 extern int coll_sphere_b(void *, int, void *, float) __asm__("func_L00_001F10E0");
 extern int reject_follow_camera_first_step_backward_hit_f(void *, int, float *, float) __asm__("func_L00_002E8E78");
-extern int adjust_follow_camera_orbit_probe_for_collisions(void *, void *, int, float, float);
 
 extern int gCamSphereMaskLvl MACRO_ADDR;
 extern V4 collision_hit_point;
@@ -4188,7 +4187,7 @@ void run_type5_grid_record_noop_callbacks(int a) {
 }
 extern void run_type5_grid_record_noop_callbacks(int);
 extern void follow_camera_auto_turn(int);
-extern void follow_camera_read_stick(int, float *, float *);
+
 extern void follow_camera_turn_and_pitch(int, float, float);
 extern void follow_camera_avoid_mobies(int);
 extern void follow_camera_orbit(int);

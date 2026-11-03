@@ -431,9 +431,6 @@ void draw_three_moby_effect_quads(char *m) {
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 
-extern void get_moby_color(void *, void *, void *, void *);
-
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
 extern short fleet_ripple_pair_uv_bufs;

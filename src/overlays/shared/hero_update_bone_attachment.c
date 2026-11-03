@@ -379,15 +379,13 @@ extern s32 g_current_level_index MACRO_ADDR;
 
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
@@ -586,7 +584,7 @@ extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
 
 extern s32 pad_pressed_within(s32, s32, s32);
 extern struct Moby *CreateMoby(s32);
-extern void moby_build_matrix(struct Moby *);
+
 extern void enter_hero_vehicle_mode(s32, s32, struct Moby *);
 extern f32 gravity_z(void *);
 

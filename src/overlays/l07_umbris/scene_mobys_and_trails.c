@@ -10,6 +10,7 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -490,7 +491,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern void DeleteMoby(void *);
 /* Level moby state machine: wait, detect proximity, then emit effects, spawn a replacement and delete itself. */
 void mushroom_update(char *m) {

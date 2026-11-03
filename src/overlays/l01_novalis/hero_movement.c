@@ -203,8 +203,6 @@ extern void turn_to(int, float, float, float);
 extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern void vec_set_length_xy(void *, void *, float);
-
 // Per-tick horizontal air movement for the hero's jump states (level 01).
 // Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l01/ui_help_00233de0.c, FUN_L01_00234b40.
 void update_hero_airborne_planar_motion(void) {
@@ -359,10 +357,9 @@ extern float adjust_hero_animation_speed_for_target_frame(float, float, float, f
 extern void HeroMoveDownAlongNormal(float *, float *, float);
 
 extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
-extern int clamp_vec_length_xy(float, void *, void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);

@@ -487,7 +487,7 @@ extern float func_00214D28(float *, float, float);
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern int find_batalia_cannon_aim_target_r(char *) __asm__("func_L08_002E15A0");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
-extern int func_L00_001FEF78(void *);
+
 extern void *CreateMoby_r(int) __asm__("func_0020D348");
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
@@ -1038,8 +1038,6 @@ void update_falling_debris(Moby *m) {
 }
 extern void *CreateMoby(int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void moby_build_matrix(void *);
 
 // Spawns a moby of a class, copies the parent's position, and aims it at the parent's attach point.
 void *spawn_joint_aligned_moby_part(char *parent, int oClass, int joint, int pjoint) {
@@ -2663,7 +2661,6 @@ void process_shrub_part_hits(char *m) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern void moby_build_matrix(void *);
 extern float shrub_part_spin_speed SDATA(shrub_part_spin_speed);
 
 /* Re-aims the twelve child mobys of a parent, adjusts the parent's spin, then runs the children's follow-up. */
@@ -3078,7 +3075,7 @@ void process_linked_moby_part_hits(struct Moby *moby) {
     if (sound >= 0)
         Moby_PlaySound_r3(sound, 0, moby);
 }
-extern void moby_build_matrix();
+
 extern float commando_part_spin_speed SDATA(commando_part_spin_speed);
 
 // Updates the moby's attached parts: pose each one, scale one value, then run the flagged ones.

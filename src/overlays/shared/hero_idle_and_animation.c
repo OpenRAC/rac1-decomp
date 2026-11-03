@@ -802,9 +802,6 @@ void dispatch_hero_animation_timed_events(void) {
 }
 extern void MobyTransformScaledVertex(void *, int, void *);
 
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
-
 /* Keeps the moby at hero+0xA88 in sync with the hero's own moby. */
 void update_hero_bone_attachment(void) {
     long buf[8];
@@ -1433,9 +1430,6 @@ typedef struct {
 } Vx __attribute__((aligned(16)));
 extern char level_moby_lights_field_310[] NOT_SDA;
 
-extern void func_L00_00251388(void *, void *);
-extern void get_moby_light_color(void *, void *);
-
 /* Tint the effect from the moby's colour bytes, then set the four shape floats from its vector sum. */
 void update_item_tint_from_hero(void *a, char *m) {
     Vx v;
@@ -1524,8 +1518,7 @@ extern struct Hero g_hero_r5 __asm__("D_0013F450");
 extern s32 g_current_level_index MACRO_ADDR;
 void copy_hero_color_to_item_mobys(void);
 void update_item_tint_from_hero(void *a, char *m);
-extern void set_moby_color(void *, int, int, int);
-extern void get_moby_color(void *, int *, int *, int *);
+
 extern u8 gold_weapon_purchased[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00203b18.c, FUN_L00_002076a8. */
@@ -1978,7 +1971,7 @@ extern void HeroSetObjectFlags(void);
 extern void HeroClearObjectFlags(void);
 extern void apply_hero_vertical_oscillation(void);
 extern void apply_hero_rotation_oscillation(void);
-extern void copy_memory_by_alignment(int, void *, unsigned short);
+
 extern void offset_hero_position_against_gravity(float *dst, float *src, float h);
 extern void set_moby_local_table_entry_r(void *, int, float, float, void *) __asm__("func_L00_0024FF10");
 extern int hero_is_in_special_state(void);
@@ -2079,7 +2072,6 @@ extern Vec4f hero_height_probe_offsets[];
 extern CollisionHit coll_hit_result;
 
 void func_L00_00251388_091D8(Moby *, Vec4 *) __asm__("func_L00_00251388");
-f32 fast_atan2(f32, f32);
 
 void func_001F9C30_091D8(Vec4 *, Moby *, f32) __asm__("func_001F9C30");
 void vec_scale_to_length(Vec4 *, Vec4 *, f32);
@@ -2304,8 +2296,7 @@ void update_hero_world_matrices(int a) {
     t = hero_world_matrix_joints;
     compute_selected_world_matrices(a, 9, &t, hero_globals_base + 0x18DD);
 }
-extern unsigned long pack_vector_s16(int, float);
-extern void func_L00_00255B90(int);
+
 typedef struct {
     unsigned short unk0, unk2, unk4, size, scale_offset, scale_count, translation_offset, translation_count;
     unsigned long root_rotation;
@@ -3416,7 +3407,7 @@ extern float func_001F9CE8(void *);
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
 extern Obj *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 extern Obj *moby_get_ride_transform(char *);
-extern int func_L00_001F1D20(float, float, void *, int, int);
+
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastDiffRots_r2(float, float) __asm__("func_001FA850");
 

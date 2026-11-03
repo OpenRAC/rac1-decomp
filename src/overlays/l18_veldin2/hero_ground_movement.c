@@ -91,7 +91,6 @@ extern void HeroMoveDownAlongNormal(float *, float *, float);
 
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
-extern int clamp_vec_length_xy(float, void *, void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
@@ -126,8 +125,6 @@ extern void create_moby_transform_history_entry(void *, int, int);
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 extern int offset_path_index(void *, int, int, int);
-
-extern void vec_set_length_xy(void *, void *, float);
 
 extern void gravity_flatten(float *, float *);
 extern int hero_slot_item_id(int);

@@ -21,6 +21,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -450,7 +451,6 @@ extern char help_stats_base[] NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 
-extern float fast_atan2(float, float);
 extern float vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -655,7 +655,6 @@ extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void transform_vector_r2(void *, void *, void *) __asm__("func_001F9EE8");
 extern void func_00234C98(int, long);
 extern void font_queue_vu_state_r(void) __asm__("func_001F7868");
-extern void func_L00_001FDE48(int, void *, void *, void *, int);
 
 /* Draws the moby's beam: orients the moby along its child's two joints, draws three quads and a ribbon of 196 points.
    */
@@ -1227,7 +1226,6 @@ extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void func_L00_0026EBC0(void *, void *, int, int, float);
 extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
 
-extern void func_L00_002514B8(void *);
 extern void cancel_hero_item_animation_r(void) __asm__("func_L00_0020ED30");
 extern float IntToFloat_r2(int) __asm__("func_001FA888");
 extern int allocate_colored_effect_slot_r2(void *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
@@ -1812,7 +1810,7 @@ extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
 extern float func_00214D28(float *, float, float);
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
 extern float FastAbsF_r3(float) __asm__("func_001F9B88");
-extern void func_L00_001FFED8(void *, int, float);
+
 extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
 extern int coll_line_r3(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void vec_scale_to_length_r4(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -2030,7 +2028,6 @@ void visibomb_missile_update(Moby *m) {
 
 extern unsigned char *GetFlaggedPvarWord(void *);
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -2146,7 +2143,6 @@ extern s32 Sound_IsPlaying(Moby *, s32);
 extern void MobyBlendAnimation_r3(Moby *, s32, s32, s32) __asm__("func_00213DE0");
 extern s32 Moby_PlaySound_r2(s32, s32, Moby *) __asm__("func_0022ED80");
 extern s32 truncate_float_to_s32(f32);
-extern void apply_taunter_to_nearby_mobies(Moby *, f32);
 
 extern void update_taunter_effect_slots(Moby *);
 extern Hero g_hero_r4 __asm__("D_0013F450");
@@ -2481,7 +2477,7 @@ extern void rand_vec(float *, float, float);
 
 extern void *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
 extern void register_pyrocitor_flame_effect();
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 
 extern int truncate_float_to_s32(float);
@@ -2489,7 +2485,7 @@ extern void spawn_color_decaying_effect_particle(void *, void *, int);
 
 extern void euler_rotation_basis(void *, void *);
 extern void multiply_matrix3x3(void *, void *, void *);
-extern void moby_build_matrix(Moby *);
+
 extern void update_pyrocitor_flame_effect_slots(char *);
 
 void pyrocitor_update(Moby *moby) {
@@ -2746,7 +2742,7 @@ extern int pyrocitor_flame_particle_end_color_b SDATA(pyrocitor_flame_particle_e
 extern int pyrocitor_flame_particle_time_min SDATA(pyrocitor_flame_particle_time_min);
 extern int pyrocitor_flame_particle_time_max SDATA(pyrocitor_flame_particle_time_max);
 extern int pyrocitor_flame_particle_count SDATA(pyrocitor_flame_particle_count);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void rand_vec(float *, float, float);

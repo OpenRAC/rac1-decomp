@@ -94,7 +94,7 @@ extern void set_scale_matrix_v(float, void *) __asm__("func_001FA1C0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
 extern void sce_vu0_mul_matrix(void *, void *, void *);
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
+
 extern void restore_view_after_textured_grid(void *);
 extern int textured_grid_view_settings_mode MACRO_ADDR;
 extern u64 gaspar_grid_tex0 MACRO_ADDR;
@@ -260,7 +260,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
 }
 typedef int uq __attribute__((mode(TI)));
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 // Spawns a moby of class cls at pos, copying orientation and matrices from src.
@@ -714,7 +714,7 @@ extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern Moby *CreateMoby_r(s32) __asm__("func_0020D348");
-extern void func_L00_00251328(Moby *, s32, s32, s32);
+
 extern void moby_build_matrix_r(Moby *) __asm__("func_L00_00251E30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -1205,8 +1205,6 @@ void AsteroidBeltUpdate(Moby *m) {
 }
 extern char *CreateMoby(int);
 
-extern void moby_build_matrix(void *);
-
 extern int func_001160D8(void);
 
 /* spawns a moby of the given class at a source moby's position */
@@ -1236,7 +1234,7 @@ extern short g_current_level_index_r __asm__("D_0015EE84");
 char *spawn_breakable_stack_replacement(char *src, int cls);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern char *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
-extern int fast_subtract_rotations_cf(u8 *);
+
 extern void SetDeathBits_r(struct Moby *, int, int) __asm__("func_L00_002584A8");
 extern void add_random_offset_to_vector_xyz(void *, float);
 extern int Moby_PlaySound_r(int, int, struct Moby *) __asm__("func_0022ED80");
@@ -1389,7 +1387,6 @@ void handle_moby_damage_and_destruction(char *m) {
     moby->hit_slot = 0xFF;
 }
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a class 0x11C moby at the given position with the given angle. */
 char *spawn_class_11c_moby(char *owner, void *position, float angle) {
@@ -2590,7 +2587,7 @@ extern int allocate_colored_effect_slot(void *, float, float, float, float, floa
 
 extern float vec_length_xy(void *);
 extern void divide_vector_xyz(void *, void *, float);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern float MobyGetFrameValue(void *);
 
 extern void set_camera_position(void *);

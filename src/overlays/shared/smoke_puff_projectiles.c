@@ -8,6 +8,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad_B0068 __attribute__((mode(TI)));
@@ -110,11 +111,9 @@ extern u128_B0290 eudora_coll_hit_point;
 extern u8 eudora_coll_hit_normal[];
 extern f32 vec_distance_xy(void *, void *);
 extern s32 Moby_PlaySound(s32, s32, struct Moby *);
-extern void vec_set_length_xy(void *, void *, f32);
 
 extern void DeleteMoby(struct Moby *);
 extern s32 coll_line(void *, void *, s32, struct Moby *, CollisionProbe *);
-extern void vec_reflect(void *, void *, void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
 
@@ -253,7 +252,6 @@ void spawn_moby_table_puff_pattern(char *a) {
 typedef int u128 __attribute__((mode(TI)));
 
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-extern void moby_build_matrix(void *);
 
 /* Spawns moby Gun, copies the 16-byte position from b and a few
    fields from a into it, hands the new moby to moby_build_matrix. */

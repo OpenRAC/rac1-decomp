@@ -291,7 +291,6 @@ void update_bolt_pickup(Moby *m) {
 }
 extern char *CreateMoby(int);
 
-extern void moby_build_matrix(void *);
 /* Spawns a Bomb moby at a position and facing derived from a vector. */
 char *spawn_bomb_with_velocity(int arg, char *pos, char *vec) {
     char *m = CreateMoby(0xF8);
@@ -1569,7 +1568,7 @@ extern void MobySpringTurn(void *, void *, float, float, float, float);
 extern void MobySpringTurn_x(float, void *, void *, float, float, float) __asm__("func_L00_002592B0");
 
 extern void ClampVectorLength(void *, float);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern float batalia_hero_pos[];
 typedef struct {
     char pad0[0x140];
@@ -2825,7 +2824,7 @@ void update_rocket(M46 *m) {
 LINKER_REMNANT("asm/overlays", func_L08_002DF750);
 extern Moby *CreateMoby_mb(s32) __asm__("func_0020D348");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-extern void set_moby_color(void *, int, int, int);
+
 extern int batalia_1b3_projectile_red SDATA(batalia_1b3_projectile_red);
 extern int batalia_1b3_projectile_green SDATA(batalia_1b3_projectile_green);
 extern int batalia_1b3_projectile_blue SDATA(batalia_1b3_projectile_blue);

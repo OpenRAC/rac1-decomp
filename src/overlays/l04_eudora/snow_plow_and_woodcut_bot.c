@@ -236,11 +236,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern void AttachManipulator(void *, s32, void *);
 
-extern void axis_rotation_2d48(void *, s32, float);
-
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
-
 extern char *MobyGetHitMessage(void *, s32, s32);
 extern s32 PlayBankSound(s32, s32, s32);
 extern void ShowBanner(s32, s32);
@@ -794,8 +789,6 @@ extern int mine_fall(void *, void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void DeleteMoby(void *);
 extern void StepColorFade(void *, void *);
-
-extern void axis_rotation_2d48(void *, int, float);
 
 extern char eudora_camera_pos[];
 
@@ -1396,7 +1389,6 @@ void woodcut_bot_update(Moby *m) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern struct Moby *func_0020D348(int);
-extern void moby_build_matrix(void *);
 
 // Spawns a Axe moby copying fields from another and placing it at a position.
 void *spawn_axe_moby(char *src, char *pos) {

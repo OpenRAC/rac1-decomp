@@ -546,7 +546,6 @@ extern int fast_dec_timer(void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
@@ -554,7 +553,7 @@ extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 
 extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 extern Lid_0030FCC0 *CreateMoby_r(int) __asm__("func_0020D348");
-extern void moby_build_matrix(void *);
+
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int rilgar_cinematic_mode MACRO_ADDR;
@@ -1449,7 +1448,7 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern short moby_pool_4f60 MACRO_ADDR;
 
 extern void AttachManipulator_r(void *, int, void *) __asm__("func_0020D960");
-extern void axis_rotation_2d48(void *, int, float);
+
 extern char *g_hero_moby;
 
 struct ElectricGateData {

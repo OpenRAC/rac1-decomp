@@ -24,6 +24,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -495,9 +496,6 @@ extern int umbris_coll_hit[];
 extern float vec_distance_xy(void *, void *);
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 
-extern void clamp_vec_length(void *, void *, float);
-
-extern float fast_atan2(float, float);
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern int probe_vertical_ground_collision(void *p, int x, int y, float f, float g);
 
@@ -578,7 +576,6 @@ float func_L07_00315108_r(struct ChaserAnim *a, struct ChaserSpeed *s, float x, 
     a->speed = s->base / (frame_scale_r * 0.06f) * k;
     return r;
 }
-extern float fast_atan2(float, float);
 
 /* latches onto a target when it is turned toward enough, then picks a turn animation */
 int start_snagglebeast_turn_toward_target(unsigned char *m, unsigned char *obj, float *vec, int a, int b) {
@@ -606,7 +603,6 @@ int start_snagglebeast_turn_toward_target(unsigned char *m, unsigned char *obj, 
     }
     return 0;
 }
-extern float fast_atan2(float, float);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -670,7 +666,6 @@ extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void set_ground_height_band(void *);
 extern void process_snagglebeast_damage(void *, void *, void *);
 extern void FindNearestTargetMoby(void *, void *, float);
-extern int fast_subtract_rotations_cf(void *);
 
 extern int truncate_float_to_s32(float);
 extern void suck_beam_queue_draw(int);
@@ -2066,8 +2061,7 @@ typedef struct {
 extern void lerp_vector(void *, void *, void *, float);
 extern float select_segment_point_near_sphere_surface(void *, void *, void *, void *, void *, float);
 extern RopePuff *PartType23Spawn(void *, float, float, float, int, void *, float, int);
-extern void KillPart(void *);
-extern void LerpVec4(void *, void *, void *, float);
+
 extern RopeVec_319080 rope_previous_points_prev_base[];
 extern RopeVec_319080 rope_grid_prev_row_base[][20];
 extern RopeVec_319080 snagglebeast_rope_ring_offsets[];

@@ -1359,7 +1359,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern float blarg_zero_vec[] MACRO_ADDR;
 
 /* Update: waits for a positive value, then spawns effects and a child moby and deletes itself. */

@@ -11,13 +11,13 @@
 #include "enums/hero_state.h"
 #include "structs/collision.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern char gHeroPos[];
 extern unsigned char g_hero[] NOT_SDA;
 
 extern unsigned char g_hero[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
 
 extern void Hero_TryMoveStateL05(int, int);
 extern void Hero_OnKilled(void);
@@ -192,15 +192,13 @@ extern s32 g_current_level_index MACRO_ADDR;
 
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
@@ -406,8 +404,7 @@ extern void Hero_ConstrainToPath(void);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
 extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
-extern int coll_capsule(float, float, void *, int, void *);
-extern int coll_sphere_hero_groups(float, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* Camera collision step: moves the camera by a delta, probing 8 times, returns -1 if it moved too far. */
@@ -519,7 +516,7 @@ extern float gravity_z(float *);
 extern void gravity_set_z(float *, float *, float);
 extern s32 coll_line(void *, void *, s32, s32, s32);
 extern float vec_length_xy(void *);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void resolve_hero_collisions_with_history(void);
 extern void HeroL05_GroundProbe(void);
 extern void correct_hero_ground_penetration(void);

@@ -634,7 +634,6 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
     }
 }
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_spinning_moby_fragment(void *, void *, void *);
@@ -3042,7 +3041,6 @@ extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void spawn_proximity_gated_bolts(void *);
 void func_0020D678_0B248(struct Obj *obj) __asm__("func_0020D678");
-extern void moby_build_matrix(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay_vendor_003083b0.c, FUN_L06_00309e08. */
 void update_hit_triggered_moby_replacement(char *self) {

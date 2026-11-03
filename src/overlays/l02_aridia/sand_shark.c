@@ -1264,8 +1264,6 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
     }
 }
 
-extern void moby_build_matrix(void *);
-
 /* Launches a sand shark from a position along a direction. */
 void launch_sand_shark(unsigned char *moby, void *position, float *direction) {
     char *data = (char *)((struct Moby *)moby)->pvars;
@@ -2126,7 +2124,6 @@ void DrawRotatingQuadRing(char *m) {
         } while (matrix.position[2] < upper);
     }
 }
-extern int fast_subtract_rotations_cf(void *);
 
 /* UpdateMoby_656: steps the moby's animation state from 0/2 (when flagged) and 1/3 (when the timer runs out) */
 void bulldozer_update(unsigned char *moby) {
@@ -2159,7 +2156,7 @@ extern void handle_sand_shark_nest_damage(char *m);
 extern int fast_dec_timer(int *arg0);
 extern char *select_inactive_group_sand_shark_for_nest(char *m);
 extern float MobyGetFrameValue(void *);
-extern void vec_set_length_xy(void *, void *, float);
+
 void launch_sand_shark(unsigned char *moby, void *position, float *direction);
 extern unsigned char help_stats_base[] NOT_SDA;
 
@@ -3172,7 +3169,6 @@ typedef struct {
 } TurnerVars;
 extern s32 aridia_cinematic_mode MACRO_ADDR;
 extern u8 saved_mission_state[][16];
-extern void axis_rotation_2d48(void *, int, float);
 
 /* Turns the moby from its spawn rotation to the goal angles once it is triggered (unkBC).
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/entities/002400c8.c, FUN_L02_002df948. */

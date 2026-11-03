@@ -1085,8 +1085,6 @@ extern char envmap_a_uvs[];
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 
-extern void draw_env_overlay_mesh(int, int, int, char *, int);
-
 /* Sets up the draw state, then draws the three entries of the level's table. */
 void env_map_a_draw(void) {
     int *a = (int *)&envmap_a_vertex_counts;

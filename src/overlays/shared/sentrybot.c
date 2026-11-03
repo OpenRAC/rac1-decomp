@@ -1703,7 +1703,6 @@ extern char quartu_coll_hit[];
 extern char *quartu_coll_sphere_moby_hits[];
 extern char quartu_player_camera[];
 extern void EffectQueue_Add(void *, int, float, float, void *, int, int, float, int);
-extern void vec3_sub_in_place_second_arg(void *, void *, void *);
 
 extern float vec_length(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
@@ -1712,8 +1711,6 @@ extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int c
                                       float w, float pw);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-
-extern void vec_set_length_xy(void *, void *, float);
 
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 

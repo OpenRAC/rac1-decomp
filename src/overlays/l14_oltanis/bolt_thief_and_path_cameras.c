@@ -740,7 +740,7 @@ extern int coll_line(void *, void *, int, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int Moby_PlaySound();
-extern void vec_set_length_xy(void *, void *, float);
+
 extern int truncate_float_to_s32(float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -902,7 +902,6 @@ void update_bouncing_spark(Moby *m) {
 }
 extern char *CreateMoby(int);
 
-extern void moby_build_matrix(void *);
 extern float oltanis_spark_start_scale SDATA(oltanis_spark_start_scale);
 
 /* Spawns a moby with its data block filled from the arguments. */
@@ -1565,7 +1564,7 @@ extern void FastVecScale_r4(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern int FastDecTimer_r2(void *) __asm__("func_001F9938");
-extern void func_L00_00251328(void *, int, int, int);
+
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern int Sound_IsPlaying_r2(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");

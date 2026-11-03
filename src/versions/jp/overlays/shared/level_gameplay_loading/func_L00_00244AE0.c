@@ -38,7 +38,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
     if (full) {
         FastMemCopy(h, (char *)(src[4] + (s32)src), src[5]);
         level_texture_data_base = 0;
-        copy_memory_by_alignment(mission_state, saved_mission_state + g_current_level_index * 16, 0x10);
+        copy_memory_by_alignment_v(mission_state, saved_mission_state + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
         saved_sound_bank_handle = sound_bank_handle;
         flush_cache(0);
@@ -154,7 +154,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         n = span->count;
         level_sound_slots = (Slot244110 *)free;
         level_sound_slot_count = n;
-        copy_memory_by_alignment(free, tbl + span->off, n * 32);
+        copy_memory_by_alignment_v(free, tbl + span->off, n * 32);
         span++;
         free += n * 32;
         e = tbl + span->off;

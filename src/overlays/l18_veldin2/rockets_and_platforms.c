@@ -398,7 +398,7 @@ void update_rocket_moby(char *moby) {
 }
 extern void *CreateMoby_r() __asm__("func_0020D348");
 extern float rocket_scale SDATA(rocket_scale);
-extern void set_moby_color(void *, int, int, int);
+
 extern void Moby_PlaySound(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d5348. */
@@ -552,7 +552,7 @@ extern float vec_distance_xy(void *, void *);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int FindNearestTargetMoby(char *, char *, float);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void move_4318(int, int, float, float, float, int);
 extern int CarriedMobyUpdate(void *, void *);
 extern float g_frame_time_sq MACRO_ADDR;
@@ -929,7 +929,6 @@ void update_path_junction_selection(struct Moby *moby) {
     }
 }
 
-extern void moby_build_matrix(void *);
 extern int fast_dec_timer(int *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 

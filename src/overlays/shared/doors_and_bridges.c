@@ -6,6 +6,7 @@
 #include "structs/moby.h"
 #include "data/level_07.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -79,7 +80,7 @@ extern float func_001F9D48(void *, void *);
 extern int func_001F9908(int *arg0);
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void func_L00_00251328(void *, int, int, int);
+
 extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 
 /* Timed activation pad update: runs the 10-state machine on the data block at moby+0x78.

@@ -112,9 +112,6 @@ extern float vec_length_xy(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void set_moby_color(void *, int, int, int);
-extern void moby_build_matrix(void *);
-
 /* spawns a moby of class 0x3F1 aimed along a direction */
 unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a, float b) {
     unsigned char *m = CreateMoby(0x3F1);
@@ -1566,8 +1563,6 @@ void update_moby_path_transform(Moby *moby) {
     vec_scale_to_length_r(G, G, data->speed);
     FastVecAdd_r(&moby->pos, &moby->pos, G);
 }
-
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
 extern int oil_tanker_2b_mesh_uv_sources[];
 

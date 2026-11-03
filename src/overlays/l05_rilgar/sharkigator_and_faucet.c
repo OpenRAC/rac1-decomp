@@ -1082,7 +1082,6 @@ void spawn_amoeboid_hit_sparks(void *m, void *dir) {
     }
 }
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a Hoverboard moby at the owner's position; returns it, or 0 if the pool is full. */
 char *spawn_racer_child(char *owner) {
@@ -1986,8 +1985,6 @@ extern void AttachManipulator(char *, int, unsigned char *);
 
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 
-extern void axis_rotation_2d48(void *, int, float);
-
 extern float extermitank_move_speed SDATA(extermitank_move_speed);
 extern short extermitank_vars_b58_init;
 extern float extermitank_vars_b5a_init SDATA(extermitank_vars_b5a_init);
@@ -2462,7 +2459,6 @@ mark_children:
     StepColorFade(moby, &data->color_fade);
 }
 
-extern void vec_set_length_xy(void *, void *, float);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 
 typedef struct {

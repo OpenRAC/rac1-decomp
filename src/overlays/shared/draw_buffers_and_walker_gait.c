@@ -90,7 +90,7 @@ int walker_gait_mask(struct WalkAnim *anim, float v) {
     }
     return r;
 }
-extern void axis_rotation_2d48(void *, int, float);
+
 /* Resets the rotation helpers and timers of both walker legs. */
 void reset_walker_gait_helpers(char *a) {
     int i;

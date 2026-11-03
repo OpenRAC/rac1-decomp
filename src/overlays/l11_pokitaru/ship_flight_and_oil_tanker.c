@@ -1551,7 +1551,6 @@ extern float randf_sym(float, float);
 extern void PartType34Spawn(void *, void *, float, float);
 extern int CarriedMobyUpdate(struct Moby *, void *);
 extern void DeleteMoby(void *);
-extern void vec_set_length_xy(void *, void *, float);
 
 /* Update for the Puffoid creature: spawns on a path or a carrier moby, wanders, chases and attacks the target, jumps
    between path points, and smokes while it dies.
@@ -2387,7 +2386,6 @@ extern float vec_distance_xy(float *, float *);
 
 extern void Moby_PlaySound(int, int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void moby_build_matrix(void *);
 
 /* Moby update for a two-leaf gate that spawns and swings open its leaves. */
 void update_two_door_gate(struct PMoby *moby) {
@@ -2696,7 +2694,7 @@ void update_oil_tanker_front_path_pose(char *moby) {
 }
 
 extern int truncate_float_to_s32(float);
-extern void moby_build_matrix(void *);
+
 extern float oil_tanker_spacing_reference_offset_gp SDATA(oil_tanker_spacing_reference_offset_gp);
 extern float oil_tanker_link_spacing_threshold_gp SDATA(oil_tanker_link_spacing_threshold_gp);
 extern int oil_tanker_link_marker_cooldown_frames_gp SDATA(oil_tanker_link_marker_cooldown_frames_gp);
@@ -3540,7 +3538,6 @@ extern void spawn_bubble_spark(char *);
 extern void spawn_bubble_surface_effects(char *, float *, int, int);
 extern char *PartType34Spawn_p(void *, float *, float, float) __asm__("func_L00_0026FF20");
 extern void DeleteMoby(void *);
-extern void vec_set_length_xy(void *, void *, float);
 
 /* Bubble update: rises to the surface, then pops and fades, drifting with its velocity. */
 void update_bubble_motion_and_scale(char *m) {
@@ -3719,7 +3716,6 @@ void Pokitaru_BreakOnHitUpdate(char *m) {
     }
 }
 
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int pokitaru_layered_scrolled_uvs[];
 extern int pokitaru_layered_uv_scroll[];
 

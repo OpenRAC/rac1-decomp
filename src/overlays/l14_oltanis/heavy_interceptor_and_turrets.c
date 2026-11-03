@@ -568,7 +568,7 @@ extern void Profile_Mark(void *, float);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern f32 Spring_r(f32 *pos, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025C918");
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
                                      float) __asm__("func_L00_0025EFC0");
@@ -1089,7 +1089,6 @@ extern float interceptor_ring_vertices[][3];
 extern s32 interceptor_ring_vertex_colors[];
 extern char interceptor_ring_uvs[];
 extern void draw_blarg_heavy_interceptor_camera_facing_glow_r(struct Moby *m) __asm__("func_L14_002AF2E8");
-extern void draw_env_overlay_mesh(int, void *, void *, void *, int);
 
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 extern void VU1_addGSregister(s32, s64);
@@ -1779,7 +1778,7 @@ extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int func_L00_00260D30(void *, void *, float);
 extern char *func_L14_002EE150(void *, float *, int, int);
-extern void func_L00_00251328(void *, int, int, int);
+
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -3010,8 +3009,6 @@ void update_flying_debris(struct Moby *m) {
 }
 typedef int u128_2BC560 __attribute__((mode(TI)));
 extern struct Moby *func_0020D348(int);
-
-extern void moby_build_matrix(void *);
 
 // Spawns moby 0x51 at a position facing away from an owner, with random drift and spin parameters.
 unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {

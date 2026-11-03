@@ -290,7 +290,6 @@ extern float vec_distance_xy(void *, void *);
 extern float SpringAngle_spark(void *, void *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 
@@ -643,8 +642,6 @@ void update_thrown_bomb(L16FallingMoby *m) {
     StepColorFade(m, d);
 }
 extern char *func_0020D348(int);
-
-extern void moby_build_matrix(void *);
 
 // Spawns a Bomb moby and initialises its data, position and angles.
 unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {

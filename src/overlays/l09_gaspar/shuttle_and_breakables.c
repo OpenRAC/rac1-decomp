@@ -49,7 +49,7 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern float vec_distance_xy(void *, void *);
 
 extern void add_random_offset_to_vector_xyz(void *, f32);

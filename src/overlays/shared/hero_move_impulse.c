@@ -10,6 +10,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 extern char hoven_item_defs[];
@@ -62,7 +63,6 @@ extern void stick_target(int, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern void allocate_hero_voice_for_entry(int, int);
 extern int g_current_level_index MACRO_ADDR;

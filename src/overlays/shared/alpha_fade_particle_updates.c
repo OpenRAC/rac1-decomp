@@ -80,8 +80,6 @@ typedef struct {
 
 extern float IntToFloat(int);
 
-extern void scale_vector_xyz_in_place(void *, void *, float);
-
 /* Per-frame update of a type 0x2C particle: fade colour, move and rotate its velocity.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271450. */
 void update_moving_rotating_resizing_alpha_fade_particle(struct PartBase *p) {

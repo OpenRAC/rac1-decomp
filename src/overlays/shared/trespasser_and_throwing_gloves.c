@@ -17,6 +17,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -169,15 +170,12 @@ extern float FastAbsF(float);
 
 extern float vec_distance_xy(void *, void *);
 
-extern float fast_atan2(float, float);
-
 extern int truncate_float_to_s32(float);
 
 extern void *libc_memset(void *, int, unsigned int);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void clamp_vec_length(void *, void *, float);
-extern int clamp_vec_length_xy(float, void *, void *);
+
 extern void save_state_fields_to_hero(char *);
 extern void restore_state_fields_from_hero(char *);
 extern void save_state_vector_and_fields_to_hero(char *);
@@ -717,7 +715,6 @@ void update_trespasser_pickup(void *mv) {
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
 
 /* computes a launch velocity that reaches a point within a limited range */
 void compute_mine_launch_velocity(float a, float b, float c, float *p, float *q, float *out) {
@@ -1075,8 +1072,6 @@ extern void DeleteMoby(void *);
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern f32 vec_length(f32);
 
-extern f32 fast_atan2(f32, f32);
-
 extern s32 fast_dec_timer(s32 *);
 extern s32 coll_line_r2(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 
@@ -1288,7 +1283,6 @@ void bomb_glove_update(struct Moby *moby) {
     else if (get_ammo(-1) || g_hero_r3.item_anim_active)
         vars->held = spawn_bomb(moby, &vars->grip);
 }
-extern float fast_atan2(float, float);
 
 extern float IntToFloat(int);
 
@@ -1495,7 +1489,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
 
 extern float vec_length(float);
-extern float fast_atan2(float, float);
 
 extern char D_00173F60_alias[] __asm__("D_L00_00173F60");
 extern struct {
@@ -1570,8 +1563,6 @@ void release_moby_with_collision_check(float *release_position, char *m, void *i
 }
 typedef int OvlQuad __attribute__((mode(TI)));
 
-s32 CollType();
-
 extern f32 g_frame_time MACRO_ADDR;
 typedef struct {
     u8 pad_00[0x10];
@@ -1586,7 +1577,6 @@ extern s32 cinematic_mode MACRO_ADDR;
 extern CollisionHit coll_hit_result_r3 __asm__("D_L00_00173F40");
 extern Vec4 coll_hit_normal;
 extern Vec4 g_debug_camera_r3 __asm__("D_L00_00166EC0");
-extern f32 fast_atan2(f32, f32);
 
 extern s32 coll_line_r3(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 extern s32 fast_dec_timer(s32 *);
@@ -1764,7 +1754,7 @@ void update_decoy_proximity_motion(char *m) {
             ((struct Moby *)m)->pos.z = ground_height;
     }
 }
-extern int CollType(void);
+
 void destroy_decoy_with_particles(unsigned char *m);
 
 /* Runs destroy_decoy_with_particles on the moby for selected values of the current mode. */
@@ -1783,11 +1773,10 @@ void destroy_decoy_on_selected_materials(void *m) {
 }
 /* Thrown-object moby update (the state byte at moby+0x20 picks: 0 init, 1 held (killed if the hero lets go), 2 flying (gravity, push-apart from other mobys, sphere collision with bounce/stick), 3 and 4 landed/rolling (hit detection against the nearest hurt, damage and explosion when the vars+0x48 health drops below 0; 4 times out into 5), 5/6 fade and kill). Written from the asm with the NTSC decomp draft as the guide; PAL adds the hero-state 0x31 pull toward the hero before the hit test. Not checkable by real calls (not called before level 1). */
 extern int coll_sphere(float, void *, int, void *);
-extern void vec_reflect(void *, void *, void *);
 
 extern float vec_length(float);
 extern void destroy_decoy_on_selected_materials(void *);
-extern int fast_subtract_rotations_cf(void *);
+
 extern void Moby_PlaySound(int, int, void *);
 extern void add_random_offset_to_vector_xyz(float, void *);
 
@@ -2123,7 +2112,6 @@ typedef struct Rec2 {
 extern Rec item_defs[] NOT_SDA;
 extern Rec2 item_price_table[];
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* spawns a moby of a class and initialises its data block. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c52a8. */
 char *spawn_on_path(void *pos, int idx, int a2, int a3) {
@@ -2189,7 +2177,7 @@ extern int truncate_float_to_s32(float);
 extern void queue_formatted_dialogue_message(int, int, int);
 
 extern int Sound_PlayClassSound(int, int, int, int);
-extern float jet_distance(void *, void *);
+
 extern void DeleteMoby(void *);
 typedef struct {
     int amount;
@@ -2858,7 +2846,7 @@ void func_L00_002C74B8_r(Moby *m) {
 }
 typedef unsigned int u128_pt __attribute__((mode(TI)));
 extern unsigned char *CreateMoby_r(int) __asm__("func_0020D348");
-extern void func_L00_00251328(unsigned char *, int, int, int);
+
 extern void Moby_GetJointWorldPos_r2(unsigned char *, int, void *) __asm__("func_L00_00250800");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern void MobyBlendAnimation_r2(unsigned char *, int, int, int) __asm__("func_00213DE0");

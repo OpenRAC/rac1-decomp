@@ -6,6 +6,7 @@
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 extern char *hoven_mobys MACRO_ADDR;
 
@@ -31,8 +32,6 @@ void capture_linked_moby_relative_transforms(char *moby, char *arr, int n) {
         }
     }
 }
-
-extern void moby_build_matrix(void *);
 
 // updates attached objects' transforms relative to a parent
 void apply_linked_moby_relative_transforms(char *parent, char *list, int n) {

@@ -28,6 +28,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -267,10 +268,8 @@ void draw_water_reservoir(Moby *moby) {
     }
 }
 extern char *CreateMoby(int);
-extern float fast_atan2(float, float);
-extern float vec_length_xy(void *);
 
-extern void moby_build_matrix(void *);
+extern float vec_length_xy(void *);
 
 /* Rocket pvars (Rocket). */
 struct HovenRocketVars {
@@ -341,7 +340,6 @@ extern char hoven_camera_pos[];
 extern float hoven_zero_vec[] MACRO_ADDR;
 extern char *MobyGetHitMessage(void *, int, int);
 extern void DeleteMoby(void *);
-extern void add_vectors(void *, void *, void *);
 
 extern int coll_line(void *, void *, int, struct Moby *, int);
 extern int coll_sphere(void *, int, struct Moby *, float);
@@ -988,7 +986,6 @@ extern void DetachManipulator(void *, void *);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachValue(float *, float, float);
-extern void axis_rotation_2d48(void *, int, float);
 
 extern void create_moby_with_particles(void *, void *, void *, int);
 
@@ -1628,7 +1625,6 @@ extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern int fast_subtract_rotations_cf(void *);
 extern void *spawn_class_b8_projectile(void *, void *, void *, int);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
@@ -1973,7 +1969,7 @@ void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int
 extern void DeleteMoby(void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern void moby_build_matrix(void *);
+
 extern int hoven_mobys_m __asm__("D_L12_00160058") MACRO_ADDR;
 extern float planetbuster_fall_pos MACRO_ADDR;
 extern float planetbuster_maximus_detached_owner_rotation MACRO_ADDR;
@@ -2682,8 +2678,6 @@ void BreakableUpdate(char *m) {
 }
 
 extern int GetEffectTex(int);
-
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
 extern char hoven_overlay_uv_buffer[];
 extern char hoven_overlay_uv_scroll[] MACRO_ADDR;

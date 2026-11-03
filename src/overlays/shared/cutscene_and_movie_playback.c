@@ -30,6 +30,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -762,8 +763,6 @@ extern void update_world_object_animation(void);
 extern void start_cutscene_chunk_read(s32);
 extern void update_moby_animation_state(void *);
 extern f32 IntToFloat(s32);
-
-extern void moby_build_matrix(void *);
 
 extern void HeroAttachManipulators(void *);
 extern void update_moby_pulsing_glow_effects(void *);

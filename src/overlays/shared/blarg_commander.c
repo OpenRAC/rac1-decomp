@@ -8,6 +8,7 @@
 #include "asm_functions/level_01.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 /* Blarg commander shot (Blarg Commander): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
@@ -97,7 +98,6 @@ void draw_level_12_effects(void) {
 }
 typedef int u128_8670 __attribute__((mode(TI)));
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_00308670.c, FUN_L12_00308670. */
 char *create_blarg_commander_moby_from_source(char *a0) {

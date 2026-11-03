@@ -642,9 +642,6 @@ extern float IntToFloat(int);
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 
-extern void get_moby_color(void *, void *, void *, void *);
-
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
 extern float quartu_ripple_world_verts[][3];

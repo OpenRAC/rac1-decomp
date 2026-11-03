@@ -24,6 +24,7 @@
 #include "structs/pad.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -237,7 +238,6 @@ extern s32 vendor_auxiliary_moby_load_pending MACRO_ADDR;
 
 extern VendorMoby_pv *CreateMoby(s32);
 
-extern void moby_build_matrix(void *);
 extern void snd_PauseAllSoundsInGroup(s32);
 extern void music_Pause(s32);
 extern int snd_FlushSoundCommands(void);
@@ -736,8 +736,6 @@ extern short vendor_selected_item_local_offset;
 extern int vendor_selection_changed __attribute__((section(".sdata")));
 extern unsigned char discount_purchase_pricing[] __attribute__((section(".data")));
 
-extern void moby_build_matrix(void *);
-
 extern void update_moby_animation_state(void *);
 
 #define GG g
@@ -873,7 +871,7 @@ extern int vendor_quantity_adjustable SDATA(vendor_quantity_adjustable);
 extern s32 vendor_quantity_decrease_hold_frames MACRO_ADDR;
 extern s32 vendor_quantity_increase_hold_frames MACRO_ADDR;
 extern char level_render_state_base[];
-extern void MobyAnimAdvance();
+
 extern s32 msg_string();
 extern void set_scrolling_status_message();
 
@@ -1255,7 +1253,7 @@ extern void set_camera_rotation();
 extern void UpdateAllPointLights();
 extern void decompress_and_relocate_vendor_moby_assets();
 extern void handle_vendor_auxiliary_moby_event();
-extern void MobyAnimAdvance();
+
 extern void update_resident_dialogue_animation_state();
 
 extern s32 msg_string();

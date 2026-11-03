@@ -97,8 +97,6 @@ extern void DeleteMoby(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void MobyTransformScaledVertex(void *, int, void *);
 
-extern void moby_build_matrix(void *);
-
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
@@ -871,7 +869,7 @@ void update_shard_debris(struct Moby *m) {
     if (v->timer == 0)
         DeleteMoby_r(m);
 }
-extern void set_moby_color(char *, int, int, int);
+
 extern float vec_length_xy(void *);
 extern int aridia_projectile_color_r SDATA(aridia_projectile_color_r);
 extern int aridia_projectile_color_g SDATA(aridia_projectile_color_g);

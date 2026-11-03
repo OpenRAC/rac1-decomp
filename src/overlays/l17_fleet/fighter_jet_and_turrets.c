@@ -3094,7 +3094,6 @@ void magnet_elevator_update(char *moby) {
     update_entity_matrix(state + 0x20, delta, rot, moby + 0x40);
 }
 extern Hero g_hero;
-extern void vec_set_length_xy(void *, void *, float);
 
 /* Builds the magnet elevator camera spot 2.5 units toward the camera, facing the hero. */
 void build_magnet_elevator_camera_pose(char *moby, char *temp, char *state) {

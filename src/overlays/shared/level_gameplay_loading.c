@@ -18,6 +18,7 @@
 #include "enums/level.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -456,7 +457,7 @@ extern void UpdateFog();
 
 extern void VU0_loadMicroProgram(void *);
 extern int STUB_printf();
-extern void copy_memory_by_alignment(void *, void *, int);
+extern void copy_memory_by_alignment_v(void *, void *, int) __asm__("func_L00_001FF040");
 
 extern void scale_vector(void *, void *, float);
 
@@ -465,8 +466,6 @@ extern float IntToFloat(int);
 
 extern void resolve_lookup_record(short *);
 extern int find_or_assign_bolt_source_slot(int, int);
-
-extern void moby_build_matrix(void *);
 
 extern void store_current_level_table_value(int, int);
 
@@ -682,7 +681,7 @@ char *load_level_gameplay(int arg0) {
             n = 12;
         }
         if (n != 0) {
-            copy_memory_by_alignment(level_moby_lights, p, n << 6);
+            copy_memory_by_alignment_v(level_moby_lights, p, n << 6);
         }
     }
     if (hdr->f80 != 0) {
@@ -694,8 +693,8 @@ char *load_level_gameplay(int arg0) {
             Light *l;
             int i;
 
-            copy_memory_by_alignment(env_zone_spheres, p, env_zone_count << 4);
-            copy_memory_by_alignment(env_zone_lights, p + (env_zone_count << 4), env_zone_count << 7);
+            copy_memory_by_alignment_v(env_zone_spheres, p, env_zone_count << 4);
+            copy_memory_by_alignment_v(env_zone_lights, p + (env_zone_count << 4), env_zone_count << 7);
             for (i = 0; i < env_zone_count; i++) {
                 l = &env_zone_lights[i];
                 if (l->f48 < 0) {
@@ -746,7 +745,7 @@ char *load_level_gameplay(int arg0) {
         size += 3;
         size &= ~3;
         size -= 8;
-        copy_memory_by_alignment(mem, p, size);
+        copy_memory_by_alignment_v(mem, p, size);
         for (i = 0; i < help_popup_state.f2C; i++) {
             int delta = (int)help_text_entries - 8;
 
@@ -810,7 +809,7 @@ char *load_level_gameplay(int arg0) {
             level_tie_matrices[i].fC = 1.0f / FastVecLength(&level_tie_matrices[i]);
             level_tie_matrices[i].f1C = 1.0f / FastVecLength(level_tie_matrices[i].m1);
             level_tie_matrices[i].f2C = 1.0f / FastVecLength(level_tie_matrices[i].m2);
-            copy_memory_by_alignment(mtx->f140, p, 0x80);
+            copy_memory_by_alignment_v(mtx->f140, p, 0x80);
             p += 0x80;
             inst->f1C = *(unsigned short *)p;
             p += 0x10;
@@ -1005,7 +1004,7 @@ char *load_level_gameplay(int arg0) {
             for (i = 0; i < voice_pool.fD90; i++) {
                 SndInst *e = voice_pool.fD94 + i;
 
-                copy_memory_by_alignment(e, p, 0x90);
+                copy_memory_by_alignment_v(e, p, 0x90);
                 p += 0x90;
                 resolve_lookup_record((short *)e);
             }
@@ -1431,7 +1430,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(level_clip_volumes, 0, n * 0x90);
         }
         for (i = 0; i < level_clip_volume_count; i++) {
-            copy_memory_by_alignment(level_clip_volumes + i * 0x90, q, 0x90);
+            copy_memory_by_alignment_v(level_clip_volumes + i * 0x90, q, 0x90);
             q += 0x80;
         }
     }
@@ -1449,7 +1448,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(level_cuboids, 0, n << 7);
         }
         for (i = 0; i < level_cuboid_count; i++) {
-            copy_memory_by_alignment(level_cuboids + (i << 7), q, 0x80);
+            copy_memory_by_alignment_v(level_cuboids + (i << 7), q, 0x80);
             q += 0x80;
         }
     }
@@ -1467,7 +1466,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(level_spheres, 0, n << 7);
         }
         for (i = 0; i < level_sphere_count; i++) {
-            copy_memory_by_alignment(level_spheres + (i << 7), q, 0x80);
+            copy_memory_by_alignment_v(level_spheres + (i << 7), q, 0x80);
             q += 0x80;
         }
     }
@@ -1485,7 +1484,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(level_cylinders, 0, n << 7);
         }
         for (i = 0; i < level_cylinder_count; i++) {
-            copy_memory_by_alignment(level_cylinders + (i << 7), q, 0x80);
+            copy_memory_by_alignment_v(level_cylinders + (i << 7), q, 0x80);
             q += 0x80;
         }
     }
@@ -1497,7 +1496,7 @@ char *load_level_gameplay(int arg0) {
         q += 0x10;
         size += 0x4000;
         mem += size;
-        copy_memory_by_alignment(camera_collision_grid, q, size);
+        copy_memory_by_alignment_v(camera_collision_grid, q, size);
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
     }
     if (hdr->f78 != 0) {
@@ -1508,7 +1507,7 @@ char *load_level_gameplay(int arg0) {
         q += 0x10;
         size += 0x4000;
         mem += size;
-        copy_memory_by_alignment(level_circle_zone_grid, q, size);
+        copy_memory_by_alignment_v(level_circle_zone_grid, q, size);
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
     }
     if (hdr->f7C != 0) {
@@ -1521,7 +1520,7 @@ char *load_level_gameplay(int arg0) {
         mem += n << 5;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
-            copy_memory_by_alignment(level_circle_zones, q, n << 5);
+            copy_memory_by_alignment_v(level_circle_zones, q, n << 5);
         }
     }
     if (hdr->f88 != 0) {
@@ -1534,7 +1533,7 @@ char *load_level_gameplay(int arg0) {
         mem += n * 0x30;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
-            copy_memory_by_alignment(environment_samples, q, n * 0x30);
+            copy_memory_by_alignment_v(environment_samples, q, n * 0x30);
         }
     }
     particle_pool = mem;
@@ -1890,7 +1889,7 @@ extern UpdD244 active_scene_trigger;
 
 extern void Profile_Mark(void *, s32);
 
-extern void copy_memory_by_alignment(void *, void *, s32);
+extern void copy_memory_by_alignment_v(void *, void *, s32) __asm__("func_L00_001FF040");
 
 extern void ParseParticleTexs(void *, char *, void *, s32);
 extern void unpack_point_records(void *, s32);
@@ -1958,7 +1957,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
     if (full) {
         FastMemCopy(h, (char *)(src[4] + (s32)src), src[5]);
         level_texture_data_base = 0;
-        copy_memory_by_alignment(mission_state, saved_mission_state + g_current_level_index * 16, 0x10);
+        copy_memory_by_alignment_v(mission_state, saved_mission_state + g_current_level_index * 16, 0x10);
         upload_texture_images((char *)(src[6] + (s32)src), h->v[0], (char *)h + h->v[1]);
         saved_sound_bank_handle = sound_bank_handle;
         flush_cache(0);
@@ -2074,7 +2073,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         n = span->count;
         level_sound_slots = (Slot244110 *)free;
         level_sound_slot_count = n;
-        copy_memory_by_alignment(free, tbl + span->off, n * 32);
+        copy_memory_by_alignment_v(free, tbl + span->off, n * 32);
         span++;
         free += n * 32;
         e = tbl + span->off;

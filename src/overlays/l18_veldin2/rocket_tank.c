@@ -117,7 +117,6 @@ extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
 extern char *func_0020D348(int);
 
-extern void moby_build_matrix(void *);
 extern int IsFrameWithinWindow(char *, float);
 extern float MobyGetFrameValue(void *);
 
@@ -266,9 +265,9 @@ extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, short *);
 extern int FindNearestTargetMoby(unsigned char *, char *, float);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern float vec_length_xy(void *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern void StepColorFade(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 

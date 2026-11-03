@@ -1501,8 +1501,6 @@ extern u8 hero_item_28_29_pose_buffer_slot0[];
 extern u8 hero_item_28_29_joints_slot1[];
 extern u8 hero_item_28_29_pose_buffer_slot1[];
 extern u8 D_L00_0017AA60[];
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
 
 extern void pack_pose(void *, void *, s32, s32, s32);
 
@@ -2316,7 +2314,6 @@ void exit_hero_vehicle_mode(void) {
         HeroEnterMoveState(HERO_STATE_IDLE, 1);
     }
 }
-extern void vec_set_length_xy(float *, float *, float);
 
 /* With EACH, scales Vec4's x and y by S and z by Z; otherwise scales its xy
    to length S (vec_set_length_xy) and sets z to Z. */
@@ -3121,15 +3118,14 @@ extern f32 coll_hit_point_z;
 
 void func_L00_00212D70_12E70(void *, void *, s32, f32, f32) __asm__("func_L00_00212D70");
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
 
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
+
 void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
 
 void vec_scale_to_length(void *, void *, f32);
@@ -3438,8 +3434,6 @@ extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
 extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
 extern int coll_sphere(float, void *, int, void *);
-extern int coll_capsule(float, float, void *, int, int);
-extern int coll_sphere_hero_groups(float, void *);
 
 extern char coll_resolved_pos[];
 

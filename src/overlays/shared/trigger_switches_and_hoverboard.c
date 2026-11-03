@@ -540,10 +540,9 @@ void add_moby_frames_for_group_proximity(char *moby) {
     }
 }
 
-extern void set_moby_color(void *, int, int, int);
 extern void AttachManipulator(char *, int, void *);
 extern void AddDrawCallback(void *, void *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern void draw_moby_wobble_quads(unsigned char *m);
 
 /* UpdateMoby_823: pick random wobble parameters, then animate them each frame */
@@ -1315,7 +1314,6 @@ void draw_moby_glow_sprite(char *m) {
     draw_world_quad(&pk, 0, 0);
 }
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0031abe0.c, FUN_L05_0031d160. */
 char *spawn_lamp_destroyed_from_source(unsigned char *a0) {

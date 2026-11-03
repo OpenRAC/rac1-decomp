@@ -16,6 +16,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
@@ -213,7 +214,6 @@ extern void turn_to(int, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void add_hero_forward_offset(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);

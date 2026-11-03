@@ -894,7 +894,6 @@ extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern void queue_movie_with_game_language(int i);
 
@@ -2021,7 +2020,6 @@ extern void StepColorFade(void *, void *);
 extern char *func_0020D348(int);
 extern void MobyTransformScaledVertex(void *, int, void *);
 
-extern void moby_build_matrix(void *);
 extern int FindNearestEligibleMoby(float a, char *m, char *b, int c, int d, int *e, int f);
 extern int poll_moby_state_and_rearm(char *);
 extern char *create_class_274_ring_effect_v(void *, void *, float) __asm__("func_L18_002DD7D0");
@@ -2729,7 +2727,6 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
 typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
-extern int fast_subtract_rotations_cf(void *);
 
 extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
                                       float w, float pw);

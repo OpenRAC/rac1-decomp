@@ -389,7 +389,6 @@ void remove_moby_when_tracked_count_below_threshold(struct Moby *m) {
     }
 }
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a class 0x660 moby at position, scaled and owned by owner. */
 char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
@@ -440,8 +439,6 @@ void forward_moby_hits_to_owner(char *moby) {
     }
     ((unsigned char *)moby)[0xA4] = 0xFF;
 }
-
-extern void set_moby_color(void *, int, int, int);
 
 extern float g_frame_time MACRO_ADDR;
 

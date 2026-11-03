@@ -44,8 +44,6 @@ int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) 
     return 1;
 }
 extern void MobyTransformScaledVertex(void *, int, void *);
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
 
 /* Attach child to a bone of parent: copy its position and basis, and mirror the parent's draw flag. */
 void update_moby_bone_attachment(unsigned char *parent, unsigned char *child, int mode) {

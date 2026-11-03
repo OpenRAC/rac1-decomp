@@ -57,7 +57,6 @@ extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, 
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void get_moby_color(void *, void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 

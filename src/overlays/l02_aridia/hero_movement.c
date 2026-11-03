@@ -27,12 +27,12 @@
 #include "structs/collision.h"
 #include "structs/hit_message.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
 
 extern void HeroL02_SetMoveState(int, int);
 extern void Hero_OnKilled(void);
@@ -308,15 +308,13 @@ extern s32 g_current_level_index MACRO_ADDR;
 
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
@@ -515,9 +513,6 @@ extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
 extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
 
-extern int coll_capsule(float, float, void *, int, int);
-extern int coll_sphere_hero_groups(float, void *);
-
 extern void vec_scale_to_length(void *, void *, float);
 // Probes up to eight candidate camera positions and pulls the camera back if the view is blocked.
 extern Hero hero __asm__("D_0013F450");
@@ -645,11 +640,10 @@ extern void speed_step(float, float);
 
 extern void correct_hero_airborne_wall_velocity(void);
 extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
-extern int clamp_vec_length_xy(float, void *, void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
@@ -675,8 +669,6 @@ extern void initialize_moby_transform_history(int, void *);
 extern void create_moby_transform_history_entry(void *, int, int);
 
 extern void turn_hero_toward_move_direction_with_stick_scale(void);
-
-extern void vec_set_length_xy(void *, void *, float);
 
 extern void gravity_flatten(float *, float *);
 extern int hero_slot_item_id(int);

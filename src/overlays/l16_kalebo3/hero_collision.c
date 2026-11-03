@@ -12,11 +12,12 @@
 #include "enums/hero_state.h"
 #include "structs/collision.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
+
 extern void Hero_TryMoveState(int, int);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
@@ -154,15 +155,13 @@ extern s32 g_current_level_index MACRO_ADDR;
 
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
@@ -356,8 +355,6 @@ extern void transform_hero_local_offset_to_world(float *, float, float, float);
 
 extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern void HeroMoveDownAlongNormal(float *, float *, float);
-extern int coll_capsule(float, float, void *, int, void *);
-extern int coll_sphere_hero_groups(float, void *);
 
 /* Pulls the camera position toward a desired offset from the player; returns 1 when settled, -1 when clamped. */
 extern Hero hero __asm__("D_0013F450");
@@ -474,7 +471,7 @@ extern float gravity_length_xy(float *v);
 extern float gravity_z(float *);
 extern void gravity_set_z(float *, float *, float);
 extern float vec_length_xy(void *);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void resolve_hero_collisions_with_history(void);
 extern void correct_hero_ground_penetration(void);
 extern void gravity_flatten(float *, float *);

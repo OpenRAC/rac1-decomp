@@ -574,8 +574,6 @@ extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int allocate_hero_voice_for_entry(int, int);
 extern int GetIconFrame(int, int);
 
-extern void vec_mul_components(void *, void *, void *);
-
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern void draw_rotated_hud_sprite(int tex, int x, int y, int w, int h, int alpha);
 extern int hud_stars_width SDATA(hud_stars_width);
@@ -727,8 +725,6 @@ int draw_hud_stars(HudElem *rec) {
  */
 extern int GetIconFrame(int, int);
 extern void draw_rotated_hud_sprite(int, int, int, int, int, int);
-
-extern void vec_mul_components(void *, void *, void *);
 
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern int hud_stars_width SDATA(hud_stars_width);
@@ -2474,7 +2470,7 @@ int update_hud_elements(int call) {
 extern int weapon_hud_suspended SDATA(weapon_hud_suspended);
 extern int D_hud_pair[2] __asm__("D_L00_0015FA44") MACRO_ADDR;
 extern void Hud_SetBarValueById(int, int);
-extern void hud_weapon_update(void);
+
 extern int draw_weapon_ammo_hud_panel(char *);
 
 /* Shows or hides the weapon HUD element depending on the current weapon. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_text_002377b8.c, FUN_L00_0023adb8. */

@@ -177,11 +177,10 @@ extern float adjust_hero_animation_speed_for_target_frame(float, float, float, f
 extern void HeroMoveDownAlongNormal(float *, float *, float);
 
 extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
-extern int clamp_vec_length_xy(float, void *, void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
@@ -209,8 +208,6 @@ extern int test_hero_animation_frame_window(float);
 
 extern void initialize_moby_transform_history(int, void *);
 extern void create_moby_transform_history_entry(void *, int, int);
-
-extern void vec_set_length_xy(void *, void *, float);
 
 extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);

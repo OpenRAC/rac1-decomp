@@ -174,7 +174,6 @@ extern float vec_distance_xy(float *, float *);
 
 extern char *CreateMoby(int);
 
-extern void moby_build_matrix(void *);
 extern void update_moby_movement_with_sphere_collision(f32, struct PMoby *, void *, void *);
 extern struct Path5BD0 *eudora_paths[];
 extern f32 eudora_swarm_steer_params[8];
@@ -538,7 +537,7 @@ extern void InitKnockback(float, void *, void *, int, int, int);
 extern void trooper_set_knockback(float *p, float a, float b);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void SetDeathBits(void *, int, int);
-extern int fast_subtract_rotations_cf(void *);
+
 extern void AttachManipulator(char *, int, void *);
 extern void *libc_memset(void *, int, unsigned int);
 
@@ -553,12 +552,8 @@ extern void DeleteMoby(void *);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void StepColorFade(void *, void *);
 extern void fast_dec_timer(int *arg0);
-extern void axis_rotation_2d48(void *, int, float);
 
 extern void MobyTransformScaledVertex(char *, int, char *);
-
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
 
 extern void *spawn_axe_moby(void *, void *);
 
@@ -2274,7 +2269,6 @@ extern int MoveKeepingOverGround_o(void *, void *, void *, float, float, float, 
 
 extern float vec_length_xy(void *);
 extern void spawn_class_b8_projectile(void *, void *, void *, int);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 

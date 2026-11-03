@@ -386,8 +386,6 @@ void update_debug_camera(void) {
     }
 }
 
-extern void copy_memory_by_alignment(int, void *, unsigned short);
-extern void moby_build_matrix(void *);
 extern char g_debug_menu[];
 extern char player_camera[];
 

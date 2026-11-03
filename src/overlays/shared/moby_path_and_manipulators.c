@@ -737,7 +737,6 @@ void create_moby_transform_history_entry(struct TransformHistory *o, int a, int 
 }
 extern void clear_moby_transform_history(struct TransformHistory *o);
 extern void func_0020D6D0(void *);
-extern void moby_build_matrix(void *);
 
 /* Pushes the source object's transforms into an 8-entry ring and replays them into the trailing objects, ending them
    when all faded.
@@ -919,7 +918,7 @@ typedef struct MobyBound {
 } MobyBound;
 extern struct Moby *suck_moby_list MACRO_ADDR;
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
-float fast_atan2(float, float);
+
 float vec_length_xy(void *);
 float vec_distance_xy(void *, void *);
 
@@ -1289,7 +1288,6 @@ void queue_formatted_dialogue_message(int a, int b, int c) {
 extern float veldin1_zero_vec[] MACRO_ADDR;
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
                                 float scale, float *v12);
-extern int generate_random_points_from_shape_entries(void *, int, void *, void *, float);
 
 /* Spawns a burst of effects on a moby: a fixed set at its own position, then randomly offset ones at points gathered around it. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_00263e30. */
 void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, int cnt2, int flag) {

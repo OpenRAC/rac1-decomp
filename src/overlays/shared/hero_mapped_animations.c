@@ -325,7 +325,6 @@ extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
 extern int SlotTable_Insert(void *);
-extern void moby_blend_anim_frames_to_spr_slot(void *, int);
 
 extern void update_moby_animation_state(void *);
 extern int truncate_float_to_s32(float);
@@ -1087,7 +1086,6 @@ void gravity_set_z(float *dst, float *src, float z) {
             break;
     }
 }
-extern void vec_set_length_xy(float *, float *, float);
 
 /* Like gravity_set_z, but instead of setting z it scales the point's
    xy to length Z (vec_set_length_xy): in view mode 0 (g_hero +
@@ -1462,7 +1460,6 @@ extern s32 cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 void AttachManipulator(void *, s32, void *);
-void axis_rotation_2d48(void *, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00234808. */
 void animate_hero_slot4_and_slot5_visuals(void) {

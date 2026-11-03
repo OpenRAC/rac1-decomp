@@ -37,7 +37,7 @@ extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern void add_hero_forward_offset(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void steer_hero_planar_velocity(float);
 extern int allocate_hero_voice_for_entry(int, int);
 extern int hero_slot_item_id(int);

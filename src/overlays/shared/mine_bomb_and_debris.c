@@ -20,6 +20,7 @@
 #include "structs/level_records.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -197,21 +198,18 @@ extern void MobyTransformScaledVertex(char *, int, char *);
 extern float resolve_camera_surface_height(float *, void *);
 
 extern int PartType34Spawn(void *, void *, float, float);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern float IntToFloat(int);
 
 extern int coll_line(void *, void *, int, int, int);
-extern int CollType(void);
+
 extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern char *spawn_burst_moby(void *, float);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
 
-extern void vec_reflect(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-
-extern float fast_atan2(float, float);
 
 extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
 
@@ -935,9 +933,8 @@ void mine_update(M910 *m) {
 }
 typedef int q_2adbb0 __attribute__((mode(TI)));
 extern char *CreateMoby(int);
-extern void set_moby_color(void *, int, int, int);
+
 extern float IntToFloat(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a spinning shard (type 0x70) at pos with velocity vel, tinted r/g/b, fading out over life. */
 char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int life, unsigned char r, unsigned char g,
@@ -1017,7 +1014,7 @@ void update_glow_particle(M_d *m) {
 }
 
 extern int cinematic_mode MACRO_ADDR;
-extern float fast_atan2(float, float);
+
 extern float IntToFloat(int);
 
 extern int GetEffectTex(int);
@@ -1528,7 +1525,6 @@ extern void rand_vec(float *, float, float);
 
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
-extern void clamp_vec_length(void *, void *, float);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
@@ -2305,7 +2301,6 @@ typedef struct {
 } E;
 extern E gold_weapon_purchased;
 extern s32 coll_hit_result[0x1C];
-extern f32 fast_atan2(f32, f32);
 
 extern f32 IntToFloat(s32);
 extern s32 coll_line_r(void *, void *, s32, char *, void *) __asm__("func_L00_001EFFF0");
@@ -2463,7 +2458,7 @@ extern Vec4 devastator_default_normal MACRO_ADDR;
 extern Vec4 devastator_default_surface_motion MACRO_ADDR;
 
 extern float dot1688(void *) __asm__("func_L00_001FF3E0");
-extern void func_L00_001FF270(void *, void *, void *);
+
 extern float horizontal1688(void *) __asm__("func_001F9CE8");
 extern float func_L00_00259148(void *, float, float, float, float, float);
 extern unsigned char *smoke1688(void *, void *, int, int, int, int, float, float, float, float,

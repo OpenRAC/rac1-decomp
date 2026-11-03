@@ -19,6 +19,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -806,7 +807,7 @@ extern void fast_vec_add_2DACC0(void *, void *, void *) __asm__("func_001F9BD8")
 extern void fast_vec_normalize_2DACC0(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern void font_queue_vu_state_2DACC0(void) __asm__("func_001F7868");
 extern void transform_vector_2DACC0(void *, void *, void *) __asm__("func_001F9EE8");
-extern void func_L00_001FDE48(int, void *, void *, void *, int);
+
 extern s32 truncate_float_to_s32_2DACC0(f32) __asm__("func_001FA898");
 extern void draw_geometry_quad_2DACC0(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern void set_vector_length_xy_2DACC0(void *, void *, f32) __asm__("func_L00_001FF500");
@@ -1111,7 +1112,6 @@ extern void suck_beam_update(void *, void *);
 extern R *get_moby_suck_cannon_record_r(M_da360 *) __asm__("func_L00_002DCD40");
 extern f32 vec_distance_xy(void *, void *);
 extern s32 is_suck_cannon_suction_blocked_by_hero_state(void);
-extern f32 fast_atan2(f32, f32);
 
 extern s32 coll_line_r(void *, Vec4f *, s32, M_da360 *, s32) __asm__("func_L00_001EFFF0");
 extern int process_suck_cannon_suction_candidate(u8 *, void *, void *, void *, void *);
@@ -1332,7 +1332,7 @@ extern float frame_scale MACRO_ADDR;
 extern float frame_scale40 SDATA(D_0015EE60);
 extern char fire_tuning40[1] SDATA(D_L00_00161C00);
 /* Retail registers the copy at 0x238128, one of several identical delete callbacks. */
-extern void func_L00_00238128(void);
+
 extern void update_hud_counter_cap_and_visibility(void);
 extern void hud_draw_gauge_frame(void);
 extern int queue_animation_update(int, int, int, int, int, int, int);
@@ -1354,7 +1354,7 @@ extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int)
 extern float MobyGetFrameValue(M40 *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
 typedef struct {
     u8 pad[0x10];
@@ -1970,8 +1970,6 @@ extern B50_DD3D8 suck_cannon_blast_params;
 extern I6_DD3D8 suck_cannon_explosion_colors_a;
 extern I6_DD3D8 suck_cannon_explosion_colors_b;
 extern int *coll_sphere_moby_hits[];
-
-extern void clamp_vec_length(void *, void *, float);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern char *spawn_randomly_rotated_colored_moby_r(float, void *, void *, void *, int, unsigned char, unsigned char,
@@ -2814,8 +2812,6 @@ extern V41 suck_beam_ring_unit_offsets[];
 extern float suck_beam_segment_turn_angles[];
 extern char collision_hit_point[];
 
-extern void LerpVec4(void *, void *, void *, float);
-extern void KillPart(void *);
 extern void lerp_vector(void *, void *, void *, float);
 extern Particle41 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
@@ -3214,7 +3210,6 @@ void enqueue_red_orb_group_draw_if_cache_changed(Moby *m) {
     }
 }
 
-extern void set_moby_color(void *, int, int, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern float red_orb_pulse_speed_deg SDATA(red_orb_pulse_speed_deg);
 extern int red_orb_color_a SDATA(red_orb_color_a);
@@ -3262,7 +3257,6 @@ void quad_moby_update(Moby *a) {
 }
 extern void AttachManipulator(char *, int, void *);
 
-extern void axis_rotation_2d48(void *, int, float);
 extern float vendor_orb_spin_speed_deg SDATA(vendor_orb_spin_speed_deg);
 
 /* UpdateMoby for Vendor Orb: init then slowly spin/ease its value */
@@ -3285,7 +3279,6 @@ void vendor_orb_update(unsigned char *m) {
     }
 }
 typedef int q_2adbb0 __attribute__((mode(TI)));
-extern void moby_build_matrix(void *);
 
 /* Creates a moby of type 0x4A8 at pos with a random rotation, and fills its data block from the arguments. */
 char *spawn_randomly_rotated_colored_moby(void *owner, void *pos, void *vel, int life, unsigned char r, unsigned char g,

@@ -24,6 +24,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -1400,7 +1401,6 @@ int find_or_assign_bolt_source_slot(int lvl, int uid) {
     }
     return k;
 }
-extern void copy_memory_by_alignment(int, void *, unsigned short);
 
 /* level data, not declared anywhere else yet */
 typedef struct {
@@ -1495,7 +1495,7 @@ extern unsigned char *level_mobys_end MACRO_ADDR;
 
 extern void raise_kernel_trap(void);
 extern void enter_hero_vehicle_mode(int, int, char *);
-extern void moby_build_matrix(void *);
+
 extern void euler_rotation_basis(void *, void *);
 
 extern void register_audio_stream_callback(void);

@@ -1030,7 +1030,7 @@ void MobySetPosZ(char *a, float f) {
 typedef int OvlQuad __attribute__((mode(TI)));
 void approach_moby_height(struct Moby *a, float t);
 extern int coll_line(void *, void *, int, int, int);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
@@ -1133,7 +1133,6 @@ void update_height_adjusted_projectile(struct Moby *moby) {
 }
 extern char *CreateMoby(int);
 
-extern void moby_build_matrix(void *);
 extern float bombthrower_grass_spawn_height SDATA(bombthrower_grass_spawn_height);
 
 // Spawns a moby with a swirl/particle data block.
@@ -1264,7 +1263,7 @@ extern float FastCos_r(float x) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
-extern void func_L00_00251358(void *, void *, void *, void *);
+
 extern void set_moby_color_r(void *, int, int, int) __asm__("func_L00_00251328");
 extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
 extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
@@ -1651,7 +1650,6 @@ void lab_door_update(unsigned char *m) {
     }
 }
 
-extern void set_moby_color(void *, int, int, int);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern float ProbeGroundHeight(void *, int, float);
 
@@ -2816,7 +2814,7 @@ extern float class1199_start_b5a SDATA(class1199_start_b5a);
 void update_class_1199_hit_reactions_and_targeting(Moby *moby);
 void set_moby_group_command_frames(unsigned char *moby);
 extern float vec_length_xy(void *);
-extern int fast_subtract_rotations_cf(void *);
+
 extern int IsFrameWithinWindow(char *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");

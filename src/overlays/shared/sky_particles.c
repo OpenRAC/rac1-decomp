@@ -141,7 +141,7 @@ void update_sky_shells_static(void) {
     }
 }
 extern int level_frame_counter MACRO_ADDR;
-void fast_euler_to_matrix(void *, void *);
+
 /* rotates animated sky shells and draws each layer */
 void update_sky_shells_animated(void) {
     float v[4] __attribute__((aligned(16)));
@@ -286,7 +286,7 @@ void draw_four_sky_shells_with_animated_particles(void) {
     SkyDrawShell(3);
 }
 extern int level_frame_counter MACRO_ADDR;
-void fast_euler_to_matrix(void *, void *);
+
 /* refreshes two rotating shrub transform layers */
 void sky_shells_rotate_two(void) {
     float v[4] __attribute__((aligned(16)));
@@ -334,7 +334,6 @@ void SkyDrawShell();
 extern int level_frame_counter MACRO_ADDR;
 
 void VU1_addGSregister(int, long);
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_00289bd8. */
 void draw_sky_shells_with_particles_and_modulo_50000_rotation(void) {
@@ -540,7 +539,6 @@ void sky_particles_update(void);
 void SkyDrawShell();
 
 void VU1_addGSregister(int, long);
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a208. */
 void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void) {
@@ -563,7 +561,6 @@ typedef int q128 __attribute__((mode(TI)));
 extern u8 *sky_data_r2 __asm__("D_L00_001605DC") MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 void SkyDrawShell(s32);
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a2f0. */
 void draw_sky_shells_with_modulo_40000_rotation(void) {
@@ -682,7 +679,6 @@ void draw_three_sky_shells_with_particles(void) {
 }
 
 void SkyDrawShell();
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a998. */
 void SkyShellsRotatePair(void) {
@@ -801,7 +797,6 @@ void render_three_shell_particle_sky(void) {
 }
 
 void SkyDrawShell();
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028b080. */
 void draw_seven_sky_shells_with_modulo_40000_and_60000_rotation(void) {

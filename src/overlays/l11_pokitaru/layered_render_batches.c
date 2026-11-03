@@ -11,6 +11,7 @@
 #include "structs/small_records.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 extern void VU1_addGSregister(int, long);
 
@@ -166,8 +167,6 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
             break;
     }
 }
-
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
 extern char pokitaru_faded_uv_scroll[];
 extern int pokitaru_faded_mesh_uv_sources[];

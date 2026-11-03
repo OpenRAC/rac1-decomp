@@ -70,7 +70,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int func_L00_001EFFF0(void *, void *, int, void *, int);
 extern float func_001F9CE8(void *);
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern void func_L00_001FF500(void *, void *, float);
+
 extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
 
 extern float random_float_between_r(float, float) __asm__("func_002140F8");

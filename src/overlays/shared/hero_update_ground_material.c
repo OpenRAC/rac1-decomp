@@ -298,8 +298,7 @@ extern struct Hero g_hero_r __asm__("D_0013F450");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern unsigned char D_0013E620[];
-extern void func_L00_00251358(struct Moby *, int *, int *, int *);
-extern void func_L00_00251328(struct Moby *, int, int, int);
+
 extern void func_L00_002078E0(void);
 extern void update_item_tint_from_hero_r(struct Moby *, struct Moby *) __asm__("func_L00_00207948");
 
@@ -1155,15 +1154,13 @@ extern u8 novalis_coll_hit_point[];
 void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
@@ -1350,8 +1347,6 @@ extern float frame_scale SDATA(frame_scale);
 extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
 extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
-extern int coll_capsule(float, float, void *, int, void *);
-extern int coll_sphere_hero_groups(float, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1438,7 +1433,7 @@ int resolve_hero_position_with_collision_queries(int a0) {
     return 1;
 }
 typedef int u128_34970 __attribute__((mode(TI)));
-extern void vec_set_length_xy(void *, void *, float);
+
 extern float forward_component(void *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern void add_hero_forward_offset(void *, void *, float);
@@ -1545,7 +1540,7 @@ extern void exit_hero_vehicle_mode_and_restore_moby(void);
 
 extern s32 pad_pressed_within(s32, s32, s32);
 extern struct Moby *CreateMoby(s32);
-extern void moby_build_matrix(struct Moby *);
+
 extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
 extern f32 gravity_z(void *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");

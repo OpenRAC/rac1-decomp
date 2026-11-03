@@ -86,7 +86,6 @@ void emit_moby_sprite_particles(char *m) {
 extern struct Moby *func_0020D348(int);
 
 extern float vec_length_xy(void *);
-extern void moby_build_matrix(void *);
 
 /* spawn a Rocket moby with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
@@ -136,8 +135,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-
-extern void vec_set_length_xy(void *, void *, float);
 
 extern float SpringTurn(float, float, float, float, float, float *);
 extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00215C00");

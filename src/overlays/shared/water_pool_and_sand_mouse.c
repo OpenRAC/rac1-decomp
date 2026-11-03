@@ -2025,8 +2025,6 @@ void sand_mouse_update(Moby *moby) {
 
 extern int coll_line(void *, void *, int, int, int);
 
-extern void vec_set_length_xy(void *, void *, float);
-
 extern void DeleteMoby(void *);
 
 typedef struct {
@@ -2685,7 +2683,6 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
 }
 extern short *lists_2F0728[] __asm__("D_L01_001ABFC0");
 extern Moby *entities_2F0728 SDATA(D_L01_00160058);
-extern void func_L00_00251E30(void *);
 
 /* Elevator partner spawn: picks the class that pairs with this moby's
    (0x23C -> 0x361, 0x361 -> 0x362), walks its group's entity list

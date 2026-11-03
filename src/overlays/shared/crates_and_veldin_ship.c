@@ -558,7 +558,7 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *pos, void *rot, int type, int n,
                                          float lo, float hi);
-extern void moby_build_matrix(void *);
+
 extern void rand_vec(float *, float, float);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
@@ -823,7 +823,7 @@ extern V collision_hit_point;
 extern int is_moby_in_class_range_500_to_540(void *);
 
 extern void break_crate(void *, int, int);
-extern void crate_drop_bolts(void *);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern int moby_get_ride_transform(char *);
@@ -1819,7 +1819,6 @@ void helipack_update(Moby *a) {
     }
 }
 extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* spawn a moby of type 0x27F and copy a spawn record into its data */
 char *mine_camera_blast(char *a, char *b, int c, char *d) {
@@ -1886,7 +1885,7 @@ extern unsigned char level_point_lights[];
 extern float IntToFloat(int);
 
 extern s16 scale_ticks_r(int) __asm__("func_001F9850");
-extern int fast_subtract_rotations_cf(void *);
+
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
@@ -3457,7 +3456,7 @@ void func_0020D678_D83D8(P *) __asm__("func_0020D678");
 
 int fetch_and_add_global_accumulator(int);
 int random_integer_below(int);
-void reset_smoke_fire_spawner_particle(P *, int);
+
 void func_L00_002D9208_D83D8(P *, int) __asm__("func_L00_002D9208");
 int FastBSphereCheck(Vec4f *, float);
 float vec_distance_xy(Vec4f *, Vec4f *);
@@ -3838,7 +3837,6 @@ void initialize_smoke_fire_spawner_mesh_particle(char *m, int idx) {
 typedef struct {
     int a[4];
 } Vy __attribute__((aligned(16)));
-extern void set_moby_color(void *, int, int, int);
 
 /* Creates a class 0x307 moby at src, scaled by f, and returns it (or 0). */
 char *spawn_burst_moby(Vy *src, float f) {

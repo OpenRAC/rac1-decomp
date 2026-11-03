@@ -17,6 +17,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -78,7 +79,6 @@ extern int moby_get_ride_transform(char *);
 
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_reflect(void *, void *, void *);
 
 typedef struct {
     float v[4];
@@ -313,7 +313,7 @@ extern float frame_scale MACRO_ADDR;
 extern int fast_dec_timer(int *);
 extern void *spawn_moby_bound_effect_particle(void *);
 extern float IntToFloat(int);
-extern void add_vectors(void *, void *, void *);
+
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_moby_collision_particles(void *);
 
@@ -575,9 +575,6 @@ void reset_morphoray_chicken_slot_defaults(char *a) {
 
 extern char *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_ri(int, int, char *) __asm__("func_0022ED80");
-extern void set_moby_color(void *, int, int, int);
-
-extern float fast_atan2(float, float);
 
 extern int rand_range(int, int);
 extern float IntToFloat(int);
@@ -585,7 +582,6 @@ extern void SetDeathBits(void *, int, int);
 extern void DeleteMoby(void *);
 extern void PartType05Spawn(void *, float, int, int, int, int, float);
 
-extern void moby_build_matrix(void *);
 extern int morphoray_chicken_slots[];
 extern char morphoray_chicken_slot_state_blocks[];
 extern char morphoray_chicken_slot_aux_blocks[];
@@ -1533,7 +1529,6 @@ void update_homing_shot(Moby *m) {
     PartType27Spawn_r(&*(Vec4A *)&m->pos, &c, 0x7F2F4F6F, rand_range_r(scale_ticks_r2(10), scale_ticks_r2(15)),
                       30000.0f);
 }
-extern void KillPart(void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
 
@@ -1610,7 +1605,6 @@ extern int func_001160D8(void);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int rand_range(int, int);
 
-extern void moby_build_matrix(void *);
 extern void copy_hero_moby_field_38(void *);
 extern int feather_base_lifetime SDATA(feather_base_lifetime);
 extern float feather_scale_multiplier SDATA(feather_scale_multiplier);
@@ -1684,7 +1678,6 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
 extern int fast_dec_timer(int *);
 extern void DeleteMoby(void *);
 
-extern int fast_subtract_rotations_cf(void *);
 extern float falling_moby_horizontal_velocity_scale SDATA(falling_moby_horizontal_velocity_scale);
 
 // UpdateMoby_428: apply gravity and drag to the moby's velocity, then test for despawn.
@@ -2059,8 +2052,6 @@ typedef struct {
 } __attribute__((aligned(16))) V4;
 extern unsigned char *CreateMoby(int);
 
-extern void moby_build_matrix(void *);
-
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -2139,11 +2130,8 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 
-extern float lensq_cc2e8(void *);
 extern float vec_length(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-
-extern void vec_set_length_xy(void *, void *, float);
 
 typedef struct {
     float x, y, z, w;
@@ -2388,8 +2376,6 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 int get_ammo(int);
 void use_ammo(int, int);
-
-unsigned char *spawn_hero_drone(unsigned char *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8440.c, FUN_L00_002cdcc0. */
 void replenish_hero_drones(void) {
@@ -3043,7 +3029,7 @@ extern void create_linked_class_0326_moby(struct Moby *);
 extern s32 truncate_float_to_s32(f32);
 extern void update_moby_animation_state(struct Moby *);
 extern void break_crate(struct Moby *, int, Contact *);
-extern void crate_drop_bolts(struct Moby *);
+
 extern s32 coll_sphere_mobys(f32, void *, s32, void *, void *);
 extern int FastBSphereCheck(void *, float);
 extern int get_first_moby_in_group(struct Moby **, int, int, int);

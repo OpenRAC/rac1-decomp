@@ -735,8 +735,6 @@ void set_moby_and_links_to_states_8_and_9(char *moby) {
     }
 }
 
-extern void moby_build_matrix(void *);
-
 /* Puts a moby in state 2 and its seven linked mobys in state 3, resetting each one's heading. */
 void set_moby_and_links_to_states_2_and_3(char *a) {
     struct HangarDoorVars *data = (struct HangarDoorVars *)((Moby *)a)->pvars;

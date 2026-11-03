@@ -684,7 +684,7 @@ void PartType11Spawn(void *pos, void *dir, int col, int d, int n, int b1A, int b
 }
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
-extern int fast_subtract_rotations_cf(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float cpu_frame_load MACRO_ADDR;
@@ -780,7 +780,6 @@ void update_branching_and_fading_effect_particle(struct PartBase *m) {
             KillPart(m);
     }
 }
-extern unsigned char *create_part2(int, int);
 
 extern int truncate_float_to_s32(float);
 
@@ -1375,7 +1374,6 @@ extern f32 frame_scale MACRO_ADDR;
 void Moby_GetJointWorldPos(void *, s32, void *);
 void vec_scale_to_length(void *, void *, f32);
 
-void KillPart(void *);
 s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026c860. */
@@ -2162,10 +2160,9 @@ void vec_scale_to_length(void *, void *, f32);
 
 f32 FastAbsF(f32);
 
-f32 fast_atan2(f32, f32);
 s32 truncate_float_to_s32(f32);
 s32 func_L00_001F10E0_6F510(void *, s32, s32, f32) __asm__("func_L00_001F10E0");
-void vec_reflect(void *, void *, void *);
+
 void func_L00_002688A8_6F510(O_26e670_26e670 *) __asm__("func_L00_002688A8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026e670. */
@@ -2439,7 +2436,7 @@ char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
     return (char *)p;
 }
 extern float vec_length_xy(void *);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void ApproachValue(void *, float, float);
 extern float camera_yaw;
 

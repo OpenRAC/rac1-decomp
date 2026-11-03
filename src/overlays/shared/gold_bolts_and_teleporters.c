@@ -27,6 +27,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -536,8 +537,6 @@ struct Moby *spawn_debris_moby(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a
 }
 extern f32 g_frame_time MACRO_ADDR;
 
-extern f32 fast_atan2(f32, f32);
-
 extern void vec_scale_to_length(void *, void *, f32);
 
 typedef struct {
@@ -557,7 +556,7 @@ extern CollisionHit novalis_coll_hit;
 extern int fast_dec_timer(void *);
 extern s32 coll_line(void *, void *, s32, void *, s32);
 extern s32 coll_sphere(f32, void *, s32, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern s32 rand_range(s32, s32);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, s32, s32, f32, s32);
 
@@ -812,7 +811,6 @@ extern void record_moby_context_bytes(char *, int, char *, int, void *);
 extern int memcard_Save(int, int);
 
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -1860,7 +1858,7 @@ void TeleporterPadUpdate(char *moby) {
     }
 }
 extern void vec_scale_to_length(void *, void *, float);
-extern void moby_build_matrix(void *);
+
 extern float teleporter_child_height_offset SDATA(teleporter_child_height_offset);
 extern float teleporter_child_base_pitch_deg SDATA(teleporter_child_base_pitch_deg);
 
@@ -2039,7 +2037,7 @@ void show_teleporter_and_children(char *a) {
     }
 }
 typedef int OvlQuad_c9 __attribute__((mode(TI)));
-extern void LerpVec4(void *, void *, void *, float);
+
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 
 extern char novalis_point_light_slots[];
@@ -2296,10 +2294,9 @@ typedef struct {
 extern f32 SpringTurn(f32 *, f32, f32, f32, f32, f32);
 extern void BuildSphericalOffset_r(f32 *, f32, f32, f32) __asm__("func_00215C00");
 extern f32 vec_distance_xy(void *, void *);
-extern void vec_set_length_xy(void *, void *, f32);
 
 extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
-extern s32 CollType(void);
+
 extern f32 camera_pos_r[] __asm__("D_L01_001672C0");
 extern OvlQuad_0DD80 novalis_coll_hit_point;
 extern OvlQuad_0DD80 gHeroPos_r2 __asm__("D_0013F4D0");
@@ -2456,7 +2453,6 @@ void *select_sandmouse_projectile_target(void *moby, void *from, void *reference
     return best;
 }
 
-extern float fast_atan2(float, float);
 extern float vec_distance_xy(void *, void *);
 extern void *GetFlaggedPvarWord(void *);
 extern void Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");

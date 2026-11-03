@@ -2382,9 +2382,6 @@ extern CarrierCamera novalis_player_camera_r __asm__("D_L01_00167180");
 extern CarrierOffsets novalis_stationary_ship_rider_offsets;
 extern s32 truncate_float_to_s32(f32);
 
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
-
 /* Rider carrier: waits for the hero in its clip volume, then follows its path carrying up to eight rider mobys (and
    steers its camera moby), drops them off one by one at the marked node and removes itself at the end of the path.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002b96e0.c, FUN_L01_002f4960. */

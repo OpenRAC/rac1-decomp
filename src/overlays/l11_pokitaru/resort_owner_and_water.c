@@ -1607,7 +1607,6 @@ extern unsigned char *CreateMoby_r(int) __asm__("func_0020D348");
 extern void *func_L00_0025D390(char *);
 extern void BuildSphericalOffset_r2(void *, float, float, float) __asm__("func_00215C00");
 
-extern void moby_build_matrix(void *);
 /* Spawns an effect moby (Rocket) attached to a target and positioned from a source. */
 unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *vec, int arg, float scale) {
     unsigned char *moby = CreateMoby_r(0x40A);
@@ -1920,7 +1919,7 @@ int try_activate_pokitaru_gate(unsigned char *moby) {
 }
 
 extern void AttachManipulator(struct Moby *, int, void *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, float *) __asm__("func_L00_00250800");
 
 extern void PartType34Spawn(float *, float *, float, float);
@@ -3117,8 +3116,6 @@ void update_link_triggered_moby_turn(char *moby) {
     }
 }
 extern char *CreateMoby(int);
-
-extern void moby_build_matrix(void *);
 
 /* Spawns a moby of the given class at a position with a random yaw and stores its vector. */
 char *spawn_moby_with_random_yaw(void *position, void *vector, int id) {

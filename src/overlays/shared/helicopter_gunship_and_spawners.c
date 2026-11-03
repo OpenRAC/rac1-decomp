@@ -101,7 +101,6 @@ extern void fast_add_rotations_cf(void *, void *, float, float, float);
 
 extern float IntToFloat(int);
 
-extern void set_moby_color(void *, int, int, int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* update: follow the parent, blend its color, scale by the wind factor */
@@ -155,7 +154,6 @@ extern int D_L03_0015F6B0 MACRO_ADDR;
 extern char spawner_revive_failed_fmt[];
 extern int STUB_printf();
 
-extern void moby_build_matrix(void *);
 extern float *func_L00_0025D390(void *);
 
 typedef struct Spawner {
@@ -714,8 +712,6 @@ void ChildSpawnerUpdate(Moby *moby) {
 }
 extern char *CreateMoby_m_2C59A0(int) __asm__("func_0020D348");
 
-extern void moby_build_matrix(void *);
-
 // Spawns the Bomb moby for an owner at pos with dir, random angles and a size, copying the owner's colour.
 char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int arg) {
     Moby *m;
@@ -1049,7 +1045,6 @@ extern void AttachManipulator_r(char *, int, void *) __asm__("func_0020D960");
 
 extern float func_L00_00259148(float *, float, float, float, float, float);
 
-extern void func_L00_001FFED8(void *, int, float);
 extern float func_00214D28(float *, float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
@@ -1063,7 +1058,6 @@ extern void raise_kernel_trap_r(void) __asm__("func_001F9978");
 extern char *spawn_homing_spark_projectile_r(char *, char *, int, int, float) __asm__("func_L03_002D65D0");
 
 extern void func_0020D9D8(void *, void *);
-extern void func_L00_002514B8(void *);
 
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
@@ -1648,7 +1642,6 @@ typedef struct {
     void *moby;
 } Tgt;
 extern void FindNearestTargetMoby(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);

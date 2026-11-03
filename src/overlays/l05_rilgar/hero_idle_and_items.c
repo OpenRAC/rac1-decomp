@@ -59,7 +59,6 @@ extern void release_and_clear_hero_voice_slots(void);
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 
 extern void gravity_set_z(float *dst, float *src, float z);
-extern void get_moby_color(void *, void *, void *, void *);
 
 extern int select_point_index_by_distance(void *, void *, float);
 

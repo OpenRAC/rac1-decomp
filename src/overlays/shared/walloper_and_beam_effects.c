@@ -153,7 +153,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern void lerp_vector(void *, void *, void *, float);
 
-extern float fast_atan2(float, float);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 
@@ -870,7 +869,6 @@ typedef struct {
 } Vu __attribute__((aligned(16)));
 extern char *CreateMoby(int);
 
-extern void moby_build_matrix(void *);
 /* Spawn a class 0xB3 moby linked to src, copying its basis rows; returns the moby or 0. */
 char *spawn_linked_moby_from_basis(char *src) {
     Moby *m = (Moby *)CreateMoby(0xB3);
@@ -2813,7 +2811,7 @@ typedef struct Blk {
     float f50; /* 0x50 */
 } Blk;
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern int func_L00_001FF5B0(float, void *, void *);
+
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern float vec_length_xy_r2(void *) __asm__("func_001F9CE8");

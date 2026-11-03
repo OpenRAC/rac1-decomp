@@ -127,7 +127,7 @@ extern void func_L00_002111E8(void);
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern s32 pad_pressed_within_r(s32, s32, s32) __asm__("func_L00_00267BA8");
 extern struct Moby *func_0020D348(s32);
-extern void func_L00_00251E30(struct Moby *);
+
 extern void func_L00_002110C0(s32, s32, struct Moby *);
 extern f32 func_L00_002342F8(void *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
@@ -581,7 +581,6 @@ extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, 
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void get_moby_color(void *, void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 extern void help_queue_add(int, int, int);

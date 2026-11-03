@@ -316,10 +316,9 @@ typedef struct {
     int a[4];
 } Vy __attribute__((aligned(16)));
 extern char *CreateMoby(int);
-extern void set_moby_color(void *, int, int, int);
 
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
-extern void moby_build_matrix(void *, int);
+extern void moby_build_matrix_v(void *, int) __asm__("func_L00_00251E30");
 
 /* Spawns a beam moby (0x2D2) from owner between two points, colored, with random rotation and two glow sprites.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l01/unclassified_002f9810.c, FUN_L01_002fa068. */
@@ -352,7 +351,7 @@ char *spawn_colored_half_scale_moby(int owner, void *pos, void *target, int colo
         v->color = color;
         spawn_source_attached_fading_effect_particle(m, 0x2F00007F, color, -1, 210000.0f);
         spawn_source_attached_fading_effect_particle(m, 0x4F004F7F, v->color, -1, 115500.0f);
-        ((void (*)(void *))moby_build_matrix)(m);
+        ((void (*)(void *))moby_build_matrix_v)(m);
     }
     return m;
 }
@@ -1501,7 +1500,7 @@ void pipe_778_update(char *m) {
         DeleteMoby(m);
     }
 }
-extern void moby_build_matrix(void *, int);
+extern void moby_build_matrix_v(void *, int) __asm__("func_L00_00251E30");
 
 /* Spawns the replacement pipe moby (class 0x30B) at the owner's position and rotation. */
 char *spawn_pipe_replacement_moby(char *owner) {
@@ -1517,7 +1516,7 @@ char *spawn_pipe_replacement_moby(char *owner) {
         qcopy(&((struct Moby *)moby)->pos, owner + 0x10);
         qcopy(&((struct Moby *)moby)->rot, owner + 0x40);
         *(int *)data = -1;
-        moby_build_matrix(moby, -1);
+        moby_build_matrix_v(moby, -1);
     }
     return moby;
 }
@@ -1792,7 +1791,7 @@ char *initialize_beehive_spawn_moby(char *owner) {
     destination_moby_vars->f250 = 1.0f;
     destination_moby_vars->w170 = truncate_float_to_s32_r(819.2f);
     destination_moby_vars->f224 = 30.0f;
-    ((void (*)(void *))moby_build_matrix)(destination_moby);
+    ((void (*)(void *))moby_build_matrix_v)(destination_moby);
     return (char *)destination_moby;
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -2145,7 +2144,7 @@ char *SpawnDebrisMoby(char *src, void *dir, float scale) {
         v->spin_y = randf_sym(0.05235988f, 0.13962634f);
         v->spin_z = randf_sym(0.0f, 0.017453292f);
         v->timer = scale_ticks(200);
-        ((void (*)(void *))moby_build_matrix)(m);
+        ((void (*)(void *))moby_build_matrix_v)(m);
     }
     return m;
 }
@@ -2393,7 +2392,7 @@ extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 
 extern void generate_level01_environment_map_uvs(int n, char *pts, char *nrm, int unused, float *out);
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
+
 extern int novalis_env_mesh_vertex_counts[];
 extern char *novalis_env_mesh_normals[];
 extern char *novalis_env_mesh_verts[];

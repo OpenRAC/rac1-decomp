@@ -28,6 +28,7 @@
 #include "structs/collision.h"
 #include "structs/hit_message.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -308,15 +309,13 @@ extern s32 g_current_level_index MACRO_ADDR;
 
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
 
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
@@ -514,7 +513,6 @@ extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern void add_hero_forward_offset(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
@@ -689,10 +687,9 @@ extern void HeroMoveDownAlongNormal(float *, float *, float);
 extern void correct_hero_airborne_wall_velocity(void);
 
 extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
-extern int clamp_vec_length_xy(float, void *, void *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 

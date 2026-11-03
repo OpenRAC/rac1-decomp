@@ -138,8 +138,6 @@ extern void ClassifyTargetInCone(struct Moby *, void *, void *, void *);
 extern void Sound_PlayClassSound_r(int, int, struct Moby *, int) __asm__("func_L00_0028EF68");
 extern f32 IntToFloat(s32);
 
-extern void vec_set_length_xy(void *, void *, f32);
-
 extern int mine_fall_r(struct Moby *, void *) __asm__("func_L00_0025D6F0");
 extern void spawn_explosion(struct Moby *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
                             s32, s32, s32);
@@ -1081,7 +1079,6 @@ void robo_shack_sign_update(struct Moby *m) {
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 
 extern int coll_line(void *, void *, int, void *, void *);
-extern void moby_build_matrix(void *);
 
 typedef int u128 __attribute__((mode(TI)));
 
