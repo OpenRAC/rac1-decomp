@@ -22,9 +22,9 @@
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "core/vu0/vector.h"
 #include "asm_functions/shared_levels.h"
+#include "core/libc/printf_rand.h"
 extern char gold_weapon_purchased[];
 
-extern int func_001160D8(void);
 /* Returns a random integer in the inclusive range lo..hi. */
 int rand_range(int lo, int hi) {
     return ((func_001160D8() >> 16) & 0x7FFF) % (hi - lo + 1) + lo;
@@ -2624,7 +2624,6 @@ extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_v
                                                                                  float) __asm__("func_L00_0026CA10");
 
 extern void *SpawnFallingSpark_r(void *, void *, int, int, int) __asm__("func_L00_002B0738");
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
 extern int spawn_glow_particle_r(void *, void *, void *, float, int, int, int, int, int) __asm__("func_L00_002ADBB0");
 

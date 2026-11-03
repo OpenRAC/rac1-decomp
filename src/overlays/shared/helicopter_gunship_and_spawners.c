@@ -30,6 +30,8 @@
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
 #include "overlays/shared/radial_particle_burst.h"
 #include "overlays/shared/type_31_particle.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -344,11 +346,7 @@ typedef struct {
     float f2C;
 } Hit_2C0330;
 
-extern void SetDeathBits(void *, int, int);
-
 extern void libc_memset(void *, int, int);
-
-extern int func_001160D8(void);
 
 extern char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int arg);
 
@@ -1031,7 +1029,6 @@ extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern void SetDeathBits(void *, int, int);
 extern void SpawnBreakFragment_r(void *, int, void *, void *, int, int, float, void *, void *,
                                  void *) __asm__("func_L00_00265050");
 extern float kerwan_zero_vec_r[] __asm__("D_L03_0015F660") MACRO_ADDR;

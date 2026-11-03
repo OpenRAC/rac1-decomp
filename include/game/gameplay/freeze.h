@@ -7,5 +7,6 @@
 
 extern void draw_freeze_message_box(void);
 extern void mode_freeze_init(int, void *, int);
+extern void update_mode_freeze(void);
 
 #endif /* GAME_GAMEPLAY_FREEZE_H */

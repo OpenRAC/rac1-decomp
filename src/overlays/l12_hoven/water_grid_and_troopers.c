@@ -39,6 +39,8 @@
 #include "overlays/l12_hoven/moby_heading_moves.h"
 #include "overlays/l12_hoven/reservoir_turret_planetbuster.h"
 #include "overlays/shared/rocket_and_path_camera.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -542,8 +544,6 @@ extern void process_hoven_anklebiter_damage_and_alerts_r(void *) __asm__("func_L
 extern int select54(char *, char *, float) __asm__("func_L00_00260D30");
 
 extern void MoveCtl_Init_r(char *) __asm__("func_L01_0026E8E0");
-
-extern int func_001160D8(void);
 
 extern float smooth54(float *, float, float) __asm__("func_00214D28");
 
@@ -1744,7 +1744,6 @@ void spawn_blarg_trooper_death_effects(void *a, void *b) {
     spawn_color_swapped_explosion_burst(a, b, -1, 1.0f, 10.0f);
 }
 
-extern void SetDeathBits();
 /* Same reads, writes, calls and arguments as retail; the jump table is a switch, the shared exits are gotos, quad
    copies are four-float copies, and the two DeleteMoby calls pass the pointer that retail leaves in $a0. No COP2/VU0
    instructions in this function. */
@@ -1761,8 +1760,6 @@ extern float hoven_zero_vec[] MACRO_ADDR;
 extern char *hoven_nearby_mobys[];
 
 extern void process_blarg_trooper_damage_and_alerts(char *moby);
-
-extern int func_001160D8(void);
 
 extern void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float max_angle, float approach_speed);
 extern void set_blarg_trooper_aim_yaw_offsets(char *moby, float *pos);
@@ -2412,8 +2409,6 @@ typedef struct {
     char pad0[0x248];
     void *child;
 } Level12VendorData;
-
-extern void SetDeathBits(Moby *, int, int);
 
 /* Release the vendor moby and any child it owns. */
 void remove_blarg_trooper_and_attachment(Moby *moby) {

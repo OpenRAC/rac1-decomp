@@ -35,6 +35,8 @@
 #include "overlays/l01_novalis/spark_particles.h"
 #include "overlays/l01_novalis/rocks_and_sandmouse.h"
 #include "overlays/l01_novalis/range_centered_on_value.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -590,8 +592,6 @@ extern int select_birdbot_path_node(void *, int *);
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern void SetDeathBits(void *, int, int);
 
 /* Birdbot update: follows its path, turns on and shoots at the hero, flees when hurt, and blows up when it dies or
    leaves the level. */
@@ -1308,8 +1308,6 @@ extern float peckbot_nonfatal_knockback_horizontal_speed_gp SDATA(peckbot_nonfat
 extern float peckbot_home_knockback_speed_gp SDATA(peckbot_home_knockback_speed_gp);
 extern float peckbot_home_knockback_acceleration_gp SDATA(peckbot_home_knockback_acceleration_gp);
 extern short novalis_peckbot_spawn_d0_record;
-
-extern int func_001160D8(void);
 
 /* Peckbot update: wanders and hops after the hero, flies in a hurt arc when hit, dies with a burst of parts. */
 void peckbot_update(Moby *m) {

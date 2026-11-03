@@ -39,6 +39,7 @@
 #include "overlays/shared/trespasser_and_throwing_gloves.h"
 #include "overlays/shared/collision_queries.h"
 #include "game/ui/vendor.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -1788,8 +1789,6 @@ fail:
 }
 extern short suck_cannon_stored_rot_offset;
 extern char *get_moby_suck_cannon_record(char *);
-
-extern void SetDeathBits(void *, int, int);
 
 /* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
 int store_moby_in_suck_cannon(unsigned char *m, void *v) {

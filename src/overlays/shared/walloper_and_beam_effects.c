@@ -30,6 +30,7 @@
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "overlays/shared/morphoray_chicken_and_drones.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -1447,9 +1448,7 @@ extern float *GetFlaggedPvarWord_r(Moby *) __asm__("func_L00_0025D390");
 
 extern int queue_animation_update_r(int, int, void *, void *, void *, int *, int) __asm__("func_001FFB38");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern int PlayBankSound(int, int, int);
 
-extern void spawn_morphoray_chicken(void *);
 extern void update_beam_ring_rail_and_pulse_effects_r(void *) __asm__("func_L00_002BE3A8");
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");

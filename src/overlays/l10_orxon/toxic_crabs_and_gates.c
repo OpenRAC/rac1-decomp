@@ -33,6 +33,7 @@
 #include "overlays/shared/spawner_and_chase_enemies.h"
 #include "overlays/shared/gadgebot_containers_and_frog.h"
 #include "overlays/l10_orxon/platforms_doors_and_bombthrower.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -166,8 +167,6 @@ extern void coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("fun
 extern void InitKnockback_b(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void MobySpringTurn_b(char *moby, float target, float k, float d, float max,
                              float *vel) __asm__("func_L00_002592B0");
-
-extern void SetDeathBits(void *, int, int);
 
 /* Update for the toxic crab (moby Toxic Crab): line-of-sight test, then a 13-state walk/chase/attack/death machine. */
 void toxic_crab_update(Moby *m) {

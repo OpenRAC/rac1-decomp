@@ -34,6 +34,8 @@
 #include "overlays/shared/animation_frame_range.h"
 #include "asm_functions/level_08.h"
 #include "overlays/shared/owner_target_particles.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -181,8 +183,6 @@ extern void alert_visible_group_sentrybots(void *);
 extern int can_sentrybot_approach_linked_moby(void *);
 
 extern char *spawn_class_3a6_moby_v(char *, float *, char *, char *) __asm__("func_L15_002E5970");
-
-extern void SetDeathBits(void *, int, int);
 
 extern void update_sentrybot_joint_aim(void *);
 
@@ -2102,9 +2102,6 @@ extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func
 
 extern char *spawn_source_attached_fading_effect_particle_v(float, char *, int, int, int) __asm__("func_L00_0026E940");
 
-extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
-                                                                               int, int, int);
-
 typedef struct {
     int on;
     union {
@@ -2838,8 +2835,6 @@ typedef struct {
     int i20;
     int pad24[3];
 } Ray;
-
-extern int func_001160D8(void);
 
 extern int quartu_spiderbot_spark_count SDATA(quartu_spiderbot_spark_count);
 extern float quartu_spiderbot_spark_scale SDATA(quartu_spiderbot_spark_scale);

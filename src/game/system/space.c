@@ -39,6 +39,8 @@
 #include "game/movie/movie.h"
 #include "core/storage/wad.h"
 #include "game/render/lights.h"
+#include "core/libc/printf_rand.h"
+#include "game/gameplay/camera.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -55,8 +57,6 @@ extern int current_vu_chain MACRO_ADDR;
 extern short g_current_level_index;
 
 extern int g_hero_moby NOT_SDA;
-
-extern int func_001160D8(void);
 
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
@@ -1096,21 +1096,9 @@ extern void resident_call_001254A0(void *, void *, f32) __asm__("func_001254A0")
 extern void resident_call_00125548(void *, void *, f32) __asm__("func_00125548");
 extern void resident_call_001253F8(void *, void *, f32) __asm__("func_001253F8");
 
-extern void noop_callback_a(void *, void *, s32, s32, s32);
-extern void noop_callback_b(void *);
-extern void noop_callback_c(void *);
-extern void noop_callback_d(void);
 extern void resident_call_001E9790(ResidentRenderObject *) __asm__("func_001E9790");
-extern void noop_callback_f(ResidentRenderObject *);
-extern void noop_callback_g(void);
-
-extern void noop_callback_j(void);
-
-extern void noop_callback_m(ResidentRenderObject *, ResidentRenderObject *);
-extern void update_camera(void);
 
 extern void resident_call_001F49B0(void *, ResidentRenderObject *) __asm__("func_001F49B0");
-extern void enqueue_callback_list_4(void *, ResidentRenderObject *);
 
 extern f32 resident_call_001F9D48(void *, void *, void *) __asm__("func_001F9D48");
 

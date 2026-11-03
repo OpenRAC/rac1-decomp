@@ -7,6 +7,7 @@
 
 extern s32 GetIconFrame(s32, s32);
 extern void HudSprite(s32, s32, s32, s32, s32, s32);
+extern void *Hud_HeapAlloc(int, int, void *, int);
 extern void Hud_HeapReset(void);
 extern void Hud_SendResidentBank(int, int, int);
 extern void Hud_SetBarValueById(int, int);
@@ -21,6 +22,7 @@ extern void draw_hud_rect(int, int, int, int, unsigned long, int);
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern void draw_hud_rect_depth(int, int, int, int, long, int, int);
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
+extern void draw_hud_sprite_rect(int, int, int, int, int, int, int, int, int, int);
 extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
 extern void draw_hud_sprite_uv(int, int, int, int, int, int, int, int);
 extern void draw_rotated_sprite(float, float, float, float, float, int, int, long);

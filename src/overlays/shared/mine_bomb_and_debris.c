@@ -2406,7 +2406,6 @@ extern void spark1688(void *, void *, int, int, int, int, float) __asm__("func_L
 
 extern int collision1688(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern void debris1688(void *, void *, int, int, float, int) __asm__("func_L00_0026B368");
 
 /* Gold Devastator missile update: steer toward its target, trail smoke and explode on hit. */

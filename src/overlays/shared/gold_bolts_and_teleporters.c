@@ -43,6 +43,7 @@
 #include "overlays/l01_novalis/hero_idle_and_items.h"
 #include "overlays/shared/moby_context_table.h"
 #include "overlays/shared/visibomb_and_pyrocitor.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -478,8 +479,6 @@ typedef struct {
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern struct Moby *CreateMoby_r(s32) __asm__("func_0020D348");
 extern void copy_hero_moby_field_38(struct Moby *);
-
-extern s32 func_001160D8(void);
 
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
@@ -1208,7 +1207,6 @@ extern f32 D_L01_00161FB8_00309078 SDATA(D_L01_00161FB8);
 extern f32 D_L01_00161FBC_00309078 SDATA(D_L01_00161FBC);
 extern s32 D_L01_00161FE0_00309078 SDATA(D_L01_00161FE0);
 
-extern void exit_hero_vehicle_mode_and_restore_moby(void);
 extern int voice_00309078(int, int, void *) __asm__("func_0022ED80");
 extern void set_seq_00309078(Moby *, s32, s32, s32) __asm__("func_00213DE0");
 extern void set_hero_animation_r(f32, s32, s32) __asm__("func_L00_00232C10");
@@ -2637,7 +2635,6 @@ extern void jet_animate(void *, f32);
 extern void set_hero_animation_v(f32, int, int) __asm__("func_L00_00232C10");
 
 extern void add_random_offset_to_vector_xyz(void *, f32);
-extern int func_001160D8(void);
 
 extern Moby *sandmouse_grab_moby;
 extern int g_current_level_index MACRO_ADDR;

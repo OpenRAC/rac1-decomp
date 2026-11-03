@@ -27,6 +27,15 @@
 #include "game/ui/pause.h"
 #include "game/system/space.h"
 #include "asm_functions/shared_levels.h"
+#include "overlays/shared/debug_menu_and_text.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "game/gameplay/freeze.h"
+#include "overlays/shared/level_gameplay_loading.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/vendor_screen_drawing.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -85,13 +94,7 @@ extern int skip_frame_r __asm__("D_L00_0015F6BC") MACRO_ADDR;
 
 extern int STUB_printf_r() __asm__("func_001E9730");
 
-extern void init_level_runtime_state(void);
-extern int load_level_archive_resources(int, int);
-
 extern void initialize_level_map_archive_r(void) __asm__("func_L00_00246EC0");
-
-extern void load_misc_animations_into_stash(void);
-extern void prepare_level_entry_transition(void);
 
 /* The empty function (`jr $31; nop`) and register_audio_stream_callback have several identical copies in level 00. The
    catalogue
@@ -100,30 +103,9 @@ extern void prepare_level_entry_transition(void);
 
 extern void func_001E9768_v_2465F8() __asm__("func_L00_001F7110");
 
-extern void update_debug_menu(void);
-extern void draw_debug_menu(void);
-extern void handle_pause_input(void);
-extern void draw_debug_profiler_if_enabled(void);
-extern void play_queued_movie(void);
-extern void update_cutscene_playback(void);
-
-extern void update_pause_menu(void);
-extern void draw_page_contents(void);
-extern void update_mode_freeze(void);
-extern void draw_dialog_background_and_text(void);
-
-extern void draw_vendor_screen(void);
-extern void update_resident_gameplay_state(void);
-extern void dispatch_game_state_update(void);
-extern void update_slideshow(void);
-extern void draw_framebuffer_with_timed_text(void);
-extern void frame_roll_counter(void);
-
 extern void Menu_RunStateHandler_r(void) __asm__("func_00209070");
 
 extern void draw_rotated_sprite_r(float, float, int, int, long, float, float, float) __asm__("func_00200E38");
-
-extern void flush_debug_text_queue(void);
 
 /* Level main loop (shared by every level): clears the level's work area, sets up the level and counts the visit
    and play time of the planet, then runs one frame per pass, dispatching on the game mode, until the level asks to

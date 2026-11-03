@@ -33,6 +33,7 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -735,7 +736,6 @@ typedef struct WBQuery {
 } WBQuery;
 
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
-extern void SetDeathBits(void *, int, int);
 
 extern void coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 

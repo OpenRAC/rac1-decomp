@@ -35,6 +35,7 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -1534,8 +1535,6 @@ typedef struct {
 
 extern float bolt_thief_move_speed SDATA(bolt_thief_move_speed);
 extern Path *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
-
-extern void SetDeathBits(void *, int, int);
 
 /* Bolt thief update: waits for the hero, runs its path, pulls bolts in and grabs them, flees along the side path, dies
    when hit. */

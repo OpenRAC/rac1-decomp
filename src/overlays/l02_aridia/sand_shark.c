@@ -37,6 +37,8 @@
 #include "game/render/partupd.h"
 #include "overlays/l02_aridia/hero_idle_and_item_input.h"
 #include "overlays/l02_aridia/background_ship_and_skid.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -229,8 +231,6 @@ void emit_sand_shark_dust_burst(void *moby) {
 
 extern void handle_sand_shark_damage_and_targeting(unsigned char *moby);
 
-extern int func_001160D8(void);
-
 extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 
@@ -241,8 +241,6 @@ extern void begin_sand_shark_return_home_if_outside_path(unsigned char *moby);
 extern void emit_sand_shark_radial_particles(void *pos, int n);
 
 extern int CarriedMobyUpdate(void *, void *);
-
-extern void SetDeathBits(void *, int, int);
 
 extern int select_group_sand_shark_nest_moby(void *argp);
 
@@ -1323,7 +1321,6 @@ void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
 }
 
 extern void handle_level02_bot_damage_and_retargeting(void *);
-extern int func_001160D8(void);
 
 /* The angle before the pointer: argument moves follow the parameter order, and retail loads $f12 before $a1 in state
    11. */
@@ -1332,7 +1329,6 @@ extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, floa
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 
-extern void SetDeathBits(void *, int, int);
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 /* The scale before the three vectors, as the other level files declare it. */

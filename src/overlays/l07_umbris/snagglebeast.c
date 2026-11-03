@@ -41,6 +41,8 @@
 #include "overlays/l07_umbris/snagglebeast_sphere_draw.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -344,7 +346,6 @@ typedef struct Anim {
 
 extern Hit_314800 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
-extern void SetDeathBits(void *, int, int);
 
 extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 
@@ -662,8 +663,6 @@ extern int truncate_float_to_s32(float);
 
 extern void AddDrawCallback(void (*)(), void *);
 
-extern int func_001160D8(void);
-
 extern int start_snagglebeast_turn_toward_target(unsigned char *, unsigned char *, float *, int, int);
 extern int update_alternating_joint_emission_burst(void *, char *, float *);
 
@@ -672,8 +671,6 @@ extern unsigned char *spawn_moby_class_1046(int, void *, int, float, float, floa
 extern void func_L07_00313298(void *, void *, int, void *, short, unsigned int, int, float);
 
 extern void rumble_by_distance(char *);
-
-extern void SetDeathBits(void *, int, int);
 
 extern float update_snagglebeast_rope(void *, void *);
 
@@ -2641,8 +2638,6 @@ extern MobyHit *hit_31AAB0(struct Moby *, s32, s32) __asm__("func_L00_0025B478")
 extern s32 ComputeHitResponse_r2(struct Moby *, MobyHit *, void *, s32, s32 *, s32, s32,
                                  s32) __asm__("func_L00_0025B4D0");
 
-extern void SetDeathBits(void *, int, int);
-
 extern s32 tick_31AAB0(s32 *) __asm__("func_001F9908");
 extern s32 coll_sphere_r(f32, void *, s32, struct Moby *) __asm__("func_L00_001F10E0");
 extern void jet_animate_r(struct Moby *, f32) __asm__("func_L00_0025B040");
@@ -2870,7 +2865,6 @@ typedef struct Gun {
 
 extern int ComputeHitResponse_r3(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void SetDeathBits(void *, int, int);
 
 extern void *func_L07_0030C918(void *, void *, void *, int);
 

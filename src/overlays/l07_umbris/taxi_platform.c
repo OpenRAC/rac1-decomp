@@ -41,6 +41,8 @@
 #include "overlays/shared/pivot_reorientation.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -1207,14 +1209,11 @@ extern unsigned short umbris_water_grid_override_value SDATA(umbris_water_grid_o
 extern char gHaveHeliPack[];
 extern char discount_purchase_pricing[];
 
-extern void func_L01_002B90A8(float);
-
-extern void func_L01_002B9440(void *, int, float, float, float, float);
+extern void pool_ripple_v(void *, int, float, float, float, float) __asm__("func_L01_002B9440");
 extern void initialize_level07_water_grid_neighbors_r(int) __asm__("func_L07_0030E128");
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
-extern void func_L01_002B9198(void *, int);
 extern void render_level07_water_grids_r(void) __asm__("func_L07_0030E100");
 
 /* Water plate update: the first plate sets up the 36-plate wave grid; each plate rises and sinks with its switch,
@@ -1280,7 +1279,7 @@ void WaterPlateUpdate(Moby *m) {
                     for (j = 0; j < 2; j++) {
                         float x = r->x + random_float_between(-6.0f, 6.0f);
                         float y = r->y + random_float_between(-6.0f, 6.0f);
-                        pool_ripple(t, 0x24, x, y, 2.0f, 0.2f);
+                        pool_ripple_v(t, 0x24, x, y, 2.0f, 0.2f);
                     }
                 }
                 for (n = 0; n < 0x24; n++) {
@@ -1618,8 +1617,6 @@ void ocean_umbris_update(unsigned char *moby) {
 }
 extern float umbris_zero_vec[] MACRO_ADDR;
 extern int umbris_frame_count MACRO_ADDR;
-
-extern void SetDeathBits(void *, int, int);
 
 // Bombomatic update: runs its fuse near the hero, bursts and drifts toward its target, with a state machine on m[0x20].
 void bombomatic_update(char *m) {
@@ -2190,8 +2187,6 @@ void func_L07_0030FC38_r(void *moby, LaunchParams_30FC38 *l, Vec4f *dir) {
     InitKnockback_r2(ang, moby, l, 6, 1, 0);
 }
 
-extern void SetDeathBits(void *, int, int);
-
 /* Hit handler: reacts to the hit type, then takes damage and dies (state 0xE) when health runs out. */
 void handle_sharkigator_hit(char *m, char *x, float *hp) {
     struct HitMessage *info;
@@ -2306,7 +2301,6 @@ void set_sharkigator_idle_state_from_water_height_gap(char *arg) {
 extern void cache_path_segment_lengths(char *data);
 extern int classify_sharkigator_water_height_gap(char *moby, char *data);
 extern void set_sharkigator_idle_state_from_water_height_gap(char *arg);
-extern int func_001160D8(void);
 
 extern int scene_points_addr __asm__("D_L07_0016016C") MACRO_ADDR;
 extern char umbris_sharkigator_no_path_msg[];
@@ -3124,8 +3118,6 @@ typedef struct D_3126A8 {
     float fCC;
 } D_3126A8;
 
-extern int func_001160D8(void);
-
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 
 extern char *level_mobys_r2 __asm__("D_L07_00160058") MACRO_ADDR;
@@ -3558,8 +3550,6 @@ typedef struct Packet {
 } Packet;
 
 extern int coll_line_r4(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-
-extern int func_001160D8(void);
 
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
 extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");

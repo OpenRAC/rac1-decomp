@@ -37,6 +37,7 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/trespasser_and_throwing_gloves.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -420,9 +421,6 @@ extern u8 *level_paths_r2[] __asm__("D_L00_001B0830");
 
 void func_L00_00261478_2D19E8(u8 *, s32, void *, void *, void *, void *) __asm__("func_L00_00261478");
 
-extern void SetDeathBits(u8 *, s32, s32);
-extern s32 ChooseDropItem(u8 *, s32 *);
-
 void func_L00_00262BC0_2D19E8(s32, void *, void *, void *) __asm__("func_L00_00262BC0");
 
 u8 *func_L00_002C6608_2D19E8(u8 *, s32, s32, s32) __asm__("func_L00_002C6608");
@@ -551,7 +549,7 @@ void func_L00_002D19E8_r(u8 *a) {
 }
 /* break_crate (CrateBreakFx) -- src/overlays/shared/vendor_002D1168.c. EXACT 2026-10-19 (fg). */
 
-extern void Moby_PlaySound(int, int, int);
+extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 
 extern int truncate_float_to_s32(float);
 
@@ -611,7 +609,7 @@ void break_crate(void *mv, int a1, int av) {
         if (((Moby *)m)->oclass == 0x1FA)
             Sound_PlayClassSound(0, 0, m, 0x1F4);
         else
-            Moby_PlaySound(0, 0, (int)m);
+            Moby_PlaySound_v(0, 0, (int)m);
         crate_break_sound_frame = level_frame_counter;
     }
     if (subtract_integer_with_clamp(level_frame_counter - crate_break_effect_frame) >= 2)
@@ -1207,7 +1205,7 @@ typedef int u128_D3B20 __attribute__((mode(TI)));
 void decoy_glove_update(unsigned char *moby) {
     extern void DeleteMoby_v(void) __asm__("func_0020D678");
     extern void transform_vector();
-    extern void Moby_PlaySound(int, int, int);
+    extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
     struct DecoyGloveVars *d;
     char *p;
     struct Hero *g;
@@ -1298,7 +1296,7 @@ L3D34:
                 release_moby_with_collision_check(&d->pos.x, d->decoy, *(char **)(d->decoy + 0x78) + 0x10);
                 *(int *)&d->decoy = 0;
             } else {
-                Moby_PlaySound(0, 0, (int)moby);
+                Moby_PlaySound_v(0, 0, (int)moby);
             }
             ((Moby *)moby)->state = 4;
             d->timer = scale_ticks(0x14);
@@ -1498,14 +1496,11 @@ extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L0
 
 extern void func_001E9768(void *, void *);
 
-extern void MobyTransformScaledVertex(void *, s32, void *);
-
 extern s32 voice_2D4398(s32, s32, void *) __asm__("func_0022ED80");
 
 extern s32 trunc_2D4398(f32) __asm__("func_001FA898");
 
 extern void increment_metal_detector_collection_counter_r(unsigned char *) __asm__("func_L00_002D42D8");
-extern void DeleteMoby(void *);
 
 extern void draw_metal_detector_trail_r(void) __asm__("func_L00_002D3F40");
 
@@ -1814,7 +1809,6 @@ char *mine_camera_blast(char *a, char *b, int c, char *d) {
     return (char *)m;
 }
 
-extern void DeleteMoby(void *);
 extern char *moby_array_start MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern unsigned char level_point_lights[];
@@ -2213,9 +2207,7 @@ extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern float SteerAngleWithVelocity_r(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float move_horny_toad_toward_position(unsigned char *m, float *t, float vel);
 
-extern void Moby_PlaySound(int, int, int);
-
-extern void DeleteMoby(void *);
+extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 
 extern void resolve_point_path_segment_xy_clearance_v(int, float, void *, void *) __asm__("func_L00_00262DF0");
 extern float ApproachValue_r(float, float, float *) __asm__("func_00214D28");
@@ -2431,7 +2423,7 @@ void horny_toad_update(Moby *moby) {
             break;
         case 12:
             if (mine_fall(moby, data->f70) & 0x140) {
-                Moby_PlaySound(7, 0, (int)moby);
+                Moby_PlaySound_v(7, 0, (int)moby);
                 spawn_color_swapped_explosion_burst(moby, (*(Vec_5AC0 *)&moby->pos), -1, 0.75f, 10.0f);
                 DeleteMoby(moby);
                 return;

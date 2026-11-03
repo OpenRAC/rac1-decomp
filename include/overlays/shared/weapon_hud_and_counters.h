@@ -25,6 +25,7 @@ extern void hud_init_particles(void);
 extern int hud_keep_visible(int, int);
 extern int hud_screen_position(void *, void *, void *);
 extern void hud_update_particles(void);
+extern void init_level_runtime_state(void);
 extern void initialize_bolt_counter_hud(void);
 extern void initialize_eight_slot_hud_selector(void);
 extern void initialize_four_slot_hud_selector(void);

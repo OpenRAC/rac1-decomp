@@ -39,6 +39,8 @@
 #include "overlays/shared/helicopter_gunship_and_spawners.h"
 #include "overlays/l15_quartu/moby_sphere_collision.h"
 #include "overlays/l15_quartu/scientist_and_hint_triggers.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -702,8 +704,6 @@ extern unsigned char gemlik_available[];
 
 extern void *spawn_debris_moby_v(void *, void *, int, float, int, float, float, float,
                                  int) __asm__("func_L01_002F9908");
-
-extern void SetDeathBits(void *, int, int);
 
 /* One 0x40-byte record of the destructible-hit table (quartu_moby_hits, 64 entries). */
 struct HitRecord {
@@ -1899,8 +1899,6 @@ typedef struct {
 } UPaths;
 
 extern void process_ultramech_hits_and_update_target(void *);
-
-extern int func_001160D8(void);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 

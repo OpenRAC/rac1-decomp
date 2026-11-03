@@ -40,6 +40,8 @@
 #include "overlays/l09_gaspar/sky_shells.h"
 #include "overlays/l09_gaspar/shuttle_and_breakables.h"
 #include "overlays/shared/pivot_reorientation.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -358,8 +360,6 @@ typedef union {
     float m[4][4];
     Pair pair;
 } Buf;
-
-extern void SetDeathBits(void *, int, int);
 
 extern void PartType11Spawn_v(void *, void *, int, int, int, int, int, int, float, float) __asm__("func_L00_0026B890");
 
@@ -1183,8 +1183,6 @@ void AsteroidBeltUpdate(Moby *m) {
     FastVecAdd(((f32 *)&m->pos), ((f32 *)&m->pos), gaspar_camera_pos);
     FastVecSub(((f32 *)&m->pos), ((f32 *)&m->pos), d->centre);
 }
-
-extern int func_001160D8(void);
 
 /* spawns a moby of the given class at a source moby's position */
 char *spawn_breakable_stack_replacement(char *src, int cls) {

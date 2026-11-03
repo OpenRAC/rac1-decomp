@@ -42,6 +42,8 @@
 #include "asm_functions/level_11.h"
 #include "overlays/l11_pokitaru/resort_owner_and_water.h"
 #include "game/ui/help.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -340,8 +342,6 @@ void update_ship_lock_on_target(int a, char *moby) {
 extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int icon, long color);
 extern void update_ship_lock_on_target(int a, char *moby);
-extern void draw_quarter_turn_textured_quads(float, float, float, float, unsigned char, unsigned char, unsigned char,
-                                             unsigned char);
 
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
 
@@ -1497,8 +1497,6 @@ extern void Manipulator_ApplyScale_v(struct Moby *, int, void *, float) __asm__(
 
 extern int truncate_float_to_s32(float);
 
-extern int func_001160D8(void);
-
 extern void MobySphereHitDirectional_v(struct Moby *, void *, float, int, float, float, int, int,
                                        int) __asm__("func_L00_0025A8E8");
 
@@ -2027,8 +2025,6 @@ typedef struct Data_316DD8 {
 extern Hit_316DD8 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-
-extern void func_L00_002584A8(void *, int, int);
 
 extern int FindNearestEligibleMoby_v(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 

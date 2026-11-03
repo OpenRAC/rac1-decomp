@@ -39,6 +39,8 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/ship_mode_and_level_entry.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -93,8 +95,6 @@ typedef struct {
 } DebrisMoby;
 extern DebrisColors rock_formation_debris_colors;
 extern float g_frame_time MACRO_ADDR;
-
-extern void SetDeathBits(void *, int, int);
 
 extern void spawn_debris_moby_v(void *, void *, u32, s32, f32, f32, f32, f32, s32) __asm__("func_L01_002F9908");
 
@@ -192,8 +192,6 @@ typedef struct {
 } SwayMoby;
 
 extern float g_frame_time MACRO_ADDR;
-
-extern int func_001160D8(void);
 
 extern void coll_sphere_mobys_v(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
@@ -1002,8 +1000,6 @@ extern short pool_drip_timer;
 extern PoolTile *pool_draw_tiles MACRO_ADDR;
 extern u8 *pool_draw_tex MACRO_ADDR;
 extern s32 pool_draw_count MACRO_ADDR;
-
-extern void pool_ripple(f32, f32, f32, f32, void *, s32);
 
 extern char *pool_drip(void *position, float scale);
 

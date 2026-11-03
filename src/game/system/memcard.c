@@ -241,21 +241,13 @@ extern char mc_data_001E8518[] __asm__("D_001E8518");
 extern void mc_call_001E9730(char *fmt, ...) __asm__("func_001E9730");
 extern s32 mc_call_0020BAD8(const u32 *packet) __asm__("func_0020BAD8");
 extern void mc_call_001F9978() __asm__("func_001F9978");
-extern s32 sce_mc_format(s32 port, s32 slot);
-extern s32 sce_mc_unformat(s32 port, s32 slot);
+
 extern void mc_call_001FDF10(s32, McChunk **, s32 *) __asm__("func_001FDF10");
 extern void mc_call_0020BCB0(u8 *, s32, s32) __asm__("func_0020BCB0");
 extern s32 mc_call_0020BD70(u8 *, s32, u32 *) __asm__("func_0020BD70");
 extern s32 mc_call_00217628(McChunk *, s32, s32) __asm__("func_00217628");
-extern s32 sce_mc_close(s32 fd);
-extern s32 sce_mc_delete(s32 port, s32 slot, char *name);
 
-extern s32 sce_mc_mkdir(s32 port, s32 slot, char *name);
 extern s32 mc_call_001238B0(s32 port, s32 slot, char *name, s32 mode) __asm__("func_001238B0");
-extern s32 sce_mc_read(s32 fd, void *buf, s32 size);
-extern s32 sce_mc_seek(s32 fd, s32 offset, s32 origin);
-
-extern s32 sce_mc_write_buffer(s32 fd, void *buf, s32 size);
 
 extern char *mc_call_001166FC(char *, const char *) __asm__("func_001166FC");
 

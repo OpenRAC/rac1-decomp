@@ -17,8 +17,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern int func_001160D8(void);
-
 LINKER_REMNANT("asm/remnants/text", func_0022BEB0);
 
 /* Sky shell draw loop (a variant of draw_sky_shells): shell 0 re-reads the
@@ -130,7 +128,6 @@ extern u8 sky_matrix[];
 extern void SkyDrawShell(s32);
 
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
-extern s32 func_001160D8();
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/update_sky_effects.c, update_sky_effects. */
 void SkyLevelGeneric___maybe(void) {

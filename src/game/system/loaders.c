@@ -370,7 +370,6 @@ typedef struct {
 extern SrcHdr *level_root_src __asm__("D_0015EF4C") MACRO_ADDR;
 extern HudArena hud_state_arena __asm__("D_0019A4E8");
 
-extern char *Hud_HeapAlloc(int, int, char *, int);
 extern void LoadCompressedHudBank(int idx, int size);
 
 extern int level_resource_buffers[];

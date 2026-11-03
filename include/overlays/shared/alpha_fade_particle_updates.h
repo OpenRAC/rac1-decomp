@@ -8,6 +8,7 @@
 extern void *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 extern void *PartType53Spawn(void *, int, float, float, int, int, int, void *, float);
 extern void *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
+extern void load_misc_animations_into_stash(void);
 extern void *spawn_color_tween_emitter_particle(void *, unsigned char, unsigned char, unsigned char, unsigned char,
                                                 unsigned char, void *, float, float);
 extern int spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);

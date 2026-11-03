@@ -40,6 +40,8 @@
 #include "overlays/l13_gemlik/joint_particle.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/ui/help.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -528,7 +530,7 @@ extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 
 extern void fire_blarg_turret_projectile_r(void *) __asm__("func_L13_002B5950");
-extern void SetDeathBits(void *, int, int);
+
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -709,8 +711,6 @@ char *spawn_blarg_turret_child(char *parent) {
     }
     return (char *)m;
 }
-
-extern void SetDeathBits(void *, int, int);
 
 // Per-frame update of a moby's timed state: checks its target, counts down and switches state.
 void process_blarg_gunner_hits(char *m, char *p) {
@@ -897,7 +897,6 @@ void update_robosquawker_ground_height(char *m, char *d) {
     }
 }
 
-extern int func_001160D8(void);
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 extern int move_4318_v(void *, void *, float, float, float, int) __asm__("func_L00_00259868");

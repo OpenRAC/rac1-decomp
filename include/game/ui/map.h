@@ -16,6 +16,7 @@ extern void move_map_entry_slot(int, int);
 extern int pick_map_slot_to_evict(void);
 extern int pick_next_map(void);
 extern int promote_first_available_map_entry(void);
+extern long register_8bit_texture(int, int, int, int, int, int);
 extern int update_map_zoom_and_pan(void);
 
 #endif /* GAME_UI_MAP_H */

@@ -45,6 +45,8 @@
 #include "game/render/partupd.h"
 #include "overlays/l13_gemlik/space_fighters_and_rockets.h"
 #include "overlays/l13_gemlik/scene_controller.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -1838,8 +1840,8 @@ typedef struct {
     L13Vec_p matrix;
 } L13Hit_p;
 #define D_L13_00174140_p (*(L13Hit_p *)D_L13_001741C0)
-extern void update_attached_rocket(struct Moby *moby);
-#define func_L13_00306EF0_r update_attached_rocket
+extern void update_attached_rocket_v(struct Moby *moby) __asm__("func_L13_00306EF0");
+#define func_L13_00306EF0_r update_attached_rocket_v
 struct L1300306EF0RVars {
     u8 pad_00[0x10];
     Vec4 unk_10;
@@ -2351,8 +2353,6 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
     }
 }
 
-extern void SetDeathBits(void *, int, int);
-
 extern void spawn_poison_vessel_destruction_effects(void *, void *);
 
 /* KEPT: the calls disagree on where the float goes: the argument order changes the moves. */
@@ -2557,10 +2557,9 @@ extern void update_blarg_space_commando_damage_targeting_and_ground_motion(struc
 
 extern void SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 
-extern int func_001160D8(void);
 extern void resolve_point_path_segment_xy_clearance_v(int, void *, void *, float) __asm__("func_L00_00262DF0");
 
-extern void initialize_gemlik_trail(char *m);
+extern void initialize_gemlik_trail_v(char *m) __asm__("func_L13_0030A828");
 extern void InitDirectionalHitQuery_r(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern char gemlik_camera_pos[];
 extern float D_L13_00161EE8_309330 SDATA(D_L13_00161EE8);
@@ -2641,7 +2640,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
         case 2:
             if (moby->anim_flags & 2) {
                 moby->state = 3;
-                initialize_gemlik_trail((char *)moby);
+                initialize_gemlik_trail_v((char *)moby);
                 if (moby->prev_seq != 5) {
                     MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
                 }
@@ -2670,7 +2669,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
                                      g_frame_time * 3.1415927f);
             if (fast_dec_timer(&vars->timer) != 0) {
                 moby->state = 3;
-                initialize_gemlik_trail((char *)moby);
+                initialize_gemlik_trail_v((char *)moby);
                 if (moby->prev_seq != 5) {
                     MobyBlendAnimation(moby, 5, 0, scale_ticks(5));
                 }
@@ -3058,7 +3057,7 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
 
 extern char gemlik_coll_hit_normal[];
 extern short gemlik_trail_arc_degrees, gemlik_trail_ticks;
-/* initializes a sixteen-point curved trail around a moby */ void initialize_gemlik_trail(char *m) {
+/* initializes a sixteen-point curved trail around a moby */ void initialize_gemlik_trail_v(char *m) {
     float v[4];
     int i;
     struct GemlikTrailVars *d = (struct GemlikTrailVars *)((Moby *)m)->pvars;
@@ -3285,7 +3284,6 @@ extern int gemlik_pool_tile_count MACRO_ADDR;
 extern int gemlik_pool_override_tile SDATA(gemlik_pool_override_tile);
 extern unsigned short gemlik_pool_override_color;
 
-extern void pool_ripple(float, float, float, float, void *, int);
 extern void RippleDisturb_v(float, float, float, float, void *, int, int) __asm__("func_L00_002A5158");
 extern int check_scaled_vector_bsphere_v(float, void *) __asm__("func_L01_00276680");
 extern void render_level13_water_grids(void);

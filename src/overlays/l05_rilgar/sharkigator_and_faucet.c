@@ -37,6 +37,7 @@
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
 #include "overlays/l05_rilgar/electric_gate.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -1547,13 +1548,11 @@ extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_00
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter_r(void *, short *) __asm__("func_L00_0025E4B0");
 extern void StepColorFade_r(void *, short *) __asm__("func_L00_0025E590");
 
 extern Moby *find_nearest_extermibot_group_target_r(void *, int) __asm__("func_L05_003053D8");
 
-extern void EaseManipulatorOffsets(void *, void *, int, float, float);
 extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
 extern Path *rilgar_paths_r2[] __asm__("D_L05_001B0CB0");
 extern float D_L05_00161B58_3047E8 SDATA(D_L05_00161B58);
@@ -2246,7 +2245,6 @@ typedef struct {
 } AnimSeq_065D0;
 
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void SetDeathBits(void *, int, int);
 
 extern int extermitank_death_ticks SDATA(extermitank_death_ticks);
 extern float extermitank_tread_speed_ref SDATA(extermitank_tread_speed_ref);

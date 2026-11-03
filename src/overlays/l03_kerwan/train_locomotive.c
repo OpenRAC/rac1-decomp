@@ -35,6 +35,8 @@
 #include "overlays/l03_kerwan/taxi_and_mine_layer.h"
 #include "overlays/l03_kerwan/rotate_point_about_axis.h"
 #include "callees.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -1168,7 +1170,6 @@ extern unsigned char gSkillPoints_r[] __asm__("D_0013D510");
 extern float kerwan_zero_vec[] MACRO_ADDR;
 extern void *kerwan_red_ship_update_slot MACRO_ADDR;
 
-extern int PlayBankSound(int, int, int);
 extern void allocate_voice_for_group_entry_r(int, int, void *) __asm__("func_0022EEB8");
 
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
@@ -1653,14 +1654,10 @@ typedef struct {
 extern short kerwan_mobys_r2 __asm__("D_L03_00160058");
 extern char kerwan_moby573_spawn_d0_record;
 
-extern int func_001160D8(void);
-
 extern int ClassifyTargetInCone_r(char *m, char *p, char *pos, char *v) __asm__("func_L00_0025A060");
 
 extern int FindNearestTargetMoby_r(char *, char *, float) __asm__("func_L00_00260D30");
 extern int is_point_inside_clip_volume_cf(int id);
-
-extern void SetDeathBits(void *, int, int);
 
 extern void Manipulator_ApplyScale_v(void *, int, void *, float) __asm__("func_L00_00264B40");
 

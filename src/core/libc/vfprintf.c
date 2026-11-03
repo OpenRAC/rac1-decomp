@@ -5,6 +5,9 @@
 #include "core/libc/findfp.h"
 #include "asm_functions/executable.h"
 #include "core/libc/write_wsetup.h"
+#include "core/libc/printf_rand.h"
+#include "core/libc/lseek_malloc.h"
+#include "core/libc/close_dtoa.h"
 
 /*
  * core_text object 0x116FA0-0x1188C8. Boundaries are retail's linker fill
@@ -136,13 +139,11 @@ extern struct _reent *vfprintf_reent_117118[] __asm__("D_0012F86C") __attribute_
 extern s32 vfprintf_mbmax_117118[] __asm__("D_0012F870") __attribute__((section(".data")));
 extern const char vfprintf_blanks_117118[] __asm__("D_001525E0");
 extern const char vfprintf_zeroes_117118[] __asm__("D_001525F0");
-extern char **libc_localeconv(void);
-extern s32 libc_mbtowc_r(struct _reent *, s32 *, const char *, s32, s32 *);
+extern char **libc_localeconv_v(void) __asm__("func_001144F0");
 
 extern s32 __sbprintf(FILE *, const char *, char *) __asm__("func_00116FE8");
 extern s32 __sprint(FILE *, struct __suio *) __asm__("func_00116FA0");
-extern s32 double_is_not_nan(f64);
-extern s32 libc_isnan(f64);
+
 extern char *cvt(struct _reent *, f64, s32, s32, char *, s32 *, s32, s32 *) __asm__("func_00118630");
 extern s32 exponent(char *, s32, s32) __asm__("func_001187E0");
 
@@ -172,7 +173,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
     int prec;
     char sign;
     s32 wc;
-    char *decimal_point = *libc_localeconv();
+    char *decimal_point = *libc_localeconv_v();
     char softsign;
     double _double;
     int expt;
@@ -956,7 +957,6 @@ union double_union {
     double d;
     unsigned int i[2];
 };
-extern char *func_001126D8(void *, double, int, int, int *, int *, char **);
 
 /* cvt, newlib's text: convert a double for the %e/%f/%g conversions
    through _dtoa_r (func_001126D8), padding trailing zeros unless %g

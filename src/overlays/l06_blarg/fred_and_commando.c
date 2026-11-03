@@ -2107,8 +2107,6 @@ extern float D_L06_00162240_3054D8 SDATA(D_L06_00162240);
 extern void ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern void Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
-extern int try_set_help_message(int, int);
-
 extern void emit_red_button_particle_burst_r(void *, void *) __asm__("func_L06_00305C58");
 
 /* Red button (moby Red Button) update on level 06: turns its two levers, waits for the hero to press it, then

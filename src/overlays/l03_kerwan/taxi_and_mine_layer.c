@@ -39,6 +39,7 @@
 #include "overlays/shared/helicopter_gunship_and_spawners.h"
 #include "overlays/shared/moby_context_table.h"
 #include "asm_functions/level_03.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -151,7 +152,6 @@ extern void Sound_PlayClassSound_r(int, int, struct Moby *, int) __asm__("func_L
 
 extern int mine_fall_r(struct Moby *, void *) __asm__("func_L00_0025D6F0");
 
-extern void SetDeathBits(struct Moby *, int, int);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
 /* l03 trooper update: patrols its rail path, turns to face the hero once in sight, fires three-shot bursts, falls

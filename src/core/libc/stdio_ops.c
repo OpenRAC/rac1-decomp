@@ -4,6 +4,8 @@
 #include "core/libc/stdio_ops.h"
 #include "core/libc/lseek_malloc.h"
 #include "core/libc/close_dtoa.h"
+#include "core/libc/printf_rand.h"
+#include "core/libc/write_wsetup.h"
 
 /*
  * core_text object 0x1162B8-0x116CC0: the C library's stdio internals
@@ -31,7 +33,6 @@ extern int __sclose(void *arg0);
    since its own `r == -1` would become an unsupported 64-bit compare) and
    the call site goes through a declaration that spells the return type the
    way retail's header did. Emits a plain `jal reentrant_read`. */
-extern long reentrant_read(int *errOut, void *a, void *b, void *c);
 
 int __sread(void *arg0, void *arg1, void *arg2) {
     Node1E4 *s = (Node1E4 *)arg0;
@@ -48,7 +49,6 @@ int __sread(void *arg0, void *arg1, void *arg2) {
    above -- see that note. Here the narrowing lands on the return value
    itself: retail's trailing dsll32/dsra32 pair is _write_r's 64-bit
    result being handed back through this function's int return type. */
-extern long _write_r(int *errOut, void *a, void *b, void *c);
 
 int __swrite(void *arg0, void *arg1, void *arg2) {
     char *s = (char *)arg0;

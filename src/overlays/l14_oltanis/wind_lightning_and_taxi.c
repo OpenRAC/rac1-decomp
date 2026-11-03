@@ -3013,10 +3013,6 @@ typedef struct Skill_2FE038 {
     unsigned char f18;
 } Skill_2FE038;
 
-extern void mark_moby_and_linked_moby_for_removal(Moby *);
-
-extern int PlayBankSound(int, int, int);
-
 extern int STUB_printf_r3() __asm__("func_001E9730");
 
 extern void initialize_flight_path_state_r2(Moby *) __asm__("func_L14_002FDD18");

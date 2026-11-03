@@ -43,6 +43,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "overlays/shared/space_commando_and_door_lock.h"
+#include "overlays/shared/moby_drops_and_death.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -1574,7 +1575,6 @@ extern void MobySpringTurn_v(Moby *, float, float *, float, float, float) __asm_
 extern float ApproachValue_r2(float *, float, float) __asm__("func_00214D28");
 extern float compute_alien_snapper_target_gap_angle_r(Moby *) __asm__("func_L06_002FAB28");
 
-extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
 extern void resolve_point_path_segment_xy_clearance_r2(int, void *, void *, float) __asm__("func_L00_00262DF0");
 
 extern float MobyGetFrameValue_r(Moby *) __asm__("func_0020D830");
@@ -2053,7 +2053,6 @@ extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int
 extern void transition_moby_group_state_1_to_2_r2(void *) __asm__("func_L06_002FAAC8");
 
 extern void InitKnockback_r3(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
-extern void SetDeathBits(void *, int, int);
 
 extern int *blarg_paths_r2[] __asm__("D_L06_001B0FB0");
 extern int D_L06_0015F6B0_2FA618 SDATA(D_L06_0015F6B0);
@@ -2287,8 +2286,6 @@ extern void resolve_point_path_segment_xy_clearance_q(int, void *, float, void *
 extern int coll_sphere_mobys_q(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void set_moby_and_links_to_states_4_and_5_q(void *) __asm__("func_L06_002F6790");
 extern void set_listed_class_16f_state_2_and_clear_data_28_q(int) __asm__("func_L06_002DB248");
-
-extern int PlayBankSound(int, int, int);
 
 extern char blarg_camera_pos_q[] __asm__("D_L06_00167640");
 extern int *blarg_paths_q[] __asm__("D_L06_001B0FB0");
@@ -2675,8 +2672,6 @@ extern int *blarg_paths[];
 extern float alien_queen_glow_phase_speed_degrees_gp SDATA(alien_queen_glow_phase_speed_degrees_gp);
 extern int alien_queen_glow_color_a SDATA(alien_queen_glow_color_a);
 extern int alien_queen_glow_color_b SDATA(alien_queen_glow_color_b);
-
-extern void SetDeathBits(void *, int, int);
 
 /* Boss-style moby update: applies hit damage, handles recovery and death states. */
 void update_alien_queen_hit_response_and_recovery(void *moby_) {

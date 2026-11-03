@@ -12,6 +12,7 @@
 #include "game/ui/hud.h"
 #include "game/ui/help.h"
 #include "game/ui/vendor.h"
+#include "core/libc/printf_rand.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -213,8 +214,6 @@ void blend_moby_animation_ex(MobyAnim *arg0, int arg1, int arg2, int arg3, int a
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00214080);
-
-extern int func_001160D8(void);
 
 /* Returns a random integer from 0 to arg0 - 1. */
 int random_integer_below(int arg0) {

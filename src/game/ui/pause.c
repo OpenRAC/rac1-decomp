@@ -1640,7 +1640,7 @@ extern PadState controller_state_C840 __asm__("D_0013CA40");
 extern u8 item_available_C840[] __asm__("D_0013D5C8");
 extern MenuItemInfo_C840 menu_item_info_C840[] __asm__("D_001864D0");
 extern Hero hero_C840 __asm__("D_0013F450");
-extern s32 noop_callback_p(s32);
+
 extern s32 play_menu_sound_C840() __asm__("func_0022ED80");
 
 /* Adapted from Lombyte's project (GPL-3.0): src/ui/menus/update_menu_grid_selection.c, update_menu_grid_selection. */
@@ -2523,7 +2523,6 @@ typedef struct {
 extern void font_print_right_r(s32, s32, u64, void *, s32) __asm__("func_001F6CF8");
 extern void FontPrintLarge_r(s32, s32, u64, void *, s32) __asm__("func_001F68E8");
 
-extern void draw_hud_sprite_rect(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 extern void draw_hud_rect_blended_r(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 
 /* Draws the sound options page: the sound and music volume rows, each a right-aligned label

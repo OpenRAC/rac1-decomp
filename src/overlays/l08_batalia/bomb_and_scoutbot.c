@@ -35,6 +35,7 @@
 #include "callees.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/candidate_adjacency_masks.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -779,9 +780,7 @@ extern void burst_2D5FA8(Moby *, float *, float *, float, float, int, int, int, 
                          int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void *spawn_2D5FA8(Moby *, int, float *, float *, int, int, float, float *, float *,
                           float *) __asm__("func_L00_00265050");
-extern int PlayBankSound(int, int, int);
 
-extern void SetDeathBits(Moby *, int, int);
 extern void delete_2D5FA8(Moby *) __asm__("func_0020D678");
 extern int event_2D5FA8(int, int, Moby *) __asm__("func_0022ED80");
 extern void effects_start_2D5FA8(Moby *, short *) __asm__("func_L00_0025E4B0");

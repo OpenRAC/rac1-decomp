@@ -92,8 +92,7 @@ typedef struct {
 } TtyHandlerState;
 
 extern void kprintf(const char *, ...);
-extern int isceDeci2ExRecv(int, char *, unsigned short);
-extern int isceDeci2ExSend(int, char *, unsigned short);
+
 extern char tty_packet_too_large_msg[];
 extern char tty_receive_error_msg[];
 extern char tty_send_error_msg[];

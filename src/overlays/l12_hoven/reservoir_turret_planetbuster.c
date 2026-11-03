@@ -39,6 +39,7 @@
 #include "overlays/shared/smoke_puff_projectiles.h"
 #include "overlays/l12_hoven/jittered_quad_layers.h"
 #include "callees.h"
+#include "overlays/shared/moby_drops_and_death.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -1431,7 +1432,7 @@ extern int coll_sphere_v(void *, int, struct Moby *, float) __asm__("func_L00_00
 
 extern void spawn_explosion_r(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float,
                               int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void SetDeathBits(struct Moby *, int, int);
+
 extern void jet_animate_v(float, struct Moby *) __asm__("func_L00_0025B040");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 typedef struct {

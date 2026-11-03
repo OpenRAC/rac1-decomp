@@ -33,6 +33,7 @@
 #include "overlays/shared/walloper_and_beam_effects.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "core/libc/printf_rand.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -1319,8 +1320,6 @@ void draw_moby_oscillating_textured_quads(char *m) {
         draw_world_quad(&quad, rotA, 1);
     }
 }
-
-int func_001160D8(void);
 
 extern char decoy_list[];
 
@@ -3145,7 +3144,6 @@ void glove_of_doom_update(struct Moby *moby) {
     }
 }
 
-extern int func_001160D8(void);
 extern void PartType05Spawn_v(void *, unsigned char, unsigned char, int, float, float,
                               int) __asm__("func_L00_0026AA10");
 

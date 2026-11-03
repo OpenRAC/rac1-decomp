@@ -41,6 +41,8 @@
 #include "overlays/shared/moby_context_table.h"
 #include "overlays/shared/rig_probe_setup.h"
 #include "overlays/shared/vendor_screen_init.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -1515,7 +1517,6 @@ extern float hover_target_yaw_spring_strength_degrees_gp SDATA(hover_target_yaw_
 extern float hover_target_yaw_damping_degrees_gp SDATA(hover_target_yaw_damping_degrees_gp);
 extern float hover_target_yaw_turn_rate_limit_degrees_gp SDATA(hover_target_yaw_turn_rate_limit_degrees_gp);
 extern float hover_ground_animation_height_threshold_gp SDATA(hover_ground_animation_height_threshold_gp);
-extern int func_001160D8(void);
 
 extern void MobySpringTurn_v(void *, float, void *, float, float, float) __asm__("func_L00_002592B0");
 
@@ -1702,7 +1703,6 @@ extern int sand_mouse_fade_particle_color_alpha_gp SDATA(sand_mouse_fade_particl
 extern float sand_mouse_fade_particle_time_squared_coefficient_gp
     SDATA(sand_mouse_fade_particle_time_squared_coefficient_gp);
 
-extern int func_001160D8(void);
 extern void MobySpringTurn_r(void *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 
@@ -2069,7 +2069,6 @@ extern int follow_path_v(int *, int, int, float, void *, void *, void *) __asm__
 
 extern void PostHitMessage_r(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
-extern void SetDeathBits(void *, int, int);
 extern int IsFrameWithinWindow_v(float, void *) __asm__("func_00215B18");
 
 extern int truncate_float_to_s32(float);

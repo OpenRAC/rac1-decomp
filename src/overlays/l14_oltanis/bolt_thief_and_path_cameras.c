@@ -37,6 +37,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -333,7 +334,6 @@ extern char oltanis_bolt_thief_empty_other_path_msg[];
 extern char oltanis_bolt_thief_no_trigger_msg[];
 
 extern void InitKnockback_v(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
-extern void SetDeathBits(void *, int, int);
 
 extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");

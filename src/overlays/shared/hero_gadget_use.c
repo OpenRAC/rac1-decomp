@@ -1460,8 +1460,6 @@ extern int hoverboard_race_finished SDATA(hoverboard_race_finished);
 
 extern void compute_hero_hoverboard_respawn_transform_r(void *, void *) __asm__("func_L05_00254B38");
 
-extern int PlayBankSound(int, int, int);
-
 /* Hoverboard race tick: advances the hero's and the opponents' path nodes and laps, handles wrong-way and fall resets,
    ranks everyone and finishes the race after three laps. */
 void update_hero_hoverboard_race_progress(void) {

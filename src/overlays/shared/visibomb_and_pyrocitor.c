@@ -1454,8 +1454,6 @@ int func_L00_0025D390_2b58d8(void *) __asm__("func_L00_00261448");
 
 void func_L00_002B69C0_2b58d8(void *) __asm__("func_L00_002B69C0");
 
-extern int initialize_mode6_orbit_camera(void *);
-
 int func_L00_002BC668_2b58d8(void *) __asm__("func_L00_002BC668");
 
 int func_0022ED80_2b58d8(int, int, void *) __asm__("func_0022ED80");

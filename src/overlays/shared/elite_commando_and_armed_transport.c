@@ -25,6 +25,7 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/sentrybot.h"
 #include "overlays/l16_kalebo3/gadgetron_ceo_and_env_maps.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -541,8 +542,6 @@ extern void randomize_blarg_elite_commando_group_pursuit_timers(void *, int, int
 extern int truncate_float_to_s32(float);
 
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
-
-extern void SetDeathBits(void *, int, int);
 
 extern int FindNearestTargetMoby_v(float, char *, void *) __asm__("func_L00_00260D30");
 

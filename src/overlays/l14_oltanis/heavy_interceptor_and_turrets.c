@@ -35,6 +35,7 @@
 #include "overlays/l14_oltanis/wind_lightning_and_taxi.h"
 #include "overlays/l14_oltanis/bolt_thief_and_path_cameras.h"
 #include "overlays/l14_oltanis/ribbon_effects.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -1022,8 +1023,6 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
         d->voice = Moby_PlaySound_r(2, 4, m);
     }
 }
-
-extern void SetDeathBits(void *, int, int);
 
 /* per-frame update: runs the hit query, decays a timer, then dispatches on the hit result */
 void process_blarg_heavy_interceptor_hit_reactions(char *moby) {

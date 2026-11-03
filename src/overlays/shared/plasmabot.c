@@ -28,6 +28,7 @@
 #include "overlays/shared/vendor_beam.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -129,7 +130,6 @@ extern float plasmabot_beam_sweep_half_angle SDATA(plasmabot_beam_sweep_half_ang
 extern float plasmabot_beam_length SDATA(plasmabot_beam_length);
 extern float plasmabot_beam_origin_offset SDATA(plasmabot_beam_origin_offset);
 
-extern void SetDeathBits(void *, int, int);
 void process_plasmabot_hit_reaction(char *m);
 void update_plasmabot_target(char *moby);
 void update_plasmabot_target_range(struct Moby *m);
@@ -832,7 +832,6 @@ extern float g_frame_time_x __asm__("D_0015EE6C") MACRO_ADDR;
 extern float plasmabot_knockback_lift_factor SDATA(plasmabot_knockback_lift_factor);
 
 extern int truncate_float_to_s32(float);
-extern void SetDeathBits(void *, int, int);
 
 /* Enemy hit reaction: takes damage from attacks (not from its own kind), staggers or is knocked away and dies. */
 void process_plasmabot_hit_reaction(char *m) {

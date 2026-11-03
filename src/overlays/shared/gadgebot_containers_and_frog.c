@@ -36,6 +36,7 @@
 #include "overlays/shared/space_commando_and_door_lock.h"
 #include "overlays/shared/radial_particle_burst.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char level_moby_killed[];
 extern unsigned char saved_mission_state[];
 extern Hero g_hero;
@@ -415,8 +416,6 @@ extern void move_frog_with_collision_resolution(void *, void *, int, float, floa
 
 extern void InitKnockback_x(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 
-extern void SetDeathBits(void *, int, int);
-
 extern void collect_mobies_in_sphere_at_moby_point_v(void *, int, int, float, float, float, int, int,
                                                      int) __asm__("func_L00_0025AA20");
 extern int CarriedMobyUpdate(void *, void *);
@@ -767,7 +766,6 @@ extern int frog_glow_color_end_gp SDATA(frog_glow_color_end_gp);
 extern short level_mobys_q_r __asm__("D_L06_00160058");
 extern u8 hero_vehicle_mode[];
 
-extern void SetDeathBits(void *, int, int);
 extern void spawn_moby_directional_spark_bursts_r(struct Moby *, Vec4 *) __asm__("func_L06_002EB5C8");
 extern void destroy_frog_child_moby_r(struct Moby *) __asm__("func_L06_002EB360");
 extern void spawn_moby_death_effect_burst(char *);

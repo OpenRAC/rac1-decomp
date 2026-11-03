@@ -25,6 +25,8 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -387,8 +389,6 @@ extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
-extern void SetDeathBits(void *, int, int);
-
 extern int FindNearestEligibleMoby_r(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 
 extern float g_frame_time_sq_r2 __asm__("D_0015EE70") MACRO_ADDR;
@@ -638,7 +638,6 @@ extern void sound_2E39E0(float, Moby *, int, void *) __asm__("func_L00_00264B40"
 extern void wake_2E39E0(Moby *) __asm__("func_L00_0025B178");
 extern int target_2E39E0(Moby *, Target *, float) __asm__("func_L00_00260D30");
 extern void steer_init_2E39E0(int *) __asm__("func_L01_0026E8E0");
-extern int func_001160D8(void);
 
 extern void animate_2E39E0(Moby *, int, int, int) __asm__("func_00213DE0");
 
@@ -1316,7 +1315,6 @@ struct Moby *respawn_spawner_child(struct Moby *owner, Vec4 *pos) {
     return result;
 }
 
-extern void SetDeathBits(void *, int, int);
 extern int D_0015EE84 MACRO_ADDR;
 
 /* ticks down a timer against a hit check, then reacts: either ends or switches to state 2 */

@@ -32,6 +32,8 @@
 #include "overlays/shared/collision_queries.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -561,8 +563,6 @@ void reset_morphoray_chicken_slot_defaults(char *a) {
 
 extern char *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_ri(int, int, char *) __asm__("func_0022ED80");
-
-extern void SetDeathBits(void *, int, int);
 
 extern void PartType05Spawn_v(void *, float, int, int, int, int, float) __asm__("func_L00_0026AA10");
 
@@ -1527,8 +1527,6 @@ void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled) {
 }
 extern char *CreateMoby_r(int) __asm__("func_0020D348");
 
-extern int func_001160D8(void);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern int feather_base_lifetime SDATA(feather_base_lifetime);
@@ -1763,7 +1761,6 @@ extern void scale_2CDAB8(float *, float *, float) __asm__("func_001F9C30");
 
 extern float length_2CDAB8(float *) __asm__("func_001F9CE8");
 extern unsigned char *missile_2CDAB8(Moby *, float *, Moby *, float, float, float) __asm__("func_L00_002CE390");
-extern int func_001160D8(void);
 
 /* Ryno update: target lock and reticle while held, then the eight-missile salvo state machine. */
 void ryno_update(Moby *m) {
@@ -2497,7 +2494,6 @@ extern void apply_mat4_2CF808(float *, float *, void *) __asm__("func_001F9EE8")
 
 extern s32 truncate_float_to_s32_2CF808(f32) __asm__("func_001FA898");
 
-extern int func_001160D8(void);
 extern int play_sound_2CF808(int, int, char *) __asm__("func_0022ED80");
 extern int dec_timer_s16_2CF808(short *) __asm__("func_001F9938");
 

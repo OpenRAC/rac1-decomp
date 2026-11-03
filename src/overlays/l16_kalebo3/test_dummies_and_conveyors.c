@@ -36,6 +36,8 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -1021,8 +1023,6 @@ extern void refresh_test_dummy_door_timer(char *);
 extern int move_test_dummy_toward_position_and_heading(char *, void *, float);
 
 extern int FindNearestEligibleMoby_v(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
-
-extern void SetDeathBits(void *, int, int);
 
 /* This file defines it (int a, void *pos, float *dir, int c, float f); retail sets the float argument up before the
    int one here, so its last two parameters are the other way round. */
@@ -3729,8 +3729,6 @@ void activate_grindrail_button(Level16VendorTurnMoby *moby) {
     moby->state = 2;
 }
 extern void update_chomper_hit_reaction_and_target(void *);
-
-extern int func_001160D8(void);
 
 extern float move_chomper_toward_position(void *, void *);
 

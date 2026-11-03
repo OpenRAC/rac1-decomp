@@ -42,6 +42,8 @@
 #include "overlays/l17_fleet/trail_particles.h"
 #include "overlays/l17_fleet/moby_class_flag_update.h"
 #include "game/ui/help.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -676,8 +678,6 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
     }
 }
 typedef int u128_2D8CC8 __attribute__((mode(TI)));
-
-extern int func_001160D8(void);
 
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle_v(float *pos, char *vel, int color,
                                                                        unsigned char life, unsigned char b, int mode,
@@ -3106,7 +3106,6 @@ typedef struct {
     int c2BC;
 } Vars1382;
 
-extern void SetDeathBits(void *, int, int);
 extern short class1382_move_params;
 
 /* UpdateMoby for Robot Dog: hides or shows the moby by its clip volumes, then runs its state machine. */

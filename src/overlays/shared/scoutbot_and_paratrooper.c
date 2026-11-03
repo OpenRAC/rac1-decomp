@@ -29,6 +29,8 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/type_49_particle.h"
 #include "overlays/shared/span_particle.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -342,7 +344,6 @@ void scoutbot_update(Moby *moby) {
 extern char hero_globals_base[];
 extern char *batalia_path_table[];
 
-extern void SetDeathBits(void *, int, int);
 extern int FindNearestEligibleMoby_f(char *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 
 /* Takes hits (dying at 0 health), then follows the moby's path and gives up on it when too far off. */
@@ -1161,7 +1162,6 @@ extern float height302618 SDATA(D_L08_00162260);
 extern float shove302618 SDATA(D_L08_00162244);
 extern float shove_rate302618 SDATA(D_L08_00162248);
 extern float batalia_zero_vec[4] MACRO_ADDR;
-extern int func_001160D8(void);
 
 extern int randomf302618(float) __asm__("func_001FA898");
 
@@ -1173,8 +1173,6 @@ extern void sound302618(float, void *, int, void *) __asm__("func_L00_00264B40")
 extern int ray302618(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
 extern char *projectile302618(void *, void *, void *, void *, int, int) __asm__("func_L08_00308650");
-
-extern void SetDeathBits(void *, int, int);
 
 typedef struct Paratrooper302618 {
     char pad0[0x20];

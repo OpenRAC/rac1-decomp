@@ -47,6 +47,7 @@
 #include "overlays/l11_pokitaru/hero_idle_animation.h"
 #include "asm_functions/level_11.h"
 #include "overlays/shared/pause_menu.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -3419,9 +3420,6 @@ extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
 extern float SteerAngleWithVelocity_r2(float *p, float a, float *v, float b, float c,
                                        float d) __asm__("func_L00_0025CE58");
-extern int IsFrameWithinWindow(void *, float);
-
-extern void SetDeathBits(void *, int, int);
 
 extern Path_311648 *path_table_r2[] __asm__("D_L11_001B11B0");
 extern Moby *g_hero_moby_r __asm__("D_001414D0");
@@ -3615,8 +3613,6 @@ extern int ComputeHitResponse_r2(void *, void *, void *, int, int *, float *, in
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
 
 extern void func_L00_00237B70(int);
-
-extern void SetDeathBits(void *, int, int);
 
 /* Pokitaru psytcopus movement (called from psytcopus_update): follows its path, picks a jump or a hop from the
  * path helper's result and keeps the effect attached to it, then checks whether the hero is out of reach. */

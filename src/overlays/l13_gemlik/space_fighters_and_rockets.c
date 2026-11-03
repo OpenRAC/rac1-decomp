@@ -35,6 +35,8 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/l13_gemlik/scene_controller.h"
 #include "overlays/l13_gemlik/voice_position.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -755,7 +757,6 @@ extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 extern char *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 
-extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter_r(void *m, short *p) __asm__("func_L00_0025E4B0");
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -1274,8 +1275,6 @@ extern int STUB_printf_d(void *, ...) __asm__("func_001E9730");
 extern int Moby_PlaySound_s(int, int, int) __asm__("func_0022ED80");
 extern int update_blarg_space_fighter_path_following_r(void *, void *, int) __asm__("func_L13_002C5248");
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
-
-extern int func_001160D8(void);
 
 extern char blarg_space_fighter_no_path_format[];
 extern float optional_glow_suppression_level MACRO_ADDR;
@@ -1814,7 +1813,6 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
 typedef int Q_2cff90 __attribute__((mode(TI)));
 extern char forcefield_tower_damage_debug_format[];
 extern char forcefield_tower_hit_debug_format[];
-extern void SetDeathBits(void *, int, int);
 
 /* Enemy hit reaction (debug build prints the hits): loses health from attacks landing from above; at zero it
  * bursts into debris and dies. */
@@ -2059,8 +2057,6 @@ void forcefield_tower_update(char *moby) {
 #undef func_L00_0026AA10_C4748
 #undef spawn_explosion_s
 
-extern int func_001160D8(void);
-
 // spawns a spinning Asteroid moby with randomized angular rates
 char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f) {
     Moby *moby = (Moby *)CreateMoby(0x584);
@@ -2238,7 +2234,7 @@ typedef struct {
 #define random_float_p func_002140F8
 
 #define random_angle_p func_00214158
-extern s32 func_001160D8(void);
+
 #define rand_p func_001160D8
 
 #define normalize_p func_L00_001FF4B0
@@ -3581,7 +3577,7 @@ float calculate_hero_aim_angles(float *pos, float *pitch, float *yaw, float lead
         *pitch = p;
     return y;
 }
-extern int func_001160D8(void);
+
 extern void Moby_GetJointWorldPos_r3(char *, int, float *) __asm__("func_L00_00250800");
 extern unsigned char *spawn_level_13_homing_rocket_r(char *, char *, char *, char *, float, int,
                                                      float) __asm__("func_L13_002C2638");

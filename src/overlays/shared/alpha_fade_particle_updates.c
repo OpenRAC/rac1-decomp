@@ -18,6 +18,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "core/libc/printf_rand.h"
 extern char gHeroPos[];
 extern Hero g_hero;
 extern char g_hero_body_center[];
@@ -125,7 +126,6 @@ void update_moving_rotating_resizing_alpha_fade_particle(struct PartBase *p) {
 }
 extern unsigned char *part_type45_textures;
 extern int truncate_float_to_s32(float);
-extern int func_001160D8(void);
 
 /* spawn a type-0x2D particle at a position with a velocity scale */
 unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *pos, int b, int color, float f, float g) {

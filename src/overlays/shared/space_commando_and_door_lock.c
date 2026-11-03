@@ -22,6 +22,7 @@
 #include "callees.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "game/render/partupd.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -472,8 +473,6 @@ extern void update_blarg_space_commando_beam(void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb);
-
-extern void SetDeathBits(void *, int, int);
 
 extern int *blarg_paths[];
 extern float g_frame_time MACRO_ADDR;

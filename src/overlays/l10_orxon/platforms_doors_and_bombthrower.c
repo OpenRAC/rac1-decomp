@@ -37,6 +37,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/rocket_and_path_camera.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -213,7 +214,6 @@ typedef int Q_296dc0 __attribute__((mode(TI)));
 extern float g_frame_time_x __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
-extern float random_angle_radians(void);
 extern float randf_sym(float lo, float hi);
 
 extern int rand_range(int, int);
@@ -332,7 +332,6 @@ extern int orxon_cinematic_mode_r __asm__("D_L10_0015F6A8") MACRO_ADDR;
 extern int dialogue_message_duration_r __asm__("D_L10_0015F720") MACRO_ADDR;
 extern char *orxon_mobys_r __asm__("D_L10_00160058") MACRO_ADDR;
 
-extern void ShowBanner(int, int);
 extern void grant_inventory_item(int, int);
 
 /* Spinning pickup: waits until the hero is close and level with it, then plays the scene, saves and goes away.
@@ -391,7 +390,6 @@ extern int orxon_cinematic_mode MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern char *orxon_scene_points MACRO_ADDR;
 extern int orxon_relocation_reset_flag SDATA(orxon_relocation_reset_flag);
-extern int try_set_help_message(int, int);
 
 // Level 10 update for moby class 22: links two Ent records, sets table bits, calls the spawn helpers.
 void update_hero_relocation_trigger(char *m) {
@@ -794,7 +792,6 @@ typedef struct {
 } HitBox_2CAD18;
 
 extern struct Moby *nearby_mobys_r[] __asm__("D_L10_00178400");
-extern void euler_rotation_basis(void *, void *);
 
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void *func_00115248(void *, const void *, u32);
@@ -1140,8 +1137,6 @@ char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
     return (char *)moby;
 }
 
-extern float ProbeGroundHeight(void *, int, float);
-
 // Orxon moby step: pulls the moby toward its target and returns a state code 0..3
 // (resolve_bouncing_projectile_collision).
 int resolve_bouncing_projectile_collision(Moby *m, char *c, float *a2) {
@@ -1399,8 +1394,6 @@ void bomb_938_update(char *m) {
     }
 }
 
-extern void BuildSphericalOffset(void *, float, float, float);
-
 extern int bombthrower_grass_fire_ticks_min SDATA(bombthrower_grass_fire_ticks_min);
 extern int bombthrower_grass_fire_ticks_max SDATA(bombthrower_grass_fire_ticks_max);
 extern float bombthrower_grass_yaw_spread SDATA(bombthrower_grass_yaw_spread);
@@ -1612,8 +1605,6 @@ void lab_door_update(unsigned char *m) {
             break;
     }
 }
-
-extern float ProbeGroundHeight(void *, int, float);
 
 extern char nearby_mobys[];
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -2139,7 +2130,6 @@ typedef struct {
 extern unsigned char *CreateMoby_r(int) __asm__("func_0020D348");
 extern void set_moby_color_r2(unsigned char *, int, int, int) __asm__("func_L00_00251328");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float random_float_between(float, float);
 
 unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, float z) __asm__("func_L10_002DE630");
 
@@ -2326,18 +2316,14 @@ extern float func_L00_0025CE58(float *, float, float *, float, float, float);
 
 extern void func_L00_002607A8(void *, float);
 extern int func_L00_00259B08(void *, void *, float, int, float, int);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern void activate_waiting_moby_group_members_r(void *) __asm__("func_L10_002E14F8");
 extern float func_L00_0025CC58(float *, int, float, float);
 extern void func_L00_002592B0(void *, float, float *, float, float, float);
 
-extern float random_float_between(float, float);
-extern float random_angle_radians(void);
-
 extern int func_L00_0025D6F0(void *, void *);
-extern void func_L00_002584A8(void *, int, int);
+
 extern void func_L00_00260460(void *, void *, int, float, float);
 extern V_2E0630 orxon_camera_pos_r __asm__("D_L10_001672C0");
 extern Path *orxon_paths_r[] __asm__("D_L10_001B0C30");
@@ -3216,20 +3202,17 @@ typedef struct Path_2E2B80 {
     float pts[4];
 } Path_2E2B80;
 
-extern float random_float_between(float, float);
-
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 extern Hit_2E2B80 *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(void *, void *, float, int, int, int);
 extern void RerollEffectCounter(void *m, void *p);
-extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
+
 extern void StepColorFade(void *, void *);
 extern int FindNearestTargetMoby_r(void *, void *, float) __asm__("func_L00_00260D30");
 

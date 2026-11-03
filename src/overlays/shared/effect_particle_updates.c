@@ -18,6 +18,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 
 extern int level_frame_counter MACRO_ADDR;
@@ -180,7 +181,6 @@ after:
     }
 }
 
-extern int func_001160D8(void);
 extern unsigned char *part_type04_textures;
 
 typedef struct PartType04Data {
@@ -1922,7 +1922,6 @@ typedef struct {
 extern u8 *part_type28_textures;
 struct PartBase *func_00218928_6ED30(s32) __asm__("func_00218928");
 
-s32 func_001160D8(void);
 s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026de90. */

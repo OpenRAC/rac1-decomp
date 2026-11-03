@@ -29,6 +29,8 @@
 #include "overlays/l04_eudora/polygon_edge_collision.h"
 #include "overlays/l04_eudora/snow_plow_and_woodcut_bot.h"
 #include "asm_functions/level_04.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -334,8 +336,6 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
     }
 }
 
-extern int func_001160D8(void);
-
 // Per-frame update: counts down a timer, firing a effect call at start and end.
 void update_moby_random_interval_animation(char *m) {
     int *animation_countdown;
@@ -525,8 +525,6 @@ typedef struct {
 extern void set_big_axebot_and_axe_animation_speed(char *, float);
 
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
-
-extern void SetDeathBits(void *, int, int);
 
 extern void *libc_memset(void *, int, unsigned int);
 
