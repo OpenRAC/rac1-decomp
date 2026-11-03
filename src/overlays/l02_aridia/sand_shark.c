@@ -237,13 +237,11 @@ extern int func_001160D8(void);
 
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 
-extern int fast_dec_timer(int *arg0);
 extern void emit_sand_shark_single_particle(void *pos);
 
 extern int move_w(void *, void *, void *, void *, float);
 extern void begin_sand_shark_return_home_if_outside_path(unsigned char *moby);
 
-extern float vec_distance_xy(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
 extern float ApproachValue(float *p, float target, float maxstep);
@@ -1160,8 +1158,6 @@ extern float sand_shark_death_knockback_horizontal_speed_approach_rate_gp
     SDATA(sand_shark_death_knockback_horizontal_speed_approach_rate_gp);
 extern int *aridia_paths_r[] __asm__("D_L02_001B0DB0");
 
-extern float vec_distance_xy(void *, void *);
-
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern int select_group_sand_shark_nest_moby(void *argp);
@@ -2018,8 +2014,6 @@ extern int aridia_elevator_ring_fast_color SDATA(aridia_elevator_ring_fast_color
 extern float aridia_elevator_ring_quad_angle SDATA(aridia_elevator_ring_quad_angle);
 extern float aridia_elevator_ring_uvs[][2];
 
-extern int GetEffectTex(int);
-
 extern void draw_world_quad(void *, void *, int);
 
 typedef int u128 __attribute__((mode(TI)));
@@ -2153,7 +2147,7 @@ void bulldozer_update(unsigned char *moby) {
     }
 }
 extern void handle_sand_shark_nest_damage(char *m);
-extern int fast_dec_timer(int *arg0);
+
 extern char *select_inactive_group_sand_shark_for_nest(char *m);
 
 void launch_sand_shark(unsigned char *moby, void *position, float *direction);
@@ -3337,12 +3331,9 @@ extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
 
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
@@ -3396,18 +3387,18 @@ void rocks_update(unsigned char *moby) {
         *(u128 *)B = 0;
         *(u128 *)C = *(u128 *)A;
         t = random_float_between_r(-2.0f, 2.0f);
-        t = t * FastCos_r(((struct Moby *)moby)->rot.z);
+        t = t * FastCos(((struct Moby *)moby)->rot.z);
         B[0] = t;
         t2 = random_float_between_r(-1.0f, 1.0f);
-        t2 = t2 * FastSin_r(((struct Moby *)moby)->rot.z);
+        t2 = t2 * FastSin(((struct Moby *)moby)->rot.z);
         B[1] = t2;
         B[2] = random_float_between_r(0.0f, 4.0f);
         *(u128 *)A = *(u128 *)B;
-        FastVecAdd_r(A, A, &((struct Moby *)moby)->pos);
+        FastVecAdd(A, A, &((struct Moby *)moby)->pos);
         k = random_float_between_r(1.5f, 3.5f) * g_frame_time_r;
         vec_scale_to_length_r(C, C, k);
         s = random_float_between_r(1.5f, 3.5f) * 210000.0f;
-        r = scale_ticks_r(rand_range_r(120, 240));
+        r = scale_ticks(rand_range_r(120, 240));
         spawn_effect_particle_with_target_scalar(A, C, *(int *)&D_L02_00161D54_2E1B58, *(int *)&D_L02_00161D58_2E1B58,
                                                  s, r);
     }
@@ -3423,14 +3414,14 @@ void rocks_update(unsigned char *moby) {
         *(u128 *)D = 0;
         *(u128 *)A = *(u128 *)B;
         t = random_float_between_r(-2.0f, 2.0f);
-        t = t * FastCos_r(((struct Moby *)moby)->rot.z);
+        t = t * FastCos(((struct Moby *)moby)->rot.z);
         D[0] = t;
         t2 = random_float_between_r(-1.0f, 1.0f);
-        t2 = t2 * FastSin_r(((struct Moby *)moby)->rot.z);
+        t2 = t2 * FastSin(((struct Moby *)moby)->rot.z);
         D[1] = t2;
         D[2] = random_float_between_r(1.0f, 4.0f);
         *(u128 *)B = *(u128 *)D;
-        FastVecAdd_r(B, B, &((struct Moby *)moby)->pos);
+        FastVecAdd(B, B, &((struct Moby *)moby)->pos);
         k = random_float_between_r(1.0f, 5.0f) * g_frame_time_r;
         vec_scale_to_length_r(A, A, k);
         pc = (unsigned int *)C + random_integer_below_r(3);

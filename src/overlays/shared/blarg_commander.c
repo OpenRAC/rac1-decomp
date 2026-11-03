@@ -89,7 +89,7 @@ void apply_npc_big_head_cheat(char *moby) {
         }
     }
 }
-extern int GetEffectTex(int);
+
 extern void draw_textured_effect_list(void *, int, int, int);
 extern char hoven_textured_effect_entries[];
 

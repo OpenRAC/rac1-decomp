@@ -48,8 +48,6 @@
 
 extern char voice_pool[];
 
-extern int GetEffectTex(int);
-
 extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 
@@ -1219,7 +1217,6 @@ extern s32 *D_001602E0_1BB90 SDATA(D_001602E0);
 extern s32 menu_action_messages_r[] __asm__("D_00199578");
 extern s32 selected_level_index_r[] __asm__("D_001A0414");
 
-extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 extern void mode_freeze_init_r2(s32, s32, s32) __asm__("func_001FBC80");
 extern s32 Moby_PlaySound_r2(s32, s32, s32) __asm__("func_0022ED80");
 
@@ -1252,8 +1249,8 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
             }
         } else {
             fade_timer = menu->data.list.items[entry_index].fade_timer;
-            if (scale_game_frame_count_r(D_001602B4_1BB90) < fade_timer) {
-                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count_r(D_001602B4_1BB90);
+            if (scale_game_frame_count(D_001602B4_1BB90) < fade_timer) {
+                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count(D_001602B4_1BB90);
             }
             menu->data.list.items[entry_index].fade_timer = menu->data.list.items[entry_index].fade_timer > 0
                                                                 ? menu->data.list.items[entry_index].fade_timer - 1
@@ -1410,8 +1407,6 @@ extern MenuPage *current_menu_page_r[] __asm__("D_001D5F74");
 extern short text_shadow_x;
 extern short text_shadow_y;
 extern void VU1_addGSregister_r(s32, long) __asm__("func_00234C98");
-
-extern s32 GetEffectTex(s32);
 
 extern void FontPrint_r(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
 extern char *msg_string_r(s32) __asm__("func_001FE540");
@@ -4143,7 +4138,7 @@ struct ClutImage {
 extern MemoryCardState memory_card_state_r2 __asm__("D_0013D390");
 
 extern s64 register_8bit_texture_r2(s32, s32, u8 *, u8 *, s32, s32) __asm__("func_00205660");
-extern void flush_pending_texture_uploads_r2(void) __asm__("func_0020C2F8");
+
 extern void fast_decompress_r2(u8 *, s32) __asm__("func_0020C468");
 extern s32 start_audio_stream_read_r2(u8 *, s32, s32) __asm__("func_00217628");
 extern s32 get_menu_stream_buffer_size_r(s32) __asm__("func_00227018");
@@ -4252,7 +4247,7 @@ s32 update_menu_stream_image(MenuScreen *stream) {
             y = log2dim(b->height);
             level_map_selection_r2.tex0 = register_8bit_texture_r2(
                 x, y, p20, p420, level_map_selection_r2.tex_clut_vram, level_map_selection_r2.tex0_vram);
-            flush_pending_texture_uploads_r2();
+            flush_pending_texture_uploads();
             stream->data.stream.state = 2;
             break;
     }
@@ -7625,8 +7620,6 @@ extern f32 g_frame_time_sq SDATA(g_frame_time_sq);
 extern f32 ammo_preview_offsets[];
 extern f32 ammo_preview_velocities[];
 
-extern f32 FastNormalizeAngle_r(f32) __asm__("func_001FA7D8");
-
 extern void advance_moby_animation_r(void *) __asm__("func_0020E3D0");
 extern f32 ApproachWithVelocity(f32 *, f32 *, f32, f32, f32, f32);
 void update_ammo_preview_transform(struct AmmoPreviewMoby *moby);
@@ -7664,7 +7657,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     phase_angle = ((phase * 6.28318f) / IntToFloat(6)) - 3.14159f;
     bob_angle = (((f32)(game_frame_counter % 170) / IntToFloat(170)) * 6.28318f) - 3.14159f;
     double_phase = (phase * 12.56636f) / IntToFloat(6);
-    FastNormalizeAngle_r(double_phase);
+    FastNormalizeAngle(double_phase);
     zero = 0.0f;
     orbit_angle = FastAddRots(orbit_angle, phase_angle);
     bob_angle = FastAddRots(bob_angle, double_phase);
@@ -8594,7 +8587,6 @@ extern s32 D_0015EF20_27DB0 __asm__("D_0015EF20") MACRO_ADDR;
 extern u8 save_clock_time_r[] __asm__("D_0015EF98") MACRO_ADDR;
 extern s32 D_001D5F20[];
 
-extern void copy_memory_aligned_r(void *dst, void *src, s32 size) __asm__("func_001F9A00");
 extern void load_and_initialize_level_chunk_r(void) __asm__("func_00209DC0");
 extern void memcard_MakeWholeSave_r(s32) __asm__("func_0020BA00");
 extern s32 sce_cd_read_clock_r(u8 *clock) __asm__("func_00121A80");
@@ -8616,35 +8608,35 @@ void load_level_zero_preserving_progress(s32 slot) {
     s32 i;
     s32 j;
 
-    copy_memory_aligned_r((void *)0x70000000, gold_weapon_purchased_r, 0x28);
-    copy_memory_aligned_r((void *)0x70000030, item_available_r, 0x25);
-    copy_memory_aligned_r((void *)0x70000060, weapon_ammo_counts_r, 0x94);
-    copy_memory_aligned_r((void *)0x70000100, gold_bolts_collected_r, 0x50);
-    copy_memory_aligned_r((void *)0x70000150, pause_iop_sprite_lists_r, 0x20);
-    copy_memory_aligned_r((void *)0x70000170, vendor_stock, 0xC);
-    copy_memory_aligned_r((void *)0x70000180, gSkillPoints_r, 0x20);
-    copy_memory_aligned_r((void *)0x700001A0, gCheats_r, 0xC);
-    copy_memory_aligned_r((void *)0x700001B0, selector_available_r, 0xC);
+    copy_memory_aligned((void *)0x70000000, gold_weapon_purchased_r, 0x28);
+    copy_memory_aligned((void *)0x70000030, item_available_r, 0x25);
+    copy_memory_aligned((void *)0x70000060, weapon_ammo_counts_r, 0x94);
+    copy_memory_aligned((void *)0x70000100, gold_bolts_collected_r, 0x50);
+    copy_memory_aligned((void *)0x70000150, pause_iop_sprite_lists_r, 0x20);
+    copy_memory_aligned((void *)0x70000170, vendor_stock, 0xC);
+    copy_memory_aligned((void *)0x70000180, gSkillPoints_r, 0x20);
+    copy_memory_aligned((void *)0x700001A0, gCheats_r, 0xC);
+    copy_memory_aligned((void *)0x700001B0, selector_available_r, 0xC);
     saved = gBolts_r;
     count = D_0015EF20_27DB0;
     flag4 = gSpecialItems_r[4] != 0;
     flag5 = gSpecialItems_r[5] != 0;
     bytes = (u8 *)0x70000030;
     load_and_initialize_level_chunk_r();
-    copy_memory_aligned_r(gold_weapon_purchased_r, (void *)0x70000000, 0x28);
+    copy_memory_aligned(gold_weapon_purchased_r, (void *)0x70000000, 0x28);
     for (j = 0; preserved_item_available_indices[j] != -1; j++) {
         item_available_r[preserved_item_available_indices[j]] = bytes[preserved_item_available_indices[j]];
     }
-    copy_memory_aligned_r(weapon_ammo_counts_r, (void *)0x70000060, 0x94);
-    copy_memory_aligned_r(gold_bolts_collected_r, (void *)0x70000100, 0x50);
+    copy_memory_aligned(weapon_ammo_counts_r, (void *)0x70000060, 0x94);
+    copy_memory_aligned(gold_bolts_collected_r, (void *)0x70000100, 0x50);
     for (i = 0; i < 8; i++) {
         s32 item = items[i];
         pause_iop_sprite_lists_r[i] = item_available_r[item] ? item : 0;
     }
-    copy_memory_aligned_r(vendor_stock, (void *)0x70000170, 0xC);
-    copy_memory_aligned_r(gSkillPoints_r, (void *)0x70000180, 0x20);
-    copy_memory_aligned_r(gCheats_r, (void *)0x700001A0, 0xC);
-    copy_memory_aligned_r(selector_available_r, (void *)0x700001B0, 0xC);
+    copy_memory_aligned(vendor_stock, (void *)0x70000170, 0xC);
+    copy_memory_aligned(gSkillPoints_r, (void *)0x70000180, 0x20);
+    copy_memory_aligned(gCheats_r, (void *)0x700001A0, 0xC);
+    copy_memory_aligned(selector_available_r, (void *)0x700001B0, 0xC);
     gBolts_r = saved;
     if (flag4) {
         gSpecialItems_r[4] = 1;

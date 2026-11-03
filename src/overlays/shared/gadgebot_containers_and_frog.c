@@ -199,8 +199,6 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void destroy_gadgebot_spawn_container(void *, void *);
 extern void draw_gadgebot_spawn_container(char *);
 
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00297d10.c, FUN_L06_002d85a0. */
@@ -221,8 +219,8 @@ void gadgebot_spawn_container_update(Moby *moby) {
             if (f > 3.14159274f) {
                 f -= 6.28318548f;
             }
-            f = (FastSin_r(f) + 1.0f) * 0.5f;
-            moby->glow_color = FastTweenColor_r(0x80464646, 0x80828282, f);
+            f = (FastSin(f) + 1.0f) * 0.5f;
+            moby->glow_color = FastTweenColor(0x80464646, 0x80828282, f);
             if (p != 0) {
                 destroy_gadgebot_spawn_container(moby, p);
             }
@@ -269,7 +267,6 @@ extern float blarg_gadgebot_container_normal_scale SDATA(blarg_gadgebot_containe
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern long GetEffectTex(int);
 extern void draw_world_quad(void *, int, int);
 
 /* Transform src by matrix m into dst. */
@@ -418,21 +415,18 @@ extern void update_frog_health_respawn_and_target_x(void *) __asm__("func_L06_00
 extern void set_ground_height_band(void *);
 extern int truncate_float_to_s32(float);
 
-extern float vec_distance_xy(void *, void *);
 extern void destroy_frog_child_moby_x(void *) __asm__("func_L06_002EB360");
 extern void probe_frog_local_z_collision(char *);
 extern void blend_frog_rotation_to_facing_frame(char *, float *, float *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void move_frog_with_collision_resolution(void *, void *, int, float, float);
 
-extern float vec_length_xy(void *);
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern void InitKnockback_x(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 
 extern int mine_fall(void *, void *);
 
 extern void SetDeathBits(void *, int, int);
-extern int fast_dec_timer(int *);
 
 extern void collect_mobies_in_sphere_at_moby_point(void *, int, int, float, float, float, int, int, int);
 extern int CarriedMobyUpdate(void *, void *);
@@ -792,7 +786,6 @@ extern int truncate_float_to_s32(float);
 
 extern void select_hero_or_gadgebot_target(char *, char **, f32);
 
-extern float vec_distance_xy(void *, void *);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 
 extern struct MobyHit *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
@@ -1052,12 +1045,7 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern void func_L00_00260958(void *, float);
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
-extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r2(float) __asm__("func_001F9FA8");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int FastTweenColor_r2(int, int, float) __asm__("func_001FA8A8");
-extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
+
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 
 /* Throws blarg_frog_spark_burst_count bursts of sparks from around the moby: each burst gets a random heading, speed
@@ -1085,12 +1073,12 @@ void spawn_moby_directional_spark_bursts(struct Moby *moby, Vec4 *dir) {
         angle = random_angle_radians_r();
         speed = random_float_between_r(D_L06_00161CBC_2EB5C8, D_L06_00161CC0_2EB5C8);
         rise = random_float_between_r(D_L06_00161CC4_2EB5C8, D_L06_00161CC8_2EB5C8);
-        FastVecScale_r(&vel, dir, random_float_between_r(0.0f, D_L06_00161CF4_2EB5C8) * g_frame_time_r);
-        vel.f[0] += FastCos_r(angle) * (speed * g_frame_time_r);
-        vel.f[1] += FastSin_r2(angle) * (speed * g_frame_time_r);
+        FastVecScale(&vel, dir, random_float_between_r(0.0f, D_L06_00161CF4_2EB5C8) * g_frame_time_r);
+        vel.f[0] += FastCos(angle) * (speed * g_frame_time_r);
+        vel.f[1] += FastSin(angle) * (speed * g_frame_time_r);
         vel.f[2] += rise * g_frame_time_r;
         qcopy(&accel, &vel);
-        accel.f[2] -= D_L06_00161CCC_2EB5C8 * g_frame_time_sq_r * (float)scale_ticks_r(D_L06_00161CEC_2EB5C8);
+        accel.f[2] -= D_L06_00161CCC_2EB5C8 * g_frame_time_sq_r * (float)scale_ticks(D_L06_00161CEC_2EB5C8);
         for (j = 0; j < D_L06_00161CAC_2EB5C8; j++) {
             float size = random_float_between_r(0.5f, 1.5f);
             int color0;
@@ -1102,16 +1090,14 @@ void spawn_moby_directional_spark_bursts(struct Moby *moby, Vec4 *dir) {
             accel.f[3] = size * D_L06_00161CD4_2EB5C8;
             add_random_offset_to_vector_xyz(&pos, D_L06_00161CB4_2EB5C8);
             add_random_offset_to_vector_xyz(&accel, D_L06_00161CB8_2EB5C8 * g_frame_time_r);
-            color0 =
-                FastTweenColor_r2(D_L06_00161CD8_2EB5C8, D_L06_00161CE0_2EB5C8, random_float_between_r(0.0f, 1.0f));
-            color1 =
-                FastTweenColor_r2(D_L06_00161CDC_2EB5C8, D_L06_00161CE4_2EB5C8, random_float_between_r(0.0f, 1.0f));
-            life = scale_ticks_r(D_L06_00161CE8_2EB5C8);
-            fade = scale_ticks_r(D_L06_00161CEC_2EB5C8);
+            color0 = FastTweenColor(D_L06_00161CD8_2EB5C8, D_L06_00161CE0_2EB5C8, random_float_between_r(0.0f, 1.0f));
+            color1 = FastTweenColor(D_L06_00161CDC_2EB5C8, D_L06_00161CE4_2EB5C8, random_float_between_r(0.0f, 1.0f));
+            life = scale_ticks(D_L06_00161CE8_2EB5C8);
+            fade = scale_ticks(D_L06_00161CEC_2EB5C8);
             n = (float)D_L06_00161CF0_2EB5C8;
-            PartType02Spawn(
-                &pos, &vel, &accel, color0, color1, life, fade,
-                truncate_float_to_s32_r(multiply_global_factor_r(random_float_between_r(n * 0.5f, n * 2.5f))), -1);
+            PartType02Spawn(&pos, &vel, &accel, color0, color1, life, fade,
+                            truncate_float_to_s32_r(multiply_global_factor(random_float_between_r(n * 0.5f, n * 2.5f))),
+                            -1);
         }
     }
 }
@@ -1156,7 +1142,6 @@ typedef struct {
     char _pad6C[4];
     unsigned char unk70; /* 0x70 */
 } MobyAnim_EBA10;
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
 
 void func_00213DE0_EBA10(MobyAnim_EBA10 *arg0, int arg1, int arg2, int arg3) __asm__("func_00213DE0");
 
@@ -1178,7 +1163,7 @@ int update_moby_grab_state(struct Moby *moby, void *position, void *target) {
     } else if (moby->state == 0x10) {
         moby->state = 8;
         if (moby->prev_seq != 0) {
-            func_00213DE0_EBA10((MobyAnim_EBA10 *)moby, 0, 0, scale_ticks_r2(10));
+            func_00213DE0_EBA10((MobyAnim_EBA10 *)moby, 0, 0, scale_ticks(10));
         }
     }
     return r;
@@ -1338,8 +1323,6 @@ extern GbHit blarg_coll_hit;
 extern Moby *blarg_coll_hit_moby;
 extern GbStats blarg_gadgebot_command_count_base;
 
-extern float vec_distance_xy(void *, void *);
-
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern void update_gadgebot_glow_effects(char *);
@@ -1353,7 +1336,6 @@ extern void assign_gadgebot_attack_targets(void);
 
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 
-extern int fast_dec_timer(int *);
 extern void select_nearest_gadgebot_interaction_target(void *);
 
 extern char *spawn_source_attached_fading_effect_particle(float, char *, int, int, int);
@@ -1364,7 +1346,7 @@ extern void PartType53Spawn_v(void *, int, float, float, int, int, int, float, v
 extern void Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 extern int coll_sphere(float, void *, int, void *);
-extern float vec_length_xy(void *);
+
 extern int is_moby_in_class_range_500_to_540(void *);
 extern void set_ground_height_band(void *);
 
@@ -2449,7 +2431,7 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 r16 = rand_range(0x40, 0xFF);
                 f20 = FastCos(random_angle_radians()) * random_float_between(0.0f, 0.25f);
                 vA[0] = f20;
-                f20 = FastSin_r(random_angle_radians());
+                f20 = FastSin(random_angle_radians());
                 f20 = f20 * random_float_between(0.0f, 0.25f);
                 vA[2] = 0.0f;
                 vA[1] = f20;
@@ -2469,7 +2451,7 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
             g = level_mobys_q_r2 + (*(int *)st << 8);
             f20 = FastNormalizeAngle(IntToFloat(v58) * 60.0f * 0.017453292f);
             vB[0] = FastCos(FastAddRots(*(float *)(g + 0x48), f20));
-            vB[1] = FastSin_r(FastAddRots(*(float *)(g + 0x48), f20));
+            vB[1] = FastSin(FastAddRots(*(float *)(g + 0x48), f20));
             vB[2] = 0.0f;
             FastVecAdd(ctx + 0x10, vB, g + 0x10);
             *(u128_F4058 *)(ow + 0x2F0) = *(u128_F4058 *)(ow + 0x2E0) = *(u128_F4058 *)(ctx + 0x10);
@@ -2483,7 +2465,7 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 r16 = rand_range(0x40, 0xFF);
                 f20 = FastCos(random_angle_radians()) * random_float_between(0.0f, 0.25f);
                 vC[0] = f20;
-                f20 = FastSin_r(random_angle_radians());
+                f20 = FastSin(random_angle_radians());
                 f20 = f20 * random_float_between(0.0f, 0.25f);
                 vC[2] = 0.0f;
                 vC[1] = f20;
@@ -2639,7 +2621,7 @@ void select_hero_or_gadgebot_target(char *moby, char **current, f32 range) {
 }
 extern char *MobyGetHitMessage_r3(void *, int, int) __asm__("func_L00_0025B478");
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
-extern int scale_ticks_r3(int) __asm__("func_001F9850");
+
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 typedef unsigned int Q_2F4A70 __attribute__((mode(TI), aligned(16)));
 extern char *g_hero_moby_r2 __asm__("D_001414D0");
@@ -2664,8 +2646,8 @@ void func_L06_002F4A70_r(unsigned char *moby) {
             float ang;
             ang = base_angle;
             if (owner != g_hero_moby_r2 && *(short *)(owner + 0xA6) != ((Moby *)moby)->oclass) {
-                int frames_sq = scale_ticks_r3(0x50);
-                frames_sq *= scale_ticks_r3(0x50);
+                int frames_sq = scale_ticks(0x50);
+                frames_sq *= scale_ticks(0x50);
                 state[0xBD] = 0;
                 *(int *)(state + 0xA4) = 9;
                 *(float *)(state + 0x90) = 4.0f / (float)frames_sq;

@@ -807,8 +807,7 @@ extern S_28b1a0 *sky_data_r3 __asm__("D_L00_001605DC") MACRO_ADDR;
 extern unsigned char sky_shell_matrix_r2[] __asm__("D_L00_001BDB70") NOT_SDA;
 extern short D_L00_00160580;
 extern q_28b1a0 D_L00_001605E0 MACRO_ADDR;
-void func_001FA190_28b1a0(void *) __asm__("func_001FA190");
-void func_001F9BC0_28b1a0(void *) __asm__("func_001F9BC0");
+
 void func_L00_001FFA40_28b1a0(void *, void *) __asm__("func_L00_001FFA40");
 void func_001F9C48_28b1a0(void *, void *, float) __asm__("func_001F9C48");
 void func_0022C9A8_28b1a0(int) __asm__("func_0022C9A8");
@@ -820,8 +819,8 @@ void SkyShellsEntryUpdate(void) {
     unsigned char *M;
     float k;
     sky_data_r3->h4 = 0;
-    func_001FA190_28b1a0(sky_shell_matrix_r2);
-    func_001F9BC0_28b1a0(v);
+    set_identity_matrix(sky_shell_matrix_r2);
+    clear_u64_value(v);
     for (; i < sky_data_r3->h6; i++) {
         p = (float *)(sky_data_r3->e[i] + 8);
         k = 1.0f;
@@ -851,7 +850,7 @@ void SkyShellsEntryUpdate(void) {
                 *p += (*(float *)&sky_shell_rotation_phase_step) * 0.8f;
                 break;
             default:
-                func_001FA190_28b1a0(sky_shell_matrix_r2);
+                set_identity_matrix(sky_shell_matrix_r2);
                 break;
         }
         if (i > 0) {

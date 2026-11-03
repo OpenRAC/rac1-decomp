@@ -238,7 +238,6 @@ extern VehicleCamera eudora_camera;
 extern s32 truncate_float_to_s32(float);
 
 extern void MobySpringTurn(void *, void *, float, float, float, float);
-extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -250,7 +249,6 @@ extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32,
                             s32, s32, s32, s32);
 
 extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
-extern s32 fast_dec_timer(s32 *);
 
 typedef float VehicleArr_2CB800[4] __attribute__((aligned(16)));
 typedef struct {
@@ -755,8 +753,6 @@ extern void FindNearestTargetMoby(void *, void *, float);
 extern void Manipulator_ApplyScale(float, void *, int, void *);
 
 extern void set_ground_height_band(void *);
-
-extern float vec_distance_xy(void *, void *);
 
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -1490,9 +1486,8 @@ struct MobyP {
 #define scale_vector_xyz func_001F9C30
 #define rib_p func_002140B0
 #define cif_p func_001FA888
-extern float vec_length_xy(void *);
+
 #define vector_length_xy func_001F9CE8
-extern int fast_dec_timer(s32 *);
 
 #define random_int_between func_L00_00258BC8
 #define collision_line ((int (*)(void *, void *, int, void *, void *))(func_L00_001EFFF0))
@@ -1747,7 +1742,7 @@ extern u8 gHaveHeliPack_r[] __asm__("D_0013D5CA");
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern char suck_cannon_no_exit_fmt_r[] __asm__("D_L04_001DCA60");
 extern Exit_002E2DF0 *portal_mobys_002E2DF0 __asm__("D_L04_00160058") MACRO_ADDR;
-extern f32 add_rot_002E2DF0(f32, f32) __asm__("func_001FA748");
+
 extern f32 dist_002E2DF0(void *, void *) __asm__("func_001F9D48");
 extern void initialize_moby_particle_effect_r(Moby *) __asm__("func_L00_002D80A0");
 extern void remove_moby_002E2DF0(Moby *) __asm__("func_0020D678");
@@ -1765,7 +1760,7 @@ void suck_cannon_update(Moby *moby) {
     PortalVars_002E2DF0 *vars = (PortalVars_002E2DF0 *)moby->pvars;
     Exit_002E2DF0 *exit;
 
-    moby->rot.z = add_rot_002E2DF0(moby->rot.z, g_frame_time_r * 1.5707964f);
+    moby->rot.z = FastAddRots(moby->rot.z, g_frame_time_r * 1.5707964f);
     if (eudora_game_mode_r == 2)
         moby->flags |= 0x41;
     else if (moby->flags & 1)
@@ -1818,7 +1813,6 @@ typedef struct {
     int c[4];
     float d[4];
 } L10SpriteData;
-extern int fast_dec_timer(int *);
 
 extern int truncate_float_to_s32(float);
 extern int eudora_game_mode MACRO_ADDR;
@@ -2216,7 +2210,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
 extern char eudora_coll_hit_normal[];
 extern float eudora_debris_spin_min_deg SDATA(eudora_debris_spin_min_deg);
 extern float eudora_debris_spin_max_deg SDATA(eudora_debris_spin_max_deg);
-extern int FastDecTimer_bounce(void *) __asm__("func_001F9938");
+
 extern int coll_sphere(float, void *, int, void *);
 
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.
@@ -2247,7 +2241,7 @@ void update_entity_bounce_and_decay(char *moby) {
         case ENTITY_MOTION_STATE_BOUNCE:
             if (entity->pos.z < pv->floor - 3.0f) {
                 entity->state = ENTITY_MOTION_STATE_DECAY_AND_REMOVE;
-            } else if (FastDecTimer_bounce(&pv->timer) != 0 && pv->bounces != 0) {
+            } else if (FastDecTimer(&pv->timer) != 0 && pv->bounces != 0) {
                 if (coll_sphere(pv->radius, pos, 2, 0) != 0) {
                     VecQuad *collision_normal = (VecQuad *)eudora_coll_hit_normal;
                     float zero;

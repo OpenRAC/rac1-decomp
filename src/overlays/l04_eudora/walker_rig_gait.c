@@ -211,9 +211,6 @@ typedef struct {
     Vec4f v40; /* 0x40 */
 } StTab;
 
-extern float FastCos_r(float) __asm__("func_001F9F90");
-
-extern float func_001F9CE8(void *);
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern char D_L04_00174040[];
 
@@ -274,7 +271,7 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
             }
         }
         if (push[0] != 0.0f || push[1] != 0.0f || push[2] != 0.0f) {
-            dir[0] = FastCos_r(m->rot.z);
+            dir[0] = FastCos(m->rot.z);
             dir[1] = FastSin(m->rot.z);
             dir[2] = 0.0f;
             FastVecCross(dir, dir, push);
@@ -529,7 +526,7 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
         }
         divide_vector_xyz(v80, v80, cnt);
     } else {
-        v80[0] = FastCos_r(*(float *)(s + 0x6C)) * *(float *)(s + 0xC0);
+        v80[0] = FastCos(*(float *)(s + 0x6C)) * *(float *)(s + 0xC0);
         v80[1] = FastSin(*(float *)(s + 0x6C)) * *(float *)(s + 0xC0);
         v80[2] = 0.0f;
     }

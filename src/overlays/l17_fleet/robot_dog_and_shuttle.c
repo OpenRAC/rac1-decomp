@@ -248,7 +248,6 @@ extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float 
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern void move_4318(int, int, float, float, float, int);
-extern float vec_distance_xy(void *, void *);
 
 /* Steers the moby toward a target point; returns nonzero when it is within 0.2 of it. */
 int move_robot_dog_toward_position(char *moby, float *target, float speed) {
@@ -293,7 +292,6 @@ int cancel_suck_cannon_suction_and_set_state_12(char *a) {
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 
-extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 /* The turret's eased part (EaseManipulatorOffsets's second argument) and where it sits in the moby's data. */
@@ -435,7 +433,6 @@ void draw_three_moby_effect_quads(char *m) {
         p += 0x10;
     }
 }
-extern int GetEffectTex(int);
 
 extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
@@ -903,7 +900,6 @@ void update_shuttle_help_message(char *moby) {
             break;
     }
 }
-extern void lerp_vector(void *, void *, void *, float);
 
 typedef struct {
     float x, y, z, w;

@@ -507,8 +507,6 @@ extern s32 vendor_flash_timers[];
 extern s32 vendor_scroll_timers[];
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
-extern s64 func_001F4868(s32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_vendor_capture_texture_overlays_pass.c, render_vendor_capture_texture_overlays_pass. */
 void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_width, f32 capture_height) {
     s32 flash_timer;
@@ -919,8 +917,6 @@ typedef struct {
 
 extern Cfg16 attachment_vertex_indices NOT_SDA;
 
-extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
-
 struct UpdateInstanceAttachmentPointsAndLengthsVars {
     u8 pad_00[0x10];
     Vec4 unk_10;
@@ -944,8 +940,8 @@ void update_instance_attachment_points_and_lengths(char *arg0) {
 
     cfg = attachment_vertex_indices;
     transform_scaled_vertex_batch(arg0, 4, &cfg, p);
-    FastVecSub_b(a, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_10, p);
-    FastVecSub_b(b, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_20, p);
+    FastVecSub(a, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_10, p);
+    FastVecSub(b, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_20, p);
     ((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_40 = FastVecLength(a);
     ((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_44 = FastVecLength(b);
 }

@@ -587,7 +587,7 @@ extern char snd_non_idle_error_string_sb[] __asm__("D_00153E20");
 extern void StoreObjectIndex_sb(void *, s32, s32 *) __asm__("func_0012E038");
 extern s32 SceSifCheckStatRpc_sb(void *) __asm__("func_0011B6B8");
 extern s32 printf_sb(const char *, ...) __asm__("func_00116078");
-extern void FlushCache_sb(s32) __asm__("func_00118D80");
+
 extern s32 sceSifCallRpc_sb(void *, u32, u32, void *, s32, void *, s32, void (*)(void *),
                             void *) __asm__("func_0011B4C8");
 
@@ -604,7 +604,7 @@ void snd_SendCurrentBatch(void) {
                         snd_batch_command_buffers_sb[snd_batch_index_sb]);
     while (SceSifCheckStatRpc_sb(sound_command_client_sb) != 0) {
         printf_sb(snd_non_idle_error_string_sb);
-        FlushCache_sb(0);
+        flush_cache(0);
     }
     sceSifCallRpc_sb(sound_command_client_sb, 0x4D, 1, snd_batch_command_buffers_sb[snd_batch_index_sb],
                      0x1000 - snd_batch_free_bytes_sb[snd_batch_index_sb],

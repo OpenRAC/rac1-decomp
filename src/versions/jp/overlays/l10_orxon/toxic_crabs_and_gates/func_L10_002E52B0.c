@@ -22,7 +22,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     }
     if (d->f38 != 0) {
         activate_waiting_moby_group_members_r(m);
-        d->f1AC = truncate_float_to_s32_r(multiply_global_factor_r(random_float_between_r(180.0f, 240.0f)));
+        d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between_r(180.0f, 240.0f)));
         d->f38 = 0;
     }
     fast_dec_timer_r(&d->f1AC);
@@ -30,7 +30,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     B = 0.0f;
     r = MobyGetHitMessage_r(m, 0xB30000, 0);
     v21 = ComputeHitResponse_r(m, r, &d->f20, 0, &A, &B, 0, 4);
-    FastDecTimer_r(&d->h26);
+    FastDecTimer(&d->h26);
     if ((unsigned int)A >= 2 && m->state != 0xB && m->state != 0xC) {
         if (g_current_level_index_m == LEVEL_ORXON && r != 0 && r->f20 != 0 && r->f20->oclass == 0x31A) {
             if (d->f1AC != 0 && ((Flags *)gSkillPoints)->b11 == 0) {
@@ -45,7 +45,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 B = 0.0f;
         }
         if (g_hero.state.current == HERO_STATE_HELD_ITEM_ATTACK ||
-            (g_hero.state.prev == HERO_STATE_HELD_ITEM_ATTACK && g_hero.state_timer < scale_ticks_r(30))) {
+            (g_hero.state.prev == HERO_STATE_HELD_ITEM_ATTACK && g_hero.state_timer < scale_ticks(30))) {
             if (2.0f < B)
                 B = 2.0f;
         }
@@ -75,11 +75,11 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (r->f20->oclass == MOBY_CLASS_DOOM_BOT || r->f20->oclass == MOBY_CLASS_RATCHET)
                 vA.z += 0.25f;
             if (coll_line_r(&vA, &vB, 0x12, m, 0) != 0) {
-                FastVecSub_r(&dst, &vB, &vA);
+                FastVecSub(&dst, &vB, &vA);
                 *(u128_2E52B0 *)&W = *(u128_2E52B0 *)&dst;
                 vec_scale_to_length_r(&W, &W, 1.0f);
                 vec_scale_to_length_r(&X, &orxon_ground_hit_normal_r, 1.0f);
-                if (0.5f < FastAbsF(FastVecDot_r(&W, &X))) {
+                if (0.5f < FastAbsF(FastVecDot(&W, &X))) {
                     B = 0.0f;
                     v21 = 11;
                 }
@@ -102,7 +102,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             case 9:
             case 10:
                 m->state = 10;
-                d->h26 = scale_ticks_r(60);
+                d->h26 = scale_ticks(60);
                 d->f80 = D_L10_00161EAC_2E52B0 * g_frame_time_sq_r;
                 trooper_set_knockback_r(d->a70, 0.5f, 0.5f);
                 d->fC0 = 8.0f;
@@ -117,7 +117,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             case 5: {
                 float s;
                 m->state = 10;
-                d->h26 = scale_ticks_r(60);
+                d->h26 = scale_ticks(60);
                 d->f80 = D_L10_00161EAC_2E52B0 * g_frame_time_sq_r;
                 s = g_hero.vehicle_mode == 1 ? 1.0f : 3.0f;
                 trooper_set_knockback_r(d->a70, s, 0.5f);
@@ -173,15 +173,15 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     }
     if (m->state != 1 && d->f164 == 2) {
         d->f1D4++;
-        if (scale_ticks_r(300) < d->f1D4) {
-            if (1.0f < FastVecDist_r(&m->pos, &d->a170)) {
+        if (scale_ticks(300) < d->f1D4) {
+            if (1.0f < FastVecDist(&m->pos, &d->a170)) {
                 m->state = 8;
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks_r(12));
+                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(12));
             } else if (g_hero.vehicle_mode != 1) {
                 m->state = 1;
                 if (m->prev_seq != 0)
-                    MobyBlendAnimation_r(m, 0, 0, scale_ticks_r(20));
+                    MobyBlendAnimation_r(m, 0, 0, scale_ticks(20));
             }
         }
     } else {

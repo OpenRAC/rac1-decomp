@@ -627,11 +627,7 @@ extern Particle *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, vo
                                                                       struct Moby *) __asm__("func_L00_002757E8");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
-extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 /* Ship engine effects: puffs exhaust particles from joint 1 and places the nozzle and beam points from joints 7 and 2.
@@ -653,9 +649,9 @@ void update_plasmabot_visual_effects(struct Moby *m) {
     pv = (ShipVars *)m->pvars;
     AddDrawCallback_r(draw_plasmabot_glow_quad_r, m);
     Moby_GetJointWorldPos_r(m, 1, &pos);
-    FastVecSub_r(&dir, &pos, &oltanis_camera_pos_r);
+    FastVecSub(&dir, &pos, &oltanis_camera_pos_r);
     vec_scale_to_length_r(&dir, &dir, -0.5f);
-    FastVecAdd_r(&pv->exhaust, &pos, &dir);
+    FastVecAdd(&pv->exhaust, &pos, &dir);
     random_spherical_offset_r(&vel, 0.005f, 0.03f);
     p = spawn_mode_controlled_rotating_alpha_fade_particle_r(&pos, &vel, 0x7F, m);
     if (p != 0) {
@@ -672,7 +668,7 @@ void update_plasmabot_visual_effects(struct Moby *m) {
         } else {
             p->life = random_float_between_r(80000.0f, 120000.0f);
         }
-        p->frames = scale_ticks_r(2);
+        p->frames = scale_ticks(2);
         f = 1.0f / IntToFloat(p->frames);
         fade->mode = 3;
         fade->color = 0x7F7F7F;
@@ -680,22 +676,21 @@ void update_plasmabot_visual_effects(struct Moby *m) {
     }
     Moby_GetJointWorldPos_r(m, 6, &pv->joint6);
     MobyTransformScaledVertex_r(m, 7, mat);
-    FastVecScale_r(&dx, &mat[0], D_L14_00161570_2B3850);
-    FastVecAdd_r(&pv->nozzle, &mat[3], &dx);
+    FastVecScale(&dx, &mat[0], D_L14_00161570_2B3850);
+    FastVecAdd(&pv->nozzle, &mat[3], &dx);
     MobyTransformScaledVertex_r(m, 2, mat);
-    FastVecScale_r(&dx, &mat[0], D_L14_00161578_2B3850);
-    FastVecScale_r(&dy, &mat[1], D_L14_0016157C_2B3850);
-    FastVecScale_r(&dz, &mat[2], D_L14_00161580_2B3850);
-    FastVecAdd_r(&pv->beam_start, &mat[3], &dx);
-    FastVecAdd_r(&pv->beam_start, &pv->beam_start, &dy);
-    FastVecAdd_r(&pv->beam_start, &pv->beam_start, &dz);
-    FastVecScale_r(&dy, &dy, -2.0f);
-    FastVecAdd_r(&pv->beam_end, &pv->beam_start, &dy);
+    FastVecScale(&dx, &mat[0], D_L14_00161578_2B3850);
+    FastVecScale(&dy, &mat[1], D_L14_0016157C_2B3850);
+    FastVecScale(&dz, &mat[2], D_L14_00161580_2B3850);
+    FastVecAdd(&pv->beam_start, &mat[3], &dx);
+    FastVecAdd(&pv->beam_start, &pv->beam_start, &dy);
+    FastVecAdd(&pv->beam_start, &pv->beam_start, &dz);
+    FastVecScale(&dy, &dy, -2.0f);
+    FastVecAdd(&pv->beam_end, &pv->beam_start, &dy);
     AddDrawCallback_r(draw_plasmabot_effect_quads_r, m);
 }
 
 extern void draw_world_quad(void *, void *, s32);
-u64 GetEffectTex(s32);
 
 extern Vec4 plasmabot_effect_quad_corners[];
 extern f32 D_L14_00161574_3B78 SDATA(D_L14_00161574);
@@ -957,7 +952,6 @@ void process_plasmabot_hit_reaction(char *m) {
 extern char hero_globals_base[];
 extern int *oltanis_paths[];
 extern int FindNearestEligibleMoby(char *, char *, float, int, int, int *, int);
-extern float vec_distance_xy(void *, void *);
 
 // Checks the moby's distance against its radius and latches state fields.
 void update_plasmabot_target(char *moby) {
@@ -1050,8 +1044,6 @@ void scale_and_apply_plasmabot_planar_velocity(char *moby) {
 }
 
 extern float SteerAngleWithVelocity_r2(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
-
-extern float vec_length_xy(void *);
 
 // steers a moby's pitch toward a target, and its yaw toward its owner when asked
 float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
@@ -1181,7 +1173,6 @@ extern float plasmabot_glow_quad_size SDATA(plasmabot_glow_quad_size);
 extern float plasmabot_glow_camera_pull SDATA(plasmabot_glow_camera_pull);
 extern float plasmabot_glow_camera_margin SDATA(plasmabot_glow_camera_margin);
 extern u32 plasmabot_glow_color SDATA(plasmabot_glow_color);
-u64 GetEffectTex(s32);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1239,8 +1230,6 @@ void draw_plasmabot_glow_quad(Moby *m) {
 }
 extern u8 hero_vehicle_mode[];
 extern u8 *race_state;
-
-extern s32 fast_dec_timer(void *);
 
 typedef struct {
     s32 armed; /* 0x00: nonzero once the hatch may open */
@@ -1341,8 +1330,6 @@ extern f32 g_frame_scale_sq MACRO_ADDR;
 extern float spinning_debris_drag_min_speed SDATA(spinning_debris_drag_min_speed);
 extern float spinning_debris_drag SDATA(spinning_debris_drag);
 extern float spinning_debris_gravity SDATA(spinning_debris_gravity);
-
-extern int fast_dec_timer(void *);
 
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -1641,16 +1628,13 @@ typedef struct Particle_2E17B8 {
     ParticleFade_2E17B8 fade; /* 0x20 */
 } Particle_2E17B8;
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void random_spherical_offset_r2(void *, float, float) __asm__("func_002141A8");
 extern Particle_2E17B8 *spawn_mode_controlled_rotating_alpha_fade_particle_r2(void *, void *, int,
                                                                               Moby *) __asm__("func_L00_002757E8");
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
 extern int random_integer_below_r2(int) __asm__("func_002140B0");
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
 
-extern float FastCos_r(float x) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float randf_sym_r(float lo, float hi) __asm__("func_L00_00258C80");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void PartType21Spawn_r(void *, void *, int, int, int, int, float) __asm__("func_L00_0026DA50");
@@ -1679,7 +1663,7 @@ void emit_debris_trail_particles(Moby *m) {
 
     pv = *(Vars **)&m->pvars;
     vec_scale_to_length_r2(&dir, &*(Vec4 *)&m->rot_row2, 0.2f);
-    FastVecAdd_r2(&pos, &*(Vec4 *)&m->pos, &dir);
+    FastVecAdd(&pos, &*(Vec4 *)&m->pos, &dir);
     random_spherical_offset_r2(&vel, 0.005f, 0.03f);
     p = spawn_mode_controlled_rotating_alpha_fade_particle_r2(&pos, &vel, 0x7F, m);
     if (p != 0) {
@@ -1698,7 +1682,7 @@ void emit_debris_trail_particles(Moby *m) {
         } else {
             p->life = random_float_between_r2(80000.0f, 120000.0f);
         }
-        p->frames = scale_ticks_r2(2);
+        p->frames = scale_ticks(2);
         f = 1.0f / IntToFloat(p->frames);
         color = 0x7F7F7F;
         fade->mode = 4;
@@ -1715,17 +1699,16 @@ void emit_debris_trail_particles(Moby *m) {
         vec_scale_to_length_r2(&dir, &*(Vec4 *)&m->rot_row2, 1.15f);
         vel.f[2] = frame_scale_r * 0.03f;
     }
-    FastVecAdd_r2(&pos, &*(Vec4 *)&m->pos, &dir);
-    off.f[0] = FastCos_r(m->rot.z) * 0.3f;
-    off.f[1] = FastSin_r(m->rot.z) * 0.3f;
+    FastVecAdd(&pos, &*(Vec4 *)&m->pos, &dir);
+    off.f[0] = FastCos(m->rot.z) * 0.3f;
+    off.f[1] = FastSin(m->rot.z) * 0.3f;
     off.f[2] = 0.0f;
-    FastVecAdd_r2(&pos, &pos, &off);
+    FastVecAdd(&pos, &pos, &off);
     if (m->state == 1) {
         pos.f[0] += randf_sym_r(0.0f, 0.1f);
         pos.f[1] += randf_sym_r(0.0f, 0.1f);
     }
-    PartType21Spawn_r(&pos, &vel, 0x4F007FFF, 0x1FFFFFFF, rand_range_r(scale_ticks_r2(10), scale_ticks_r2(20)), 1,
-                      60000.0f);
+    PartType21Spawn_r(&pos, &vel, 0x4F007FFF, 0x1FFFFFFF, rand_range_r(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
     n = random_integer_below_r2(6);
     if (random_integer_below_r2(2) != 0) {
         n = -n;
@@ -1738,7 +1721,7 @@ void emit_debris_trail_particles(Moby *m) {
         ParticleFade_2E17B8 *ef;
         ef = &e->fade;
         e->b3 = 0x44;
-        e->frames = scale_ticks_r2(0x3C);
+        e->frames = scale_ticks(0x3C);
         ef->i4 = 2;
         ef->bA = 0x60;
         ef->bB = e->frames;
@@ -2146,7 +2129,6 @@ typedef struct Vq {
 extern void rand_vec(void *, float, float);
 
 extern int truncate_float_to_s32(float);
-extern float vec_distance_xy(void *, void *);
 
 extern char *oltanis_clip_volumes MACRO_ADDR;
 extern float g_frame_time;
@@ -2359,13 +2341,7 @@ typedef struct {
 extern char D_0013F4D0[];
 extern VendorBeamFrame_3039C0 *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
 extern u8 oltanis_collision_hit_point_r[] __asm__("D_L14_00174660");
-extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern float FastCos_r2(float) __asm__("func_001F9F90");
-extern float FastSin_r2(float) __asm__("func_001F9FA8");
-extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecScale_r2(void *, void *, f32) __asm__("func_001F9C30");
+
 extern void vec_scale_to_length_r3(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
@@ -2385,44 +2361,44 @@ void apply_vendor_beam_damage(char *self) {
     req.range = 1.0f;
     req.one = 1;
     req.moby = m;
-    clear_u64_value_r(&req);
+    clear_u64_value(&req);
     req.v[2] = 1.0f;
     req.b = 1;
     req.v[3] = 5627.925f;
     req.a = 3;
     req.oclass = m->oclass;
-    dir.f[0] = FastCos_r2(m->rot.z);
-    dir.f[1] = FastSin_r2(m->rot.z);
+    dir.f[0] = FastCos(m->rot.z);
+    dir.f[1] = FastSin(m->rot.z);
     dir.f[2] = 0.0f;
-    FastVecSub_r2(&to_hero, gHeroPos, &m->pos);
+    FastVecSub(&to_hero, gHeroPos, &m->pos);
     to_hero.f[2] = 0.0f;
     dot = FastVecDot(&dir, &to_hero);
-    if (FastVecLength_r(&to_hero) != 0.0f) {
+    if (FastVecLength(&to_hero) != 0.0f) {
         if (dot < 0.0f)
-            FastVecScale_r2(&dir, &dir, -1.0f);
+            FastVecScale(&dir, &dir, -1.0f);
         req.v[0] = dir.f[0];
         req.v[1] = dir.f[1];
     }
     qcopy_nc(&base, &oltanis_clip_volumes_r[d->w0].origin);
     if (d->s8) {
-        FastVecAdd_r3(&end_a, &base, &oltanis_clip_volumes_r[d->w0].axis[1]);
+        FastVecAdd(&end_a, &base, &oltanis_clip_volumes_r[d->w0].axis[1]);
         if (coll_line_r(&base, &end_a, 0, m, 0)) {
-            FastVecSub_r2(&from, oltanis_collision_hit_point_r, &base);
-            len = FastVecLength_r(&from);
-            FastVecScale_r2(&from, &from, len * 0.98f / len);
-            FastVecAdd_r3(&d->end_a, &base, &from);
+            FastVecSub(&from, oltanis_collision_hit_point_r, &base);
+            len = FastVecLength(&from);
+            FastVecScale(&from, &from, len * 0.98f / len);
+            FastVecAdd(&d->end_a, &base, &from);
             d->s8 = 0;
         } else {
             qcopy(&d->end_a, &end_a);
         }
     }
     if (d->sA) {
-        FastVecSub_r2(&end_b, &base, &oltanis_clip_volumes_r[d->w0].axis[1]);
+        FastVecSub(&end_b, &base, &oltanis_clip_volumes_r[d->w0].axis[1]);
         if (coll_line_r(&base, &end_b, 0, m, 0)) {
-            FastVecSub_r2(&from, oltanis_collision_hit_point_r, &base);
-            len = FastVecLength_r(&from);
-            FastVecScale_r2(&from, &from, len * 0.98f / len);
-            FastVecAdd_r3(&d->end_b, &base, &from);
+            FastVecSub(&from, oltanis_collision_hit_point_r, &base);
+            len = FastVecLength(&from);
+            FastVecScale(&from, &from, len * 0.98f / len);
+            FastVecAdd(&d->end_b, &base, &from);
             d->sA = 0;
         } else {
             qcopy(&d->end_b, &end_b);
@@ -2431,18 +2407,18 @@ void apply_vendor_beam_damage(char *self) {
     qcopy(&end_a, &d->end_a);
     qcopy(&end_b, &d->end_b);
     vec_scale_to_length_r3(&off, &oltanis_clip_volumes_r[d->w0].axis[0], d->radius);
-    FastVecAdd_r3(&from, &end_a, &off);
-    FastVecAdd_r3(&to, &end_b, &off);
+    FastVecAdd(&from, &end_a, &off);
+    FastVecAdd(&to, &end_b, &off);
     coll_line_r(&from, &to, 1, m, &req);
-    FastVecSub_r2(&from, &end_a, &off);
-    FastVecSub_r2(&to, &end_b, &off);
+    FastVecSub(&from, &end_a, &off);
+    FastVecSub(&to, &end_b, &off);
     coll_line_r(&from, &to, 1, m, &req);
     vec_scale_to_length_r3(&off, &oltanis_clip_volumes_r[d->w0].axis[2], d->radius);
-    FastVecAdd_r3(&from, &end_a, &off);
-    FastVecAdd_r3(&to, &end_b, &off);
+    FastVecAdd(&from, &end_a, &off);
+    FastVecAdd(&to, &end_b, &off);
     coll_line_r(&from, &to, 1, m, &req);
-    FastVecSub_r2(&from, &end_a, &off);
-    FastVecSub_r2(&to, &end_b, &off);
+    FastVecSub(&from, &end_a, &off);
+    FastVecSub(&to, &end_b, &off);
     coll_line_r(&from, &to, 1, m, &req);
 }
 extern int oltanis_beam_slot_owners[] MACRO_ADDR;

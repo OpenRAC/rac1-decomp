@@ -19,10 +19,10 @@ void CollectiblePickupUpdate(struct Moby *moby) {
             moby->state = 1;
             break;
         case 1:
-            *(f32 *)(o + 0x48) = FastAddRots_r(*(f32 *)(o + 0x48), D_L14_001622BC_06BE0);
+            *(f32 *)(o + 0x48) = FastAddRots(*(f32 *)(o + 0x48), D_L14_001622BC_06BE0);
             qcopy(o + 0x10, d);
-            FastVecScale_r2(v, o + 0xd0, D_L14_001622C0_06BE0);
-            FastVecAdd_r2(o + 0x10, o + 0x10, v);
+            FastVecScale(v, o + 0xd0, D_L14_001622C0_06BE0);
+            FastVecAdd(o + 0x10, o + 0x10, v);
             update_morphoray_particles_r(moby);
             if (oltanis_frame_count_r % 10 != 0)
                 return;

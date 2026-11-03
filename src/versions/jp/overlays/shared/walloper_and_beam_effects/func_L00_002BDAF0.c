@@ -23,7 +23,7 @@ void MorphorayUpdate(Moby *m) {
     if (m->prev_seq == 0 && MobyGetFrameValue_r(m) < 6.0f) {
         near = 0;
     }
-    FastDecTimer_r(&p->timer);
+    FastDecTimer(&p->timer);
     if ((((unsigned int)((Hero *)g_hero_r)->state.control_mode < 2 ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_CROUCH ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_JUMP ||
@@ -37,14 +37,14 @@ void MorphorayUpdate(Moby *m) {
             if (((Stats *)item_usage)->kills <= 0xFFFE) {
                 ((Stats *)item_usage)->kills++;
             }
-            r = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+            r = scale_ticks(gameplay_event_frame_count_r) / 600;
             if (((Stats *)item_usage)->best < r) {
-                ((Stats *)item_usage)->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                ((Stats *)item_usage)->best = scale_ticks(gameplay_event_frame_count_r) / 600;
             }
             ((Stats *)item_usage)->levels = ((Stats *)item_usage)->levels | (1 << g_current_level_index_r) | 0x80000000;
         }
         if (p->timer == 0) {
-            p->timer = scale_ticks_r(15);
+            p->timer = scale_ticks(15);
         }
         Moby_GetJointWorldPos_r(m, 0, p);
         if (((Hero *)g_hero_r)->state.current == HERO_STATE_LOOK) {
@@ -53,15 +53,15 @@ void MorphorayUpdate(Moby *m) {
         *(u128_2BDAF0 *)&v0 = 0;
         if (((Hero *)g_hero_r)->state.current == HERO_STATE_LOOK_RELEASE_WAIT &&
             (*(unsigned short *)((char *)((Hero *)g_hero_r)->moby + 0x34) & 1)) {
-            matrix_copy_rows_r(v, player_camera_r);
-            matrix_from_basis_rows_r(mt, v);
+            matrix_copy_rows(v, player_camera_r);
+            matrix_from_basis_rows(mt, v);
             v0.z = 1.0f;
-            transform_vector_r(&v0, &v0, mt);
+            transform_vector(&v0, &v0, mt);
         } else if (((Hero *)g_hero_r)->unk22C8 == 1) {
-            FastVecScale_r(&v0, &m->rot_row1, -1.0f);
+            FastVecScale(&v0, &m->rot_row1, -1.0f);
         } else {
             v0.x = 1.0f;
-            matrix_mul_vec3_r(&v0, &v0, ((Hero *)g_hero_r)->basis[0].f);
+            matrix_mul_vec3(&v0, &v0, ((Hero *)g_hero_r)->basis[0].f);
         }
         p->yaw = fast_atan2_r(v0.x, v0.y);
         p->pitch = fast_atan2_r(vec_length_xy_r(&v0), v0.z);
@@ -84,7 +84,7 @@ void MorphorayUpdate(Moby *m) {
                     p->target = hit;
                     p->total = IntToFloat(((short *)s)[2]);
                     p->left = s[0];
-                    p->delay = scale_ticks_r(30);
+                    p->delay = scale_ticks(30);
                     if (p->total <= 1.0f) {
                         p->left = 0.0f;
                     }
@@ -117,9 +117,9 @@ void MorphorayUpdate(Moby *m) {
             morphoray_light_slot_r = allocate_packed_color_point_light_slot_r((float *)&m->pos, 7.5f, 0.0f, 0x207F7F);
         }
         if (morphoray_light_slot_r >= 0) {
-            morphoray_light_fade_timer_r = scale_ticks_r(20);
+            morphoray_light_fade_timer_r = scale_ticks(20);
             vec_scale_to_length_r(&v[0], &m->rot_row1, -0.5f);
-            FastVecAdd_r(&v[1], p, &v[0]);
+            FastVecAdd(&v[1], p, &v[0]);
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[0] = v[1].x;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[1].y;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[1].z;
@@ -140,7 +140,7 @@ void MorphorayUpdate(Moby *m) {
         if (morphoray_light_slot_r >= 0) {
             float f;
             vec_scale_to_length_r(&v0, &m->rot_row1, -0.5f);
-            FastVecAdd_r(&v[0], p, &v0);
+            FastVecAdd(&v[0], p, &v0);
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[0] = v[0].x;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[0].y;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[0].z;

@@ -169,7 +169,7 @@ extern void set_sentrybot_alarm_duration(char *m, int a);
 extern int find_sentrybot_attention_target(char *m);
 
 extern int can_sentrybot_advance_patrol(void *);
-extern int fast_dec_timer(void *);
+
 extern void begin_sentrybot_turn_toward_point(char *moby, void *a, float *point, void *b, void *c);
 
 extern void mark_moby_killed_and_release_owned_voice(int);
@@ -184,7 +184,6 @@ extern int can_sentrybot_approach_linked_moby(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float vec_length_xy(void *);
 extern char *spawn_class_3a6_moby_v(char *, float *, char *, char *) __asm__("func_L15_002E5970");
 extern int mine_fall(void *, void *);
 
@@ -1033,7 +1032,6 @@ extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float 
 extern void ApproachValue(void *, float, float);
 
 extern void move_4318(int, int, float, float, float, int);
-extern float vec_distance_xy(float *, float *);
 
 // Turns a moby toward a point, updates its speed and velocity, and reports whether it is within 0.2 of it.
 int move_sentrybot_toward_point(char *moby, float *point, float arg) {
@@ -2491,7 +2489,6 @@ int activate_first_inactive_group_moby(int idx, void *pos) {
     return 0;
 }
 typedef int u128_2A3B98 __attribute__((mode(TI)));
-extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
 extern float D_L15_001CE490[];
@@ -2581,13 +2578,9 @@ typedef struct {
 extern Moby256_2A3DD0 *D_L15_00160058_2A3DD0 SDATA(D_L15_00160058);
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
-extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern void mark_moby_killed_and_release_owned_voice_r(void *) __asm__("func_L15_002A47B8");
@@ -2637,9 +2630,9 @@ void update_spark_emitter_moby(Moby *moby) {
                 if (e->owner != (char *)moby || e->state == 0) {
                     moby->command = Moby_PlaySound_r(0, 4, moby);
                 }
-                FastVecSub_r(V, &g_hero.motion.body_center, &moby->pos);
+                FastVecSub(V, &g_hero.motion.body_center, &moby->pos);
                 matrix_from_basis_rows(W, &moby->rot_row0);
-                transform_vector_r(V, V, W);
+                transform_vector(V, V, W);
                 V[0] = 0.0f;
                 z = V[0];
                 i = 15;
@@ -2658,12 +2651,12 @@ void update_spark_emitter_moby(Moby *moby) {
                     C[0] = z;
                     C[1] = random_float_between_r(lo, hi);
                     C[2] = random_float_between_r(lo, hi);
-                    matrix_mul_vec3_r(A, A, &moby->rot_row0);
-                    matrix_mul_vec3_r(B, B, &moby->rot_row0);
-                    matrix_mul_vec3_r(C, C, &moby->rot_row0);
-                    FastVecAdd_r(A, A, &moby->pos);
-                    vec_scale_to_length_r(B, B, one / (float)scale_ticks_r(30));
-                    vec_scale_to_length_r(C, C, one / (float)scale_ticks_r(30));
+                    matrix_mul_vec3(A, A, &moby->rot_row0);
+                    matrix_mul_vec3(B, B, &moby->rot_row0);
+                    matrix_mul_vec3(C, C, &moby->rot_row0);
+                    FastVecAdd(A, A, &moby->pos);
+                    vec_scale_to_length_r(B, B, one / (float)scale_ticks(30));
+                    vec_scale_to_length_r(C, C, one / (float)scale_ticks(30));
                     B[3] = 0.125f;
                     {
                         int ra = random_integer_below_r(0x10);
@@ -2673,14 +2666,14 @@ void update_spark_emitter_moby(Moby *moby) {
                         col = ((ra + 0x20) << 16) | m;
                         col |= rc + 0x60;
                     }
-                    fa = truncate_float_to_s32_r2((float)(scale_ticks_r(30) / 4));
-                    fb = truncate_float_to_s32_r2((float)(scale_ticks_r(30) / 2));
-                    fc = truncate_float_to_s32_r2((float)(scale_ticks_r(30) / 4));
+                    fa = truncate_float_to_s32_r2((float)(scale_ticks(30) / 4));
+                    fb = truncate_float_to_s32_r2((float)(scale_ticks(30) / 2));
+                    fc = truncate_float_to_s32_r2((float)(scale_ticks(30) / 4));
                     create_type_47_particle(A, B, C, col, 0x60808080, fa, fb, fc, moby);
                 } while (i >= 0);
                 if (FastAbsF(V[1]) < hi && z < V[2] && V[2] < hi) {
-                    matrix_mul_vec3_r(&d->spark_pos, V, &moby->rot_row0);
-                    FastVecAdd_r(&d->spark_pos, &d->spark_pos, &moby->pos);
+                    matrix_mul_vec3(&d->spark_pos, V, &moby->rot_row0);
+                    FastVecAdd(&d->spark_pos, &d->spark_pos, &moby->pos);
                 } else {
                     qzero(&d->spark_pos);
                 }
@@ -2983,7 +2976,7 @@ void spiderbot_update(Moby *moby) {
         int i;
         *(u128_2A8090 *)B = 0;
         B[2] = 12.0f;
-        matrix_mul_vec3_r(B, B, &moby->rot_row0);
+        matrix_mul_vec3(B, B, &moby->rot_row0);
         FastVecAdd(R.v, &moby->pos, B);
         *(u128_2A8090 *)A = *(u128_2A8090 *)R.v;
         R.flags = 0x10001;
@@ -3031,7 +3024,6 @@ void spiderbot_update(Moby *moby) {
 }
 typedef int u128_2A8850 __attribute__((mode(TI)));
 
-extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 extern float quartu_camera_pos[];
 extern float quartu_spiderbot_effect_quad_uvs[];

@@ -33,7 +33,6 @@ typedef struct {
 } T2C;
 
 extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
 
 extern int truncate_float_to_s32(float);
 

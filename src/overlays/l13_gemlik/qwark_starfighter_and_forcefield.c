@@ -151,14 +151,13 @@ struct GeometryQuad {
 
 extern int D_L13_0015F6B0 MACRO_ADDR;
 extern char gemlik_reference_axis_r[] __asm__("D_L13_00160700") MACRO_ADDR;
-extern u64 func_001F4868(int);
+
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, void *) __asm__("func_L00_00250800");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
-extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void func_L00_001FD1D8(void *, int, int);
 
@@ -200,9 +199,9 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
     quad.texture_coordinates[2][1] = one;
     quad.texture_coordinates[3][1] = one;
     Moby_GetJointWorldPos_r(moby, 0x13, start);
-    FastVecSub_r(direction, vars + 0x80, start);
+    FastVecSub(direction, vars + 0x80, start);
     clamp_vec_length_r(direction, direction, 100.0f);
-    length = FastVecLength_r(direction);
+    length = FastVecLength(direction);
     scale = length / 100.0f;
     if (scale < 1.0f)
         step = 1.0f;
@@ -212,19 +211,19 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
     qcopy(position, start);
     distance = zero;
     vec_scale_to_length_r(offset, direction, IntToFloat(gemlik_frame_count % 20) / 20.0f);
-    FastVecSub_r(position, position, offset);
+    FastVecSub(position, position, offset);
     while (distance < length) {
         width = (distance * 0.0f) / (length + length) + 0.5f;
         FastVecCross(side, direction, gemlik_reference_axis_r);
         vec_scale_to_length_r(side, side, width);
         FastVecCross(up, direction, side);
         vec_scale_to_length_r(up, up, width);
-        FastVecSub_r(edge, position, up);
-        FastVecSub_r(&quad.positions[0], edge, side);
-        FastVecAdd_r(&quad.positions[1], edge, side);
-        FastVecAdd_r(edge, position, up);
-        FastVecSub_r(&quad.positions[2], edge, side);
-        FastVecAdd_r(&quad.positions[3], edge, side);
+        FastVecSub(edge, position, up);
+        FastVecSub(&quad.positions[0], edge, side);
+        FastVecAdd(&quad.positions[1], edge, side);
+        FastVecAdd(edge, position, up);
+        FastVecSub(&quad.positions[2], edge, side);
+        FastVecAdd(&quad.positions[3], edge, side);
         if (10.0f < length && length - 10.0f < distance) {
             int color = truncate_float_to_s32_r((length - distance) * 6.4f) << 24 | 0x808080;
             quad.colors[3] = color;
@@ -234,10 +233,9 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
         }
         draw_world_quad(&quad, 0, 1);
         distance += step;
-        FastVecAdd_r(position, position, direction);
+        FastVecAdd(position, position, direction);
     }
 }
-extern int fast_dec_timer(void *);
 
 extern int fast_subtract_rotations_cf(void *);
 
@@ -556,11 +554,8 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
 extern int FastBSphereCheck(void *, float);
 
-extern float vec_distance_xy(void *, void *);
-
 extern void draw_starfighter_tractor_beam();
 
-extern int fast_dec_timer(void *);
 extern void MobySpringTurn(void *moby, float *vel, float target, float k, float d, float max);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
@@ -2050,7 +2045,6 @@ void spawn_attached_rocket_non_damaging_explosion(char *moby) {
     spawn_explosion(moby, vector, moby + 0x10, 0.0f, 0.0f, 5, 1, 5, 0.0f, 0.0f, 0.0f, 0, 1.0f, 0.0f, 0, 1, -1, 0);
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-extern float vec_length_xy(void *);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern void moby_build_matrix(void *);
@@ -3145,13 +3139,11 @@ extern char gemlik_coll_hit_result_r[] __asm__("D_L13_001741C0");
 extern char func_L06_00300AB0[];
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern float FastVecDot_r(void *a, void *b) __asm__("func_001F9C78");
+
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
+
 extern void InitDirectionalHitQuery_r(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern void AddDrawCallback_r(void *, void *) __asm__("func_001F49B0");
 extern void spawn_point_table_sparks_r(Moby *moby) __asm__("func_L13_0030B080");
@@ -3193,14 +3185,14 @@ void update_gemlik_trail(Moby *m) {
         }
     }
     for (i = 0; i < 16; i++) {
-        FastVecSub_r2(&v0, &d->pt[i], &d->f1F0);
+        FastVecSub(&v0, &d->pt[i], &d->f1F0);
         v0.z = 0.0f;
         vec_scale_to_length_r2(&v0, &v0, D_L13_00161F0C_30A9B0 * g_frame_time_r);
-        FastVecAdd_r2(&v0, &d->pt[i], &v0);
-        FastVecSub_r2(&u.s.r, &v0, &*(V4_30A9B0 *)&m->pos);
-        dd = FastVecDot_r(&u.s.r, &d->f200);
+        FastVecAdd(&v0, &d->pt[i], &v0);
+        FastVecSub(&u.s.r, &v0, &*(V4_30A9B0 *)&m->pos);
+        dd = FastVecDot(&u.s.r, &d->f200);
         vec_scale_to_length_r2(&u.s.v20, &d->f200, -dd + 0.35f);
-        FastVecAdd_r2(&u.s.r, &u.s.r, &u.s.v20);
+        FastVecAdd(&u.s.r, &u.s.r, &u.s.v20);
         f20 = u.s.v20.z;
         qcopy(&v30, &d->pt[i]);
         v30.z = v30.z + 1.0f;
@@ -3218,8 +3210,8 @@ void update_gemlik_trail(Moby *m) {
     }
     for (j = 0; j < 15; j++) {
         if (0.98f <= d->pt[j].w && 0.98f <= d->pt[j + 1].w) {
-            v0.x = FastCos_r(m->rot.z);
-            v0.y = FastSin_r(m->rot.z);
+            v0.x = FastCos(m->rot.z);
+            v0.y = FastSin(m->rot.z);
             v0.z = 1.0f;
             v0.w = 5627.925f;
             InitDirectionalHitQuery_r(&u.rec, m, flags, &v0, 1.0f);
@@ -3232,8 +3224,6 @@ void update_gemlik_trail(Moby *m) {
     AddDrawCallback_r(DrawBeam, m);
     spawn_point_table_sparks_r(m);
 }
-
-extern void lerp_vector(void *, void *, void *, float);
 
 extern int gemlik_trail_spark_lower SDATA(gemlik_trail_spark_lower);
 extern int gemlik_trail_spark_upper SDATA(gemlik_trail_spark_upper);

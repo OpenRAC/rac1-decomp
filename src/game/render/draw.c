@@ -185,8 +185,6 @@ extern char camera_sample_text_name[];
 extern char camera_sample_line_format[];
 extern char camera_sample_alt_line_format[];
 
-extern float vec_length_xy(void *);
-
 extern void UpdateViewContext(void);
 extern void UpdateFog(void);
 
@@ -754,8 +752,6 @@ void reset_graphics(void) {
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
-
-extern void scale_vector(void *, void *, float);
 
 extern char view_context_field_c0[];
 extern char sky_view_mtx[];
@@ -2106,7 +2102,7 @@ typedef struct {
 } LightRec;
 extern FRow effect_quad_corners[4];
 extern LightRec effect_quad_entries[];
-extern int GetEffectTex(int);
+
 /* GetEffectTex as it really returns: the 64-bit TEX0 (for the callers that keep it whole). */
 extern long GetEffectTex64(int) __asm__("func_001F4868");
 
@@ -3244,8 +3240,6 @@ void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsig
     font_window_active = 0;
     VU1_setScissor(0, g_screen_extent[0] - 1, 0, g_screen_extent[1] - 1);
 }
-
-extern int GetEffectTex(int);
 
 /* font_print_window_regular and font_print_window_small are the same call with a different
    mode (1 vs 2) and a different table. Six arguments: EABI passes the

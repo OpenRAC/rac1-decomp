@@ -86,7 +86,7 @@ void set_moby_list_state(int list, int state) {
         } while (*(short *)p++ >= 0);
     }
 }
-extern void scale_vector(void *, void *, float);
+
 extern int FastBSphereCheck(char *, float);
 
 /* Run a bounding-sphere check of radius scale at vec scaled down by 1/1024. */
@@ -276,7 +276,6 @@ void PlaceMarkerAheadOfMoby(float scale, char *moby) {
     clear_u64_value(fx_cutscene.q);
     fx_cutscene.a = FastAddRots(*(float *)(moby + 0x48), 3.14159274101257324f);
 }
-extern float vec_distance_xy(void *, void *);
 
 // Breaks an object into fragments, with a flag when it is near the origin.
 void spawn_proximity_gated_bolts(char *moby) {

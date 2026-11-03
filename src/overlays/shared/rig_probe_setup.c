@@ -9,7 +9,7 @@ LINKER_REMNANT("asm/overlays", func_L01_002649C8);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 typedef f32 sceVu0FVECTOR[4] __attribute__((aligned(16)));
 
-extern void scale_vector(float scale, void *out, void *joint);
+extern void scale_vector_v(float scale, void *out, void *joint) __asm__("func_001F9C48");
 
 /* Joint positions in scratchpad, 16 bytes each.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00263a28.c, FUN_L01_00263a28. */
@@ -60,8 +60,8 @@ int rig_probe_setup(char *moby, int index, unsigned int *type, float *result, fl
             moby_joints_to_scratchpad(moby, joint, 0);
         }
         joints = (short *)(entry + 4);
-        scale_vector(scale, first, (void *)(0x70000000 + joints[0] * 0x10));
-        scale_vector(scale, second, (void *)(0x70000000 + joints[1] * 0x10));
+        scale_vector_v(scale, first, (void *)(0x70000000 + joints[0] * 0x10));
+        scale_vector_v(scale, second, (void *)(0x70000000 + joints[1] * 0x10));
         if (first[2] < second[2]) {
             qcopy(result, first);
         } else {

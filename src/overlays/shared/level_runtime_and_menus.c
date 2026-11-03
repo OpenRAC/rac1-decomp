@@ -126,12 +126,11 @@ extern void SetupGifPaging_r(int) __asm__("func_001F4630");
 extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern int GetIconFrame_r(int, int) __asm__("func_00200198");
 extern void HudSprite_r(int, int, int, int, int, int) __asm__("func_00200468");
-extern long GetFrameTex_r(int) __asm__("func_00200248");
+
 extern void draw_rotated_sprite_r(float, float, int, int, long, float, float, float) __asm__("func_00200E38");
 extern void DoGifPaging_r(void) __asm__("func_001F4748");
 extern void flush_debug_text_queue_r(void) __asm__("func_L00_001F3A78");
 
-extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void ResetGsRegistersPr_r(void) __asm__("func_001F3D00");
 extern void SpaceTransition_Tick_r(void) __asm__("func_00228110");
 extern void DoSpaceTransition_r(void) __asm__("func_00233308");
@@ -192,8 +191,8 @@ void run_level_main_loop(void) {
         item_usage_r[g_current_level_index_r].count++;
     }
     per = 600;
-    if (scale_ticks_r(gameplay_event_frame_count_r) / per > item_usage_r[g_current_level_index_r].minutes) {
-        item_usage_r[g_current_level_index_r].minutes = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+    if (scale_ticks(gameplay_event_frame_count_r) / per > item_usage_r[g_current_level_index_r].minutes) {
+        item_usage_r[g_current_level_index_r].minutes = scale_ticks(gameplay_event_frame_count_r) / 600;
     }
     item_usage_r[g_current_level_index_r].flags =
         item_usage_r[g_current_level_index_r].flags | (1 << g_current_level_index_r) | 0x80000000;
@@ -285,8 +284,8 @@ void run_level_main_loop(void) {
                 t = GetIconFrame_r(0x755D, 0);
                 HudSprite_r(t, 0x32, 0x12C, 0x40, 0x40, 0x80);
                 ang = (float)(rendered_frame_count_r % n) * -6.2831855f / (float)n;
-                draw_rotated_sprite_r(1312.0f, 5312.0f, 0x40, 0x40, GetFrameTex_r(GetIconFrame_r(0x755D, 1)), size,
-                                      size, ang);
+                draw_rotated_sprite_r(1312.0f, 5312.0f, 0x40, 0x40, GetFrameTex(GetIconFrame_r(0x755D, 1)), size, size,
+                                      ang);
                 DoGifPaging_r();
             }
         }
@@ -347,8 +346,8 @@ void run_level_main_loop(void) {
             init_hud_r();
         }
         per = 600;
-        if (scale_ticks_r(gameplay_event_frame_count_r) / per > item_usage_r[g_current_level_index_r].minutes) {
-            item_usage_r[g_current_level_index_r].minutes = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+        if (scale_ticks(gameplay_event_frame_count_r) / per > item_usage_r[g_current_level_index_r].minutes) {
+            item_usage_r[g_current_level_index_r].minutes = scale_ticks(gameplay_event_frame_count_r) / 600;
         }
     }
     DoSpaceTransition_r();

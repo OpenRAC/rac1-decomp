@@ -130,7 +130,7 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
-f32 vec_distance_xy(void *, void *);
+
 f32 func_00214D28_33130(f32, f32, f32 *) __asm__("func_00214D28");
 void func_L00_0025C918_33130(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_L00_0025C918");
 
@@ -400,18 +400,13 @@ extern HeroSpeedBands D_L12_X_f;
 extern float hoven_hero_swim_frame_speeds[];
 extern float hoven_hero_ledge_shimmy_frame_speeds[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern float ApproachValue(float *, float, float);
 
 extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
 
 extern float Spring(float *, float *, float, float, float, float);
 

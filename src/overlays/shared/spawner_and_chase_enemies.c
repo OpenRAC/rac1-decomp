@@ -103,13 +103,12 @@ extern Vec4f gaspar_camera_pos_r __asm__("D_L09_00166FC0");
 extern u8 D_L09_00208610[];
 
 extern void STUB_printf_r(void *, s16) __asm__("func_001E9730");
-extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
+
 extern void clear_u64_value_r(Vec4 *) __asm__("func_001F9BC0");
 extern f32 FastVecLength_r(Vec4 *) __asm__("func_001F9CB8");
-extern f32 FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern f32 FastCos_r(f32) __asm__("func_001F9F90");
-extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
+
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
@@ -152,7 +151,7 @@ void seeker_update(struct Moby *moby) {
     update_seeker_damage_and_target_r(moby);
     target = vars->target;
     Manipulator_ApplyScale_r(moby, 0, vars->unk280, 2.7f);
-    if (moby->visible != 0 && FastVecDist_r(&moby->pos, &gaspar_camera_pos_r) < 29.0f) {
+    if (moby->visible != 0 && FastVecDist(&moby->pos, &gaspar_camera_pos_r) < 29.0f) {
         set_ground_height_band_r(moby);
         moby->shadow_range = 0x17;
     }
@@ -179,7 +178,7 @@ void seeker_update(struct Moby *moby) {
             vars->speed = g_frame_time_r * 7.75f;
             moby->state = 1;
             if (moby->prev_seq != 1) {
-                MobyBlendAnimation_r(moby, 1, 0, scale_ticks_r(10));
+                MobyBlendAnimation_r(moby, 1, 0, scale_ticks(10));
             }
             vars->voice = -1;
             break;
@@ -220,10 +219,10 @@ void seeker_update(struct Moby *moby) {
                     vars->voice = Moby_PlaySound_r(1, 4, moby);
                 }
                 if (moby->prev_seq != 4) {
-                    MobyBlendAnimation_r(moby, 4, 0, scale_ticks_r(10));
+                    MobyBlendAnimation_r(moby, 4, 0, scale_ticks(10));
                 }
                 if (vars->timer == 0) {
-                    vars->timer = scale_ticks_r(180);
+                    vars->timer = scale_ticks(180);
                 }
             }
             break;
@@ -241,8 +240,8 @@ void seeker_update(struct Moby *moby) {
                 vars->moving = 0;
             }
             if (vars->moving != 0) {
-                vel.f[0] = FastCos_r(moby->rot.z) * vars->speed;
-                vel.f[1] = FastSin_r(moby->rot.z) * vars->speed;
+                vel.f[0] = FastCos(moby->rot.z) * vars->speed;
+                vel.f[1] = FastSin(moby->rot.z) * vars->speed;
                 vel.f[2] = 0.0f;
                 diff = g_hero.motion.pos.f[2] + 0.8f - z;
                 if (moby->pos.z < g_hero.motion.pos.f[2] + 0.8f) {
@@ -284,7 +283,7 @@ void seeker_update(struct Moby *moby) {
             if (dist < 6.0f && moby->state == 2) {
                 moby->state = 3;
                 if (moby->prev_seq != 3) {
-                    MobyBlendAnimation_r(moby, 3, 0, scale_ticks_r(10));
+                    MobyBlendAnimation_r(moby, 3, 0, scale_ticks(10));
                 }
             }
             break;
@@ -300,7 +299,7 @@ void seeker_update(struct Moby *moby) {
                 vars->moving = 1;
                 moby->state = 4;
                 if (vars->timer == 0) {
-                    vars->timer = scale_ticks_r(180);
+                    vars->timer = scale_ticks(180);
                 }
             }
             break;
@@ -385,7 +384,7 @@ typedef struct {
     float pts[1][4];
 } Path;
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
+
 extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
 extern Hit_2C73D0 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
@@ -438,8 +437,8 @@ void update_seeker_damage_and_target(Moby *m) {
         m->state = 7;
         return;
     }
-    if (d->timer == scale_ticks_r2(0xA) || d->timer == scale_ticks_r2(0x14) || d->timer == scale_ticks_r2(0x28) ||
-        d->timer == scale_ticks_r2(0x3C) || d->timer == scale_ticks_r2(0x78) || d->timer == scale_ticks_r2(0xB3)) {
+    if (d->timer == scale_ticks(0xA) || d->timer == scale_ticks(0x14) || d->timer == scale_ticks(0x28) ||
+        d->timer == scale_ticks(0x3C) || d->timer == scale_ticks(0x78) || d->timer == scale_ticks(0xB3)) {
         d->reactTime = 0xF0;
         RerollEffectCounter_r(m, d->react);
     }
@@ -642,14 +641,14 @@ extern Hit_2E39E0 *hit_query_2E39E0(Moby *, int, int) __asm__("func_L00_0025B478
 extern int hit_check_2E39E0(Moby *, Hit_2E39E0 *, float *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int timer16_2E39E0(short *) __asm__("func_001F9938");
 extern int timer32_2E39E0(int *) __asm__("func_001F9908");
-extern int ticks_2E39E0(int) __asm__("func_001F9850");
+
 extern void event_2E39E0(int, int) __asm__("func_L01_0026F040");
 extern float angle_2E39E0(float, float) __asm__("func_L00_001FF860");
 extern void knock_2E39E0(Moby *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
 extern void explode_2E39E0(Moby *, int, int) __asm__("func_L00_002584A8");
 extern void effects_start_2E39E0(Moby *, void *) __asm__("func_L00_0025E4B0");
 extern void sound_2E39E0(float, Moby *, int, void *) __asm__("func_L00_00264B40");
-extern float distance_2E39E0(void *, void *) __asm__("func_001F9D10");
+
 extern float fast_distance_2E39E0(void *, void *) __asm__("func_001F9D48");
 extern void wake_2E39E0(Moby *) __asm__("func_L00_0025B178");
 extern int target_2E39E0(Moby *, Target *, float) __asm__("func_L00_00260D30");
@@ -658,25 +657,17 @@ extern int rand_2E39E0(void) __asm__("func_001160D8");
 extern int range_2E39E0(int, int) __asm__("func_L00_00258BC8");
 extern void animate_2E39E0(Moby *, int, int, int) __asm__("func_00213DE0");
 extern float ground_2E39E0(void *, int, float) __asm__("func_00214358");
-extern void vec_sub_2E39E0(void *, void *, void *) __asm__("func_001F9BF0");
-extern void vec_add_2E39E0(void *, void *, void *) __asm__("func_001F9BD8");
-extern float length_2E39E0(void *) __asm__("func_001F9CB8");
 
 extern int status_2E39E0(int) __asm__("func_002140B0");
 extern float range_float_2E39E0(float, float) __asm__("func_002140F8");
 extern void func_L00_002592B0(Moby *, float, void *, float, float, float);
 extern void project_2E39E0(Moby *, char *, void *, void *) __asm__("func_L01_0028C3A8");
-extern float sine_2E39E0(float) __asm__("func_001F9F90");
-extern float cosine_2E39E0(float) __asm__("func_001F9FA8");
+
 extern int func_L00_00259B88(Moby *, int *, void *, void *, float);
 
-extern float angle_dist_2E39E0(float, float) __asm__("func_001FA850");
 extern void func_L00_0025AC00(Moby *, Moby *, int, void *, void *, float);
 extern int knock_update_2E39E0(Moby *, void *) __asm__("func_L00_0025D6F0");
 
-extern void zero_2E39E0(void *) __asm__("func_001F9BC0");
-
-extern float angle_add_2E39E0(float, float) __asm__("func_001FA748");
 extern void vec_scale_2E39E0(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern int hazard_2E39E0(void) __asm__("func_L00_001F3958");
@@ -704,7 +695,7 @@ void update_ground_melee_enemy(Moby *m) {
         hit = hit_query_2E39E0(m, 0x330000, 0);
         hit_check_2E39E0(m, hit, &d->health, 0, &hit_index, &damage, 0, 4);
         timer16_2E39E0(&d->cooldown);
-        if (d->cooldown < ticks_2E39E0(45) && hit != 0) {
+        if (d->cooldown < scale_ticks(45) && hit != 0) {
             if ((unsigned short)(hit->moby->oclass - 0xB0) < 2) {
                 if (d->cooldown != 0)
                     hit->damage = 0.0f;
@@ -755,14 +746,14 @@ void update_ground_melee_enemy(Moby *m) {
                     d->f174 = 10.0f;
                     m->state = 6;
                     d->f117 = 250;
-                    d->cooldown = ticks_2E39E0(60);
+                    d->cooldown = scale_ticks(60);
                     effects_start_2E39E0(m, d->effects);
                 }
             }
         }
         m->hit_slot = 0xFF;
         sound_2E39E0(2.1f, m, 0, d->sound);
-        if (m->visible != 0 && distance_2E39E0(&m->pos, gaspar_camera_pos_r2) < 38.0f) {
+        if (m->visible != 0 && FastVecDist(&m->pos, gaspar_camera_pos_r2) < 38.0f) {
             wake_2E39E0(m);
             m->shadow_range = 30;
         }
@@ -781,7 +772,7 @@ void update_ground_melee_enemy(Moby *m) {
             m->flags |= 0x1000;
         }
         if (d->hurt != 0)
-            d->alert = ticks_2E39E0(240);
+            d->alert = scale_ticks(240);
         d->hurt = 0;
         timer32_2E39E0(&d->f208);
         if (timer16_2E39E0(&d->alert))
@@ -812,24 +803,24 @@ void update_ground_melee_enemy(Moby *m) {
                 m->flags |= 0x8000;
             d->settings = &settings_2E39E0;
             if (m->prev_seq != 2)
-                animate_2E39E0(m, 2, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                animate_2E39E0(m, 2, 0, scale_ticks(range_2E39E0(10, 13)));
             ground = m->pos.z = ground_2E39E0(&m->pos, 0, 0.5f);
             break;
         case 1:
-            vec_sub_2E39E0(&step, &query, &m->pos);
-            if ((kind < 2 || length_2E39E0(&step) < d->range + 4.0f) && FastAbsF(m->pos.z - query.z) < 8.0f &&
+            FastVecSub(&step, &query, &m->pos);
+            if ((kind < 2 || FastVecLength(&step) < d->range + 4.0f) && FastAbsF(m->pos.z - query.z) < 8.0f &&
                 !status_2E39E0(19)) {
                 m->state = 2;
                 if (m->prev_seq != 4)
-                    animate_2E39E0(m, 4, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 4, 0, scale_ticks(range_2E39E0(10, 13)));
             } else if (m->command == 1 && !status_2E39E0(19)) {
                 if (status_2E39E0(0x100) & 1)
                     d->side_deg = -d->side_deg;
                 d->side = d->side_deg * 0.017453292f;
-                d->side_timer = ticks_2E39E0((int)range_float_2E39E0(30.0f, 90.0f));
+                d->side_timer = scale_ticks((int)range_float_2E39E0(30.0f, 90.0f));
                 m->state = 3;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
                 m->command = 0;
             }
             break;
@@ -838,31 +829,31 @@ void update_ground_melee_enemy(Moby *m) {
         case 10:
         case 11:
             MobySpringTurn(m, angle_2E39E0(query.x - m->pos.x, query.y - m->pos.y), d->turn, 0.02f, 0.3f, 0.1f);
-            vec_sub_2E39E0(&step, &query, &m->pos);
-            if ((kind < 2 || length_2E39E0(&step) < d->range) && FastAbsF(m->pos.z - query.z) < 8.0f &&
+            FastVecSub(&step, &query, &m->pos);
+            if ((kind < 2 || FastVecLength(&step) < d->range) && FastAbsF(m->pos.z - query.z) < 8.0f &&
                 !status_2E39E0(19)) {
                 if (m->group != 0xFF)
                     event_2E39E0(m->group, 1);
                 if (status_2E39E0(0x100) & 1)
                     d->side_deg = -d->side_deg;
                 d->side = d->side_deg * 0.017453292f;
-                d->side_timer = ticks_2E39E0((int)range_float_2E39E0(30.0f, 90.0f));
+                d->side_timer = scale_ticks((int)range_float_2E39E0(30.0f, 90.0f));
                 m->state = 3;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
                 m->command = 0;
             } else if (m->command == 1 && !status_2E39E0(19)) {
                 if (status_2E39E0(0x100) & 1)
                     d->side_deg = -d->side_deg;
                 d->side = d->side_deg * 0.017453292f;
-                d->side_timer = ticks_2E39E0((int)range_float_2E39E0(30.0f, 90.0f));
+                d->side_timer = scale_ticks((int)range_float_2E39E0(30.0f, 90.0f));
                 m->state = 3;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
                 m->command = 0;
             }
             if (m->prev_seq == 4 && (m->anim_flags & 2))
-                animate_2E39E0(m, 2, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                animate_2E39E0(m, 2, 0, scale_ticks(range_2E39E0(10, 13)));
             break;
         case 3: {
             int flags;
@@ -874,24 +865,24 @@ void update_ground_melee_enemy(Moby *m) {
             else
                 qcopy(&goal, &query);
             MobySpringTurn(m, angle_2E39E0(goal.x - m->pos.x, goal.y - m->pos.y) + d->side, d->turn, 0.05f, 0.3f, 0.2f);
-            step.x = 2.0f * sine_2E39E0(m->rot.z);
-            step.y = 2.0f * cosine_2E39E0(m->rot.z);
+            step.x = 2.0f * FastCos(m->rot.z);
+            step.y = 2.0f * FastSin(m->rot.z);
             step.z = 0.0f;
-            vec_add_2E39E0(&goal, &m->pos, &step);
+            FastVecAdd(&goal, &m->pos, &step);
             flags = move_w(m, &d->steer, &goal, &step, 1.0f);
             if (timer32_2E39E0(&d->side_timer)) {
-                d->side_timer = ticks_2E39E0((int)range_float_2E39E0(30.0f, 90.0f));
+                d->side_timer = scale_ticks((int)range_float_2E39E0(30.0f, 90.0f));
                 d->side = -d->side;
             }
-            vec_sub_2E39E0(&away, &query, &d->home);
+            FastVecSub(&away, &query, &d->home);
             if ((flags & 4) || (fast_distance_2E39E0(&m->pos, &query) < 1.5f && !(flags & 2))) {
                 m->state = 4;
                 if (m->prev_seq != 1)
-                    animate_2E39E0(m, 1, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 1, 0, scale_ticks(range_2E39E0(10, 13)));
             } else if (d->f190 < g_frame_time_r2 || 1.0f < steep || (flags & 2)) {
-                d->home_timer = ticks_2E39E0(50);
+                d->home_timer = scale_ticks(50);
                 m->state = 5;
-            } else if (length_2E39E0(&away) < d->range + 4.0f && FastAbsF(m->pos.z - query.z) < 8.0f) {
+            } else if (FastVecLength(&away) < d->range + 4.0f && FastAbsF(m->pos.z - query.z) < 8.0f) {
                 if (m->group != 0xFF)
                     event_2E39E0(m->group, 1);
             } else if (m->command != 1) {
@@ -904,9 +895,9 @@ void update_ground_melee_enemy(Moby *m) {
             MobySpringTurn(m, angle_2E39E0(query.x - m->pos.x, query.y - m->pos.y), d->turn, 0.05f, 0.3f, 0.2f);
             if (m->seq == m->prev_seq && MobyGetFrameValue(m) == 13.0f && FastAbsF(m->pos.z - query.z) < 0.5f &&
                 fast_distance_2E39E0(&m->pos, &query) < 2.0f &&
-                angle_dist_2E39E0(angle_2E39E0(query.x - m->pos.x, query.y - m->pos.y), m->rot.z) < 0.2617994f) {
-                step.x = sine_2E39E0(m->rot.z) * 0.2f;
-                step.y = cosine_2E39E0(m->rot.z) * 0.2f;
+                FastDiffRots(angle_2E39E0(query.x - m->pos.x, query.y - m->pos.y), m->rot.z) < 0.2617994f) {
+                step.x = FastCos(m->rot.z) * 0.2f;
+                step.y = FastSin(m->rot.z) * 0.2f;
                 step.z = 0.0f;
                 qcopy(&goal, &query);
                 goal.z += 0.75f;
@@ -915,7 +906,7 @@ void update_ground_melee_enemy(Moby *m) {
             if ((m->anim_flags & 2) && fast_distance_2E39E0(&m->pos, &query) > 1.5f) {
                 m->state = 3;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
             }
             ground = ground_2E39E0(&m->pos, 0, 0.5f);
             d->fall = d->fall - g_frame_time_sq_r2 * 9.8f;
@@ -932,33 +923,33 @@ void update_ground_melee_enemy(Moby *m) {
             else
                 qcopy(&goal, &d->home);
             MobySpringTurn(m, angle_2E39E0(goal.x - m->pos.x, goal.y - m->pos.y), d->turn, 0.02f, 0.3f, 0.1f);
-            step.x = 2.0f * sine_2E39E0(m->rot.z);
-            step.y = 2.0f * cosine_2E39E0(m->rot.z);
+            step.x = 2.0f * FastCos(m->rot.z);
+            step.y = 2.0f * FastSin(m->rot.z);
             step.z = 0.0f;
-            vec_add_2E39E0(&goal, &m->pos, &step);
+            FastVecAdd(&goal, &m->pos, &step);
             flags = move_w(m, &d->steer, &goal, &step, 1.0f);
             if (fast_distance_2E39E0(&m->pos, &d->home) < 2.0f) {
                 m->state = 1;
                 if (m->prev_seq != 2)
-                    animate_2E39E0(m, 2, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 2, 0, scale_ticks(range_2E39E0(10, 13)));
             }
-            vec_sub_2E39E0(&away, &query, &d->home);
-            if (expired && length_2E39E0(&away) < d->range) {
+            FastVecSub(&away, &query, &d->home);
+            if (expired && FastVecLength(&away) < d->range) {
                 if (m->group != 0xFF)
                     event_2E39E0(m->group, 1);
                 m->state = 3;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
             } else if (expired && m->command == 1) {
                 m->state = 3;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
             } else if (flags & 2) {
                 m->pos.x = previous.x;
                 m->pos.y = previous.y;
                 m->state = 12;
                 if (m->prev_seq != 4)
-                    animate_2E39E0(m, 4, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 4, 0, scale_ticks(range_2E39E0(10, 13)));
             }
             m->command = 0;
             break;
@@ -967,7 +958,7 @@ void update_ground_melee_enemy(Moby *m) {
             if (knock_update_2E39E0(m, d->motion) & 1) {
                 m->state = 9;
                 if (m->prev_seq != 3)
-                    animate_2E39E0(m, 3, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 3, 0, scale_ticks(range_2E39E0(10, 13)));
                 return;
             }
             if (m->pos.z < 0.0f) {
@@ -987,13 +978,13 @@ void update_ground_melee_enemy(Moby *m) {
             if (MobyGetFrameValue(m) > 29.0f) {
                 m->state = 3;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
                 return;
             }
             break;
         case 99:
             if (knock_update_2E39E0(m, d->motion) & 0x40) {
-                zero_2E39E0(&step);
+                clear_u64_value(&step);
                 splash_2E39E0(m, &m->pos, 6, 0.5f, 13.0f);
                 delete_2E39E0(m);
                 return;
@@ -1013,29 +1004,29 @@ void update_ground_melee_enemy(Moby *m) {
             else
                 qcopy(&goal, &d->home);
             MobySpringTurn(m, angle_2E39E0(goal.x - m->pos.x, goal.y - m->pos.y), d->turn, 0.05f, 0.3f, 0.2f);
-            step.x = 2.0f * sine_2E39E0(m->rot.z);
-            step.y = 2.0f * cosine_2E39E0(m->rot.z);
+            step.x = 2.0f * FastCos(m->rot.z);
+            step.y = 2.0f * FastSin(m->rot.z);
             step.z = 0.0f;
-            vec_add_2E39E0(&goal, &m->pos, &step);
+            FastVecAdd(&goal, &m->pos, &step);
             flags = move_w(m, &d->steer, &goal, &step, 1.0f);
-            vec_sub_2E39E0(&away, &query, &d->home);
+            FastVecSub(&away, &query, &d->home);
             if ((flags & 4) || (fast_distance_2E39E0(&m->pos, &query) < 1.5f && steep <= 1.0f)) {
                 m->state = 4;
                 if (m->prev_seq != 1)
-                    animate_2E39E0(m, 1, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 1, 0, scale_ticks(range_2E39E0(10, 13)));
             } else if (steep <= 1.0f && !(flags & 2)) {
                 m->state = 5;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
             } else if ((flags & 2) && expired) {
                 m->state = 1;
                 if (m->prev_seq != 2)
-                    animate_2E39E0(m, 2, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 2, 0, scale_ticks(range_2E39E0(10, 13)));
             } else if (m->anim_flags & 2) {
                 int a;
                 status_2E39E0(4);
                 a = status_2E39E0(4) ? 2 : 4;
-                animate_2E39E0(m, a, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                animate_2E39E0(m, a, 0, scale_ticks(range_2E39E0(10, 13)));
             }
             m->command = 0;
             break;
@@ -1043,11 +1034,11 @@ void update_ground_melee_enemy(Moby *m) {
         case 13: {
             Moby *o;
             if (m->seq != 0 && m->prev_seq != 0)
-                animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
-            step.x = sine_2E39E0(m->rot.z) * (d->speed * g_frame_time_r2);
-            step.y = cosine_2E39E0(m->rot.z) * (d->speed * g_frame_time_r2);
+                animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
+            step.x = FastCos(m->rot.z) * (d->speed * g_frame_time_r2);
+            step.y = FastSin(m->rot.z) * (d->speed * g_frame_time_r2);
             step.z = 0.0f;
-            vec_add_2E39E0(&goal, &m->pos, &step);
+            FastVecAdd(&goal, &m->pos, &step);
             for (o = gaspar_moby_list; o != 0; o = o->next) {
                 if (o != m && (signed char)o->state >= 0 && (o->oclass == MOBY_CLASS_RATCHET || o->oclass == 193)) {
                     if (fast_distance_2E39E0(&goal, &o->pos) < 2.0f) {
@@ -1057,10 +1048,10 @@ void update_ground_melee_enemy(Moby *m) {
                         float t = g_frame_time_r2 * 1.5707964f;
                         if (!(dl > 0.0f))
                             t = -t;
-                        m->rot.z = angle_add_2E39E0(m->rot.z, t);
-                        vec_sub_2E39E0(&goal, &m->pos, &o->pos);
+                        m->rot.z = FastAddRots(m->rot.z, t);
+                        FastVecSub(&goal, &m->pos, &o->pos);
                         vec_scale_2E39E0(&goal, &goal, 2.0f);
-                        vec_add_2E39E0(&goal, &goal, &o->pos);
+                        FastVecAdd(&goal, &goal, &o->pos);
                         goal.z = z;
                     }
                 }
@@ -1076,7 +1067,7 @@ void update_ground_melee_enemy(Moby *m) {
             if (d->anchor == 0 || fast_distance_2E39E0(&m->pos, &d->anchor->pos) > IntToFloat(d->leash)) {
                 m->state = 5;
                 if (m->prev_seq != 0)
-                    animate_2E39E0(m, 0, 0, ticks_2E39E0(range_2E39E0(10, 13)));
+                    animate_2E39E0(m, 0, 0, scale_ticks(range_2E39E0(10, 13)));
             }
             m->command = 0;
             break;
@@ -1178,10 +1169,8 @@ typedef struct {
 extern Vec4 gaspar_camera_pos_r3 __asm__("D_L09_00166FC0");
 extern Vec4 D_L09_00174060;
 extern u8 D_L09_00174080[];
-extern f32 FastVecDist_r3(void *, void *) __asm__("func_001F9D10");
+
 extern f32 vec_distance_xy_r3(void *, void *) __asm__("func_001F9D48");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 
 extern s32 Moby_PlaySound_r3(s32, s32, void *) __asm__("func_0022ED80");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
@@ -1189,9 +1178,9 @@ extern s32 FastDecTimer_r(s16 *) __asm__("func_001F9938");
 extern s32 coll_line_r(void *, void *, s32, void *, CollisionProbe *) __asm__("func_L00_001EFFF0");
 extern f32 random_float_between_r4(f32, f32) __asm__("func_002140F8");
 extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
-extern f32 FastVecLength_r2(void *) __asm__("func_001F9CB8");
+
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
-extern s32 scale_ticks_r3(s32) __asm__("func_001F9850");
+
 extern s32 rand_range_r2(s32, s32) __asm__("func_L00_00258BC8");
 extern void func_L00_0026EBC0(void *, void *, u32, s32, f32);
 extern void spawn_explosion_r(void *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, s32, f32, f32, s32, s32,
@@ -1212,9 +1201,9 @@ void update_class_4ea_projectile(struct Moby *m) {
     f32 d;
     s32 i;
 
-    d = FastVecDist_r3(&m->pos, &gHeroPos);
+    d = FastVecDist(&m->pos, &gHeroPos);
     qcopy(&old, &m->pos);
-    FastVecAdd_r(&m->pos, &m->pos, &v->vel);
+    FastVecAdd(&m->pos, &m->pos, &v->vel);
     if (v->unk28 == 0 && v->unk24 != 0 && v->dist < d && d < 3.0f) {
         Moby_PlaySound_r3(0, 0, m);
         v->unk28 = 1;
@@ -1235,7 +1224,7 @@ void update_class_4ea_projectile(struct Moby *m) {
         pr.self = m;
         pr.unk20 = 1;
         qcopy(&pr.dir, &v->vel);
-        FastVecSub_r(&pr.dir, &m->pos, &gHeroPos);
+        FastVecSub(&pr.dir, &m->pos, &gHeroPos);
         vec_set_length_xy(&pr.dir, &pr.dir, 1.0f);
         probe = &pr;
         pr.dir.f[2] = 1.0f;
@@ -1263,11 +1252,10 @@ void update_class_4ea_projectile(struct Moby *m) {
             r.f[2] = random_float_between_r4(-1.0f, 1.0f);
             push.q = r.q;
             vec_reflect_r(&r, v, gaspar_coll_hit_normal);
-            vec_scale_to_length_r(&push, &push, FastVecLength_r2(&r) * 0.5f);
-            FastVecAdd_r(&push, &r, &push);
+            vec_scale_to_length_r(&push, &push, FastVecLength(&r) * 0.5f);
+            FastVecAdd(&push, &r, &push);
             vec_scale_to_length_r(&push, &push, random_float_between_r4(g_frame_time_r * 3.0f, g_frame_time_r * 6.0f));
-            PartType27Spawn(&m->pos, &push, 0x7F2F4F6F, rand_range_r2(scale_ticks_r3(10), scale_ticks_r3(15)),
-                            60000.0f);
+            PartType27Spawn(&m->pos, &push, 0x7F2F4F6F, rand_range_r2(scale_ticks(10), scale_ticks(15)), 60000.0f);
         }
     }
     spawn_explosion_r(m, v, 0, 0.0f, 0.0f, 4, 3, 6, 1.1f, 0.6f, 1.0f, -1, 0.9f, 0.0f, 0, 1, -1, 0);
@@ -1416,26 +1404,23 @@ int refresh_spawner_population_and_find_free_slot(int unused, char *m) {
 extern void process_spawner_hit_record_r(char *moby, char *d) __asm__("func_L09_0030BD98");
 extern void DeleteMoby_r3(void *) __asm__("func_0020D678");
 extern int get_first_moby_in_group_r2(int *, int, int, int) __asm__("func_L00_0025A208");
-extern int FastDecTimer_r2(void *) __asm__("func_001F9938");
+
 extern int random_integer_below_r3(int) __asm__("func_002140B0");
 extern int FindNearestEligibleMoby_r2(void *, void *, float, void *, int, void *, int) __asm__("func_L00_00260FB0");
 extern int refresh_spawner_population_and_find_free_slot_r(int, char *) __asm__("func_L09_0030BEE8");
-extern float FastVecDist_r4(void *, void *) __asm__("func_001F9D10");
-extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
+
 extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
-extern float FastVecLength_r3(void *) __asm__("func_001F9CB8");
+
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern int rand_range_r3(int, int) __asm__("func_L00_00258BC8");
 
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern float random_float_between_r5(float, float) __asm__("func_002140F8");
 extern float ProbeGroundHeight_r2(void *, int, float) __asm__("func_00214358");
 
 extern void func_L00_00260958(float *, float);
 extern float func_L00_0025BC48(void *, void *, void *, float, float);
 extern char *spawn_spawner_egg_r(int, void *, void *, unsigned char, unsigned char) __asm__("func_L09_0030C658");
-extern int scale_ticks_r4(int) __asm__("func_001F9850");
+
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void *func_L00_00265050(char *, int, float *, void *, int, int, float, float *, float *, float *);
@@ -1473,7 +1458,7 @@ void spawner_1885_update(char *moby) {
         }
         case 1: {
             process_spawner_hit_record_r(moby, ((char *)d));
-            if (!FastDecTimer_r2(&d->spawn_timer))
+            if (!FastDecTimer(&d->spawn_timer))
                 return;
             if (random_integer_below_r3(7) == 0) {
                 char *a6 = 0;
@@ -1522,7 +1507,7 @@ void spawner_1885_update(char *moby) {
                         int idx = *(int *)(((char *)d) + 0xA0 + i * 4);
                         if (idx != -1) {
                             char *q = D_L09_0016016C_30BF88 + (idx << 7);
-                            float f = FastVecDist_r4(&g_hero.motion.pos, q + 0x30);
+                            float f = FastVecDist(&g_hero.motion.pos, q + 0x30);
                             if (f < best) {
                                 sel = q;
                                 best = f;
@@ -1530,13 +1515,13 @@ void spawner_1885_update(char *moby) {
                         }
                     }
                     if (sel == 0) {
-                        FastVecSub_r2(v, &d->target_pos, moby + 0x10);
-                        FastVecScale_r(v, v, 0.5f);
+                        FastVecSub(v, &d->target_pos, moby + 0x10);
+                        FastVecScale(v, v, 0.5f);
                         if (3.0f < d->range)
                             clamp_vec_length_r(v, v, 3.0f);
-                        if (FastVecLength_r3(v) < 3.0f)
+                        if (FastVecLength(v) < 3.0f)
                             vec_scale_to_length_r2(v, v, 3.0f);
-                        FastVecAdd_r2(v, v, moby + 0x10);
+                        FastVecAdd(v, v, moby + 0x10);
                     } else {
                         qcopy(v, sel + 0x30);
                     }
@@ -1556,36 +1541,36 @@ void spawner_1885_update(char *moby) {
                         if (s < 3.0f)
                             s = 3.0f;
                         generate_random_scaled_vector2(v, s);
-                        FastVecAdd_r2(v, v, moby + 0x10);
+                        FastVecAdd(v, v, moby + 0x10);
                     } else {
                         qcopy(v, sel + 0x30);
                     }
                 }
                 if (sel != 0) {
-                    FastVecScale_r(rot, sel, random_float_between_r5(-1.0f, 1.0f));
-                    FastVecAdd_r2(v, v, rot);
-                    FastVecScale_r(rot, sel + 0x10, random_float_between_r5(-1.0f, 1.0f));
-                    FastVecAdd_r2(v, v, rot);
+                    FastVecScale(rot, sel, random_float_between_r5(-1.0f, 1.0f));
+                    FastVecAdd(v, v, rot);
+                    FastVecScale(rot, sel + 0x10, random_float_between_r5(-1.0f, 1.0f));
+                    FastVecAdd(v, v, rot);
                 }
                 {
                     float r = ProbeGroundHeight_r2(v, 0, 0.5f);
                     if (r != 0.0f)
                         v[2] = r;
                 }
-                FastVecSub_r2(rot, v, moby + 0x10);
+                FastVecSub(rot, v, moby + 0x10);
                 {
-                    float len = FastVecLength_r3(rot);
+                    float len = FastVecLength(rot);
                     float f20 = len * (g_frame_time_r2 * 0.6f);
                     vec_scale_to_length_r2(rot, rot, f20);
                     Moby_GetJointWorldPos(moby, 0, pos2);
                     vec_scale_to_length_r2(arr, rot, 0.05f);
                     add_random_offset_to_vector_xyz(arr, 0.025f);
-                    FastVecAdd_r2(pos2, pos2, arr);
+                    FastVecAdd(pos2, pos2, arr);
                     rot[2] = jump_speed_4318(pos2, v, 0, f20, -(g_frame_time_sq_r2 * 9.8f));
                 }
                 ((Sp *)((char *)d))->slots[last] = spawn_spawner_egg_r(
                     (int)moby, pos2, rot, (unsigned char)*(char *)&d->egg_kind, (unsigned char)last);
-                d->spawn_timer = scale_ticks_r4(d->spawn_delay);
+                d->spawn_timer = scale_ticks(d->spawn_delay);
                 d->egg_count = (char)(*(char *)&d->egg_count + 1);
             }
             return;
@@ -1668,7 +1653,6 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern CollisionHit gaspar_coll_hit;
 extern s32 coll_line(void *, void *, s32, struct Moby *, s32);
 
-extern f32 vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern s32 coll_sphere(f32, void *, s32, struct Moby *);

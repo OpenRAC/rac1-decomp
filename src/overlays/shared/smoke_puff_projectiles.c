@@ -30,7 +30,7 @@ typedef struct {
 extern struct Moby *CreateMoby_r(int oclass) __asm__("func_0020D348");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+
 extern void func_L00_0026E940(struct Moby *, int color, int life, int, float size);
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
@@ -64,7 +64,7 @@ struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir,
         vars->unk14 = 0;
         vars->time = life;
         vars->time_max = life;
-        vars->hero_dist = FastVecDist_r(&m->pos, &g_hero_r.motion.pos);
+        vars->hero_dist = FastVecDist(&m->pos, &g_hero_r.motion.pos);
         vars->unk24 = 0;
         vars->unk28 = 0;
         if (owner->oclass == 0xFF) {
@@ -113,7 +113,6 @@ extern s32 g_current_level_index SDATA(g_current_level_index);
 extern f32 eudora_camera_pos[];
 extern u128_B0290 eudora_coll_hit_point;
 extern u8 eudora_coll_hit_normal[];
-extern f32 vec_distance_xy(void *, void *);
 
 extern s32 coll_line(void *, void *, s32, struct Moby *, CollisionProbe *);
 

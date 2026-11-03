@@ -1,6 +1,6 @@
 void magnetboots_update(Moby *m) {
     char *d = (char *)m->pvars;
-    m->rot.z = addrot_00299818(m->rot.z, g_frame_time_x * 1.5707964f);
+    m->rot.z = FastAddRots(m->rot.z, g_frame_time_x * 1.5707964f);
     switch (m->state) {
         case 0:
             initialize_moby_particle_effect_r(m);

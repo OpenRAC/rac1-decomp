@@ -3,6 +3,7 @@
 #include "structs/misc.h"
 #include "core/libc/fvwrite_fwalk.h"
 #include "core/libc/findfp.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x116FA0-0x1188C8. Boundaries are retail's linker fill
@@ -143,8 +144,7 @@ extern s32 isinf(f64) __asm__("func_00116168");
 extern s32 isnan(f64) __asm__("func_001161B0");
 extern char *cvt(struct _reent *, f64, s32, s32, char *, s32 *, s32, s32 *) __asm__("func_00118630");
 extern s32 exponent(char *, s32, s32) __asm__("func_001187E0");
-extern void *memchr(const void *, s32, u32) __asm__("func_001150D4");
-extern u32 strlen(const char *) __asm__("func_00116810");
+
 extern char vfprintf_string_00152600[] __asm__("D_00152600");
 extern char vfprintf_string_00152608[] __asm__("D_00152608");
 extern char vfprintf_string_00152610[] __asm__("D_00152610");
@@ -404,7 +404,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                 if ((cp = ((char *)(*(void **)((ap += 8) - 8)))) == 0)
                     cp = vfprintf_string_00152628;
                 if (prec >= 0) {
-                    char *p = memchr(cp, 0, prec);
+                    char *p = libc_memchr(cp, 0, prec);
                     if (p != 0) {
                         size = p - cp;
                         if (size > prec)
@@ -412,7 +412,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                     } else
                         size = prec;
                 } else
-                    size = strlen(cp);
+                    size = libc_strlen(cp);
                 sign = '\0';
                 break;
             case 'U':
@@ -467,7 +467,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                             break;
                         default:
                             cp = vfprintf_string_00152648;
-                            size = strlen(cp);
+                            size = libc_strlen(cp);
                             goto skipsize;
                     }
                 }

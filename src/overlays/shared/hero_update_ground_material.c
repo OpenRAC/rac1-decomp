@@ -266,7 +266,7 @@ void update_hero_frame(void) {
     update_hero_moby_probed_height_bounds();
 }
 extern struct Hero g_hero_r __asm__("D_0013F450");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
+
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern unsigned char D_0013E620[];
 
@@ -283,9 +283,9 @@ void update_hero_blink_and_gold_weapon_tint(void) {
     blink = 0;
     if (g_hero_r.state.current == HERO_STATE_DYING_SPEED_LIMITED ||
         g_hero_r.state.current == HERO_STATE_DYING_ZERO_HEALTH)
-        blink = g_hero_r.state_timer < scale_ticks_r(30);
+        blink = g_hero_r.state_timer < scale_ticks(30);
     if (g_current_level_index_r == LEVEL_QUARTU || g_current_level_index_r == LEVEL_FLEET) {
-        if (g_hero_r.state.current == 0x76 && g_hero_r.state_timer < scale_ticks_r(20))
+        if (g_hero_r.state.current == 0x76 && g_hero_r.state_timer < scale_ticks(20))
             blink = 1;
     }
     if (blink) {
@@ -427,10 +427,7 @@ typedef struct {
 extern char g_hero_r2[] __asm__("D_0013F450");
 extern char novalis_coll_hit_r[] __asm__("D_L01_00174340");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
 
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 extern int CollType_r(void) __asm__("func_L00_001F3958");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
@@ -438,8 +435,6 @@ extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern Obj_D688 *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 extern Obj_D688 *moby_get_ride_transform(char *);
 extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
-extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 
 /* the hero's ledge probe (single-size variant): looks for an edge ahead to grab, and where it finds one stores the
    grab point and direction */
@@ -482,15 +477,15 @@ void update_hero_ledge_probe(void) {
     speed = ((Hero *)g_hero_r2)->fall_state_gravity;
     if (((Hero *)g_hero_r2)->state.control_mode == HERO_MODE_JUMP)
         speed = ((Hero *)g_hero_r2)->jump_gravity;
-    r = scale_ticks_r2(2);
+    r = scale_ticks(2);
     predict_position_with_vertical_drop(v0, ((Hero *)g_hero_r2)->motion.pos.f,
                                         ((Hero *)g_hero_r2)->motion.resolved_velocity.f, r, speed);
     found = 0;
-    v0[0] += FastCos_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * ((Hero *)g_hero_r2)->capsule_radius;
-    v0[1] += FastSin_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * ((Hero *)g_hero_r2)->capsule_radius;
+    v0[0] += FastCos(((Hero *)g_hero_r2)->motion.rot.f[2]) * ((Hero *)g_hero_r2)->capsule_radius;
+    v0[1] += FastSin(((Hero *)g_hero_r2)->motion.rot.f[2]) * ((Hero *)g_hero_r2)->capsule_radius;
     for (i = 0; !found && i < 4; i++) {
-        v0[0] += FastCos_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * fwd * 0.25f;
-        v0[1] += FastSin_r(((Hero *)g_hero_r2)->motion.rot.f[2]) * fwd * 0.25f;
+        v0[0] += FastCos(((Hero *)g_hero_r2)->motion.rot.f[2]) * fwd * 0.25f;
+        v0[1] += FastSin(((Hero *)g_hero_r2)->motion.rot.f[2]) * fwd * 0.25f;
         qcopy(v10, v0);
         v10[2] += up + 0.15f;
         qcopy(v20, v0);
@@ -548,8 +543,8 @@ void update_hero_ledge_probe(void) {
         qcopy(v50, ((Hero *)g_hero_r2)->motion.pos.f);
         qcopy(v60, v10);
         len = ((Hero *)g_hero_r2)->capsule_radius * 2.0f;
-        v60[0] += FastCos_r(ang) * len;
-        v60[1] += FastSin_r(ang) * len;
+        v60[0] += FastCos(ang) * len;
+        v60[1] += FastSin(ang) * len;
         v60[2] += down * (1.0f - (float)j / 5.0f);
         v50[2] = v60[2];
         if (coll_line_r(v50, v60, 2, 0, 0)) {
@@ -561,8 +556,8 @@ void update_hero_ledge_probe(void) {
     }
     if (!edge)
         return;
-    if (!(FastDiffRots_r(((Hero *)g_hero_r2)->motion.rot.f[2],
-                         FastAddRots_r(((Hero *)g_hero_r2)->ledge_normal_yaw, 3.1415927f)) < 1.1344640f))
+    if (!(FastDiffRots(((Hero *)g_hero_r2)->motion.rot.f[2],
+                       FastAddRots(((Hero *)g_hero_r2)->ledge_normal_yaw, 3.1415927f)) < 1.1344640f))
         return;
     {
         float max = 2.4f;
@@ -571,8 +566,8 @@ void update_hero_ledge_probe(void) {
         for (d = 0.0f; d < max; d += step) {
             qcopy(v60, v10);
             v60[2] = v10[2];
-            v60[0] += FastCos_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
-            v60[1] += FastSin_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
+            v60[0] += FastCos(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
+            v60[1] += FastSin(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
             qcopy(v50, v60);
             v60[2] += 0.5f;
             v50[2] -= 0.5f;
@@ -581,11 +576,11 @@ void update_hero_ledge_probe(void) {
                 d = step * 0.5f;
                 d = -d;
                 v70[2] = v10[2];
-                v70[0] += FastCos_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
-                v70[1] += FastSin_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
+                v70[0] += FastCos(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
+                v70[1] += FastSin(((Hero *)g_hero_r2)->ledge_normal_yaw) * d;
                 qcopy(((Hero *)g_hero_r2)->ledge_hang_pos.f, v70);
-                ((Hero *)g_hero_r2)->ledge_hang_pos.f[0] += FastCos_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * back;
-                ((Hero *)g_hero_r2)->ledge_hang_pos.f[1] += FastSin_r(((Hero *)g_hero_r2)->ledge_normal_yaw) * back;
+                ((Hero *)g_hero_r2)->ledge_hang_pos.f[0] += FastCos(((Hero *)g_hero_r2)->ledge_normal_yaw) * back;
+                ((Hero *)g_hero_r2)->ledge_hang_pos.f[1] += FastSin(((Hero *)g_hero_r2)->ledge_normal_yaw) * back;
                 ((Hero *)g_hero_r2)->ledge_found = 1;
                 ((Hero *)g_hero_r2)->ledge_hang_pos.f[2] += drop;
                 return;
@@ -607,21 +602,18 @@ typedef struct {
     f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
     f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
 } CollisionHit_2DE30;
-f32 func_001F9F90_2DE30(f32) __asm__("func_001F9F90");
-f32 func_001F9FA8_2DE30(f32) __asm__("func_001F9FA8");
+
 /* Adds to v an xy offset of length 2r in direction ang. */
 static inline void circle_offset_2DE30(Vec4 *v, f32 ang, f32 r) {
     r += r;
-    v->f[0] += func_001F9F90_2DE30(ang) * r;
-    v->f[1] += func_001F9FA8_2DE30(ang) * r;
+    v->f[0] += FastCos(ang) * r;
+    v->f[1] += FastSin(ang) * r;
 }
 extern CollisionHit_2DE30 novalis_coll_hit_r2 __asm__("D_L01_00174340");
 extern int coll_line_r2(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
 extern int CollType_r2(void) __asm__("func_L00_001F3958");
 extern f32 vec_length_xy_r2(void *) __asm__("func_001F9CE8");
 extern f32 fast_atan2_r2(f32, f32) __asm__("func_L00_001FF860");
-extern f32 FastAddRots_r2(f32, f32) __asm__("func_001FA748");
-extern f32 FastDiffRots_r2(f32, f32) __asm__("func_001FA850");
 
 /* Ledge probe, FUN_L00_0020c758 without its hero.unk20A4 == 1 variant: steps forward from `pos` along the hero's yaw
    looking for a flat top (normal within 20 degrees of up, not material 9 or 12) at least 1.8 above the floor and not
@@ -649,11 +641,11 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
     i = 0;
     top_margin = 0.15f;
     max_slope = 0.34906584f; /* 20 degrees */
-    probe.f[0] += func_001F9F90_2DE30(g_hero_r.motion.rot.f[2]) * g_hero_r.capsule_radius;
-    probe.f[1] += func_001F9FA8_2DE30(g_hero_r.motion.rot.f[2]) * g_hero_r.capsule_radius;
+    probe.f[0] += FastCos(g_hero_r.motion.rot.f[2]) * g_hero_r.capsule_radius;
+    probe.f[1] += FastSin(g_hero_r.motion.rot.f[2]) * g_hero_r.capsule_radius;
     do {
-        probe.f[0] += func_001F9F90_2DE30(g_hero_r.motion.rot.f[2]) * fwd * step;
-        probe.f[1] += func_001F9FA8_2DE30(g_hero_r.motion.rot.f[2]) * fwd * step;
+        probe.f[0] += FastCos(g_hero_r.motion.rot.f[2]) * fwd * step;
+        probe.f[1] += FastSin(g_hero_r.motion.rot.f[2]) * fwd * step;
         qcopy(&top, &probe);
         top.f[2] += up + top_margin;
         qcopy(&low, &probe);
@@ -699,7 +691,7 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
     if (!hit)
         return 0;
 
-    if (FastDiffRots_r2(*dir, FastAddRots_r2(wall_yaw, 3.14159274f)) < 1.13446403f) {
+    if (FastDiffRots(*dir, FastAddRots(wall_yaw, 3.14159274f)) < 1.13446403f) {
         /* walk along the wall normal until the top ends */
         limit = 2.4f;
         inc = 0.07f;
@@ -708,8 +700,8 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
         do {
             qcopy(&wall, &top);
             wall.f[2] = top.f[2];
-            wall.f[0] += func_001F9F90_2DE30(wall_yaw) * d;
-            wall.f[1] += func_001F9FA8_2DE30(wall_yaw) * d;
+            wall.f[0] += FastCos(wall_yaw) * d;
+            wall.f[1] += FastSin(wall_yaw) * d;
             qcopy(&low, &wall);
             wall.f[2] += half;
             low.f[2] -= half;
@@ -722,9 +714,9 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
             d = inc * half;
             d = -d;
             edge.f[2] = top.f[2];
-            edge.f[0] += func_001F9F90_2DE30(wall_yaw) * d;
-            edge.f[1] += func_001F9FA8_2DE30(wall_yaw) * d;
-            if (0.52359879f < FastDiffRots_r2(FastAddRots_r2(wall_yaw, 3.14159274f), *dir))
+            edge.f[0] += FastCos(wall_yaw) * d;
+            edge.f[1] += FastSin(wall_yaw) * d;
+            if (0.52359879f < FastDiffRots(FastAddRots(wall_yaw, 3.14159274f), *dir))
                 return 0;
             return 1;
         } while (d < limit);
@@ -945,7 +937,7 @@ extern Hero g_hero_r4 __asm__("D_0013F450");
 
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
-f32 vec_distance_xy(void *, void *);
+
 f32 ApproachValue(f32, f32, f32 *);
 void Spring(f32 *, f32 *, f32, f32, f32, f32);
 
@@ -1015,8 +1007,6 @@ void hero_speed_from_table(void) {
         }
     }
 }
-
-extern float vec_length_xy(void *);
 
 extern int coll_line(void *, void *, int, int, int);
 
@@ -1106,7 +1096,6 @@ void clip_hero_horizontal_velocity(int flag) {
 }
 typedef int Q __attribute__((mode(TI)));
 extern u8 novalis_coll_hit_point[];
-void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
 
 s32 coll_line(void *, void *, s32, s32, s32);
 
@@ -1137,7 +1126,7 @@ void HeroGroundProbe(void) {
     g_hero.ground_normal.i[1] = 0;
     g_hero.ground_slope.i = 0;
     g_hero.ground_z.i = 0;
-    func_001F9BC0_333D8((u8 *)&g_hero + 0x2A0);
+    clear_u64_value((u8 *)&g_hero + 0x2A0);
     g_hero.on_flagged_ground_moby = 0;
     g_hero.ground_distance = 32.0f;
     g_hero.ground_moby = 0;
@@ -1226,7 +1215,7 @@ tail:
         g_hero.in_water_frames = 0;
     }
 d1:
-    func_001F9BC0_333D8(((u8 *)&g_hero + 0x290));
+    clear_u64_value(((u8 *)&g_hero + 0x290));
     switch (g_hero.gravity_mode) {
         case 0:
             g_hero.gravity_dir.f[2] = -1.0f;
@@ -1476,13 +1465,9 @@ extern Entry70_23c710 novalis_idle_fidgets_field_60[];
 extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern u8 item_available[];
 
-extern s32 fast_dec_timer(s32 *);
-
 extern void exit_hero_vehicle_mode_and_restore_moby(void);
 
 extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
-
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0023c710. */
 void update_hero_timers_and_vehicle_transitions(void) {
@@ -1570,7 +1555,7 @@ void update_hero_timers_and_vehicle_transitions(void) {
     if (g_hero_r.air_frames.s != 0 && gravity_z(&g_hero_r.motion.velocity) < 0.0f) {
         if (g_hero_r.pos_history_count != 0x20)
             goto skip;
-        clear_u64_value_r(&sum);
+        clear_u64_value(&sum);
         n8 = 8;
         for (i = 0; i < n8; i++) {
             n = g_hero_r.pos_history_index - i;

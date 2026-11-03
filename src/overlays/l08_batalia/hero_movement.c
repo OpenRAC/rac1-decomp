@@ -185,10 +185,7 @@ extern HeroSpeedBands batalia_hero_speed_bands;
 extern float batalia_hero_anim_speed_curve[];
 extern float batalia_hero_anim_frame_speeds[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
@@ -197,8 +194,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float ApproachValue(float *, float, float);
 
 extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
 
 extern float Spring(float *, float *, float, float, float, float);
 

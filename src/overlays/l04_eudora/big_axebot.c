@@ -179,8 +179,6 @@ struct PMoby {
 
 extern void *libc_memset(void *, int, unsigned int);
 
-extern float vec_distance_xy(float *, float *);
-
 extern struct Path5BD0 *eudora_paths[];
 extern f32 eudora_swarm_steer_params[8];
 extern int eudora_swarm_initialized SDATA(eudora_swarm_initialized);
@@ -528,7 +526,6 @@ extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 
 extern void set_ground_height_band(void *);
 extern void FindNearestTargetMoby(char *, float *, float);
-extern float vec_distance_xy(float *, float *);
 
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -551,7 +548,6 @@ extern int mine_fall(void *, void *);
 
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void StepColorFade(void *, void *);
-extern void fast_dec_timer(int *arg0);
 
 extern float eudora_camera_pos[4];
 extern int eudora_game_mode MACRO_ADDR;
@@ -2252,8 +2248,6 @@ extern int coll_line(void *, void *, int, void *, void *);
 extern int MoveKeepingOverGround_o(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
 
-extern float vec_length_xy(void *);
-
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern float eudora_camera_pos[];
@@ -2839,8 +2833,7 @@ void BlargTrooperUpdate(char *moby) {
 struct Manip_C7BD8;
 struct GifEntry_C7BD8;
 struct AnimSeq;
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void moby_anim_sphere_lerp_r(void *) __asm__("func_0020EEE8");
+
 extern unsigned char voice_pool_r2[] __asm__("D_0013E650");
 extern void Sound_StopSlot_r2(s32) __asm__("func_L00_0028EBF0");
 typedef struct {
@@ -2881,7 +2874,7 @@ void eudora_bridge_update(struct Moby *m) {
     }
     switch (m->state) {
         case 0:
-            MobyBlendAnimation_r(m, 1, 0, scale_ticks_r(300));
+            MobyBlendAnimation_r(m, 1, 0, scale_ticks(300));
             m->state = 1;
             m->anim_speed = 0;
             v->voice = -1;
@@ -2894,7 +2887,7 @@ void eudora_bridge_update(struct Moby *m) {
                 update_moby_animation_state(m);
                 m->unk72 = ((MobyClassHeader *)m->pclass)->unkE;
                 m->collision = ((MobyClassHeader *)m->pclass)->unk10;
-                moby_anim_sphere_lerp_r(m);
+                moby_anim_sphere_lerp(m);
             }
             break;
         case 1:
@@ -2927,7 +2920,7 @@ void eudora_bridge_update(struct Moby *m) {
                         update_moby_animation_state(m);
                         m->unk72 = ((MobyClassHeader *)m->pclass)->unkE;
                         m->collision = ((MobyClassHeader *)m->pclass)->unk10;
-                        moby_anim_sphere_lerp_r(m);
+                        moby_anim_sphere_lerp(m);
                         m->state = 2;
                     }
                 } else if (!Sound_IsPlaying_r2(m, v->voice)) {

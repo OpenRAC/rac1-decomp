@@ -153,8 +153,6 @@ struct GrindrailBarrierVars {
     s32 sound_slot; /* 0x24 */
 };
 
-extern float vec_length_xy(void *);
-
 // Creates a Rocket moby that looks along a direction, copying owner data and position.
 char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
     char *moby = CreateMoby(0x31);
@@ -183,14 +181,8 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
     }
     return moby;
 }
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-
-extern float vec_length_xy(void *);
 
 extern void BuildSphericalOffset(void *, float, float, float);
-extern int fast_dec_timer(int *);
-
-extern void lerp_vector(void *, void *, void *, float);
 
 extern int coll_line(void *, void *, int, void *, void *);
 
@@ -205,7 +197,7 @@ void HomingProjectileUpdate(char *m) {
     struct HomingProjectileVars *d = (struct HomingProjectileVars *)((Moby *)m)->pvars;
     void *remaining;
     float yaw, pitch;
-    if (d->unk_34 == 0 && FastVecDist_r(m + 0x10, kalebo3_camera_pos) < 15.0f) {
+    if (d->unk_34 == 0 && FastVecDist(m + 0x10, kalebo3_camera_pos) < 15.0f) {
         d->unk_34 = 1;
         Sound_PlayClassSound(5, 0, (int)m, 0x54C);
     }
@@ -305,8 +297,6 @@ extern int mine_fall(void *, void *);
 extern int Moby_PlaySound_update(int, int, void *) __asm__("func_0022ED80");
 
 extern float ApproachValue(float *, float, float);
-
-extern float FastVecDist_update(void *, void *) __asm__("func_001F9D10");
 
 extern char hero_globals_base[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
@@ -547,7 +537,7 @@ void blarg_elite_commando_update(char *m) {
             ((Moby *)m)->pos.y = d->home_pos.y + d->sway_amp * FastSin(d->sway_phase_z);
             ((Moby *)m)->pos.z = d->home_pos.z + d->sway_amp * FastSin(d->sway_phase_x);
         }
-        if (FastVecDist_update(m + 0x10, kalebo3_camera_pos) < 32.0f && !Sound_IsPlaying(m, d->sound_slot))
+        if (FastVecDist(m + 0x10, kalebo3_camera_pos) < 32.0f && !Sound_IsPlaying(m, d->sound_slot))
             d->sound_slot = Moby_PlaySound_update(7, 4, m);
     }
     if (blarg_elite_commando_joint_aim_enabled_gp)
@@ -569,11 +559,10 @@ extern int PlayBankSound(int, int, int);
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
-extern int fast_dec_timer(int *);
 
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern int FindNearestTargetMoby(float, char *, void *);
-extern float vec_distance_xy(void *, void *);
+
 extern int elite_commando_reward_hit_count SDATA(elite_commando_reward_hit_count);
 extern char hero_globals_base[];
 
@@ -817,7 +806,6 @@ float advance_blarg_elite_commando_base_position(char *moby, float *target) {
 extern short *kalebo3_moby_groups[];
 extern char *kalebo3_moby_array MACRO_ADDR;
 
-extern float multiply_global_factor_timer(float) __asm__("func_001F9878");
 extern int truncate_float_to_s32_timer(float) __asm__("func_001FA898");
 typedef struct {
     char pad00[0x2E0];
@@ -838,7 +826,7 @@ void randomize_blarg_elite_commando_group_pursuit_timers(void *arg, int lower, i
     if (m->group == 255) {
         d = m->data;
         d->timer =
-            truncate_float_to_s32_timer(multiply_global_factor_timer(random_float_between((float)lower, (float)upper)));
+            truncate_float_to_s32_timer(multiply_global_factor(random_float_between((float)lower, (float)upper)));
     } else {
         L16GroupMoby *other;
         p = kalebo3_moby_groups[m->group];
@@ -846,8 +834,8 @@ void randomize_blarg_elite_commando_group_pursuit_timers(void *arg, int lower, i
         other = (L16GroupMoby *)(((*(unsigned short *)p & 0x7FFF) << 8) + (int)kalebo3_moby_array);
         if (other->state >= 0) {
             d = other->data;
-            d->timer = truncate_float_to_s32_timer(
-                multiply_global_factor_timer(random_float_between((float)lower, (float)upper)));
+            d->timer =
+                truncate_float_to_s32_timer(multiply_global_factor(random_float_between((float)lower, (float)upper)));
         }
         if (*p++ >= 0)
             goto next;
@@ -943,7 +931,6 @@ void emit_blarg_elite_commando_death_particles(void *m) {
     spawn_glow_particle(m, origin, movement, 3.0f, scale_ticks(29), 32, 0, 0, 32);
 }
 
-extern float vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -1089,7 +1076,7 @@ void armed_transport_update(char *m) {
                 break;
             }
             path = kalebo3_path_table[d->path_a];
-            d->node_length = FastVecDist_update(path + 0x10, path + 0x20);
+            d->node_length = FastVecDist(path + 0x10, path + 0x20);
             qcopy(&((struct Moby *)m)->pos, path + 0x10);
             ((struct Moby *)m)->state = 1;
             ((struct Moby *)m)->visible = 0;
@@ -1334,7 +1321,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
     }
 }
 extern void func_00215CA8(float, void *, int, void *, void *, int);
-extern float FastVecDist_path42(void *, void *) __asm__("func_001F9D10");
+
 extern float ApproachWithVelocity_path42(float, float, float, float, float *, float *) __asm__("func_00214D88");
 extern short armed_transport_path_accel, armed_transport_max_path_speed;
 /* Advance a path segment and ease the remaining travel distance. */
@@ -1352,7 +1339,7 @@ int advance_armed_transport_along_path(char *m, char *path) {
         SamplePathAt(progress, path, 0, position, m + 0x40, 0);
         d->base_z = ((Moby *)m)->pos.z;
         speed = 0.0f;
-        distance = FastVecDist_path42(position, path + (*(int *)path << 4));
+        distance = FastVecDist(position, path + (*(int *)path << 4));
         rate = *(float *)&armed_transport_path_accel * g_frame_time_sq;
         ApproachWithVelocity_path42(distance, rate, rate, *(float *)&armed_transport_max_path_speed * g_frame_time,
                                     &speed, &d->speed);
@@ -1467,7 +1454,6 @@ typedef struct {
     float yaw, phase;
     float cardinal_angles[4];
 } RingData;
-extern long GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
 extern float grindrail_barrier_ring_uvs[4][2], grindrail_barrier_core_uvs[4][2];
@@ -1572,7 +1558,6 @@ int check_grindrail_barrier_release_condition(int idx) {
 }
 INCLUDE_ASM("asm/overlays", func_L16_002E7160);
 extern char hero_globals_base[];
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 
 /* picks the nearest moby in a list (skipping Grindrail Barrier) and acts on it */
 void group_trigger_nearest(int idx) {
@@ -1583,7 +1568,7 @@ void group_trigger_nearest(int idx) {
         do {
             char *m = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
             if (((struct Moby *)m)->oclass != MOBY_CLASS_GRINDRAIL_BARRIER) {
-                float d = FastVecDist_r(&g_hero.motion.pos, &((struct Moby *)m)->pos);
+                float d = FastVecDist(&g_hero.motion.pos, &((struct Moby *)m)->pos);
                 if (d < bestd) {
                     bestd = d;
                     best = m;

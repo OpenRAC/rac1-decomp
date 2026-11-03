@@ -147,7 +147,6 @@ extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_00213DE0");
 
 extern void MobySpringTurn(f32, f32, f32, f32, struct Moby *, void *);
-extern f32 vec_distance_xy(void *, void *);
 
 extern void ClassifyTargetInCone(struct Moby *, void *, void *, void *);
 extern void Sound_PlayClassSound_r(int, int, struct Moby *, int) __asm__("func_L00_0028EF68");
@@ -542,7 +541,7 @@ extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 
 extern void vec_scale_to_length(void *, void *, f32);
-extern f32 vec_distance_xy(void *, void *);
+
 extern void Moby_PlaySound_r(int, int, struct Moby *) __asm__("func_0022ED80");
 extern int coll_sphere_mobys(void *, int, struct Moby *, void *, f32);
 
@@ -708,7 +707,6 @@ void handle_mine_hit(unsigned char *arg) {
 }
 
 extern float g_frame_scale_sq MACRO_ADDR;
-extern float vec_length_xy(void *);
 
 extern void InitKnockback(void *, void *, int, int, int, float);
 
@@ -821,7 +819,6 @@ extern void request_hero_target_pose_v(void *, float, int) __asm__("func_L00_002
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern void DeleteMoby_r3(struct Moby *) __asm__("func_0020D678");
 
-extern f32 vec_distance_xy(void *, void *);
 extern f32 SteerAngleWithVelocity(f32 *, f32, f32 *, f32, f32, f32);
 s32 func_L03_002D4CE0_D4560(struct Moby *m, s32 path, s32 *snd) __asm__("func_L03_002D4CE0");
 
@@ -1066,7 +1063,6 @@ struct SpinnerVars {
     u8 pad0[0x20];
     u8 coll[0x10]; /* 0x20: collision record moved with the rotation */
 };
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d3e58. */
 void robo_shack_sign_update(struct Moby *m) {
@@ -1078,7 +1074,7 @@ void robo_shack_sign_update(struct Moby *m) {
     v = (struct SpinnerVars *)m->pvars;
     m->draw_dist = 0xFF;
     m->update_dist = 0xFF;
-    m->rot.z = FastAddRots_r(m->rot.z, g_frame_time_r * 0.47996554f);
+    m->rot.z = FastAddRots(m->rot.z, g_frame_time_r * 0.47996554f);
     update_entity_matrix_r(v->coll, &move, &oldRot, &m->rot);
 }
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
@@ -1147,7 +1143,7 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern void FindNearestTargetMoby_r(void *, void *, f32) __asm__("func_L00_00260D30");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
+
 typedef struct {
     Vec4 vel; /* 0x00 */
     void *ignore; /* 0x10: collision owner to skip */
@@ -1166,13 +1162,10 @@ typedef struct {
     u8 pad1C[0x14];
 } RocketHit;
 
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void add_vectors_r(void *, void *, void *) __asm__("func_L00_001FF240");
-extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
+
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void PartType04Spawn_r(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
 extern float func_L00_00259148(float *vel, float cur, float target, float k, float d, float max);
@@ -1207,37 +1200,37 @@ void update_homing_rocket(struct Moby *m) {
             range = IntToFloat(v->timer * 2) * v->speed;
             FindNearestTargetMoby_r(m, &target, range);
             qcopy(&old, pos);
-            FastVecAdd_r(pos, pos, v);
+            FastVecAdd(pos, pos, v);
             cam.q = g_hero_platform_carry.q;
             cam.f[2] *= (*(float *)&D_L03_00161BA8_D5790);
             add_vectors_r(&trail, pos, &cam);
             m->rot.z = v->heading;
-            m->rot.x = FastAddRots_r2(m->rot.x, g_frame_time_r * 6.2831855f);
-            side.f[0] = FastCos_r(v->heading) * v->speed * -0.5f;
-            side.f[1] = FastSin_r(v->heading) * v->speed * -0.5f;
+            m->rot.x = FastAddRots(m->rot.x, g_frame_time_r * 6.2831855f);
+            side.f[0] = FastCos(v->heading) * v->speed * -0.5f;
+            side.f[1] = FastSin(v->heading) * v->speed * -0.5f;
             side.f[2] = 0.0f;
-            FastVecAdd_r(&trail, &side, v);
+            FastVecAdd(&trail, &side, v);
             side.q = trail.q;
-            FastVecAdd_r(&trail, &side, &cam);
+            FastVecAdd(&trail, &side, &cam);
             side.q = trail.q;
             vec_scale_to_length_r(&back, v, -0.2f);
             add_vectors_r(&trail, &back, pos);
-            PartType04Spawn_r(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks_r(rand_range_r(0xF, 0x16)), 0x28,
+            PartType04Spawn_r(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range_r(0xF, 0x16)), 0x28,
                               rand_range_r(0x14, 0x23), 1);
-            PartType04Spawn_r(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks_r(rand_range_r(0x1E, 0x3C)), 0x28,
+            PartType04Spawn_r(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range_r(0x1E, 0x3C)), 0x28,
                               rand_range_r(0x32, 0x4B), 0);
             if (target.found != 0) {
                 pitch = -fast_atan2_r(vec_distance_xy_r(pos, &target.pos), target.pos.f[2] - m->pos.z);
                 m->rot.y = SpringTurn(&v->turn_vel, m->rot.y, pitch, g_frame_time_sq_r * 0.7853982f,
                                       g_frame_time_sq_r * 3.1415927f, g_frame_time_r * 0.5235988f);
-                m->pos.z += FastSin_r(-m->rot.y) * v->speed;
+                m->pos.z += FastSin(-m->rot.y) * v->speed;
             }
             if (coll_line_r(pos, &old, 0, v->ignore, 0) != 0 || coll_sphere(0.2f, pos, 0, v->ignore) != 0) {
                 level = (void **)kerwan_coll_hit;
                 if (level[6] != 0) {
                     InitDirectionalHitQuery(&hit, m, 0x10001, 1.0f, v);
-                    hit.dir.f[0] = FastCos_r(v->heading);
-                    hit.dir.f[1] = FastSin_r(v->heading);
+                    hit.dir.f[0] = FastCos(v->heading);
+                    hit.dir.f[1] = FastSin(v->heading);
                     hit.dir.f[2] = 1.0f;
                     hit.dir.f[3] = 5627.925f;
                     hit.kind = state;
@@ -1349,11 +1342,9 @@ extern char *kerwan_camera_points SDATA(kerwan_camera_points);
         *flag = 1;                                                         \
         record_moby_context_bytes(flag, 4, M, 2, kerwan_saved_moby_bytes); \
     }
-extern void fast_dec_timer(int *arg0);
 
 extern int truncate_float_to_s32(f32);
 
-extern f32 vec_length_xy(void *);
 extern void EaseManipulatorOffsets(void *, void *, int, f32, f32);
 
 /* Helga's per-frame update: big head cheat, talk states and head tracking toward the hero. */
@@ -1526,11 +1517,7 @@ struct Moby;
 typedef int OvlQuad_DC3E8 __attribute__((mode(TI)));
 extern void update_entity_matrix_r2(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern float path_mover_distance_step_r __asm__("D_L03_00161C40") MACRO_ADDR;
-extern float FastCos_r2(float) __asm__("func_001F9F90");
-extern float FastSin_r2(float) __asm__("func_001F9FA8");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void DeleteMoby_r5(char *) __asm__("func_0020D678");
@@ -1550,10 +1537,10 @@ void RailMobyUpdate(struct Moby *m) {
     *(OvlQuad_DC3E8 *)old = *(OvlQuad_DC3E8 *)&m->pos;
     v = (struct PathMoverVars *)m->pvars;
     v->dist += path_mover_distance_step_r;
-    a[0] = FastCos_r2(m->rot.z) * v->dist;
-    a[1] = FastSin_r2(m->rot.z) * v->dist;
+    a[0] = FastCos(m->rot.z) * v->dist;
+    a[1] = FastSin(m->rot.z) * v->dist;
     *(int *)&a[2] = 0;
-    FastVecAdd_r2(a, a, v->path + 0x10);
+    FastVecAdd(a, a, v->path + 0x10);
     i = truncate_float_to_s32_r(v->dist / *(float *)(v->path + 0x1C));
     t = IntToFloat(i);
     p = v->path;
@@ -1562,10 +1549,10 @@ void RailMobyUpdate(struct Moby *m) {
         DeleteMoby_r5(m);
         return;
     }
-    FastVecSub_r(b, ((float (*)[4])p)[i + 2], ((float (*)[4])p)[i + 1]);
-    FastVecScale_r(b, b, t);
-    FastVecAdd_r2(&m->pos, b, (*(float (**)[4])(&v->path))[i + 1]);
-    FastVecSub_r(a, &m->pos, old);
+    FastVecSub(b, ((float (*)[4])p)[i + 2], ((float (*)[4])p)[i + 1]);
+    FastVecScale(b, b, t);
+    FastVecAdd(&m->pos, b, (*(float (**)[4])(&v->path))[i + 1]);
+    FastVecSub(a, &m->pos, old);
     update_entity_matrix_r2(v->matrix, a, &m->rot, &m->rot);
 }
 struct Manip_DC560;
@@ -1581,7 +1568,6 @@ extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 extern struct Moby *CreateMoby_r(int) __asm__("func_0020D348");
 extern void copy_hero_moby_field_38_r(struct Moby *) __asm__("func_L00_0025E210");
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
 /* Spawns a path mover (class 0x382, moved by FUN_L03_002db020) on path, dist units along it, facing the path's last
    point.
@@ -1610,7 +1596,7 @@ struct Moby *func_L03_002DC560_r(struct RailPath_DC560 *path, float dist) {
         m->flags |= 0x20;
         copy_hero_moby_field_38_r(m);
         qcopy(&m->pos, &path->pts[0]);
-        clear_u64_value_r(&m->rot);
+        clear_u64_value(&m->rot);
         end = (Vec4 *)((u8 *)path + (path->count - 1) * 16) + 1;
         m->rot.z = fast_atan2_r2(end->f[0] - m->pos.x, end->f[1] - m->pos.y);
         move = (u8 *)((struct PathMoverVars *)v)->matrix;
@@ -2125,9 +2111,7 @@ extern void request_hero_target_pose_r(void *, float, int) __asm__("func_L00_002
 extern s32 get_hero_target_pose_status_r(void) __asm__("func_L00_002347B8");
 extern void update_entity_matrix_r3(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 s32 func_L03_002D4CE0_DE088(struct Moby *m, s32 path, s32 *snd) __asm__("func_L03_002D4CE0");
-extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern f32 FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
+
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern int fast_dec_timer_r5(s32 *) __asm__("func_001F9908");
 int func_L03_002DDEF8_DE088(struct Moby *moby) __asm__("func_L03_002DDEF8");
@@ -2174,10 +2158,10 @@ void update_rail_lift(struct Moby *m) {
             m->draw_dist = 0xFF;
             break;
         case 1:
-            hero_end = FastVecDist_r(&g_hero_r.motion.pos, &kerwan_paths_r4[d->path[0]]->pts[0]) <
-                       FastVecDist_r(&g_hero_r.motion.pos, &kerwan_paths_r4[d->path[1]]->pts[0]);
-            lift_end = FastVecDist_r(&m->pos, &kerwan_paths_r4[d->path[0]]->pts[0]) <
-                       FastVecDist_r(&m->pos, &kerwan_paths_r4[d->path[1]]->pts[0]);
+            hero_end = FastVecDist(&g_hero_r.motion.pos, &kerwan_paths_r4[d->path[0]]->pts[0]) <
+                       FastVecDist(&g_hero_r.motion.pos, &kerwan_paths_r4[d->path[1]]->pts[0]);
+            lift_end = FastVecDist(&m->pos, &kerwan_paths_r4[d->path[0]]->pts[0]) <
+                       FastVecDist(&m->pos, &kerwan_paths_r4[d->path[1]]->pts[0]);
             if (!d->started) {
                 if (d->autostart || is_point_inside_clip_volume_r(&g_hero_r.motion.pos, d->volume)) {
                     m->collision = m->pclass->collision;
@@ -2221,12 +2205,12 @@ void update_rail_lift(struct Moby *m) {
             }
             if (func_L03_002D4CE0_DE088(m, d->path[m->command], &d->snd)) {
                 m->state = 1;
-                d->timer = scale_ticks_r2(0xF);
+                d->timer = scale_ticks(0xF);
             }
             break;
     }
     func_L03_002DE4B8_DE088(m);
-    FastVecSub_r2(&move, &m->pos, &oldPos);
+    FastVecSub(&move, &m->pos, &oldPos);
     update_entity_matrix_r3(d->coll, &move, &oldRot, &m->rot);
     if (!is_hero_on_moby_r(m) && vec_distance_xy_r2(&m->pos, &g_hero_r.motion.pos) > 2.0f && d->timer == 0)
         d->ready = 1;
@@ -2307,10 +2291,6 @@ typedef struct Entry_2E08E8 {
     int active;
     char rest[0x40];
 } Entry_2E08E8;
-
-extern void fast_dec_timer(int *arg0);
-
-extern float vec_distance_xy(void *, void *);
 
 extern int PlayBankSound(int, int, int);
 
@@ -2700,10 +2680,8 @@ void lightpost_update(char *m) {
     }
 }
 extern Hero g_hero_r2 __asm__("D_0013F450");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
+
 extern void vec_scale_to_length_r2(void *out, void *a, f32 len) __asm__("func_L00_001FF4B0");
-extern void FastVecSub_r3(void *out, void *a, void *b) __asm__("func_001F9BF0");
 
 void func_L03_002ECBA8_r(char *m) __asm__("func_L03_002ECBA8");
 
@@ -2722,18 +2700,18 @@ void func_L03_002ECBA8_r(char *m) {
 
     vec_scale_to_length_r2(side, &g_hero_r2.gravity_dir, -*(float *)(d + 0xE0));
     vec_scale_to_length_r2(back, b, -*(float *)(d + 0xD0));
-    FastVecAdd_r3(pos, &g_hero_r2.motion.pos, side);
-    FastVecAdd_r3(m + 0x30, pos, back);
+    FastVecAdd(pos, &g_hero_r2.motion.pos, side);
+    FastVecAdd(m + 0x30, pos, back);
     vec_scale_to_length_r2(look, &g_hero_r2.gravity_dir, -a[5]);
-    FastVecAdd_r3(look, &g_hero_r2.motion.pos, look);
-    FastVecSub_r3(dir, look, m + 0x30);
+    FastVecAdd(look, &g_hero_r2.motion.pos, look);
+    FastVecSub(dir, look, m + 0x30);
     vec_scale_to_length_r2(c, dir, 1.0f);
     vec_scale_to_length_r2(m, c, 1.0f);
     vec_scale_to_length_r2(m + 0x40, m, 1.0f);
     qcopy(m, m + 0x40);
-    FastVecCross_r(m + 0x10, m, &g_hero_r2.gravity_dir);
+    FastVecCross(m + 0x10, m, &g_hero_r2.gravity_dir);
     vec_scale_to_length_r2(m + 0x10, m + 0x10, -1.0f);
-    FastVecCross_r(m + 0x20, m + 0x10, m);
+    FastVecCross(m + 0x20, m + 0x10, m);
 }
 typedef struct CameraSmoothECD40 {
     float position[4];

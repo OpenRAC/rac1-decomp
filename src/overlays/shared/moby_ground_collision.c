@@ -68,8 +68,6 @@ float interpolate_wrapped_angle_cosine_eased(float x, float y, float z) {
     return FastAddRots(x, t * ((1.0f - c) * 0.5f));
 }
 
-extern void FastVecScale(void *, void *, float);
-
 /* Vector cosine interpolation: dst = a + (b - a) * ((1 - cos(t * pi)) * 0.5).
    Scalar analogue matched at src/game/moby/mobyutil.c:CosineInterpolate. */
 void interpolate_vector_xyz_cosine_eased(void *dst, void *a, void *b, float t) {
@@ -183,7 +181,7 @@ extern float probe_ground_height_flag20_f(void *) __asm__("func_L00_0025A748");
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line_p(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern float vec_length_xy(void *);
+
 extern float fast_atan2(float, float);
 extern int func_L00_001F10E0(void *, float, int, void *);
 extern float vec_distance_xy_f(void *, void *) __asm__("func_001F9D48");
@@ -375,12 +373,11 @@ typedef struct {
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 extern f32 g_frame_time_sq SDATA(g_frame_time_sq);
 extern int frame_scale MACRO_ADDR;
-extern f32 vec_length_xy(void *);
 
 extern s32 probe_vertical_ground_collision_r(void *, void *, s32, f32, f32) __asm__("func_L00_00259428");
 extern f32 fast_atan2(f32, f32);
 extern void vec_scale_to_length(void *, void *, f32);
-extern void FastVecScale(void *, void *, f32);
+
 extern s32 move_moby_with_collision_integer_radius_r(void *, void *, f32, s32, f32, s32) __asm__("func_L00_00259B08");
 extern f32 ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
 
@@ -491,17 +488,14 @@ done:
     return mask;
 }
 
-extern float FastVecDist_f(void *, void *) __asm__("func_001F9D10");
 extern float fast_atan2(float, float);
-
-extern void fast_dec_timer(int *);
 
 /* classify a target against a moby's cone and range, returning flag bits */
 int ClassifyTargetInCone(char *m, Ctl *p, float *pos, char *v) {
     int flags = 0;
     float a, b;
     clear_u64_value(v);
-    if (FastVecDist_f(&((Moby *)m)->pos, pos) < p->f2C) {
+    if (FastVecDist(&((Moby *)m)->pos, pos) < p->f2C) {
         flags = 4;
     }
     a = fast_atan2(pos[0] - ((Moby *)m)->pos.x, pos[1] - ((Moby *)m)->pos.y);
@@ -745,9 +739,7 @@ void InitDirectionalHitQuery(struct HitDescriptor *arg, int a, int b, void *src,
     qcopy(arg->vec, src);
 }
 void func_L00_0025A8C0_5A8E8(char *a, int b, int c, float d, void *q) __asm__("func_L00_0025A8C0");
-void FastVecScale(void *out, void *a, f32 scale);
-f32 FastCos(f32 radians);
-f32 FastSin(f32 radians);
+
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00259710.c, FUN_L00_002598b0. */
@@ -1331,8 +1323,6 @@ typedef struct {
     float x, y, z, w;
 } Vc0 __attribute__((aligned(16)));
 
-extern float vec_length_xy(void *);
-
 /* Vertical launch speed to reach b from a at the given ground speed and gravity. */
 float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     Vc0 d;
@@ -1348,17 +1338,14 @@ float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     return -((a[2] - b[2]) + g * (t * t) * 0.5f) / t;
 }
 extern void func_L00_00254218(void *, int, int);
-extern void f_vadd_BCF8(void *, void *, void *) __asm__("func_001F9BD8");
-extern void f_vsub_BCF8(void *, void *, void *) __asm__("func_001F9BF0");
-extern void f_vscale_BCF8(float, void *, void *) __asm__("func_001F9C30");
-extern void func_001F9C48(float, void *, void *);
 
-extern float f_vlen_BCF8(void *) __asm__("func_001F9CB8");
+extern void f_vscale_BCF8(float, void *, void *) __asm__("func_001F9C30");
+extern void scale_vector_v(float, void *, void *) __asm__("func_001F9C48");
+
 extern float f_sqrt_BCF8(float) __asm__("func_001F9B50");
-extern void f_vrot_BCF8(void *, void *, void *) __asm__("func_001F9EC0");
+
 extern void func_L00_001FF328(float, void *, void *);
-extern float f_cos_BCF8(float) __asm__("func_001F9F90");
-extern float f_sin_BCF8(float) __asm__("func_001F9FA8");
+
 extern float f_randf_BCF8(float, float) __asm__("func_002140F8");
 extern float f_randang_BCF8(void) __asm__("func_00214158");
 
@@ -1414,12 +1401,12 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                         case SHAPE_INDEXED_CENTER_SPHERE: {
                             if (type < 2) {
                                 qcopy(&first, (void *)((entry + 0x10)));
-                                scale_vector(((Moby *)entity)->scale * 0.0009765625f, &first, &first);
+                                scale_vector_v(((Moby *)entity)->scale * 0.0009765625f, &first, &first);
                                 radius = first.f[3];
                             } else {
                                 qcopy(&first, (void *)((0x70000000 + (*(int *)list << 4))));
                                 qcopy(&second, (void *)((entry + 0x10)));
-                                f_vadd_BCF8(&first, &first, &second);
+                                FastVecAdd(&first, &first, &second);
                                 f_vscale_BCF8(((Moby *)entity)->scale * 0.0009765625f, &first, &first);
                                 radius = ((Moby *)entity)->scale;
                                 radius = *(float *)(list + 8) * radius * 0.0009765625f;
@@ -1443,8 +1430,8 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                                               (void *)(0x70000000 + (*(short *)list << 4)));
                             sceVu0ScaleVector(((Moby *)entity)->scale * 0.0009765625f, &second,
                                               (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
-                            f_vsub_BCF8(&third, &first, &second);
-                            radius = f_vlen_BCF8(&third);
+                            FastVecSub(&third, &first, &second);
+                            radius = FastVecLength(&third);
                             extent = *(float *)(list + 8) * ((Moby *)entity)->scale * 0.0009765625f;
                             weights[count] = extent * 1.5707964f * extent * radius;
                             break;
@@ -1482,7 +1469,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 } else {
                     qcopy(&first, (void *)((0x70000000 + (*(int *)(entry + 4) << 4))));
                     qcopy(&second, (void *)((entry + 0x10)));
-                    f_vadd_BCF8(&first, &first, &second);
+                    FastVecAdd(&first, &first, &second);
                     f_vscale_BCF8(((Moby *)entity)->scale, &first, &first);
                     extent = *(float *)(entry + 0xc) * ((Moby *)entity)->scale;
                 }
@@ -1492,10 +1479,10 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                     second.f[0] = f_randf_BCF8(-extent, extent);
                     second.f[1] = f_randf_BCF8(-extent, extent);
                     second.f[2] = f_randf_BCF8(-extent, extent);
-                    if (f_vlen_BCF8(&second) <= extent) {
-                        f_vadd_BCF8(&second, &second, &first);
-                        f_vrot_BCF8(&second, &second, &((Moby *)entity)->rot_row0);
-                        f_vadd_BCF8(&out[emitted], &second, &((Moby *)entity)->pos);
+                    if (FastVecLength(&second) <= extent) {
+                        FastVecAdd(&second, &second, &first);
+                        matrix_mul_vec3(&second, &second, &((Moby *)entity)->rot_row0);
+                        FastVecAdd(&out[emitted], &second, &((Moby *)entity)->pos);
                         break;
                     }
                 }
@@ -1514,11 +1501,11 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 weight = f_sqrt_BCF8(weight);
                 random = f_randf_BCF8(0.0f, extent);
                 angle = f_randang_BCF8();
-                second.f[0] = f_cos_BCF8(angle) * weight;
-                second.f[1] = f_sin_BCF8(angle) * weight;
+                second.f[0] = FastCos(angle) * weight;
+                second.f[1] = FastSin(angle) * weight;
                 second.f[2] = random;
-                f_vadd_BCF8(&second, &second, &((Moby *)entity)->pos);
-                f_vadd_BCF8(&out[emitted], &first, &second);
+                FastVecAdd(&second, &second, &((Moby *)entity)->pos);
+                FastVecAdd(&out[emitted], &first, &second);
                 break;
             }
             case SHAPE_ENDPOINT_SEGMENT_WITH_BALL_OFFSET: {
@@ -1526,10 +1513,10 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 list = entry + 4;
                 sceVu0ScaleVector(((Moby *)entity)->scale, &first, (void *)(0x70000000 + (*(short *)list << 4)));
                 sceVu0ScaleVector(((Moby *)entity)->scale, &second, (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
-                f_vsub_BCF8(&third, &second, &first);
+                FastVecSub(&third, &second, &first);
                 weight = f_randf_BCF8(0.0f, 1.0f);
                 f_vscale_BCF8(weight, &third, &third);
-                f_vadd_BCF8(&fourth, &third, &first);
+                FastVecAdd(&fourth, &third, &first);
                 divide_vector_xyz(1024.0f, &fourth, &fourth);
                 extent = *(float *)(entry + 0xc) * ((Moby *)entity)->scale;
                 extent = extent * 0.0009765625f;
@@ -1537,10 +1524,10 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                     fifth.f[0] = f_randf_BCF8(-extent, extent);
                     fifth.f[1] = f_randf_BCF8(-extent, extent);
                     fifth.f[2] = f_randf_BCF8(-extent, extent);
-                } while (!(f_vlen_BCF8(&fifth) <= extent));
-                f_vadd_BCF8(&fifth, &fifth, &fourth);
-                f_vrot_BCF8(&fifth, &fifth, &((Moby *)entity)->rot_row0);
-                f_vadd_BCF8(&out[emitted], &fifth, &((Moby *)entity)->pos);
+                } while (!(FastVecLength(&fifth) <= extent));
+                FastVecAdd(&fifth, &fifth, &fourth);
+                matrix_mul_vec3(&fifth, &fifth, &((Moby *)entity)->rot_row0);
+                FastVecAdd(&out[emitted], &fifth, &((Moby *)entity)->pos);
                 break;
             }
         }
@@ -2162,10 +2149,7 @@ void copy_hero_moby_field_38(S *p, s64 v) {
     v = (*(S **)&g_hero_moby[0])->v;
     p->v = v;
 }
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 
-extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 /* Per-component adjustment of v against src: for each of the three components of v that is negative it recomputes v through the vector helpers. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/math_rotations_0025d238.c, FUN_L00_0025d238. */
 void clip_negative_segment_endpoint_xyz(Vec4 *src, Vec4 *v) {
     Vec4 t0, t1;
@@ -2178,9 +2162,9 @@ void clip_negative_segment_endpoint_xyz(Vec4 *src, Vec4 *v) {
     p1 = t1.f;
     for (i = 2; i >= 0; i--) {
         if (*pv < 0.0f) {
-            FastVecSub_r(b, v, a);
-            FastVecScale_r(b, b, FastAbsF((*p0 - 0.1f) / *p1));
-            FastVecAdd_r(v, a, b);
+            FastVecSub(b, v, a);
+            FastVecScale(b, b, FastAbsF((*p0 - 0.1f) / *p1));
+            FastVecAdd(v, a, b);
         }
         pv++;
         p1++;
@@ -2365,8 +2349,6 @@ typedef struct {
     int a[4];
 } V __attribute__((aligned(16)));
 
-extern void vec_distance_xy(V *, V *);
-
 extern float vec_distance_xy_r(V *, V *) __asm__("func_001F9D48");
 extern float FastVecDist_r(V *, V *) __asm__("func_001F9D10");
 /* Distance from a to b; XY only when their heights differ by less than r, else full 3D. */
@@ -2467,7 +2449,7 @@ float resolve_level_path_segment_point(u128_ED30 *out, u128_ED30 *p, u128_ED30 *
         o++;
     } while (i < 3);
     if (i < 3) {
-        if (FastVecDist_f(out, a) < FastVecDist_f(out, b)) {
+        if (FastVecDist(out, a) < FastVecDist(out, b)) {
             qcopy(out, a);
         } else {
             qcopy(out, b);
@@ -2656,7 +2638,7 @@ extern char D_L00_001B0620[];
 extern S6_25F4A8 color_swapped_burst_colors_r __asm__("D_L00_001E93B0");
 extern S6_25F4A8 color_swapped_burst_fade_colors_r __asm__("D_L00_001E93C8");
 extern int D_L00_0016007C MACRO_ADDR;
-extern int scale_ticks_r(int) __asm__("func_001F9850");
+
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 
@@ -2668,10 +2650,9 @@ extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void initialize_hit_descriptor_r(void *, void *, int, float) __asm__("func_L00_0025A890");
 extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void *func_L00_0026CA10(void *, void *, int, int, int, int, int, int, float);
-extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
 extern void *SpawnFallingSpark_r(void *, void *, int, int, int) __asm__("func_L00_002B0738");
 extern void PartType11Spawn_r(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
@@ -2729,11 +2710,11 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
                 pos, &dir, swap_packed_color_channels_r(0x4F007FFF, flag),
                 swap_packed_color_channels_r(0x1F00007F, flag),
-                rand_range_r(scale_ticks_r(0x3C), scale_ticks_r(0x78)) - s18 * 10, 1, -1, -1, dist);
+                rand_range_r(scale_ticks(0x3C), scale_ticks(0x78)) - s18 * 10, 1, -1, -1, dist);
         }
     }
-    FastVecSub_r2(&v0, g_debug_camera, pos);
-    dist = FastVecLength_r(&v0);
+    FastVecSub(&v0, g_debug_camera, pos);
+    dist = FastVecLength(&v0);
     {
         if (s16 != 0) {
             Q_25F4A8 d2;
@@ -2748,9 +2729,9 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
                 v0.f[2] += dist * 0.5f;
                 vec_scale_to_length_r(&d2, &d2, dist / 5.0f * g_frame_time_r);
                 vec_scale_to_length_r(&v0, &v0, (dist + dist) * g_frame_time_r);
-                FastVecAdd_r2(&d2, &d2, &v0);
+                FastVecAdd(&d2, &d2, &v0);
                 clamp_vec_length_r(&d2, &d2, g_frame_time_r * 10.0f);
-                SpawnFallingSpark_r(pos, &d2, rand_range_r(scale_ticks_r(0x3C), scale_ticks_r(0x5A)), 0, 0);
+                SpawnFallingSpark_r(pos, &d2, rand_range_r(scale_ticks(0x3C), scale_ticks(0x5A)), 0, 0);
             }
             s16 = s16 - 1;
             if (free_moby_slot_count < 11) {
@@ -2770,7 +2751,7 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
                 sel = 0;
                 if (i % 3 == 0)
                     sel = 1;
-                SpawnFallingSpark_r(pos, &rnd, rand_range_r(scale_ticks_r(0x3C), scale_ticks_r(0x5A)), sel, 0);
+                SpawnFallingSpark_r(pos, &rnd, rand_range_r(scale_ticks(0x3C), scale_ticks(0x5A)), sel, 0);
             }
         }
     }
@@ -2795,11 +2776,11 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             sp = sp * fF;
             PartType11Spawn_r(pos, &vb, swap_packed_color_channels_r(c0.v[random_integer_below_r(6)], flag),
                               swap_packed_color_channels_r(c1.v[random_integer_below_r(6)], flag), fF * 400000.0f,
-                              rand_range_r(scale_ticks_r(0xF), scale_ticks_r(0x14)) - s18 * 3,
-                              rand_range_r(scale_ticks_r(0x1E), scale_ticks_r(0x2D)) - s18 * 5, 0, 0, sp);
+                              rand_range_r(scale_ticks(0xF), scale_ticks(0x14)) - s18 * 3,
+                              rand_range_r(scale_ticks(0x1E), scale_ticks(0x2D)) - s18 * 5, 0, 0, sp);
             PartType11Spawn_r(pos, &vb, 0x7FFFFFFF, 0xFFFFFF, fF * 400000.0f,
-                              rand_range_r(scale_ticks_r(5), scale_ticks_r(0xA)) - s18 * 2,
-                              rand_range_r(scale_ticks_r(0xF), scale_ticks_r(0x14)) - s18 * 3, 0, 0, sp * 0.5f);
+                              rand_range_r(scale_ticks(5), scale_ticks(0xA)) - s18 * 2,
+                              rand_range_r(scale_ticks(0xF), scale_ticks(0x14)) - s18 * 3, 0, 0, sp * 0.5f);
         }
     }
     {
@@ -2819,8 +2800,8 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             vec_scale_to_length_r(&vel, &vel, fF * (random_float_between_r(0.0f, 3.0f) * g_frame_time_r));
             p1 = swap_packed_color_channels_r(c0.v[random_integer_below_r(6)], flag);
             p2 = swap_packed_color_channels_r(c1.v[random_integer_below_r(6)], flag);
-            spawn_particle_alt_9768_r(pos, &vel, p1, p2,
-                                      rand_range_r(scale_ticks_r(0x1E), scale_ticks_r(0x2D)) - s18 * 5, 200000.0f);
+            spawn_particle_alt_9768_r(pos, &vel, p1, p2, rand_range_r(scale_ticks(0x1E), scale_ticks(0x2D)) - s18 * 5,
+                                      200000.0f);
         }
     }
     if (m != 0 && fC > 0.0f) {
@@ -2835,13 +2816,13 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
         }
         u = r3 & 0xFF;
         if (cpu_frame_load < 0.95f && fE < dist) {
-            spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks_r(0x10), r1, 0x96, r2, 0x20);
-            spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks_r(0x16), u, 0x7F, 0x50, 0x20);
+            spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks(0x10), r1, 0x96, r2, 0x20);
+            spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks(0x16), u, 0x7F, 0x50, 0x20);
         }
-        spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks_r(0x1E), u, 0x7F, 0, 0x30);
+        spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks(0x1E), u, 0x7F, 0, 0x30);
     }
     if (m != 0 && fD > 0.0f) {
-        spawn_glow_particle_r(m, pos, &vb, fD, scale_ticks_r(0x1B), 0xFF, 0xFF, 0xFF, 0x20);
+        spawn_glow_particle_r(m, pos, &vb, fD, scale_ticks(0x1B), 0xFF, 0xFF, 0xFF, 0x20);
     }
     {
         if (k11) {
@@ -2850,7 +2831,7 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             v.f[3] = 2.0f;
             if (FastBSphereCheck_r(&v, 10.0f) != -1) {
                 ((Cam *)player_camera_r)->f160 = (dist < 20.0f) ? 0.4f - dist * 0.0175f : 0.050000012f;
-                ((Cam *)player_camera_r)->f168 = scale_ticks_r(0x19);
+                ((Cam *)player_camera_r)->f168 = scale_ticks(0x19);
             }
         }
     }
@@ -3361,7 +3342,7 @@ int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {
     matrix_to_euler(t1, d);
     return 1;
 }
-extern void copy_matrix_rotation(void *, void *);
+
 extern int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b, float *d);
 extern void ClampVectorLength(void *a, float x);
 

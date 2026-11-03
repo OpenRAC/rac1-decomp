@@ -207,8 +207,6 @@ struct DrekMissileVars {
     void *owner; /* 0x16C: the group parent */
 };
 
-extern float vec_length_xy(void *);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
@@ -312,7 +310,6 @@ char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3) {
     return moby;
 }
 
-extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_rocket_trail_effects(void *, void *);
 
 extern void spawn_rocket_explosion(void *, void *);
@@ -482,8 +479,6 @@ void spawn_rocket_explosion(void *m, void *src) {
     }
 }
 
-extern int GetEffectTex(int);
-
 extern void draw_world_quad(void *, void *, int);
 extern short rocket_target_pulse_blend_minuend_selector_gp;
 extern short rocket_target_pulse_blend_subtrahend_selector_gp;
@@ -549,8 +544,6 @@ void draw_rocket_target_pulse_quad(char *moby) {
 }
 extern short D_L18_00161A6C __asm__("D_0015EE6C");
 extern float D_L18_6C_m __asm__("D_0015EE6C") MACRO_ADDR;
-
-extern float vec_distance_xy(void *, void *);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int FindNearestTargetMoby(char *, char *, float);
@@ -930,7 +923,6 @@ void update_path_junction_selection(struct Moby *moby) {
     }
 }
 
-extern int fast_dec_timer(int *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 extern float green_thruster_lock_scale SDATA(green_thruster_lock_scale);
@@ -1907,15 +1899,10 @@ extern float D_L18_00161D04_CE10 SDATA(D_L18_00161D04);
 extern float D_L18_00161D08_CE10 SDATA(D_L18_00161D08);
 extern float D_L18_00161D0C_CE10 SDATA(D_L18_00161D0C);
 extern float D_L18_001D45E0[];
-extern void set_identity_matrix_r(void *) __asm__("func_001FA190");
+
 extern int GetEffectTex_r(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
-extern float multiply_global_factor_r(float) __asm__("func_001F9878");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
+
 extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern void multiply_matrix3x3_r(void *, void *, void *) __asm__("func_001FA4F0");
@@ -1931,7 +1918,7 @@ void draw_expanding_projectile_ring(void *moby_v) {
     int j, k, n;
     int col;
 
-    set_identity_matrix_r(m);
+    set_identity_matrix(m);
     qcopy(&m[3], &moby->pos);
     m[3].f[2] += D_L18_00161CF8_CE10;
     m[3].f[3] = 1.0f;
@@ -1946,18 +1933,18 @@ void draw_expanding_projectile_ring(void *moby_v) {
         t = d->f24 * D_L18_00161D04_CE10 + (float)j * 0.25f;
         rad = d->f24 + D_L18_00161D00_CE10 * (float)j;
         t = t - (float)truncate_float_to_s32_r2(t);
-        col = FastTweenColor_r(D_L18_00161CEC_CE10, D_L18_00161CF0_CE10, t);
+        col = FastTweenColor(D_L18_00161CEC_CE10, D_L18_00161CF0_CE10, t);
         ang = t * D_L18_00161D08_CE10;
         if (ang > 1.0f)
             ang = 1.0f;
-        col = FastTweenColor_r(col & 0xFFFFFF, col, ang);
-        ang = (d->f28 - d->f24) / (d->f20 * multiply_global_factor_r(D_L18_00161D0C_CE10));
+        col = FastTweenColor(col & 0xFFFFFF, col, ang);
+        ang = (d->f28 - d->f24) / (d->f20 * multiply_global_factor(D_L18_00161D0C_CE10));
         if (ang > 1.0f) {
             ang = 1.0f;
         } else if (ang < 0.0f) {
             ang = 0.0f;
         }
-        col = FastTweenColor_r(col & 0xFFFFFF, col, ang);
+        col = FastTweenColor(col & 0xFFFFFF, col, ang);
         fj = (float)j;
         for (k = 0; k < 4; k++) {
             float a;
@@ -1968,15 +1955,15 @@ void draw_expanding_projectile_ring(void *moby_v) {
             } else {
                 q[j].corner[k].f[2] = -t * D_L18_00161CFC_CE10;
             }
-            a = FastAddRots_r((float)(k >> 1) * (D_L18_00161CF4_CE10 * 0.017453292f) - 3.14159f,
-                              D_L18_00161CF4_CE10 * 0.25f * fj * 0.017453292f);
-            q[j].corner[k].f[0] = FastCos_r(a) * rad;
-            q[j].corner[k].f[1] = FastSin_r(a) * rad;
+            a = FastAddRots((float)(k >> 1) * (D_L18_00161CF4_CE10 * 0.017453292f) - 3.14159f,
+                            D_L18_00161CF4_CE10 * 0.25f * fj * 0.017453292f);
+            q[j].corner[k].f[0] = FastCos(a) * rad;
+            q[j].corner[k].f[1] = FastSin(a) * rad;
             q[j].corner[k].f[3] = 1.0f;
             q[j].color[k] = col;
         }
     }
-    clear_u64_value_r(&rv);
+    clear_u64_value(&rv);
     rv.f[2] = D_L18_00161CF4_CE10 * 0.017453292f;
     euler_rotation_basis_r(rot, &rv);
     for (n = 0; (float)n < 360.0f / D_L18_00161CF4_CE10; n++) {
@@ -2069,8 +2056,6 @@ void spawn_expanding_ring_segment_particles(char *moby, void *a1, void *a2) {
                                                        expanding_ring_particle_scale);
     }
 }
-extern int fast_dec_timer(int *);
-extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -2161,18 +2146,13 @@ extern float D_L18_00161D58_D8A8 SDATA(D_L18_00161D58);
 extern float D_L18_00161D5C_D8A8 SDATA(D_L18_00161D5C);
 extern float D_L18_00161D64_D8A8 SDATA(D_L18_00161D64);
 extern float D_L18_001D4600[];
-extern void set_identity_matrix_r2(void *) __asm__("func_001FA190");
+
 extern int GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void draw_world_quad_r2(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern void multiply_matrix3x3_r2(void *, void *, void *) __asm__("func_001FA4F0");
 
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
-extern float FastCos_r2(float) __asm__("func_001F9F90");
-extern float FastSin_r2(float) __asm__("func_001F9FA8");
-extern int FastTweenColor_r2(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
+
 extern void euler_rotation_basis_r2(void *, void *) __asm__("func_001FA1F8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002dc4b8. */
@@ -2188,7 +2168,7 @@ void draw_class_274_ring_effect(void *moby_v) {
     float t, r, d, s, gi;
 
     p = ((float *)((Moby *)moby)->pvars);
-    set_identity_matrix_r2(mat);
+    set_identity_matrix(mat);
     qcopy(&mat[3], moby + 0x10);
     mat[3].f[2] = mat[3].f[2] + D_L18_00161D54_D8A8;
     mat[3].f[3] = 1.0f;
@@ -2202,33 +2182,33 @@ void draw_class_274_ring_effect(void *moby_v) {
         t = p[1] + (float)i * 0.25f;
         r = p[0] + gi;
         t = t - (float)truncate_float_to_s32_r3(t);
-        c = FastTweenColor_r2(D_L18_00161D48_D8A8, D_L18_00161D4C_D8A8, t);
+        c = FastTweenColor(D_L18_00161D48_D8A8, D_L18_00161D4C_D8A8, t);
         s = t * D_L18_00161D64_D8A8;
         if (s > 1.0f)
             s = 1.0f;
-        c = FastTweenColor_r2(c & 0xFFFFFF, c, s);
+        c = FastTweenColor(c & 0xFFFFFF, c, s);
         d = IntToFloat(((int *)p)[2]);
-        s = d / (float)scale_ticks_r(D_L18_00161D2C_D8A8);
+        s = d / (float)scale_ticks(D_L18_00161D2C_D8A8);
         if (s > 1.0f) {
             s = 1.0f;
         } else if (s < 0.0f) {
             s = 0.0f;
         }
-        c = FastTweenColor_r2(c & 0xFFFFFF, c, s);
+        c = FastTweenColor(c & 0xFFFFFF, c, s);
         for (j = 0; j < 4; j++) {
             float a;
             quad[i].uv[j].u = class_274_ring_quad_uvs[j * 2];
             quad[i].uv[j].v = class_274_ring_quad_uvs[j * 2 + 1];
             quad[i].corner[j].f[2] = (j & 1) ? t * D_L18_00161D58_D8A8 : -t * D_L18_00161D58_D8A8;
-            a = FastAddRots_r2((float)(j >> 1) * (D_L18_00161D50_D8A8 * 0.017453292f) - 3.14159f,
-                               D_L18_00161D50_D8A8 * 0.25f * (float)i * 0.017453292f);
-            quad[i].corner[j].f[0] = FastCos_r2(a) * r;
-            quad[i].corner[j].f[1] = FastSin_r2(a) * r;
+            a = FastAddRots((float)(j >> 1) * (D_L18_00161D50_D8A8 * 0.017453292f) - 3.14159f,
+                            D_L18_00161D50_D8A8 * 0.25f * (float)i * 0.017453292f);
+            quad[i].corner[j].f[0] = FastCos(a) * r;
+            quad[i].corner[j].f[1] = FastSin(a) * r;
             quad[i].corner[j].f[3] = 1.0f;
             quad[i].color[j] = c;
         }
     }
-    clear_u64_value_r2(&ang);
+    clear_u64_value(&ang);
     ang.f[2] = D_L18_00161D50_D8A8 * 0.017453292f;
     euler_rotation_basis_r2(&rot[0], &ang);
     for (k = 0; (float)k < 360.0f / D_L18_00161D50_D8A8; k++) {
@@ -2927,11 +2907,8 @@ extern float electric_bolt_points_r[][4] __asm__("D_L18_001D9FD0");
 extern int electric_bolt_wave_heights_r[] __asm__("D_L18_001DA250");
 extern float electric_bolt_twist_offsets_r[][4] __asm__("D_L18_001DA2A0");
 extern int electric_bolt_twist_heights_r[] __asm__("D_L18_001DA3E0");
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void clear_u64_value_r3(void *) __asm__("func_001F9BC0");
 
 void func_L18_002EC0C8_r(struct Moby *m) __asm__("func_L18_002EC0C8");
 
@@ -2945,15 +2922,15 @@ void func_L18_002EC0C8_r(struct Moby *m) {
     if ((*(int *)&electric_bolt_initialization_requested) != 0) {
         (*(int *)&electric_bolt_initialization_requested) = 0;
         (*(int *)&D_L18_0016216C_2EC0C8) = 0;
-        electric_bolt_scaled_initial_frame_count = scale_ticks_r2((*(int *)&electric_bolt_initial_frame_count_gp));
+        electric_bolt_scaled_initial_frame_count = scale_ticks((*(int *)&electric_bolt_initial_frame_count_gp));
         (*(int *)&electric_bolt_color_r) = 0x7F2020;
-        FastVecSub_r(v, &d->target, &m->pos);
+        FastVecSub(v, &d->target, &m->pos);
         vec_scale_to_length_r(step, v, (*(float *)&electric_bolt_initial_length_scale_gp) / 20.0f);
         qcopy(electric_bolt_points_r, &m->pos);
         for (i = 1; i < 20; i++) {
-            FastVecAdd_r(electric_bolt_points_r[i], electric_bolt_points_base_r[i], step);
+            FastVecAdd(electric_bolt_points_r[i], electric_bolt_points_base_r[i], step);
             electric_bolt_wave_heights_r[i] = 0;
-            clear_u64_value_r3(electric_bolt_twist_offsets_r[i]);
+            clear_u64_value(electric_bolt_twist_offsets_r[i]);
             electric_bolt_twist_heights_r[i] = 0;
         }
         for (j = 0; j < 4; j++)

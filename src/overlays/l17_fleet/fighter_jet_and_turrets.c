@@ -130,8 +130,6 @@ typedef int v128 __attribute__((mode(TI)));
 
 extern int coll_line(void *, void *, int, void *, void *);
 
-extern void lerp_vector(void *, void *, void *, float);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int FastBSphereCheck(char *, float);
@@ -333,7 +331,6 @@ void update_fleet_beam(char *m) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 
 extern struct {
@@ -393,17 +390,14 @@ void draw_fleet_beam_quad(char *moby) {
 extern void process_dreks_fleet_turret_hits(char *m);
 extern void distribute_class_733_group_mobys_along_path(char *m);
 
-extern float vec_distance_xy(void *, void *);
-
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
-extern float vec_length_xy(void *);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern char *spawn_class_558_moby_toward_target(char *src, char *pos, float *v, float f);
 extern void FindNearestTargetMoby(void *, void *, float);
-extern int fast_dec_timer(void *);
 
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
@@ -1352,7 +1346,6 @@ char *spawn_class_558_moby_toward_target(char *source_moby, char *spawn_position
     }
     return (char *)spawned_moby;
 }
-extern int GetEffectTex(int);
 
 /* Draws effect texture 0x2E four times at x, y, each copy turned a further 90 degrees. */
 void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,

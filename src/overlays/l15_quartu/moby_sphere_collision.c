@@ -14,8 +14,6 @@ typedef int OvlQuad __attribute__((mode(TI)));
 extern CollisionHit quartu_coll_hit;
 extern int coll_sphere(void *, float, int, void *);
 
-extern f32 vec_length_xy(void *);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/math/interpolation/00247e90.c, FUN_L15_00247e90. */
 int move_moby_with_sphere_collision(struct Moby *obj, u128 *delta, int flags, float step, float radius) {
     Vec4 start;

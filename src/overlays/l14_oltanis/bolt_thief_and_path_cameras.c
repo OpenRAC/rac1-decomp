@@ -170,10 +170,9 @@ extern float D_L14_0016206C_2FF358 SDATA(D_L14_0016206C);
 extern float D_L14_00162070_2FF358 SDATA(D_L14_00162070);
 extern int D_L14_00162074_2FF358 SDATA(D_L14_00162074);
 extern Part *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern int random_integer_below_r(int) __asm__("func_002140B0");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
+
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 
 /* Spawns the effect pieces for a moby: two sparks, the ring of three and a final coloured one. */
@@ -185,13 +184,13 @@ void spawn_moby_offset_puffs(Moby *p) {
     int i, j, n, m, k, col;
     float s;
 
-    FastVecScale_r(A, (*(Vec_2FF358 *)&p->rot_row0), D_L14_00162060_2FF358);
-    FastVecAdd_r(B, (*(Vec_2FF358 *)&p->pos), A);
-    FastVecScale_r(A, (*(Vec_2FF358 *)&p->rot_row2), D_L14_00162068_2FF358);
-    FastVecAdd_r(B, B, A);
+    FastVecScale(A, (*(Vec_2FF358 *)&p->rot_row0), D_L14_00162060_2FF358);
+    FastVecAdd(B, (*(Vec_2FF358 *)&p->pos), A);
+    FastVecScale(A, (*(Vec_2FF358 *)&p->rot_row2), D_L14_00162068_2FF358);
+    FastVecAdd(B, B, A);
     qcopy(C, B);
-    FastVecScale_r(A, (*(Vec_2FF358 *)&p->rot_row1), D_L14_00162064_2FF358);
-    FastVecAdd_r(B, B, A);
+    FastVecScale(A, (*(Vec_2FF358 *)&p->rot_row1), D_L14_00162064_2FF358);
+    FastVecAdd(B, B, A);
     for (i = 1; i >= 0; i--) {
         n = random_integer_below_r(0x10);
         k = random_integer_below_r(2) == 0 ? n : -n;
@@ -199,17 +198,17 @@ void spawn_moby_offset_puffs(Moby *p) {
         if (e != 0) {
             struct PartSub_2FF358 *f = &e->sub;
 
-            e->life = scale_ticks_r(0xC);
+            e->life = scale_ticks(0xC);
             f->f4 = 2;
             f->bA = 0x7F;
             f->bB = e->life;
         }
     }
-    FastVecScale_r(A, (*(Vec_2FF358 *)&p->rot_row0), D_L14_0016206C_2FF358);
+    FastVecScale(A, (*(Vec_2FF358 *)&p->rot_row0), D_L14_0016206C_2FF358);
     s = 100000.0f;
-    FastVecAdd_r(B, B, A);
+    FastVecAdd(B, B, A);
     n = 0x10;
-    m = scale_ticks_r(2);
+    m = scale_ticks(2);
     for (j = 0; j < 3; j++) {
         e = PartType23Spawn(B, 0.05f, 1.0f, 1.0f, n, oltanis_zero_vector, s, 0x7FFFFFFF);
         if (e != 0) {
@@ -226,8 +225,8 @@ void spawn_moby_offset_puffs(Moby *p) {
         s = s - 20000.0f;
     }
     s = 300000.0f;
-    FastVecScale_r(A, (*(Vec_2FF358 *)&p->rot_row0), D_L14_00162070_2FF358);
-    FastVecAdd_r(B, C, A);
+    FastVecScale(A, (*(Vec_2FF358 *)&p->rot_row0), D_L14_00162070_2FF358);
+    FastVecAdd(B, C, A);
     col = rand_range_r(0x40, 0x80);
     k = (col << 8) | 0x7F000000;
     col = col | ((col << 16) | k);
@@ -240,13 +239,13 @@ void spawn_moby_offset_puffs(Moby *p) {
         if (g != 0) {
             struct PartSub_2FF358 *f = &g->sub;
 
-            g->life = scale_ticks_r(0x3C);
+            g->life = scale_ticks(0x3C);
             if (random_integer_below_r(2)) {
                 g->b3 = 0x44;
             }
             f->bA = 0x40;
             f->f4 = 2;
-            f->bB = scale_ticks_r(0x3C);
+            f->bB = scale_ticks(0x3C);
         }
     }
 }
@@ -554,13 +553,10 @@ int update_bolt_thief_path_movement(char *moby) {
     return r;
 }
 
-extern float vec_distance_xy(void *, void *);
-
 extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern LevelState oltanis_collected_flags_base_r __asm__("D_L14_001BBCC0");
 extern char oltanis_sam_dialogue_name[];
@@ -736,7 +732,6 @@ extern float oltanis_spark_roll_slowdown SDATA(oltanis_spark_roll_slowdown);
 extern float oltanis_spark_bounce_damping SDATA(oltanis_spark_bounce_damping);
 extern float spark_first_bounce_horizontal_speed_gp SDATA(spark_first_bounce_horizontal_speed_gp);
 extern int coll_sphere(void *, int, void *, float);
-extern int fast_dec_timer(int *);
 
 extern int coll_line(void *, void *, int, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -820,7 +815,7 @@ void update_bouncing_spark(Moby *m) {
                         vec_set_length_xy(&d->vel, &d->vel, spark_first_bounce_horizontal_speed_gp * g_frame_time);
                         d->vel.z = d->vel.z * oltanis_spark_bounce_damping;
                     } else {
-                        FastVecScale_r(&from, &d->vel, oltanis_spark_bounce_damping);
+                        FastVecScale(&from, &d->vel, oltanis_spark_bounce_damping);
                         if (vec_length_xy(&from) < (oltanis_spark_min_speed * g_frame_time)) {
                             vec_set_length_xy(&d->vel, &d->vel, oltanis_spark_min_speed * g_frame_time);
                             d->vel.z *= oltanis_spark_bounce_damping;
@@ -955,8 +950,6 @@ typedef struct {
 extern L14LevelState oltanis_collected_flags_base;
 extern s32 level_moby_killed[][64];
 
-extern int fast_dec_timer(int *);
-
 extern void save_and_lower_unlock_sequence_mobys_r(struct Moby *) __asm__("func_L14_00306A88");
 extern void raise_unlock_sequence_mobys_r(struct Moby *) __asm__("func_L14_00306B08");
 
@@ -1062,9 +1055,7 @@ extern f32 D_L14_001622C0_06BE0 SDATA(D_L14_001622C0);
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void initialize_morphoray_private_state_r(void *) __asm__("func_L14_00306EC0");
 extern f32 ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
-extern f32 FastAddRots_r(f32, f32) __asm__("func_001FA748");
-extern void FastVecScale_r2(void *, void *, f32) __asm__("func_001F9C30");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void update_morphoray_particles_r(struct Moby *) __asm__("func_L14_00306FA0");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
@@ -1098,10 +1089,10 @@ void CollectiblePickupUpdate(struct Moby *moby) {
             moby->state = 1;
             break;
         case 1:
-            o->rot.z = FastAddRots_r(o->rot.z, D_L14_001622BC_06BE0);
+            o->rot.z = FastAddRots(o->rot.z, D_L14_001622BC_06BE0);
             qcopy(&o->pos, &d->pos);
-            FastVecScale_r2(v, &o->rot_row1, D_L14_001622C0_06BE0);
-            FastVecAdd_r2(&o->pos, &o->pos, v);
+            FastVecScale(v, &o->rot_row1, D_L14_001622C0_06BE0);
+            FastVecAdd(&o->pos, &o->pos, v);
             update_morphoray_particles_r(moby);
             if (oltanis_frame_count_r % 10 != 0)
                 return;
@@ -1237,11 +1228,7 @@ typedef struct Snd {
     Moby *f88;
 } Snd;
 extern Moby *create_helper_sequence_owner_moby_r(Moby *owner) __asm__("func_L14_003075E0");
-extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
 
-extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern float interpolate_angle_r(float, float, float) __asm__("func_L00_0025C7A8");
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
@@ -1267,14 +1254,14 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
             int i;
             if (data->owner == 0) {
                 data->owner = create_helper_sequence_owner_moby_r(moby);
-                FastVecScale_r3(vec, &moby->rot_row0, D_L14_001622C4_3071B0);
-                FastVecAdd_r3(&data->owner->pos, &moby->pos, vec);
+                FastVecScale(vec, &moby->rot_row0, D_L14_001622C4_3071B0);
+                FastVecAdd(&data->owner->pos, &moby->pos, vec);
             }
             for (i = 0; i < 6; i++) {
                 if (data->slots.m[i] == 0) {
                     data->slots.m[i] = (Moby *)(oltanis_mobys_r + (data->idx[i] << 8));
-                    FastVecScale_r3(vec, &moby->rot_row0, D_L14_001622C4_3071B0);
-                    FastVecAdd_r3(&data->slots.m[i]->pos, &moby->pos, vec);
+                    FastVecScale(vec, &moby->rot_row0, D_L14_001622C4_3071B0);
+                    FastVecAdd(&data->slots.m[i]->pos, &moby->pos, vec);
                     data->slots.m[i]->pos.z =
                         data->slots.m[i]->pos.z + (D_L14_001622C8_3071B0 * (float)i + D_L14_001622CC_3071B0);
                 }
@@ -1289,7 +1276,7 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
             if (((Moby *)(oltanis_mobys_r + (data->trigger << 8)))->state == 2) {
                 moby->state = 2;
                 data->cur = 5;
-                data->timer = scale_ticks_r2(D_L14_001622D4_3071B0);
+                data->timer = scale_ticks(D_L14_001622D4_3071B0);
                 data->rate = 1.0f / IntToFloat(data->timer);
                 Sound_PlayClassSound(0, 0, data->slots.m[data->cur], 0x575);
             }
@@ -1297,14 +1284,14 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
         case 2: {
             Slots *slots = &data->slots;
             Moby *o = slots->m[data->cur];
-            FastDecTimer_r(&data->timer);
+            FastDecTimer(&data->timer);
             o->rot.y = interpolate_angle_r(1.5707964f, 0.0f, IntToFloat(data->timer) * data->rate);
             if (data->timer == 0) {
-                data->timer = scale_ticks_r2(D_L14_001622D4_3071B0);
+                data->timer = scale_ticks(D_L14_001622D4_3071B0);
                 data->cur--;
                 if (data->cur < 0) {
                     moby->state = 3;
-                    data->timer = scale_ticks_r2(D_L14_001622DC_3071B0);
+                    data->timer = scale_ticks(D_L14_001622DC_3071B0);
                     data->rate = 1.0f / IntToFloat(data->timer);
                 } else {
                     Sound_PlayClassSound(0, 0, slots->m[data->cur], 0x575);
@@ -1320,13 +1307,13 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
             if (!Sound_IsPlaying_r(moby, data->voice)) {
                 data->voice = Moby_PlaySound_r(0, 4, moby);
             }
-            FastDecTimer_r(&data->timer);
+            FastDecTimer(&data->timer);
             slots = data->slots.m;
             t = IntToFloat(data->timer) * data->rate;
             owner->rot.y = interpolate_scalar_linear_r(D_L14_001622D0_3071B0 * 0.017453292f, 0.0f, t);
             for (i = 0; i < 6; i++) {
-                FastVecScale_r3(vec, &owner->rot_row2, D_L14_001622C8_3071B0 * (float)i + D_L14_001622CC_3071B0);
-                FastVecAdd_r3(&slots[i]->pos, &owner->pos, vec);
+                FastVecScale(vec, &owner->rot_row2, D_L14_001622C8_3071B0 * (float)i + D_L14_001622CC_3071B0);
+                FastVecAdd(&slots[i]->pos, &owner->pos, vec);
             }
             if (data->timer == 0) {
                 int j;
@@ -1546,16 +1533,13 @@ extern void Sound_StopSlot_r2(int) __asm__("func_L00_0028EBF0");
 extern int STUB_printf_r() __asm__("func_001E9730");
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 extern void initialize_flying_car_path_r(void *) __asm__("func_L14_00308998");
-extern int scale_ticks_r3(int) __asm__("func_001F9850");
 
 extern void func_L00_0025E4B0(void *, void *);
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 
 extern int update_flying_car_path_motion_r(void *) __asm__("func_L14_00308AA8");
-extern void FastVecScale_r4(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecAdd_r4(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-extern int FastDecTimer_r2(void *) __asm__("func_001F9938");
 
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern int Sound_IsPlaying_r2(void *, int) __asm__("func_L00_0028EB98");
@@ -1614,7 +1598,7 @@ void update_flying_car(Moby *m) {
             m->update_dist = 0xFF;
             m->draw_dist = 0xFF;
             d->sound = -1;
-            d->timer = scale_ticks_r3(D_L14_0016234C_308368);
+            d->timer = scale_ticks(D_L14_0016234C_308368);
             d->fB0 = 0;
             d->fB4 = 0;
             d->fBC = 0;
@@ -1657,16 +1641,16 @@ void update_flying_car(Moby *m) {
             if (update_flying_car_path_motion_r(m)) {
                 if (d->part >= 0) {
                     Moby *o = (Moby *)(oltanis_mobys_r + (d->part << 8));
-                    FastVecScale_r4(&vec, &m->rot_row0, d->fA4);
-                    FastVecAdd_r4(&o->pos, &m->pos, &vec);
-                    FastVecScale_r4(&vec, &m->rot_row1, d->fA8);
-                    FastVecAdd_r4(&o->pos, &o->pos, &vec);
-                    FastVecScale_r4(&vec, &m->rot_row2, d->fAC);
-                    FastVecAdd_r4(&o->pos, &o->pos, &vec);
+                    FastVecScale(&vec, &m->rot_row0, d->fA4);
+                    FastVecAdd(&o->pos, &m->pos, &vec);
+                    FastVecScale(&vec, &m->rot_row1, d->fA8);
+                    FastVecAdd(&o->pos, &o->pos, &vec);
+                    FastVecScale(&vec, &m->rot_row2, d->fAC);
+                    FastVecAdd(&o->pos, &o->pos, &vec);
                     if ((g_hero.state.control_mode == HERO_MODE_GRAPPLE && g_hero.grapple_target == o) ||
                         (g_hero.state.control_mode == HERO_MODE_GRAPPLE_SWING && g_hero.swing_target_moby == o)) {
                         seed_linked_record_for_flying_car_r(m);
-                        d->fCC = scale_ticks_r3(0x1E);
+                        d->fCC = scale_ticks(0x1E);
                     } else {
                         fast_dec_timer_r2(&d->fCC);
                         if (d->fCC != 0) {
@@ -1686,12 +1670,12 @@ void update_flying_car(Moby *m) {
             }
             break;
         case 3:
-            if (FastDecTimer_r2(&d->timer)) {
+            if (FastDecTimer(&d->timer)) {
                 Path *path = oltanis_paths_r[d->path];
                 set_moby_color(m, d->effect[4], d->effect[5], d->effect[6]);
                 m->flags &= 0xFFBE;
                 m->collision = ((Model *)m->pclass)->bounds;
-                d->timer = scale_ticks_r3(D_L14_0016234C_308368);
+                d->timer = scale_ticks(D_L14_0016234C_308368);
                 m->state = 2;
                 d->f70 = 0;
                 d->f74 = 0;
@@ -1702,12 +1686,12 @@ void update_flying_car(Moby *m) {
                 if (d->part >= 0) {
                     Moby *o = (Moby *)(oltanis_mobys_r + (d->part << 8));
                     o->flags &= 0xFFBE;
-                    FastVecScale_r4(&vec, &m->rot_row0, d->fA4);
-                    FastVecAdd_r4(&o->pos, &m->pos, &vec);
-                    FastVecScale_r4(&vec, &m->rot_row1, d->fA8);
-                    FastVecAdd_r4(&o->pos, &o->pos, &vec);
-                    FastVecScale_r4(&vec, &m->rot_row2, d->fAC);
-                    FastVecAdd_r4(&o->pos, &o->pos, &vec);
+                    FastVecScale(&vec, &m->rot_row0, d->fA4);
+                    FastVecAdd(&o->pos, &m->pos, &vec);
+                    FastVecScale(&vec, &m->rot_row1, d->fA8);
+                    FastVecAdd(&o->pos, &o->pos, &vec);
+                    FastVecScale(&vec, &m->rot_row2, d->fAC);
+                    FastVecAdd(&o->pos, &o->pos, &vec);
                 }
                 if (d->trigger >= 0) {
                     m->flags |= 0x41;
@@ -1800,8 +1784,6 @@ extern void SpawnExplosionFx_r2(void *, void *, f32, f32, s32) __asm__("func_L00
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 extern f32 Spring(f32 *, f32 *, f32, f32, f32, f32);
 
-extern f32 vec_length_xy(void *);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00307620. */
 int update_flying_car_path_motion(struct Moby *moby) {
     float pos[4];
@@ -1884,7 +1866,7 @@ int update_flying_car_path_motion(struct Moby *moby) {
 }
 
 extern char oltanis_textured_effect_list[];
-extern int GetEffectTex(int);
+
 /* Draw callback for the 0x13-entry effect at oltanis_textured_effect_list. */
 void draw_level14_textured_effect_list(void) {
     draw_textured_effect_list(oltanis_textured_effect_list, 0x13, GetEffectTex(0x2E), GetEffectTex(0x2F));
@@ -2330,11 +2312,8 @@ extern float oltanis_path_camera_keys_r[] __asm__("D_L14_001F67C8");
 extern float D_L14_00162578_16E60 SDATA(D_L14_00162578);
 extern float atan2_16E60(float, float) __asm__("func_L00_001FF860");
 extern void compute_position_from_spherical_offset_r(void *, void *, void *) __asm__("func_L00_001ED900");
-extern void sub_16E60(void *, void *, void *) __asm__("func_001F9BF0");
-extern void scale_16E60(void *, void *, float) __asm__("func_001F9C30");
-extern void add_16E60(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void normalize_16E60(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void cross_16E60(void *, void *, void *) __asm__("func_001F9CA0");
 
 /* Start a path-key camera: sum its three paths' lengths, aim it at the hero, set key durations. */
 void initialize_path_key_camera(struct UpdateCam *cam) {
@@ -2405,13 +2384,13 @@ void initialize_path_key_camera(struct UpdateCam *cam) {
     ang[0] = f;
     ang[2] = v[2];
     compute_position_from_spherical_offset_r(&cam->pos, ang, &g_hero.motion);
-    sub_16E60(dir, &g_hero.motion, &cam->pos);
-    scale_16E60(up, &g_hero.gravity_dir, -1.5f);
-    add_16E60(dir, dir, up);
+    FastVecSub(dir, &g_hero.motion, &cam->pos);
+    FastVecScale(up, &g_hero.gravity_dir, -1.5f);
+    FastVecAdd(dir, dir, up);
     normalize_16E60(&cam->m0, dir, 1.0f);
-    cross_16E60(&cam->m1, &cam->m0, up);
+    FastVecCross(&cam->m1, &cam->m0, up);
     normalize_16E60(&cam->m1, &cam->m1, 1.0f);
-    cross_16E60(&cam->m2, &cam->m1, &cam->m0);
+    FastVecCross(&cam->m2, &cam->m1, &cam->m0);
     /* give every key without a duration (+0x44) the default 10000 */
     r = (int *)&oltanis_path_camera_keys_r[0x11];
     for (j = 38; j >= 0; j--) {

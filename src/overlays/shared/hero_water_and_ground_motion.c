@@ -77,10 +77,7 @@ extern float veldin1_hero_stride_speeds[];
 extern float veldin1_hero_ledge_shimmy_frame_speeds[];
 extern float veldin1_hero_state4e_step_lengths[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
@@ -89,8 +86,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float ApproachValue(float *, float, float);
 
 extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
 
 extern float Spring(float *, float *, float, float, float, float);
 

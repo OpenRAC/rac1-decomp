@@ -311,8 +311,6 @@ void SetUpdateModeTiming(int mode) {
 INCLUDE_ASM("asm/overlays", func_L00_00262450);
 typedef int u128 __attribute__((mode(TI)));
 
-extern float vec_distance_xy(void *, void *);
-
 /* Wander state (the idle_pos block in a moby's pvars). */
 struct WanderState {
     f32 home_x; /* 0x00: home point */
@@ -434,8 +432,6 @@ s32 test_path_segment_strict_crossing(s32 path_index, Vec4 *start, Vec4 *end) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void lerp_vector(void *, void *, void *, float);
 
 /* Tests whether segment a-b crosses polyline level_paths[idx]; writes the nearest crossing to c. */
 int SegmentCrossPolyline(int idx, void *a, void *b, void *c) {
@@ -916,9 +912,6 @@ typedef struct MobyBound {
 extern struct Moby *suck_moby_list MACRO_ADDR;
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 
-float vec_length_xy(void *);
-float vec_distance_xy(void *, void *);
-
 void func_00215C00_64140(Vec4 *, float, float, float) __asm__("func_00215C00");
 MobyBound *GetFlaggedPvarWord(struct Moby *);
 int func_L00_001EFFF0_64140(void *, Vec4 *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -1009,7 +1002,6 @@ typedef struct {
 extern S166D player_camera;
 extern V collision_hit_point;
 extern int coll_line(void *, void *, int, int, int);
-extern float vec_length_xy(void *);
 
 /* spawns impact sparks at a point on the ground near the camera. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_002634f8. */
 void spawn_ground_contact_effect_particle(V *v) {
@@ -1032,7 +1024,7 @@ void spawn_ground_contact_effect_particle(V *v) {
     }
 }
 typedef int u128_264690 __attribute__((mode(TI)));
-extern int GetEffectTex(int);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void draw_world_quad(void *, void *, int);

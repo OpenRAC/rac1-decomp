@@ -44,15 +44,14 @@ void update_gameplay_frame(void) {
     noop_callback_h_r();
     if (g_game_mode_r == 0) {
         intro_overlay_timer_r++;
-        if (scale_game_frame_count_r(0x3C) < intro_overlay_timer_r) {
+        if (scale_game_frame_count(0x3C) < intro_overlay_timer_r) {
             if (++intro_overlay_alpha_r > 0x40) {
                 intro_overlay_alpha_r = 0x40;
             }
         }
-        if (scale_game_frame_count_r(0x78) < intro_overlay_timer_r) {
+        if (scale_game_frame_count(0x78) < intro_overlay_timer_r) {
             language_intro_overlay_alpha_r =
-                (s32)(FastCos_r((intro_overlay_timer_r - scale_game_frame_count_r(0x78)) % 60 * 0.10471976f +
-                                -3.1415927f) *
+                (s32)(FastCos((intro_overlay_timer_r - scale_game_frame_count(0x78)) % 60 * 0.10471976f + -3.1415927f) *
                       32.0f) +
                 0x60;
         }
@@ -61,7 +60,7 @@ void update_gameplay_frame(void) {
         }
         sound_update_r();
     } else if (g_game_mode_r == 3) {
-        intro_overlay_timer_r = scale_game_frame_count_r(0x3C);
+        intro_overlay_timer_r = scale_game_frame_count(0x3C);
         if ((intro_overlay_alpha_r -= 0x10) < 0) {
             intro_overlay_alpha_r = 0;
         }

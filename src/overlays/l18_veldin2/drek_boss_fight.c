@@ -100,9 +100,7 @@ extern float veldin2_zero_vec[] MACRO_ADDR;
 
 extern void apply_linked_moby_relative_transforms_v(char *, void *, int) __asm__("func_L12_0027C368");
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern int fast_dec_timer(int *);
 
-extern void lerp_vector(void *, void *, void *, float);
 extern int func_001FA898(float);
 
 extern void spawn_debris_moby_v(void *, void *, unsigned int, int, float, float, float, float,
@@ -382,8 +380,6 @@ extern float veldin2_glow_quad_uvs[4][2];
 typedef int Q33D8 __attribute__((mode(TI)));
 extern Q33D8 veldin2_glow_quad_corners[4];
 
-extern int GetEffectTex(int);
-
 extern void draw_world_quad(void *, void *, int);
 
 /* Draws the glow moby's scrolling layered quads, faded by distance from the camera. */
@@ -603,7 +599,6 @@ extern int lift_mesh_color SDATA(lift_mesh_color);
 extern float veldin2_lift25_uvs[][2];
 extern FRow veldin2_lift25_vertices[];
 extern short veldin2_lift25_quads[][4][2];
-extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
 
@@ -900,10 +895,6 @@ extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, in
 extern int IsFrameWithinWindow(char *, float);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-
-extern float vec_distance_xy(void *, void *);
-
-extern float vec_length_xy(void *);
 
 /* Parameter order as retail sets the arguments up (the floats before the last integers); the definition of
    launch_mine_568_moby_from_list in vendor_002A8400.c lists its float first, with the same registers. */
@@ -2269,7 +2260,7 @@ int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void 
     return 0;
 }
 extern void ClampVectorLength(void *a, float x);
-extern float vec_distance_xy(void *, void *);
+
 extern char *veldin2_arena_nodes MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float drek_boss_arena_radius_mode_f SDATA(drek_boss_arena_radius_mode_f);
@@ -2328,12 +2319,9 @@ extern f32 D_L18_001623EC_2F7F00 SDATA(D_L18_001623EC);
 extern f32 D_L18_00162400_2F7F00 SDATA(D_L18_00162400);
 extern f32 D_L18_00162404_2F7F00 SDATA(D_L18_00162404);
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
-extern f32 FastSubRots_r(f32, f32) __asm__("func_001FA790");
-extern f32 FastAddRots_r(f32, f32) __asm__("func_001FA748");
+
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern f32 FastCos_r(f32) __asm__("func_001F9F90");
-extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern int advance_drek_boss_planar_position_toward_target_r(char *, float, void *) __asm__("func_L18_002F7CD8");
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 
@@ -2354,26 +2342,26 @@ void func_L18_002F7F00_r(Moby *moby) {
                        ((Hero *)g_hero_r)->motion.pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
     self_ang = fast_atan2_r(v->pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
                             v->pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
-    if (FastSubRots_r(self_ang, ang) < 0.0f)
-        ang = FastAddRots_r(ang, -2.3561945f);
+    if (FastSubRots(self_ang, ang) < 0.0f)
+        ang = FastAddRots(ang, -2.3561945f);
     else
-        ang = FastAddRots_r(ang, 2.3561945f);
-    ang = FastSubRots_r(ang, self_ang);
+        ang = FastAddRots(ang, 2.3561945f);
+    ang = FastSubRots(ang, self_ang);
     if (ang > 0.17453292f)
         ang = 0.17453292f;
     else if (ang < -0.17453292f)
         ang = -0.17453292f;
-    ang = FastAddRots_r(ang, self_ang);
+    ang = FastAddRots(ang, self_ang);
     if (moby->state == 2) {
-        goal.f[0] = FastCos_r(ang) * D_L18_00162400_2F7F00;
-        goal.f[1] = FastSin_r(ang) * D_L18_00162400_2F7F00;
+        goal.f[0] = FastCos(ang) * D_L18_00162400_2F7F00;
+        goal.f[1] = FastSin(ang) * D_L18_00162400_2F7F00;
         goal.f[2] = 0.0f;
     } else {
-        goal.f[0] = FastCos_r(ang) * D_L18_00162404_2F7F00;
-        goal.f[1] = FastSin_r(ang) * D_L18_00162404_2F7F00;
+        goal.f[0] = FastCos(ang) * D_L18_00162404_2F7F00;
+        goal.f[1] = FastSin(ang) * D_L18_00162404_2F7F00;
         goal.f[2] = 0.0f;
     }
-    FastVecAdd_r(&goal, &goal, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center);
+    FastVecAdd(&goal, &goal, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center);
     if (vec_distance_xy_r(&v->pos, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center) >
         D_L18_00162404_2F7F00 + 1.0f) {
         speed = 10.0f;

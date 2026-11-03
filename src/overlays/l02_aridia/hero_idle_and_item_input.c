@@ -42,7 +42,6 @@ typedef struct {
 } T2C;
 
 extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
 
 extern int truncate_float_to_s32(float);
 
@@ -1547,11 +1546,7 @@ extern HeroSpeedBands aridia_hero_speed_bands;
 
 extern int HeroL02_SetMoveState(int a, int b);
 
-extern int func_001F9908(int *);
-
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
-
-extern float vec_distance_xy(void *, void *);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 

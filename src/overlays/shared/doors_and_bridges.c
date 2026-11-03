@@ -78,11 +78,7 @@ extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 
-extern float func_001F9D48(void *, void *);
-
-extern int func_001F9908(int *arg0);
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
 
 extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 
@@ -144,9 +140,9 @@ void timed_activation_pads_update(unsigned char *moby) {
                 set_moby_list_state(((Moby *)moby)->group, 8);
             } else if (fast_dec_timer(&d->step_timer)) {
                 Moby_PlaySound_r(0, 0, (int)moby);
-                d->step_timer = scale_ticks_r(0x2D) < scale_ticks_r(5) + d->timer / scale_ticks_r(0x28)
-                                    ? scale_ticks_r(0x2D)
-                                    : scale_ticks_r(5) + d->timer / scale_ticks_r(0x28);
+                d->step_timer = scale_ticks(0x2D) < scale_ticks(5) + d->timer / scale_ticks(0x28)
+                                    ? scale_ticks(0x2D)
+                                    : scale_ticks(5) + d->timer / scale_ticks(0x28);
             }
         }
     }
@@ -162,9 +158,9 @@ void timed_activation_pads_update(unsigned char *moby) {
             set_moby_color(moby, 0x80, 0x80, 0x80);
             if (flag) {
                 if (d->duration > 0)
-                    d->timer = scale_ticks_r(d->duration * 60);
+                    d->timer = scale_ticks(d->duration * 60);
                 else
-                    d->timer = scale_ticks_r(900);
+                    d->timer = scale_ticks(900);
                 on = 1;
                 set_moby_color(moby, 0, 0xFF, 0);
                 d->active = on;
@@ -197,7 +193,7 @@ void timed_activation_pads_update(unsigned char *moby) {
             }
             break;
         case 6:
-            d->blink_timer = scale_ticks_r(0x14);
+            d->blink_timer = scale_ticks(0x14);
             d->blink_phase = 0;
             set_moby_color(moby, 0x80, 0xFF, 0x80);
             ((Moby *)moby)->state = 7;
@@ -208,7 +204,7 @@ void timed_activation_pads_update(unsigned char *moby) {
                     jet_clear_persistent_r(((Moby *)moby)->mission);
             }
             if (FastDecTimer(&d->blink_timer)) {
-                d->blink_timer = scale_ticks_r(0x14);
+                d->blink_timer = scale_ticks(0x14);
                 switch (d->blink_phase) {
                     case 0:
                         set_moby_color(moby, 0, 0xFF, 0);

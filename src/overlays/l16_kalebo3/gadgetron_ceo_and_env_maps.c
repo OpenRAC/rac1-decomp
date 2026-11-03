@@ -75,12 +75,7 @@ extern void activate_gadgetron_ceo_challenge_environment(char *);
 
 extern int PlayBankSound(int, int, int);
 
-extern float vec_distance_xy(void *, void *);
-
-extern int fast_dec_timer(void *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
 extern void EaseManipulatorOffsets(float, float, void *, void *, int);
 
@@ -1071,7 +1066,6 @@ extern int envmap_a_normal_bufs SDATA(envmap_a_normal_bufs);
 extern int envmap_a_color_bufs SDATA(envmap_a_color_bufs);
 extern char envmap_a_bounding_spheres[][16];
 extern char envmap_a_uvs[];
-extern int GetEffectTex(int);
 
 /* Sets up the draw state, then draws the three entries of the level's table. */
 void env_map_a_draw(void) {

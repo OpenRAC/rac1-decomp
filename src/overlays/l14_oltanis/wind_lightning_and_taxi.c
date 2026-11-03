@@ -174,7 +174,6 @@ typedef struct {
     long r80;
     long r88;
 } Q_E0910;
-extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -538,13 +537,7 @@ typedef struct Data_2EC3E8 {
     short timer2; /* 0x50A */
     float rate2; /* 0x50C */
 } Data_2EC3E8;
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int FastDecTimer_r(void *) __asm__("func_001F9938");
-extern float FastVecLength_r(void *a) __asm__("func_001F9CB8");
 
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern int STUB_printf_r() __asm__("func_001E9730");
@@ -591,13 +584,13 @@ void update_wind_control(Moby *m) {
             return;
         }
         d->active = 0;
-        d->f14 = FastVecLength_r(oltanis_clip_volumes_r + (d->node << 7)) * 2.0f;
-        d->f18 = FastVecLength_r(oltanis_clip_volumes_r + (d->node << 7) + 0x10);
-        d->f1C = FastVecLength_r(oltanis_clip_volumes_r + (d->node << 7) + 0x20);
-        d->timer2 = scale_ticks_r(d->ticks);
+        d->f14 = FastVecLength(oltanis_clip_volumes_r + (d->node << 7)) * 2.0f;
+        d->f18 = FastVecLength(oltanis_clip_volumes_r + (d->node << 7) + 0x10);
+        d->f1C = FastVecLength(oltanis_clip_volumes_r + (d->node << 7) + 0x20);
+        d->timer2 = scale_ticks(d->ticks);
         d->rate2 = 1.0f / IntToFloat(d->timer2);
-        sv[0] = FastCos_r(m->rot.z);
-        sv[1] = FastSin_r(m->rot.z);
+        sv[0] = FastCos(m->rot.z);
+        sv[1] = FastSin(m->rot.z);
         sv[2] = 0.0f;
         for (i = 0; i < 0x30; i++) {
             initialize_wind_spark_r(m, i, sv);
@@ -605,8 +598,8 @@ void update_wind_control(Moby *m) {
     }
     if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->vol500)) {
         Hero *h;
-        wind_push_vector.x = FastCos_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
-        wind_push_vector.y = FastSin_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
+        wind_push_vector.x = FastCos(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
+        wind_push_vector.y = FastSin(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
         wind_push_vector.z = 0.0f;
         wind_push_vector.f10 = 1.0f;
         update_wind_sparks_r(m);
@@ -614,14 +607,14 @@ void update_wind_control(Moby *m) {
         if (h->unk308 == 0 && h->unk2284 != 0xD && (h->on_ice_ground != 0 || h->frames_off_ground.s != 0) &&
             is_point_inside_clip_volume_r(&g_hero.motion.pos, d->vol0)) {
             float t;
-            FastDecTimer_r(&d->timer2);
+            FastDecTimer(&d->timer2);
             t = (1.0f - IntToFloat(d->timer2) * d->rate2) * (d->speed * g_frame_time_r);
             d->active = 1;
-            sv[0] = FastCos_r(m->rot.z) * t;
-            sv[1] = FastSin_r(m->rot.z) * t;
+            sv[0] = FastCos(m->rot.z) * t;
+            sv[1] = FastSin(m->rot.z) * t;
             sv[2] = 0.0f;
-            FastVecAdd_r(&g_hero.motion.platform_delta, &g_hero.motion.platform_delta, sv);
-            d->timer = scale_ticks_r(D_L14_00161CD4_2EC3E8);
+            FastVecAdd(&g_hero.motion.platform_delta, &g_hero.motion.platform_delta, sv);
+            d->timer = scale_ticks(D_L14_00161CD4_2EC3E8);
             d->rate = 1.0f / IntToFloat(d->timer);
             return;
         }
@@ -629,23 +622,23 @@ void update_wind_control(Moby *m) {
     if (d->active != 0 && d->timer != 0) {
         float u;
         float t;
-        if (FastDecTimer_r(&d->timer)) {
+        if (FastDecTimer(&d->timer)) {
             d->active = 0;
-            d->timer2 = scale_ticks_r(d->ticks);
+            d->timer2 = scale_ticks(d->ticks);
             d->rate2 = 1.0f / IntToFloat(d->timer2);
         }
         if (g_hero.unk308 != 0 || g_hero.on_ice_ground == 0) {
-            if (d->timer > scale_ticks_r(15)) {
-                d->timer = scale_ticks_r(15);
+            if (d->timer > scale_ticks(15)) {
+                d->timer = scale_ticks(15);
                 d->rate = 1.0f / (float)d->timer;
             }
         }
         u = IntToFloat(d->timer) * d->rate;
         t = (d->speed * g_frame_time_r - 0.0f) * u + 0.0f;
-        sv[0] = FastCos_r(m->rot.z) * t;
-        sv[1] = FastSin_r(m->rot.z) * t;
+        sv[0] = FastCos(m->rot.z) * t;
+        sv[1] = FastSin(m->rot.z) * t;
         sv[2] = 0.0f;
-        FastVecAdd_r(&g_hero.motion.platform_delta, &g_hero.motion.platform_delta, sv);
+        FastVecAdd(&g_hero.motion.platform_delta, &g_hero.motion.platform_delta, sv);
     }
 }
 extern struct {
@@ -990,8 +983,6 @@ void update_looping_path_moby(struct Moby *m) {
     }
 }
 
-extern float vec_length_xy(void *);
-
 extern void MobyBlendAnimation(void *, int, int, int);
 
 /* Spawn a projectile moby at a, aimed along b, with two parameters. */
@@ -1030,7 +1021,6 @@ typedef struct {
     u8 flag19;
     u8 pad1A[0x16];
 } L14BoltSweep;
-extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
 
@@ -1140,7 +1130,6 @@ extern int lightning_arc_remaining_frames MACRO_ADDR;
 extern float lightning_arc_start_pos[] MACRO_ADDR;
 extern float lightning_arc_end_pos[] MACRO_ADDR;
 
-extern int fast_dec_timer(void *);
 extern int FastBSphereCheck(void *, float);
 
 extern void update_branched_lightning_arc(char *);
@@ -1223,7 +1212,6 @@ extern int lightning_arc_initial_lifetime_frames MACRO_ADDR;
 extern float lightning_arc_inverse_fade_duration MACRO_ADDR;
 extern int lightning_arc_sound_pending MACRO_ADDR;
 extern int lightning_branch_starts[] MACRO_ADDR;
-extern void lerp_vector(void *, void *, void *, float);
 
 void spawn_lightning_arc_particle_pairs(float *pos, int n);
 void draw_branched_lightning_arc();
@@ -1393,7 +1381,6 @@ typedef struct {
     long r80;
     long r88;
 } Q_2EF078;
-extern int GetEffectTex(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1669,12 +1656,11 @@ extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
+
 extern int advance_elevator_along_path_r(char *) __asm__("func_L14_002F05D8");
 extern void rebuild_elevator_world_path_r(char *) __asm__("func_L14_002F0AB8");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern void update_entity_matrix_r(char *, void *, void *, void *) __asm__("func_L00_002617B0");
-extern float FastVecLength_r2(void *) __asm__("func_001F9CB8");
 
 extern float Spring_r(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
@@ -1827,17 +1813,17 @@ void elevator_685_update(char *moby) {
                     Sound_SetPitchBend(data->voice, data->pitch_base);
                 }
             }
-            ((Moby *)moby)->glow_color = FastTweenColor_r(((Moby *)moby)->glow_color, 0x80808040, 0.1f);
+            ((Moby *)moby)->glow_color = FastTweenColor(((Moby *)moby)->glow_color, 0x80808040, 0.1f);
             if (advance_elevator_along_path_r(moby) != 0) {
                 ((unsigned char *)moby)[0x20] = 3;
                 data->pitch = *(unsigned short *)&data->pitch_base;
             }
             rebuild_elevator_world_path_r(moby);
-            FastVecSub_r(v20, moby + 0x10, v0);
+            FastVecSub(v20, moby + 0x10, v0);
             update_entity_matrix_r(data->entity, v20, v10, moby + 0x40);
             break;
         case 3:
-            ft = FastVecLength_r2(&data->pos_vel_x);
+            ft = FastVecLength(&data->pos_vel_x);
             if (0.001f <= ft) {
                 if (Sound_IsPlaying_r(moby, data->voice) == 0) {
                     data->voice = Moby_PlaySound_r(0, 4, (int)moby);
@@ -1885,7 +1871,7 @@ void elevator_685_update(char *moby) {
         if (((unsigned char *)moby)[0x20] != 0) {
             settle_elevator_at_path_endpoint_r(moby);
             if (g_hero_ground_moby == moby) {
-                FastVecSub_r(v20, moby + 0x10, v0);
+                FastVecSub(v20, moby + 0x10, v0);
                 update_entity_matrix_r(data->entity, v20, v10, moby + 0x40);
             }
         }
@@ -2156,7 +2142,6 @@ extern Moby *find_group_moby_by_tag(char *, int);
 extern float func_00214D88(float, float, float, float, float *, float *);
 extern void SamplePathAt_r(int *, int, void *, float *, int, float) __asm__("func_00215CA8");
 extern void SamplePathAt_r2(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
-extern void lerp_vector(void *, void *, void *, float);
 
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
@@ -2572,8 +2557,6 @@ extern void set_ground_height_band(void *);
 
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
 
-extern float vec_distance_xy(void *, void *);
-
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern LevelState oltanis_collected_flags_base_r2 __asm__("D_L14_001BBCC0");
 extern char qwark_oltanis_dialogue_name[];
@@ -2746,7 +2729,7 @@ extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
 extern void Sound_StopSlot_r2(int) __asm__("func_L00_0028EBF0");
 extern void STUB_printf_r2(const char *, short) __asm__("func_001E9730");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
+
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern int Sound_IsPlaying_r2(struct Moby *, int) __asm__("func_L00_0028EB98");
@@ -2813,7 +2796,7 @@ void update_enemy_fighter(struct Moby *moby) {
             moby->update_dist = 0xff;
             moby->draw_dist = 0xff;
             data->sound = -1;
-            data->timer = scale_ticks_r2(D_L14_0016202C_FD578);
+            data->timer = scale_ticks(D_L14_0016202C_FD578);
             break;
         case 1:
             advance_enemy_fighter_along_flight_path_r(moby);
@@ -2823,7 +2806,7 @@ void update_enemy_fighter(struct Moby *moby) {
                 path = oltanis_paths_r3[data->path];
                 moby->flags &= 0xffbe;
                 moby->collision = moby->pclass->collision;
-                data->timer = scale_ticks_r2(D_L14_0016202C_FD578);
+                data->timer = scale_ticks(D_L14_0016202C_FD578);
                 moby->state = 1;
                 data->segment = 0;
                 data->along = 0;
@@ -3084,16 +3067,15 @@ extern void Sound_StopSlot_r3(int) __asm__("func_L00_0028EBF0");
 extern int STUB_printf_r3() __asm__("func_001E9730");
 extern void DeleteMoby_r3(void *) __asm__("func_0020D678");
 extern void initialize_flight_path_state_r2(Moby *) __asm__("func_L14_002FDD18");
-extern int scale_ticks_r3(int) __asm__("func_001F9850");
+
 extern int is_point_inside_clip_volume_r3(void *, int) __asm__("func_00215570");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
-extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
+
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern void activate_descriptor_r(int) __asm__("func_L10_002F6E10");
 extern int advance_moby_along_flight_path_r(Moby *) __asm__("func_L14_002FEDA0");
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void set_moby_state_two_r(Moby *) __asm__("func_L06_00304590");
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 extern void spawn_moby_exhaust_puffs_r(Moby *) __asm__("func_L14_002FE798");
@@ -3180,7 +3162,7 @@ void update_enemy_fighter_921(Moby *m) {
             }
             m->draw_dist = 0x80;
             d->f6C = -1;
-            d->f7C = scale_ticks_r3(D_L14_0016205C_2FE038);
+            d->f7C = scale_ticks(D_L14_0016205C_2FE038);
             break;
         case 1: {
             unsigned char a, b, c;
@@ -3197,10 +3179,10 @@ void update_enemy_fighter_921(Moby *m) {
                         qcopy(vt, (*(Vec_2FE038 *)&seat->pos));
                         vt[2] = vt[2] + 4.0f;
                         pitch =
-                            FastDiffRots_r(((Cam *)oltanis_player_camera_r)->f154,
-                                           -fast_atan2_r2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
-                                                          vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
-                        yaw = FastDiffRots_r(
+                            FastDiffRots(((Cam *)oltanis_player_camera_r)->f154,
+                                         -fast_atan2_r2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
+                                                        vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
+                        yaw = FastDiffRots(
                             ((Cam *)oltanis_player_camera_r)->f158,
                             fast_atan2_r2((*(Vec_2FE038 *)&seat->pos)[0] - ((Cam *)oltanis_player_camera_r)->pos[0],
                                           (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam *)oltanis_player_camera_r)->pos[1]));
@@ -3231,10 +3213,10 @@ void update_enemy_fighter_921(Moby *m) {
                 if (d->f94 == 0 && d->f60 >= 0x38) {
                     d->f94 = 1;
                 }
-                FastVecScale_r(vb, (*(Vec_2FE038 *)&m->rot_row0), 0.21f);
-                FastVecScale_r(vt, (*(Vec_2FE038 *)&m->rot_row2), -1.24f);
-                FastVecAdd_r2(vb, vb, vt);
-                FastVecAdd_r2(vb, (*(Vec_2FE038 *)&m->pos), vb);
+                FastVecScale(vb, (*(Vec_2FE038 *)&m->rot_row0), 0.21f);
+                FastVecScale(vt, (*(Vec_2FE038 *)&m->rot_row2), -1.24f);
+                FastVecAdd(vb, vb, vt);
+                FastVecAdd(vb, (*(Vec_2FE038 *)&m->pos), vb);
                 {
                     Moby *jet = (Moby *)(oltanis_mobys_r + (d->f8C << 8));
                     qcopy((*(Vec_2FE038 *)&jet->pos), vb);
@@ -3251,7 +3233,7 @@ void update_enemy_fighter_921(Moby *m) {
                 Moby *p = oltanis_paths_r4[d->f68];
                 m->flags &= 0xFFBE;
                 m->collision = *(int *)((char *)((struct Moby *)m->pclass) + 0x10);
-                d->f7C = scale_ticks_r3(D_L14_0016205C_2FE038);
+                d->f7C = scale_ticks(D_L14_0016205C_2FE038);
                 m->state = 2;
                 d->f60 = 0;
                 d->f64 = 0;
@@ -3473,19 +3455,17 @@ extern s32 D_L14_00162080_2FF040 SDATA(D_L14_00162080);
 extern f32 D_L14_00162078_2FF040 SDATA(D_L14_00162078);
 extern f32 D_L14_0016207C_2FF040 SDATA(D_L14_0016207C);
 extern unsigned char *oltanis_mobys_r2 __asm__("D_L14_00160098") MACRO_ADDR;
-extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
+
 extern void func_L00_0025F4A8_2FF040(void *, void *, void *, float, float, int, int, int, float, float, float, int,
                                      float, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_IsPlaying_r4(void *, int) __asm__("func_L00_0028EB98");
 
 extern int Moby_PlaySound_r5(int, int, int) __asm__("func_0022ED80");
 extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
-extern s32 scale_ticks_r4(s32) __asm__("func_001F9850");
-extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern float FastVecLength_r3(void *) __asm__("func_001F9CB8");
+
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 extern void Sound_StopSlot_r4(s32) __asm__("func_L00_0028EBF0");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
+
 extern float interpolate_angle_r(float, float, float) __asm__("func_L00_0025C7A8");
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
@@ -3513,13 +3493,13 @@ void FlyerUpdate(struct Moby *moby) {
             moby->update_dist = 0xFF;
             moby->pos.z += 1.5f;
             vars->sound = -1;
-            vars->timer = scale_ticks_r4(D_L14_00162080_2FF040);
+            vars->timer = scale_ticks(D_L14_00162080_2FF040);
             return;
         case 1:
             return;
         case 2:
-            FastVecSub_r2(&diff, oltanis_clip_volumes_r + vars->point * 0x80 + 0x30, &moby->pos);
-            dist = FastVecLength_r3(&diff);
+            FastVecSub(&diff, oltanis_clip_volumes_r + vars->point * 0x80 + 0x30, &moby->pos);
+            dist = FastVecLength(&diff);
             fast_dec_timer_r3(&vars->timer);
             speed = D_L14_00162078_2FF040 * g_frame_time_r;
             if (dist < speed || dist <= 0.0f) {
@@ -3542,11 +3522,11 @@ void FlyerUpdate(struct Moby *moby) {
                 DeleteMoby_r4(moby);
                 return;
             }
-            moby->rot.x = FastAddRots_r(moby->rot.x, 2.0f * 0.017453292f);
+            moby->rot.x = FastAddRots(moby->rot.x, 2.0f * 0.017453292f);
             moby->rot.y =
                 interpolate_angle_r(moby->rot.y, -fast_atan2_r3(vec_length_xy_r(&diff), diff.z), D_L14_0016207C_2FF040);
             moby->rot.z = interpolate_angle_r(moby->rot.z, fast_atan2_r3(diff.x, diff.y), D_L14_0016207C_2FF040);
-            FastVecScale_r2(&step, &moby->rot_row0, speed);
+            FastVecScale(&step, &moby->rot_row0, speed);
             FastVecAdd_r3((u8 *)&moby->pos, (u8 *)&moby->pos, (u8 *)&step);
             spawn_moby_offset_puffs(moby);
             if (Sound_IsPlaying_r4(moby, vars->sound) == 0) {

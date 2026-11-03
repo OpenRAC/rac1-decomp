@@ -31,7 +31,6 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float hero_speed_bands_field_18[];
 
-extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
@@ -801,8 +800,6 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern s32 g_controller_state_no_direction[];
 extern void stick_target_v(s32, f32) __asm__("func_L00_00211F80");
 
-extern f32 vec_length_xy(void *);
-
 extern void vec_scale_to_length(void *, void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
@@ -1163,7 +1160,7 @@ void spawn_hero_radial_particle_burst(void) {
     if (!ang) {
     }
 }
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+
 typedef struct {
     u8 pad00[0x40];
     f32 unk40[4]; /* 0x40: launch direction */
@@ -1205,7 +1202,7 @@ void launch_hero_wrench(void) {
             if (tpv->unk7E) {
                 has_target = 1;
                 transform_hero_local_offset_to_world(dir, 0.5f, 0.0f, 0.5f);
-                FastVecSub_r(delta, tpv->unk50, dir);
+                FastVecSub(delta, tpv->unk50, dir);
                 g_hero_r2.aim_yaw = fast_atan2(delta[0], delta[1]);
                 g_hero_r2.aim_pitch = fast_atan2(vec_length_xy(delta), delta[2]);
             }

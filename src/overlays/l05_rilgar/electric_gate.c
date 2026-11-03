@@ -254,8 +254,6 @@ extern int electric_gate_alpha_c SDATA(electric_gate_alpha_c);
 extern int electric_gate_alpha_d SDATA(electric_gate_alpha_d);
 extern int electric_gate_effect_tex SDATA(electric_gate_effect_tex);
 
-extern int GetEffectTex(int);
-
 extern void draw_world_quad(void *, void *, int);
 
 typedef struct {
@@ -445,11 +443,7 @@ extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int rilgar_level_cuboids_r __asm__("D_L05_001601AC") MACRO_ADDR;
 extern void scale_30F9D0(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void mul_30F9D0(void *, void *, float) __asm__("func_001F9C30");
-extern void add_30F9D0(void *, void *, void *) __asm__("func_001F9BD8");
-extern void sub_30F9D0(void *, void *, void *) __asm__("func_001F9BF0");
-extern float len_30F9D0(void *) __asm__("func_001F9CB8");
-extern void clear_30F9D0(void *) __asm__("func_001F9BC0");
+
 extern int voice_30F9D0(int, int, void *) __asm__("func_0022ED80");
 extern float advance_30F9D0(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
@@ -475,10 +469,10 @@ void update_triggered_moby_slide_and_lowering(Moby *moby) {
             moby->rot.z = *(float *)(e0 + 0x78);
             scale_30F9D0(v, e0 + 0x10, data->distance);
             if (data->reversed != 0) {
-                mul_30F9D0(v, v, -1.0f);
+                FastVecScale(v, v, -1.0f);
                 moby->flags |= 0x8000;
             }
-            add_30F9D0(&moby->pos, &moby->pos, v);
+            FastVecAdd(&moby->pos, &moby->pos, v);
             moby->state = 1;
             break;
         }
@@ -486,7 +480,7 @@ void update_triggered_moby_slide_and_lowering(Moby *moby) {
             if (moby_pool_4f60_r[data->trigger * 256 + 0xBC] != 0) {
                 voice_30F9D0(0, 0, moby);
                 moby->state = 2;
-                clear_30F9D0(&data->velocity);
+                clear_u64_value(&data->velocity);
             }
             break;
         case 2:
@@ -495,17 +489,17 @@ void update_triggered_moby_slide_and_lowering(Moby *moby) {
             pos = 0.0f;
             scale_30F9D0(v, e + 0x10, reach);
             if (data->reversed != 0) {
-                mul_30F9D0(v, v, -1.0f);
+                FastVecScale(v, v, -1.0f);
             }
-            add_30F9D0(v, e + 0x30, v);
-            sub_30F9D0(v, v, &moby->pos);
-            len = len_30F9D0(v);
-            speed = len_30F9D0(&data->velocity);
+            FastVecAdd(v, e + 0x30, v);
+            FastVecSub(v, v, &moby->pos);
+            len = FastVecLength(v);
+            speed = FastVecLength(&data->velocity);
             advance_30F9D0(len, g_frame_time_sq_r * 20.0f, g_frame_time_sq_r * 30.0f, g_frame_time_r * 10.0f, &pos,
                            &speed);
             scale_30F9D0(&data->velocity, v, speed);
-            add_30F9D0(&moby->pos, &moby->pos, &data->velocity);
-            if (len_30F9D0(v) < 0.01f) {
+            FastVecAdd(&moby->pos, &moby->pos, &data->velocity);
+            if (FastVecLength(v) < 0.01f) {
                 moby->state = 3;
             }
             break;
@@ -549,8 +543,6 @@ typedef struct {
 
 extern void update_drain_cover_tilt(char *obj, float a, float b);
 extern void emit_drain_cover_particles(char *obj, float a, float b);
-extern float vec_distance_xy(void *, void *);
-extern int fast_dec_timer(void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -995,11 +987,10 @@ void update_triggered_gate_motion(struct Moby *m) {
 }
 extern char voice_pool_r[] __asm__("D_0013E650");
 extern char rilgar_camera_pos_r[] __asm__("D_L05_001672C0");
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+
 extern int Moby_PlaySound_r() __asm__("func_0022ED80");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 struct EmitterVars {
     s32 unk0;
@@ -1014,8 +1005,7 @@ struct FloorRow {
     u8 padC[0x1190 - 0xC];
 };
 extern float vec_length_r(float) __asm__("func_001F9B50");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
+
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 
@@ -1069,21 +1059,21 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
             break;
         case 2:
             d->age++;
-            if (FastVecDist_r(&m->pos, rilgar_camera_pos_r) < 64.0f) {
+            if (FastVecDist(&m->pos, rilgar_camera_pos_r) < 64.0f) {
                 struct Moby *o;
                 if (*d->voice >= 0 && (o = ((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->owner) != 0 &&
                     o->oclass == 0x357) {
-                    if (o != m && (o->state != state || FastVecDist_r(&m->pos, rilgar_camera_pos_r) <
-                                                            FastVecDist_r(&o->pos, rilgar_camera_pos_r))) {
+                    if (o != m && (o->state != state || FastVecDist(&m->pos, rilgar_camera_pos_r) <
+                                                            FastVecDist(&o->pos, rilgar_camera_pos_r))) {
                         vec_scale_to_length_r(v, &m->rot_row0, 2.5f);
-                        FastVecAdd_r(&((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->position, v, &m->pos);
+                        FastVecAdd(&((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->position, v, &m->pos);
                         ((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->owner = m;
                     }
                 } else {
                     *d->voice = Moby_PlaySound_r(0, 0xD, m);
                     if (*d->voice >= 0) {
                         vec_scale_to_length_r(v, &m->rot_row0, 2.5f);
-                        FastVecAdd_r(&((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->position, v, &m->pos);
+                        FastVecAdd(&((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->position, v, &m->pos);
                     }
                 }
             }
@@ -1104,7 +1094,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                 vec_scale_to_length_r(
                     u, &m->rot_row1,
                     random_float_between_r(-(*(float *)&D_L05_00161F74_165B8), (*(float *)&D_L05_00161F74_165B8)));
-                FastVecAdd_r(v, v, u);
+                FastVecAdd(v, v, u);
                 a = random_float_between_r(lim, (*(float *)&D_L05_00161F68_165B8));
                 b = random_float_between_r(lim, (*(float *)&D_L05_00161F68_165B8));
                 c = random_float_between_r(lim, (*(float *)&D_L05_00161F68_165B8));
@@ -1133,10 +1123,10 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                         float s = t * (g_frame_time_r * 4.0f);
                         float ang = random_angle_radians_r();
                         float r = random_float_between_r(0.0f, 1.25f);
-                        FastVecScale_r(v, &m->rot_row0, s);
-                        FastVecAdd_r(v, v, &m->pos);
-                        v[0] += FastCos_r(ang) * r;
-                        v[1] += FastSin_r(ang) * r;
+                        FastVecScale(v, &m->rot_row0, s);
+                        FastVecAdd(v, v, &m->pos);
+                        v[0] += FastCos(ang) * r;
+                        v[1] += FastSin(ang) * r;
                         v[2] = floor + 0.05f;
                         spawn_splash(random_float_between_r(1.0f, 1.5f), random_integer_below_r(2) ? 2.0f : -2.0f, v,
                                      rilgar_zero_vec, &rilgar_water_patches[d->floor].z);
@@ -1191,7 +1181,6 @@ extern LiftPose *rilgar_level_cuboids_r2 __asm__("D_L05_001601AC") MACRO_ADDR;
 extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 ApproachWithVelocity_r(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
 
-extern f32 vec_distance_xy(void *, void *);
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 
 extern void lift_camera_view_r(void *, void *, void *) __asm__("func_L05_003173A8");
@@ -1701,7 +1690,6 @@ extern const char race_girl_dialogue_name[];
 extern HGVec rilgar_race_camera_vectors[];
 extern unsigned char gCheats[];
 
-extern float vec_length_xy(void *);
 extern void update_hoverboard_girl_cutscene_instances();
 extern void PlayBankSound();
 #define breast_growth_count_gp_q (*(int *)&D_L05_00161F90)
@@ -1974,7 +1962,6 @@ void update_hoverboard_girl(Moby *moby) {
 #undef update_hoverboard_girl_boobs_animation_r
 #undef func_0022EE28_x
 
-extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char qwarks_bouncer_dialogue_name[];
 extern unsigned char level_available_base[];
@@ -2279,7 +2266,6 @@ extern int D_L05_0016139C MACRO_ADDR;
 extern float D_L05_001613A0[4] MACRO_ADDR;
 extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
 extern int find_319F78(void *, int) __asm__("func_00215570");
-extern float sin_319F78(float) __asm__("func_001F9FA8");
 
 /* Two-state marker: arms the moby, then once its target is found copies the
  * target position and sets the bob height from the frame counter.
@@ -2304,7 +2290,7 @@ void update_hero_clip_volume_outputs(char *m) {
                 *(short *)(t + 0x15E) = 5;
                 hero_clip_volume_bounds[3] = 48.0f;
                 hero_clip_volume_bounds[2] =
-                    sin_319F78((float)(rilgar_frame_count_r % 360) * 0.017444444f - 3.14f) * 0.25f + 59.5f;
+                    FastSin((float)(rilgar_frame_count_r % 360) * 0.017444444f - 3.14f) * 0.25f + 59.5f;
             } else {
                 hero_inside_clip_volume = 0;
             }
@@ -2351,7 +2337,6 @@ extern void select_taxi_route(char *);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern void SamplePathAt_r(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
-extern void lerp_vector(void *, void *, void *, float);
 
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 

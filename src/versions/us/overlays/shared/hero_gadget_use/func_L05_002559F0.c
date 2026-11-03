@@ -27,9 +27,9 @@ int hero_pick_help_mode(void) {
     qcopy(vp, v1);
     qcopy(v3, g->fE0);
     vec_scale_to_length(v3, v3, 0.55f);
-    FastVecAdd_r(v3, v3, g->fE0);
+    FastVecAdd(v3, v3, g->fE0);
     v3[2] = f20;
-    FastVecAdd_r(vp, v1, v3);
+    FastVecAdd(vp, v1, v3);
     if (!coll_line(v1, vp, 2, 0, 0))
         goto L_BAC;
     h = (char *)&rilgar_coll_hit_r;

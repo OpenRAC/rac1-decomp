@@ -467,11 +467,8 @@ extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern s32 func_L00_0025F410(s32);
 extern void transform_hero_local_offset_to_world_r(float *, float, float, float) __asm__("func_L00_00233EE0");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern int func_L00_001F10E0(float, void *, int, int);
 
-extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern int func_L00_001F10E0(float, void *, int, int);
 
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 
@@ -511,7 +508,7 @@ void update_hero_movement_and_collision_probes(void) {
             distance = 20.0f;
             hit = coll_line_r(start, end, 2, g_hero_r.moby, 0);
             if (hit)
-                distance = FastVecDist_r(start, rilgar_coll_hit_point);
+                distance = FastVecDist(start, rilgar_coll_hit_point);
             if (!hit || distance > 3.0f) {
                 for (offset = -0.4f; offset < 0.5f; offset += 0.1f) {
                     transform_hero_local_offset_to_world_r(probe, 1.1f + offset, 0.0f, 0.0f);
@@ -536,8 +533,8 @@ void update_hero_movement_and_collision_probes(void) {
         start[2] = 0.21f;
         matrix_mul_vec3(start, start, (char *)g_hero_r.moby + 0xc0);
         euler_to_matrix(rotation, rilgar_hero_bob_attach_euler);
-        transform_vector_r(start, start, rotation);
-        FastVecAdd_r(g_hero_r.hoverboard_moby + 0x10, g_hero_r.hoverboard_moby + 0x10, start);
+        transform_vector(start, start, rotation);
+        FastVecAdd(g_hero_r.hoverboard_moby + 0x10, g_hero_r.hoverboard_moby + 0x10, start);
         copy_matrix_rotation(moby_rotation, (char *)g_hero_r.moby + 0xc0);
         sce_vu0_mul_matrix_r(combined, moby_rotation, rotation);
         matrix_copy_rows(g_hero_r.hoverboard_moby + 0xc0, combined);
@@ -662,7 +659,7 @@ extern int gadget_double_tap_timer SDATA(gadget_double_tap_timer);
 extern int truncate_float_to_s32(float);
 
 extern int Hero_TryMoveStateL05_r(int, int) __asm__("func_L05_0024D680");
-extern int func_001F9908(int *);
+
 typedef struct {
     char p0[0xD8];
     unsigned short hD8;
@@ -672,8 +669,6 @@ typedef struct {
 
 extern unsigned short help_records_131_count[] NOT_SDA;
 extern unsigned short usage_stats_entry27_count[] NOT_SDA;
-
-extern float vec_distance_xy(void *, void *);
 
 extern Moby *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
@@ -1472,9 +1467,9 @@ extern int race_respawn_request_active SDATA(race_respawn_request_active);
 extern int race_respawn_gate_state SDATA(race_respawn_gate_state);
 extern float rilgar_off_course_reset_rate SDATA(rilgar_off_course_reset_rate);
 extern int hoverboard_race_finished SDATA(hoverboard_race_finished);
-extern float FastVecDist_r2(void *, void *) __asm__("func_001F9D10");
+
 extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
-extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
+
 extern void compute_hero_hoverboard_respawn_transform_r(void *, void *) __asm__("func_L05_00254B38");
 extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
 extern int select_point_index_by_distance_r(void *, void *, float) __asm__("func_L01_0028C2D8");
@@ -1513,7 +1508,7 @@ void update_hero_hoverboard_race_progress(void) {
         v0[0] = 163.0f;
         v0[1] = 119.0f;
         v0[2] = 80.0f;
-        if (FastVecDist_r2(g_hero.motion.pos.f, v0) < 11.0f) {
+        if (FastVecDist(g_hero.motion.pos.f, v0) < 11.0f) {
             if (g_hero.race_path_node < 3 || g_hero.race_path_node > 0x46) {
                 if (g_hero.race_path_node >= 3) {
                     g_hero.race_lap++;
@@ -1525,7 +1520,7 @@ void update_hero_hoverboard_race_progress(void) {
         v1[0] = 223.0f;
         v1[1] = 281.0f;
         v1[2] = 93.0f;
-        if (FastVecDist_r2(g_hero.motion.pos.f, v1) < 7.0f) {
+        if (FastVecDist(g_hero.motion.pos.f, v1) < 7.0f) {
             if (g_hero.race_path_node < 0x3B) {
                 g_hero.race_path_node = 0x3B;
             }
@@ -1540,8 +1535,8 @@ void update_hero_hoverboard_race_progress(void) {
         n1 = path->n + 1;
         next = (i + n1) % path->n;
         ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
-        if (FastDiffRots_r(ang, fast_atan2_r2(g_hero.motion.pos.f[0] - path->p[i].x,
-                                              g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
+        if (FastDiffRots(ang, fast_atan2_r2(g_hero.motion.pos.f[0] - path->p[i].x,
+                                            g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.race_path_node = next;
             if (next == 0) {
                 g_hero.race_lap++;
@@ -1567,7 +1562,7 @@ void update_hero_hoverboard_race_progress(void) {
         next = (i + n1) % path->n;
         dir = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
     }
-    if (near != 0 || (FastDiffRots_r(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
+    if (near != 0 || (FastDiffRots(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
         g_hero.off_course_frames++;
         if (g_hero.off_course_frames > scale_ticks(0xB4)) {
             if (race_respawn_request_active == 0) {
@@ -1604,7 +1599,7 @@ void update_hero_hoverboard_race_progress(void) {
         next = (i + n1) % path->n;
         ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
         qcopy(v0, moby_pool_4f60_r2[d->f2C[j]].pos);
-        if (FastDiffRots_r(ang, fast_atan2_r2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
+        if (FastDiffRots(ang, fast_atan2_r2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.racer_path_point[j] = next;
             if (next == 0) {
                 g_hero.racer_laps[j]++;
@@ -1836,9 +1831,9 @@ int hero_pick_help_mode(void) {
     qcopy(vp, v1);
     qcopy(v3, g->fE0);
     vec_scale_to_length(v3, v3, 0.55f);
-    FastVecAdd_r(v3, v3, g->fE0);
+    FastVecAdd(v3, v3, g->fE0);
     v3[2] = f20;
-    FastVecAdd_r(vp, v1, v3);
+    FastVecAdd(vp, v1, v3);
     if (!coll_line(v1, vp, 2, 0, 0))
         goto L_BAC;
     h = (char *)&rilgar_coll_hit_r;

@@ -155,7 +155,6 @@ extern void DMAC_VIF1_Enable_r(void) __asm__("func_00235018");
 extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
 
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
-extern void flush_cache_r(s32) __asm__("func_00118D80");
 
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
 
@@ -167,7 +166,6 @@ extern void VU1_swapChain_r(void) __asm__("func_00234948");
 extern void UpdatePad_r(void) __asm__("func_00218908");
 extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
-extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 
 extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
 extern void sceGsResetGraph_r(s16, s16, s16, s16) __asm__("func_00121B78");
@@ -221,9 +219,9 @@ void startlevel(void) {
             } else {
                 tbl = hdr->loading;
             }
-            flush_cache_r(0);
+            flush_cache(0);
             fast_decompress(tbl[g_game_language].off + (s32)hdr, hdr->code + (s32)hdr);
-            flush_cache_r(0);
+            flush_cache(0);
         }
         SetBackgroundColor_r(0, 0, 0);
         PutDrawBufferLarge_r();
@@ -258,14 +256,14 @@ void startlevel(void) {
                      (code + 0x2C003F) & ~0x3F, 0);
     }
     decode_mode_r = 0;
-    FadeToBlack_r(scale_game_frame_count_r(0xC));
-    flush_cache_r(0);
+    FadeToBlack_r(scale_game_frame_count(0xC));
+    flush_cache(0);
     if (pal_mode_r != 0) {
         fast_decompress(hdr->gfx_alt + (s32)hdr, hdr->code + (s32)hdr);
     } else {
         fast_decompress(hdr->gfx + (s32)hdr, hdr->code + (s32)hdr);
     }
-    flush_cache_r(0);
+    flush_cache(0);
     VU1_initChain_r();
     SetBackgroundColor_r(0, 0, 0);
     PutDrawBufferLarge_r();

@@ -41,7 +41,6 @@ extern s32 level_frame_counter MACRO_ADDR;
 extern CollisionHit coll_hit_result;
 
 extern s32 probe_hero_forward_collision_v(f32 *, f32, f32) __asm__("func_L00_0020A8B8");
-extern f32 vec_length_xy(void *);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
 
@@ -133,13 +132,8 @@ extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern void update_hero_tilt_r(void) __asm__("func_L00_00216D40");
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
-extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern s32 pad_pressed_within_r(s32, s32, s32) __asm__("func_L00_00267BA8");
 
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-
-extern f32 FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void update_hero_planar_distance_spring_motion_r(void) __asm__("func_L00_002222F0");
 extern void transform_hero_local_offset_to_world_r(void *, f32, f32, f32) __asm__("func_L00_00233EE0");
 extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
@@ -205,7 +199,7 @@ void update_hero_timers_and_reach_state(void) {
         g_hero_r.health.hp != 0 && (*(s32 *)&D_L00_0015F6A8_21D50) == 0) {
         if (g_hero_r.vehicle_mode == 3) {
             exit_hero_vehicle_mode();
-            if (pad_pressed_within_r(0x80, scale_ticks_r(0x12), 0)) {
+            if (pad_pressed_within_r(0x80, scale_ticks(0x12), 0)) {
                 g_hero_r.force_slot0_item8 = 1;
             }
         } else {
@@ -233,19 +227,19 @@ void update_hero_timers_and_reach_state(void) {
     if (g_hero_r.air_frames.s != 0 && gravity_z(&g_hero_r.motion.velocity) < 0.0f) {
         if (g_hero_r.pos_history_count != 0x20)
             goto skip;
-        clear_u64_value_r(&sum);
+        clear_u64_value(&sum);
         n8 = 8;
         for (i = 0; i < n8; i++) {
             n = g_hero_r.pos_history_index - i;
             {
                 s32 a = (n + 0x1F) % 32;
                 s32 b = (n + 0x1E) % 32;
-                FastVecSub_r(&d, &g_hero_r.pos_history[a], &g_hero_r.pos_history[b]);
+                FastVecSub(&d, &g_hero_r.pos_history[a], &g_hero_r.pos_history[b]);
             }
             FastVecAdd(&sum, &sum, &d);
         }
         FastVecScale(&sum, &sum, 1.0f / (f32)n8);
-        if (FastVecLength_r(&sum) < g_frame_time_r) {
+        if (FastVecLength(&sum) < g_frame_time_r) {
             g_hero_r.still_frames++;
             goto skip;
         }
@@ -291,8 +285,6 @@ skip:
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
-
-extern float vec_distance_xy(void *, void *);
 
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
@@ -558,7 +550,6 @@ typedef struct {
 extern void set_hero_idle_state_for_vehicle_mode(void);
 
 extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
 
 extern int truncate_float_to_s32(float);
 

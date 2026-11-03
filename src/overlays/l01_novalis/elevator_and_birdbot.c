@@ -98,7 +98,6 @@ typedef struct {
 extern union PacketCursor D_L01_00161240 MACRO_ADDR;
 extern u8 D_L01_001CAF00[];
 extern s32 FastBSphereCheck_r(void *, f32) __asm__("func_L00_00200290");
-extern u64 func_001F4868(s32);
 
 extern void emit_textured_strip_packet_r(s32, s32, s32, s32, s32, s32) __asm__("func_L01_0021F9C8");
 
@@ -203,8 +202,6 @@ extern int FastBSphereCheck(void *, f32);
 
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 
-f32 func_001FA748_BE2C8b(f32 a, f32 b) __asm__("func_001FA748");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/unclassified_002b96e0.c, FUN_L01_002bd100. */
@@ -246,15 +243,15 @@ void update_spark_particle_emitter(EmitterMoby *self) {
                 euler_to_matrix(&u.rot.m, self->rot);
                 transform_vector(&off, &off, &u.rot.m);
             }
-            FastVecAdd_r2(&p, &p, &off);
+            FastVecAdd(&p, &p, &off);
             if (v->flags & 0x1000) {
                 u.rot.ang.f[0] = random_float_between_r(-v->vel_range[0], v->vel_range[0]) * 3.1415927f / 180.0f;
                 u.rot.ang.f[1] = random_float_between_r(-v->vel_range[1], v->vel_range[1]) * 3.1415927f / 180.0f;
                 u.rot.ang.f[2] = random_float_between_r(-v->vel_range[2], v->vel_range[2]) * 3.1415927f / 180.0f;
                 if (v->flags & 0x4000) {
-                    u.rot.ang.f[0] = func_001FA748_BE2C8b(u.rot.ang.f[0], self->rot[0]);
-                    u.rot.ang.f[1] = func_001FA748_BE2C8b(u.rot.ang.f[0], self->rot[1]);
-                    u.rot.ang.f[2] = func_001FA748_BE2C8b(u.rot.ang.f[0], self->rot[2]);
+                    u.rot.ang.f[0] = FastAddRots(u.rot.ang.f[0], self->rot[0]);
+                    u.rot.ang.f[1] = FastAddRots(u.rot.ang.f[0], self->rot[1]);
+                    u.rot.ang.f[2] = FastAddRots(u.rot.ang.f[0], self->rot[2]);
                 }
                 euler_to_matrix(&u.rot.m, &u.rot.ang);
                 transform_vector(&out, &v->vel, &u.rot.m);
@@ -364,8 +361,6 @@ typedef struct {
     s32 kind;
 } PathPickTarget;
 extern void FindNearestTargetMoby(void *, void *, f32);
-
-extern float vec_distance_xy(void *, void *);
 
 /* Picks the path node the follower should head for: an ordered path just steps to the next stop; otherwise the nearest
    node and its two neighbours are scored (distance, or heading change for slow movers) and the best one is written to
@@ -610,14 +605,10 @@ extern void RerollEffectCounter(void *m, short *p);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern int fast_dec_timer(void *);
-extern float vec_distance_xy(void *, void *);
 
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern float vec_length_xy(void *);
 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern int mine_fall(void *, void *);
@@ -2955,12 +2946,9 @@ float spring_axis_to(float target, float k, float a, float b, float *cur, float 
     return FastAbsF(target - *cur);
 }
 typedef unsigned int u128_pt __attribute__((mode(TI)));
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern f32 g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
 
 typedef union {
@@ -2993,10 +2981,6 @@ extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern f32 spring_axis_to_r(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L01_002F95A0");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-
-extern f32 FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern f32 func_00214440(void *, s32);
 /* Hovering enemy update: springs its position toward a home point on each axis, keeps its distance to the player, and steers toward a target with the shared turn helper. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8268. */
@@ -3032,8 +3016,8 @@ void water_lily_update(HoverMoby *m) {
             if (vec_distance_xy_r(&m->pos, &g_hero_r2.motion.pos) < *(float *)&water_lily_hero_separation_radius) {
                 if (FastAbsF(m->pos.v.z - g_hero_r2.motion.pos.f[2]) < 0.7f) {
                     ang = fast_atan2_r(m->pos.v.x - g_hero_r2.motion.pos.f[0], m->pos.v.y - g_hero_r2.motion.pos.f[1]);
-                    m->pos.v.x = FastCos_r(ang) * *(float *)&water_lily_hero_separation_radius;
-                    m->pos.v.y = FastSin_r(ang) * *(float *)&water_lily_hero_separation_radius;
+                    m->pos.v.x = FastCos(ang) * *(float *)&water_lily_hero_separation_radius;
+                    m->pos.v.y = FastSin(ang) * *(float *)&water_lily_hero_separation_radius;
                     m->pos.v.x += g_hero_r2.motion.pos.f[0];
                     m->pos.v.y += g_hero_r2.motion.pos.f[1];
                 }
@@ -3043,11 +3027,11 @@ void water_lily_update(HoverMoby *m) {
             m->pos.v.x = tgt.v.x;
             m->pos.v.y = tgt.v.y;
             m->pos.v.z = old.v.z;
-            if (FastVecDist_r(&old, &m->pos) > *(float *)&water_lily_max_horizontal_speed * g_frame_time_r2) {
-                FastVecSub_r(&d, &m->pos, &old);
+            if (FastVecDist(&old, &m->pos) > *(float *)&water_lily_max_horizontal_speed * g_frame_time_r2) {
+                FastVecSub(&d, &m->pos, &old);
                 step.q = d.q;
                 vec_scale_to_length_r(&step, &step, *(float *)&water_lily_max_horizontal_speed * g_frame_time_r2);
-                FastVecAdd_r3(&d, &old, &step);
+                FastVecAdd(&d, &old, &step);
                 m->pos.q = d.q;
             }
             dz = resolve_camera_surface_height(&m->pos, 0) - m->pos.v.z;
@@ -3211,7 +3195,6 @@ extern CapCamera novalis_player_camera;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
-extern float vec_distance_xy(void *, void *);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
 /* Collapsing platform: sparkles while idle, then drops when the player stands near, and records it as collected.

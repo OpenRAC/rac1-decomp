@@ -169,8 +169,6 @@ typedef struct {
     unsigned char *x4;
 } S160E9EC8;
 
-extern void scale_vector(void *, void *, float);
-
 extern int truncate_float_to_s32(float);
 
 extern int pal_mode MACRO_ADDR;
@@ -696,8 +694,6 @@ extern s32 D_001D8840[];
 extern s32 D_001E0C00[];
 extern s32 D_001E2900[];
 
-extern void FastMemSet_r(void *, s32, s32) __asm__("func_001F99B0");
-extern void flush_cache_r(s32) __asm__("func_00118D80");
 extern void queue_dma_transfer_r(s32) __asm__("func_001EB300");
 
 extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
@@ -750,18 +746,18 @@ void transition_load_wad(void) {
     g_gs_texture_allocation_base_r = 0x2C0000;
     g_gs_texture_allocation_start_r = 0x2C0000;
     g_gs_texture_allocation_cursor_r = 0x2C0000;
-    FastMemSet_r(coll_output_aux_buffer_r, 0x87654321, 0x10);
-    FastMemSet_r(resident_class_slot_by_id, -1, k_800);
-    FastMemSet_r(resident_class_material_maps, -1, 0xE00);
-    FastMemSet_r(resident_class_original_field_2c_r, 0, 0xE0);
+    FastMemSet(coll_output_aux_buffer_r, 0x87654321, 0x10);
+    FastMemSet(resident_class_slot_by_id, -1, k_800);
+    FastMemSet(resident_class_material_maps, -1, 0xE00);
+    FastMemSet(resident_class_original_field_2c_r, 0, 0xE0);
     InitViewContext_r();
     UpdateViewContext_r();
     VU1_initChain_r();
     start_audio_stream_read((u8 *)0x1400000, disc_table_r.unk14E8.sector, disc_table_r.unk14E8.size);
     update_audio_stream_until_idle(1);
-    flush_cache_r(0);
+    flush_cache(0);
     size = fast_decompress((u8 *)0x1400000, level_resource_buffers.hdr);
-    flush_cache_r(0);
+    flush_cache(0);
     hdr = (WadHeader *)level_resource_buffers.hdr;
     upload_texture_images(((u8 *)hdr) + hdr->x0, hdr->x8, ((u8 *)hdr) + hdr->xC);
     t = ((s64)((g_gs_texture_allocation_base_r + hdr->x70) >> 8)) | 0x1D308000;
@@ -831,7 +827,7 @@ void transition_load_wad(void) {
     new_var4 = hdr->x54;
     ParseParticleTexs(((u8 *)hdr) + (new_var = hdr->x6C), new_var3, ((u8 *)hdr) + new_var4, hdr->x50);
     sceGsSetDefLoadImage(li, (g_gs_texture_allocation_cursor_r << 8) >> 16, 4, 0, 0, 0, 0x100, 0x80);
-    flush_cache_r(0);
+    flush_cache(0);
     sceGsExecLoadImage(li, data + hdr->x84);
     wait_for_graphics_pipeline_idle(0, 0);
     level_resource_buffers.x18 = ((s32)level_resource_buffers.hdr) + size;
@@ -840,8 +836,8 @@ void transition_load_wad(void) {
     g_gs_texture_allocation_cursor_r = v + 0x20000;
     g_gs_texture_allocation_start_r = v + 0x20000;
     level_resource_buffers.x1C = initialize_level_render_state_r(data + hdr->x7C);
-    FastMemSet_r(&render_sequence_r, 0, 0x1C0);
-    FastMemSet_r(level_init_cleared_block, 0, 0x40);
+    FastMemSet(&render_sequence_r, 0, 0x1C0);
+    FastMemSet(level_init_cleared_block, 0, 0x40);
     render_sequence_r.x58 = level_resource_buffers.x1C;
     render_sequence_r.x5C = (level_resource_buffers.x1C += 0x40000);
     level_resource_buffers.x1C += 0x40000;
@@ -986,10 +982,9 @@ extern void noop_callback_e_r(RenderSequenceActor *) __asm__("func_001E9790");
 extern void noop_callback_h_r(void) __asm__("func_001E97A8");
 extern void noop_callback_i_r(void) __asm__("func_001E97B0");
 extern void Transition_UpdateMovieCamera_r(void) __asm__("func_001EB338");
-extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
+
 extern void FastVecAdd_r(Vec4A *, Vec4A *, Vec4A *) __asm__("func_001F9BD8");
 extern void FastVecScale_r(Vec4A *, Vec4A *, f32) __asm__("func_001F9C30");
-extern f32 FastCos_r(f32) __asm__("func_001F9F90");
 
 extern void update_mode_freeze_r(void) __asm__("func_001FD3E8");
 extern void parse_space_scene_chunk_r2(s32) __asm__("func_00205220");
@@ -1048,15 +1043,14 @@ void update_gameplay_frame(void) {
     noop_callback_h_r();
     if (g_game_mode_r == 0) {
         intro_overlay_timer_r++;
-        if (scale_game_frame_count_r(0x1E) < intro_overlay_timer_r) {
+        if (scale_game_frame_count(0x1E) < intro_overlay_timer_r) {
             if (++intro_overlay_alpha_r > 0x40) {
                 intro_overlay_alpha_r = 0x40;
             }
         }
-        if (scale_game_frame_count_r(0x78) < intro_overlay_timer_r) {
+        if (scale_game_frame_count(0x78) < intro_overlay_timer_r) {
             language_intro_overlay_alpha_r =
-                (s32)(FastCos_r((intro_overlay_timer_r - scale_game_frame_count_r(0x78)) % 60 * 0.10471976f +
-                                -3.1415927f) *
+                (s32)(FastCos((intro_overlay_timer_r - scale_game_frame_count(0x78)) % 60 * 0.10471976f + -3.1415927f) *
                       32.0f) +
                 0x60;
         }
@@ -1065,7 +1059,7 @@ void update_gameplay_frame(void) {
         }
         sound_update_r();
     } else if (g_game_mode_r == 3) {
-        intro_overlay_timer_r = scale_game_frame_count_r(0x3C);
+        intro_overlay_timer_r = scale_game_frame_count(0x3C);
         if ((intro_overlay_alpha_r -= 0x10) < 0) {
             intro_overlay_alpha_r = 0;
         }
@@ -1105,7 +1099,7 @@ extern u8 tie_light_data[];
 extern s32 Transition_DrawSky_r() __asm__("func_001E9E70");
 extern s32 Transition_UpdateMovieCamera_r2() __asm__("func_001EB338");
 
-extern u64 GetEffectTex();
+extern u64 GetEffectTex_v() __asm__("func_001F4868");
 
 extern s32 truncate_float_to_s32(f32);
 
@@ -1166,7 +1160,7 @@ void Transition_DefaultDraw(s32 *arg0) {
             n = 0;
         }
         DrawTexturedQuad(0xA0, frame_size[0] - 0x50, 0xC0, 0x60, 0, 0, 0x100, 0x80,
-                         (long)(language_intro_overlay_alpha << 24 | 0x808080), GetEffectTex(n + 4));
+                         (long)(language_intro_overlay_alpha << 24 | 0x808080), GetEffectTex_v(n + 4));
     }
     DoGifPaging();
     if (gFade > 0.0f) {
@@ -1268,7 +1262,6 @@ extern void load_and_init_BB48(void) __asm__("func_00209DC0");
 extern void transition_load_wad_BB48(void) __asm__("func_001EABE8");
 extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
 
-extern s32 scale_frames_BB48(s32) __asm__("func_001F98C0");
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
 
 extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
@@ -1344,7 +1337,7 @@ void transition_do_transition(void) {
     init_stash();
     init_hud();
     LoadHudBanks();
-    for (n = *(volatile u32 *)0x10000000 / 0x109; n < scale_frames_BB48(0xB4); n++) {
+    for (n = *(volatile u32 *)0x10000000 / 0x109; n < scale_game_frame_count(0xB4); n++) {
         sce_gs_sync_v(0);
     }
     snd_reset_BB48();
@@ -1391,7 +1384,7 @@ void transition_do_transition(void) {
         default_draw_BB48();
         if (game_mode_BB48 != 0) {
             wait = 0;
-        } else if (++wait >= scale_frames_BB48(0x5DC)) {
+        } else if (++wait >= scale_game_frame_count(0x5DC)) {
             start_level(level);
             wait = 0;
             level = (level + 1) % 4;

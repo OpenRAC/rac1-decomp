@@ -35,16 +35,16 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
             if (damage < 4.0f) {
                 d->tint = 0x78;
                 if ((unsigned short)(t->moby->oclass - 0xB0) < 2) {
-                    d->timer = ticks_2D5FA8(0x3C);
+                    d->timer = scale_ticks(0x3C);
                 } else {
-                    d->timer = ticks_2D5FA8(0x1E);
+                    d->timer = scale_ticks(0x1E);
                 }
             } else if (damage < 6.0f) {
                 d->tint = 0xC8;
-                d->timer = ticks_2D5FA8(0x1E);
+                d->timer = scale_ticks(0x1E);
             } else {
                 d->tint = 0xE6;
-                d->timer = ticks_2D5FA8(0x1E);
+                d->timer = scale_ticks(0x1E);
             }
             if (m->state == 0xC && m->prev_seq != 1) {
                 animate_2D5FA8(m, 1, 0, 0);
@@ -55,7 +55,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                 qcopy(vec, &m->pos);
                 vec[2] += 3.0f;
                 d->tint = 0xFA;
-                zero_2D5FA8(d->f120);
+                clear_u64_value(d->f120);
                 burst_2D5FA8(m, d->f40, vec, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, one, -1, 0);
                 spawn_2D5FA8(m, 0x6C0, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2,
                              batalia_zero_vec_r2, batalia_zero_vec_r2);
@@ -142,7 +142,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
         } else if (pitch < -0.7853982f) {
             pitch = -0.7853982f;
         }
-        yaw = angle_delta_2D5FA8(yaw, m->rot.z);
+        yaw = FastSubRots(yaw, m->rot.z);
         approach_2D5FA8(&d->yaw, yaw, &d->yaw_speed, g_frame_time_sq_r * 12.566371f, g_frame_time_sq_r * 12.566371f,
                         g_frame_time_r2 * 9.424778f);
         approach_2D5FA8(&d->pitch, pitch, &d->pitch_speed, g_frame_time_sq_r * 12.566371f,

@@ -21,7 +21,7 @@ typedef struct Vq {
     float x, y, z, w;
 } __attribute__((aligned(16))) Vq;
 
-extern long GetEffectTex(int);
+extern long GetEffectTex_v(int) __asm__("func_001F4868");
 
 extern void draw_world_quad(void *, void *, int);
 extern float hoven_jitter_quad_uvs[][2];
@@ -50,7 +50,7 @@ void draw_hoven_jittered_quad_layers(char *m) {
     copy_matrix_rotation(M, m + 0xC0);
     qcopy(&M[12], m + 0x10);
     M[15] = 1.0f;
-    tex = GetEffectTex(0xE);
+    tex = GetEffectTex_v(0xE);
     P[0].tex = P[1].tex = tex;
     c0 = hoven_jitter_quad_color;
     c1 = hoven_jitter_quad_back_color;

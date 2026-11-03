@@ -298,7 +298,6 @@ extern char D_L16_0015F660[] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR, g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float *, float, float);
 
-extern float vec_distance_xy(void *, void *);
 extern float SpringAngle_spark(void *, void *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
 
 extern void vec_scale_to_length(void *, void *, float);
@@ -410,7 +409,6 @@ extern void SamplePathAt(int *, int, void *, float *, int, float);
 
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 
-extern float vec_distance_xy(void *, void *);
 extern int FastBSphereCheck(char *, float);
 typedef struct {
     s32 clip_volume; /* 0x00: clip volume the hero must enter; -1 = none */
@@ -571,7 +569,6 @@ int is_moby_in_state_6(Level16VendorMoby *moby) {
     return moby->state == 6;
 }
 
-extern int fast_dec_timer(int *);
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
 typedef struct {
@@ -734,9 +731,7 @@ typedef struct {
 } L16SpriteData;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern int fast_dec_timer(int *);
 
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Emit four camera-facing glow particles at the moby, cycling their spin and colour timers. */
@@ -766,7 +761,7 @@ void emit_moby_sprite_effect_particles(char *m) {
         }
         f = IntToFloat(scale_ticks(0xFF) - p->c[i]);
         f = f / (float)scale_ticks(0xFF);
-        col = FastTweenColor_r(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - f));
+        col = FastTweenColor(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - f));
         PartType59Spawn(d, col, truncate_float_to_s32_r(p->a[i]) & 0xFF, 0x35, 1, 2, 0, p->d[i]);
         FastVecAdd(d, d, e);
     }
@@ -889,14 +884,13 @@ void update_conveyor_group_motion_transforms(int index, void *arg) {
 extern char *kalebo3_level_cuboids_m __asm__("D_L16_001601AC") MACRO_ADDR;
 extern int kalebo3_frame_count MACRO_ADDR;
 
-extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 extern float conveyor_belt_pulse_uvs[][2], conveyor_belt_scrolling_uvs[][2], conveyor_belt_quad_points[][4];
 extern short conveyor_belt_pulse_color_start, conveyor_belt_pulse_color_end, conveyor_belt_pulse_texture_id,
     conveyor_belt_scrolling_vertex_color;
 extern short conveyor_belt_alpha_blend_a_selector, conveyor_belt_alpha_blend_b_selector,
     conveyor_belt_alpha_blend_c_selector, conveyor_belt_alpha_blend_d_selector, conveyor_belt_scrolling_texture_id;
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
+
 typedef struct {
     float point[4][4];
     int color[4];
@@ -927,8 +921,7 @@ void draw_conveyor_belt_strips(char *m) {
     phase = IntToFloat(kalebo3_frame_count % period);
     phase = phase / IntToFloat(period);
     phase = FastSin(phase * 6.28318f - 3.14159f) * 0.5f + 0.5f;
-    tint =
-        FastTweenColor_r((*(int *)&conveyor_belt_pulse_color_start), (*(int *)&conveyor_belt_pulse_color_end), phase);
+    tint = FastTweenColor((*(int *)&conveyor_belt_pulse_color_start), (*(int *)&conveyor_belt_pulse_color_end), phase);
     color = (*(int *)&conveyor_belt_scrolling_vertex_color);
     packets[0].texture = GetEffectTex((*(int *)&conveyor_belt_pulse_texture_id));
     packets[0].mode = (long)(*(int *)&conveyor_belt_alpha_blend_a_selector) |
@@ -1623,7 +1616,7 @@ void draw_test_dummy_group_glows(L16BeamMoby *moby) {
         data = other->data;
         wave = FastSin(data->f11C);
         blend = (wave + 1.0f) * 0.5f;
-        color = FastTweenColor_r(test_dummy_glow_pulse_color_start, test_dummy_glow_pulse_color_end, blend);
+        color = FastTweenColor(test_dummy_glow_pulse_color_start, test_dummy_glow_pulse_color_end, blend);
         packet.color[3] = color;
         packet.color[2] = color;
         packet.color[1] = color;
@@ -1645,7 +1638,6 @@ void draw_test_dummy_group_glows(L16BeamMoby *moby) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void set_class_056b_collision_enabled(void *, int);
-extern int fast_dec_timer(int *);
 
 extern int g_current_level_index MACRO_ADDR;
 extern float D_L16_0015EE6C SDATA(D_L16_0015EE6C);
@@ -1958,7 +1950,7 @@ void advance_hoverboard_dummy_path_node(char *m) {
     }
 }
 extern char hero_globals_base[];
-extern int fast_dec_timer(int *arg0);
+
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
 
@@ -2614,8 +2606,6 @@ void refresh_test_dummy_door_timer(char *m) {
 extern void *set_door_647_group_activation_and_find_nearest(int, int);
 extern void *activate_door_647_group_and_find_nearest(int, int);
 
-extern int fast_dec_timer(int *);
-
 extern void activate_test_dummy_group(int);
 extern void compute_triggered_scene_path_pose(char *, void *, float *);
 
@@ -2734,8 +2724,6 @@ void update_triggered_group_objective(char *m) {
 
 extern float triggered_scene_rotation_y SDATA(triggered_scene_rotation_y);
 
-extern void lerp_vector(void *, void *, void *, float);
-
 /* Computes a moby's direction vectors from its table entry. */
 void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
     struct ScenePathVars *data = (struct ScenePathVars *)((Moby *)moby)->pvars;
@@ -2808,7 +2796,6 @@ int get_target_reposition_status(Moby *m) {
 INCLUDE_ASM("asm/overlays", func_L16_002E22DC);
 
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int kalebo3_game_mode SDATA(kalebo3_game_mode);
@@ -3713,7 +3700,7 @@ void update_local_bounds_command_trigger(unsigned char *m) {
 }
 extern float g_frame_time;
 extern short grindrail_button_local_offset;
-extern int fast_dec_timer(int *);
+
 extern void activate_grindrail_button_r(void *) __asm__("func_L16_002E6B48");
 extern int Moby_PlaySound_r4(int, int, void *) __asm__("func_0022ED80");
 extern int FastTweenColor_v(float, int, int) __asm__("func_001FA8A8");

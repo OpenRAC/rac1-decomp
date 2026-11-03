@@ -630,7 +630,6 @@ int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
     return 0;
 }
 
-extern void fast_dec_timer(int *arg0);
 extern char hero_gravity_dir[];
 
 typedef struct {

@@ -65,7 +65,7 @@ void update_enemy_fighter_921(Moby *m) {
             }
             m->draw_dist = 0x80;
             d->f6C = -1;
-            d->f7C = scale_ticks_r3(D_L14_0016205C_2FE038);
+            d->f7C = scale_ticks(D_L14_0016205C_2FE038);
             break;
         case 1: {
             unsigned char a, b, c;
@@ -82,10 +82,10 @@ void update_enemy_fighter_921(Moby *m) {
                         qcopy(vt, (*(Vec_2FE038 *)&seat->pos));
                         vt[2] = vt[2] + 4.0f;
                         pitch =
-                            FastDiffRots_r(((Cam *)oltanis_player_camera_r)->f154,
-                                           -fast_atan2_r2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
-                                                          vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
-                        yaw = FastDiffRots_r(
+                            FastDiffRots(((Cam *)oltanis_player_camera_r)->f154,
+                                         -fast_atan2_r2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
+                                                        vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
+                        yaw = FastDiffRots(
                             ((Cam *)oltanis_player_camera_r)->f158,
                             fast_atan2_r2((*(Vec_2FE038 *)&seat->pos)[0] - ((Cam *)oltanis_player_camera_r)->pos[0],
                                           (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam *)oltanis_player_camera_r)->pos[1]));
@@ -116,10 +116,10 @@ void update_enemy_fighter_921(Moby *m) {
                 if (d->f94 == 0 && d->f60 >= 0x38) {
                     d->f94 = 1;
                 }
-                FastVecScale_r(vb, (*(Vec_2FE038 *)&m->rot_row0), 0.21f);
-                FastVecScale_r(vt, (*(Vec_2FE038 *)&m->rot_row2), -1.24f);
-                FastVecAdd_r2(vb, vb, vt);
-                FastVecAdd_r2(vb, (*(Vec_2FE038 *)&m->pos), vb);
+                FastVecScale(vb, (*(Vec_2FE038 *)&m->rot_row0), 0.21f);
+                FastVecScale(vt, (*(Vec_2FE038 *)&m->rot_row2), -1.24f);
+                FastVecAdd(vb, vb, vt);
+                FastVecAdd(vb, (*(Vec_2FE038 *)&m->pos), vb);
                 {
                     Moby *jet = (Moby *)(oltanis_mobys_r + (d->f8C << 8));
                     qcopy((*(Vec_2FE038 *)&jet->pos), vb);
@@ -136,7 +136,7 @@ void update_enemy_fighter_921(Moby *m) {
                 Moby *p = oltanis_paths_r4[d->f68];
                 m->flags &= 0xFFBE;
                 m->collision = *(int *)((char *)((struct Moby *)m->pclass) + 0x10);
-                d->f7C = scale_ticks_r3(D_L14_0016205C_2FE038);
+                d->f7C = scale_ticks(D_L14_0016205C_2FE038);
                 m->state = 2;
                 d->f60 = 0;
                 d->f64 = 0;

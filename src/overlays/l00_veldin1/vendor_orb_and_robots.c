@@ -278,8 +278,6 @@ extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float vec_distance_xy(void *, void *);
-
 extern int coll_line(void *, void *, int, int, int);
 
 extern int mine_fall(void *, void *);
@@ -739,8 +737,6 @@ void update_veldin_robot_effects(char *m) {
     AddDrawCallback(draw_veldin_robot_effect_quad_r, m);
 }
 extern float veldin1_robot_effect_quad_corners[][4];
-
-extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
 typedef float W[4] __attribute__((aligned(16)));

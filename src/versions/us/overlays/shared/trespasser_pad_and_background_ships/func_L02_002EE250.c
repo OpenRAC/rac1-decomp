@@ -139,7 +139,7 @@ void background_ship_2_update(char *moby) {
         {
             int res;
             float k;
-            res = FastTweenColor_r(background_ship_2_light_color_off, background_ship_2_light_color_on, x);
+            res = FastTweenColor(background_ship_2_light_color_off, background_ship_2_light_color_on, x);
             k = background_ship_2_light_spin_rate * 0.017453292f * g_frame_time;
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);

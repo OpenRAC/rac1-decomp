@@ -163,8 +163,6 @@ extern char ship_entry_point_offsets[] NOT_SDA;
 extern int ship_level_exit_requested MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 
-extern float vec_distance_xy(void *, void *);
-
 extern int try_set_help_message(int, int);
 
 /* Per-frame update of a pickup-like moby: pulses its colour, tracks the player's range and collects items. */

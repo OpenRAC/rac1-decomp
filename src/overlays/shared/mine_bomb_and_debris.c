@@ -211,13 +211,11 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
 
-extern int fast_dec_timer(int *);
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
 extern int coll_sphere(float, void *, int, void *);
 
 extern void *MobyGetHitMessage(void *, int, int);
-extern f32 vec_distance_xy(void *, void *);
 
 extern int MoveKeepingOverGround_v(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
@@ -1001,7 +999,6 @@ void update_glow_particle(M_d *m) {
 
 extern int cinematic_mode MACRO_ADDR;
 
-extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 
 typedef struct PV_2acbf0_002acbf0 {
@@ -1141,8 +1138,6 @@ char *spawn_bomb(int owner, void *pos) {
 }
 
 extern char collision_hit_point[];
-extern float vec_length_xy(void *);
-extern float vec_distance_xy(void *, void *);
 
 typedef struct BombVars {
     Vec4 vel; /* 0x00 */
@@ -2439,7 +2434,7 @@ extern float horizontal1688(void *) __asm__("func_001F9CE8");
 extern float func_L00_00259148(void *, float, float, float, float, float);
 extern unsigned char *smoke1688(void *, void *, int, int, int, int, float, float, float, float,
                                 float) __asm__("func_L00_00272158");
-extern void rotate1688(void *, void *, void *) __asm__("func_001F9EC0");
+
 extern float random_angle1688(void) __asm__("func_00214158");
 extern void axis_rotate1688(void *, void *, void *, float) __asm__("func_002156E0");
 extern void spark1688(void *, void *, int, int, int, int, float) __asm__("func_L00_0026DA50");
@@ -2586,7 +2581,7 @@ void gold_devastator_missile_update(M910 *m) {
                   0.0f);
         phase.vectors.relative.q = 0;
         phase.vectors.relative.f[2] = 0.02f;
-        rotate1688(&phase.vectors.relative, &phase.vectors.relative, m->mtx);
+        matrix_mul_vec3(&phase.vectors.relative, &phase.vectors.relative, m->mtx);
         axis_rotate1688(&phase.vectors.relative, &phase.vectors.relative, m->mtx, random_angle1688());
         {
             int color = swap_packed_color_channels(0x4F007FFF, gold_weapon_purchased.bB);
@@ -2640,8 +2635,8 @@ void gold_devastator_missile_update(M910 *m) {
     } else if (fast_dec_timer(&d->life) || d->limit < vec_distance_xy((&m->pos), &g_hero.motion.pos.f[0])) {
         qcopy(&normal, &devastator_default_normal);
         qcopy(&surface_motion, &devastator_default_surface_motion);
-        rotate1688(&surface_motion, &surface_motion, m->mtx);
-        rotate1688(&normal, &normal, m->mtx);
+        matrix_mul_vec3(&surface_motion, &surface_motion, m->mtx);
+        matrix_mul_vec3(&normal, &normal, m->mtx);
         if (!gold_weapon_purchased.bB) {
             moby_index_list_remove(m, active_homing_missiles);
             DeleteMoby(m);
@@ -2848,14 +2843,12 @@ typedef struct {
 } P_2b1af0;
 extern P_2b1af0 D_0013F550;
 void fefc8_2b1af0(void *) __asm__("func_L00_001FEF78");
-void rot_2b1af0(void *, void *, void *) __asm__("func_001F9EC0");
-void add_2b1af0(void *, void *, void *) __asm__("func_001F9BD8");
-void scale_2b1af0(void *, void *, float) __asm__("func_001F9C30");
+
 float rndf_2b1af0(float, float) __asm__("func_002140F8");
 void ff500_2b1af0(void *, void *, float) __asm__("func_L00_001FF4B0");
 float rnd_2b1af0(float, float) __asm__("func_L00_00258C80");
 int trunc_2b1af0(float) __asm__("func_001FA898");
-int fr_2b1af0(int) __asm__("func_001F9850");
+
 int rndi_2b1af0(int, int) __asm__("func_L00_00258BC8");
 void smoke_2b1af0(void *, void *, int, int, int, int, float, float, float, float, float) __asm__("func_L00_00272158");
 void spark_2b1af0(void *, void *, int, int, int, int, float) __asm__("func_L00_0026DA50");
@@ -2877,30 +2870,30 @@ void emit_object_offset_particles(unsigned char *o) {
     b.f[3] = 1.0f;
     a.f[3] = 1.0f;
     fefc8_2b1af0(o + 0xBC);
-    rot_2b1af0(&a, &a, o + 0xC0);
-    add_2b1af0(&c, o + 0x10, &a);
-    rot_2b1af0(&b, &b, o + 0xC0);
+    matrix_mul_vec3(&a, &a, o + 0xC0);
+    FastVecAdd(&c, o + 0x10, &a);
+    matrix_mul_vec3(&b, &b, o + 0xC0);
     for (i = 1; i >= 0; i--) {
         ff500_2b1af0(&d, &b, rndf_2b1af0(0.01f, 0.06f));
-        scale_2b1af0(&b, &hero_displacement.a, 0.7f);
+        FastVecScale(&b, &hero_displacement.a, 0.7f);
         b.f[2] = 0.0f;
-        add_2b1af0(&d, &d, &b);
-        scale_2b1af0(&b, &hero_displacement.b, 0.7f);
+        FastVecAdd(&d, &d, &b);
+        FastVecScale(&b, &hero_displacement.b, 0.7f);
         b.f[2] = 0.0f;
-        add_2b1af0(&d, &d, &b);
+        FastVecAdd(&d, &d, &b);
         t = trunc_2b1af0(rnd_2b1af0(0.0f, 6.0f));
-        smoke_2b1af0(&c, &d, fr_2b1af0(0x1E), 0x7F, 0xFFFFFF, t, 25000.0f, 300.0f, 0.98f, 0.0f, 0.85f);
+        smoke_2b1af0(&c, &d, scale_ticks(0x1E), 0x7F, 0xFFFFFF, t, 25000.0f, 300.0f, 0.98f, 0.0f, 0.85f);
     }
     for (j = 0; j >= 0; j--) {
         ff500_2b1af0(&d, &b, rndf_2b1af0(0.01f, 0.06f));
-        scale_2b1af0(&b, &hero_displacement.a, 0.55f);
+        FastVecScale(&b, &hero_displacement.a, 0.55f);
         b.f[2] = 0.0f;
-        add_2b1af0(&d, &d, &b);
-        scale_2b1af0(&b, &hero_displacement.b, 0.55f);
+        FastVecAdd(&d, &d, &b);
+        FastVecScale(&b, &hero_displacement.b, 0.55f);
         b.f[2] = 0.0f;
-        add_2b1af0(&d, &d, &b);
-        t = fr_2b1af0(0x14);
-        spark_2b1af0(&c, &d, 0x4F007FFF, 0x1FFFFFFF, rndi_2b1af0(t, fr_2b1af0(0x28)), 1, 10000.0f);
+        FastVecAdd(&d, &d, &b);
+        t = scale_ticks(0x14);
+        spark_2b1af0(&c, &d, 0x4F007FFF, 0x1FFFFFFF, rndi_2b1af0(t, scale_ticks(0x28)), 1, 10000.0f);
     }
 }
 typedef int OvlQuad __attribute__((mode(TI)));

@@ -85,18 +85,14 @@ struct ProjectileVars {
     s32 life; /* 0x10 */
 };
 
-extern float vec_distance_xy(void *, void *);
-
 extern int truncate_float_to_s32(float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void lerp_vector(void *, void *, void *, float);
 
 extern float ApproachValue(float *, float, float);
 
-extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
 struct Data_2E21F8;
@@ -377,7 +373,6 @@ void skids_agent_update(Moby *m) {
     EaseManipulatorOffsets_r(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->fC0, 1);
 }
 extern void update_skid_mcmarx_relocation_sequence(char *);
-extern int fast_dec_timer(void *);
 
 extern void EaseManipulatorOffsets_r2(char *, char *, int, float, float) __asm__("func_L00_00263950");
 extern char skid_mcmarx_dialogue_name[];
@@ -616,8 +611,6 @@ extern struct Moby *aridia_mobys_r __asm__("D_L02_00160058") MACRO_ADDR;
 extern unsigned char saved_mission_state[][16];
 extern char voice_pool[];
 
-extern float vec_distance_xy(void *a, void *b);
-
 extern void update_entity_matrix(void *, void *, void *, void *);
 
 /* Lift platform carried by an animated driver moby: follows the driver's joint 0, waits at an end (3/5) for the hero
@@ -798,14 +791,13 @@ extern s32 D_L02_00161FF0 MACRO_ADDR;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern LevelFx D_L02_001B2980_ED358 __asm__("D_L02_001B2980");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
+
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 extern f32 vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
-extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
+
 extern void fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
 extern void rand_vec_r(void *, f32, f32) __asm__("func_L00_00258DB0");
@@ -827,14 +819,14 @@ void update_shard_debris(struct Moby *m) {
         default:
             return;
     }
-    FastVecAdd_r(&m->pos, &m->pos, &v->vel);
+    FastVecAdd(&m->pos, &m->pos, &v->vel);
     ApproachValue_r(&v->vel.z, 0.0f, (*(f32 *)&D_L02_00161FE8_ED358) * g_frame_time_sq_r);
     m->rot.y = 1.5707964f - fast_atan2_r(vec_length_xy_r(&v->vel), v->vel.z);
     qcopy(&p, &m->pos);
-    FastVecScale_r(&half, &v->vel, 0.5f);
-    FastVecScale_r(&back, &v->vel, -0.1f);
+    FastVecScale(&half, &v->vel, 0.5f);
+    FastVecScale(&back, &v->vel, -0.1f);
     for (i = 1; i >= 0; i--) {
-        s32 t = scale_ticks_r(truncate_float_to_s32_r(random_float_between_r(20.0f, 60.0f)));
+        s32 t = scale_ticks(truncate_float_to_s32_r(random_float_between_r(20.0f, 60.0f)));
         q = PartType44Spawn(&p, &back, t, (*(s32 *)&D_L02_00161FEC_ED358) >> 24,
                             (*(s32 *)&D_L02_00161FEC_ED358) & 0xFFFFFF, 3, random_float_between_r(300000.0f, 500000.0f),
                             10000.0f, 1.0f, -0.0002f, 0.0f);
@@ -842,23 +834,22 @@ void update_shard_debris(struct Moby *m) {
             q[2] = *D_L02_001B2980_ED358.tint;
             q[9] = truncate_float_to_s32_r(4.0f) - 0x80;
         }
-        FastVecAdd_r(&p, &p, &half);
+        FastVecAdd(&p, &p, &half);
         rand_vec_r(&jit, 0.5f, 1.5f);
-        FastVecAdd_r(&p, &p, &jit);
+        FastVecAdd(&p, &p, &jit);
     }
-    q = PartType44Spawn(&m->pos, &back, scale_ticks_r(6), shard_debris_head_color >> 24,
+    q = PartType44Spawn(&m->pos, &back, scale_ticks(6), shard_debris_head_color >> 24,
                         (*(s32 *)&D_L02_00161FEC_ED358) & 0xFFFFFF, 3, 250000.0f, 5000.0f, 1.0f, -0.0004f, 0.0f);
     if (q)
         q[9] = truncate_float_to_s32_r(4.0f) - 0x80;
     if (m->visible == 0)
         fast_dec_timer_r(&v->timer);
     else
-        v->timer = scale_ticks_r(60);
+        v->timer = scale_ticks(60);
     if (v->timer == 0)
         DeleteMoby_r(m);
 }
 
-extern float vec_length_xy(void *);
 extern int aridia_projectile_color_r SDATA(aridia_projectile_color_r);
 extern int aridia_projectile_color_g SDATA(aridia_projectile_color_g);
 extern int aridia_projectile_color_b SDATA(aridia_projectile_color_b);
@@ -1188,14 +1179,12 @@ extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
 extern int func_L00_00200290(void *, float);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
-extern float multiply_global_factor_r(float) __asm__("func_001F9878");
+
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void rand_vec_r2(void *, float, float) __asm__("func_L00_00258DB0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 
 /* Level 02 moby update (class 1479): state 0 sets up, states 1 and 2 emit particle bursts from two parameter
@@ -1220,7 +1209,7 @@ void update_smoke_vent(Moby *m) {
             if (fast_dec_timer_r2(&d->fC0)) {
                 int cnt;
                 int i;
-                d->fC0 = truncate_float_to_s32_r2(multiply_global_factor_r(
+                d->fC0 = truncate_float_to_s32_r2(multiply_global_factor(
                     random_float_between_r2((float)D_L02_0016219C_2F0458, (float)D_L02_001621A0_2F0458)));
                 cnt = random_integer_below_r(7) ? 1 : random_integer_below_r(5) + 5;
                 for (i = 0; i < cnt; i++) {
@@ -1230,7 +1219,7 @@ void update_smoke_vent(Moby *m) {
                         D_L02_00162158_2F0458 *
                             (random_float_between_r2(-D_L02_00162164_2F0458, D_L02_00162164_2F0458) + 1.0f) *
                             g_frame_time_r);
-                    FastVecAdd_r2(&A, &A, &C);
+                    FastVecAdd(&A, &A, &C);
                     vec_scale_to_length_r(
                         &B, &A,
                         D_L02_0016215C_2F0458 *
@@ -1245,12 +1234,12 @@ void update_smoke_vent(Moby *m) {
                                        random_float_between_r2(0.0f, 1.0f)),
                         FastTweenColor(D_L02_00162194_2F0458, D_L02_00162198_2F0458,
                                        random_float_between_r2(0.0f, 1.0f)),
-                        truncate_float_to_s32_r2(multiply_global_factor_r(
+                        truncate_float_to_s32_r2(multiply_global_factor(
                             (float)D_L02_0016216C_2F0458 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
-                        truncate_float_to_s32_r2(multiply_global_factor_r(
+                        truncate_float_to_s32_r2(multiply_global_factor(
                             (float)D_L02_00162170_2F0458 *
                             (random_float_between_r2(-D_L02_00162178_2F0458, D_L02_00162178_2F0458) + 1.0f))),
-                        truncate_float_to_s32_r2(multiply_global_factor_r(
+                        truncate_float_to_s32_r2(multiply_global_factor(
                             (float)D_L02_00162174_2F0458 *
                             (random_float_between_r2(-D_L02_00162178_2F0458, D_L02_00162178_2F0458) + 1.0f))),
                         D_L02_001621A4_2F0458);
@@ -1270,25 +1259,25 @@ void update_smoke_vent(Moby *m) {
                     t = t * z;
                 }
                 t = t * g_frame_time_r;
-                clear_u64_value_r(&B);
+                clear_u64_value(&B);
                 B.z = t;
                 {
                     float z = random_float_between_r2(-D_L02_00162120_2F0458, D_L02_00162120_2F0458);
                     vec_scale_to_length_r(&C, &*(V_2F0458 *)&m->rot_row1, z * g_frame_time_r);
                 }
-                FastVecAdd_r2(&B, &B, &C);
+                FastVecAdd(&B, &B, &C);
                 A.w = random_float_between_r2(D_L02_00162138_2F0458, D_L02_0016213C_2F0458);
                 B.w = random_float_between_r2(D_L02_00162140_2F0458, D_L02_00162144_2F0458);
                 PartType02Spawn(
                     &*(V_2F0458 *)&m->pos, &A, &B,
                     FastTweenColor(D_L02_00162148_2F0458, D_L02_0016214C_2F0458, random_float_between_r2(0.0f, 1.0f)),
                     FastTweenColor(D_L02_00162150_2F0458, D_L02_00162154_2F0458, random_float_between_r2(0.0f, 1.0f)),
-                    truncate_float_to_s32_r2(multiply_global_factor_r(
+                    truncate_float_to_s32_r2(multiply_global_factor(
                         (float)D_L02_00162128_2F0458 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
-                    truncate_float_to_s32_r2(multiply_global_factor_r(
+                    truncate_float_to_s32_r2(multiply_global_factor(
                         (float)D_L02_0016212C_2F0458 *
                         (random_float_between_r2(-D_L02_00162134_2F0458, D_L02_00162134_2F0458) + 1.0f))),
-                    truncate_float_to_s32_r2(multiply_global_factor_r(
+                    truncate_float_to_s32_r2(multiply_global_factor(
                         (float)D_L02_00162130_2F0458 *
                         (random_float_between_r2(-D_L02_00162134_2F0458, D_L02_00162134_2F0458) + 1.0f))),
                     -1);
@@ -1300,7 +1289,7 @@ void update_smoke_vent(Moby *m) {
                     d->fC8 = 30;
                 else
                     d->fC8 = 10;
-                d->fC4 = truncate_float_to_s32_r2(multiply_global_factor_r(random_float_between_r2(120.0f, 180.0f)));
+                d->fC4 = truncate_float_to_s32_r2(multiply_global_factor(random_float_between_r2(120.0f, 180.0f)));
             }
             qcopy(&vec, &*(V_2F0458 *)&m->pos);
             vec.w = 6.0f;
@@ -1311,7 +1300,7 @@ void update_smoke_vent(Moby *m) {
             if (fast_dec_timer_r2(&d->fC0)) {
                 int cnt;
                 int i;
-                d->fC0 = truncate_float_to_s32_r2(multiply_global_factor_r(
+                d->fC0 = truncate_float_to_s32_r2(multiply_global_factor(
                     random_float_between_r2((float)D_L02_001621EC_2F0458, (float)D_L02_001621F0_2F0458)));
                 cnt = random_integer_below_r(7) ? 1 : random_integer_below_r(5) + 5;
                 for (i = 0; i < cnt; i++) {
@@ -1321,7 +1310,7 @@ void update_smoke_vent(Moby *m) {
                         D_L02_001621A8_2F0458 *
                             (random_float_between_r2(-D_L02_001621B4_2F0458, D_L02_001621B4_2F0458) + 1.0f) *
                             g_frame_time_r);
-                    FastVecAdd_r2(&A, &A, &C);
+                    FastVecAdd(&A, &A, &C);
                     vec_scale_to_length_r(
                         &B, &A,
                         D_L02_001621AC_2F0458 *
@@ -1336,12 +1325,12 @@ void update_smoke_vent(Moby *m) {
                                        random_float_between_r2(0.0f, 1.0f)),
                         FastTweenColor(D_L02_001621E4_2F0458, D_L02_001621E8_2F0458,
                                        random_float_between_r2(0.0f, 1.0f)),
-                        truncate_float_to_s32_r2(multiply_global_factor_r(
+                        truncate_float_to_s32_r2(multiply_global_factor(
                             (float)D_L02_001621BC_2F0458 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
-                        truncate_float_to_s32_r2(multiply_global_factor_r(
+                        truncate_float_to_s32_r2(multiply_global_factor(
                             (float)D_L02_001621C0_2F0458 *
                             (random_float_between_r2(-D_L02_001621C8_2F0458, D_L02_001621C8_2F0458) + 1.0f))),
-                        truncate_float_to_s32_r2(multiply_global_factor_r(
+                        truncate_float_to_s32_r2(multiply_global_factor(
                             (float)D_L02_001621C4_2F0458 *
                             (random_float_between_r2(-D_L02_001621C8_2F0458, D_L02_001621C8_2F0458) + 1.0f))),
                         D_L02_001621F4_2F0458);
@@ -1359,13 +1348,13 @@ void update_smoke_vent(Moby *m) {
                     t = t * z;
                 }
                 t = t * g_frame_time_r;
-                clear_u64_value_r(&B);
+                clear_u64_value(&B);
                 B.z = t;
                 {
                     float z = random_float_between_r2(-D_L02_001620E0_2F0458, D_L02_001620E0_2F0458);
                     vec_scale_to_length_r(&C, &*(V_2F0458 *)&m->rot_row1, z * g_frame_time_r);
                 }
-                FastVecAdd_r2(&B, &B, &C);
+                FastVecAdd(&B, &B, &C);
                 A.w = random_float_between_r2(D_L02_001620F8_2F0458, D_L02_001620FC_2F0458);
                 B.w = random_float_between_r2(D_L02_00162100_2F0458, D_L02_00162104_2F0458);
                 PartType02Spawn(
@@ -1373,11 +1362,11 @@ void update_smoke_vent(Moby *m) {
                     FastTweenColor(D_L02_00162108_2F0458, D_L02_0016210C_2F0458, random_float_between_r2(0.0f, 1.0f)),
                     FastTweenColor(D_L02_00162110_2F0458, D_L02_00162114_2F0458, random_float_between_r2(0.0f, 1.0f)),
                     truncate_float_to_s32_r2(
-                        multiply_global_factor_r((float)d->fC8 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
-                    truncate_float_to_s32_r2(multiply_global_factor_r(
+                        multiply_global_factor((float)d->fC8 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
+                    truncate_float_to_s32_r2(multiply_global_factor(
                         (float)D_L02_001620EC_2F0458 *
                         (random_float_between_r2(-D_L02_001620F4_2F0458, D_L02_001620F4_2F0458) + 1.0f))),
-                    truncate_float_to_s32_r2(multiply_global_factor_r(
+                    truncate_float_to_s32_r2(multiply_global_factor(
                         (float)D_L02_001620F0_2F0458 *
                         (random_float_between_r2(-D_L02_001620F4_2F0458, D_L02_001620F4_2F0458) + 1.0f))),
                     -1);

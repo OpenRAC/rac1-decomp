@@ -53,8 +53,6 @@ extern void vec_scale_to_length(void *, void *, f32);
 
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 
-extern float vec_distance_xy(void *, void *);
-
 extern void add_random_offset_to_vector_xyz(void *, f32);
 
 /* Flies the moby along its path toward the current node, turning and banking toward it, steps the node at each arrival

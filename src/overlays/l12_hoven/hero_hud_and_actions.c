@@ -56,14 +56,9 @@ extern HeroItemDefView hoven_item_defs[];
 extern HeroAttackRecord hoven_attack_records[];
 extern HeroSpeedBands D_L12_X_f;
 
-extern int func_001F9908(int *);
-
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int truncate_float_to_s32(float);
-
-extern float vec_length_xy(void *);
-extern float vec_distance_xy(void *, void *);
 
 extern void ClampVectorLength(void *a, float x);
 

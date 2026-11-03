@@ -123,17 +123,12 @@ extern s32 Moby_PlaySound_r(s32, s32, struct Moby *) __asm__("func_0022ED80");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 
-extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
-extern f32 FastAddRots_r(f32, f32) __asm__("func_001FA748");
-extern f32 FastSubRots_r(f32, f32) __asm__("func_001FA790");
+
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-extern f32 FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
+
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 
@@ -177,8 +172,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             }
             vars->follow[0].path = batalia_path_table[vars->follow[0].path_id];
             vars->follow[1].path = batalia_path_table[vars->follow[1].path_id];
-            vars->fire_timer =
-                truncate_float_to_s32_r(multiply_global_factor_r(random_float_between_r(300.0f, 600.0f)));
+            vars->fire_timer = truncate_float_to_s32_r(multiply_global_factor(random_float_between_r(300.0f, 600.0f)));
             moby->flags |= 0x4000;
             qcopy(&moby->pos, &vars->follow[1].path->points[0]);
             spawn_joint_linked_moby_parts(moby);
@@ -195,14 +189,14 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                                           vars->follow[0].path->points[waypoint].f[1] - moby->pos.y),
                              &vars->turn_speed, 0.004f, 0.3f, 0.02f);
             qcopy(&point, &vars->follow[0].path->points[waypoint]);
-            if (FastVecDist_r(&moby->pos, &point) < 0.5f) {
+            if (FastVecDist(&moby->pos, &point) < 0.5f) {
                 vars->follow[0].point = waypoint;
             }
-            FastVecSub_r(&step, &point, &moby->pos);
-            if (FastVecLength_r(&step) > D_L08_00161DC4_2EAF48 * g_frame_time_r) {
+            FastVecSub(&step, &point, &moby->pos);
+            if (FastVecLength(&step) > D_L08_00161DC4_2EAF48 * g_frame_time_r) {
                 vec_scale_to_length_r(&step, &step, D_L08_00161DC4_2EAF48 * g_frame_time_r);
             }
-            FastVecAdd_r(&moby->pos, &moby->pos, &step);
+            FastVecAdd(&moby->pos, &moby->pos, &step);
             process_linked_moby_part_hits(moby);
             update_commando_parts(moby);
             if (moby->command == 0) {
@@ -211,8 +205,8 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             moby->command = 0;
             Moby_GetJointWorldPos(vars->parts[3].moby, 1, &muzzle);
             pitch = random_float_between_r(0.17453292f, 0.5235988f);
-            yaw = FastAddRots_r(fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), 3.1415927f);
-            yaw = FastAddRots_r(yaw, random_float_between_r(-0.2617994f, 0.7853982f));
+            yaw = FastAddRots(fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), 3.1415927f);
+            yaw = FastAddRots(yaw, random_float_between_r(-0.2617994f, 0.7853982f));
             if (yaw > 0.0f && yaw < 0.34f) {
                 yaw = 0.34f;
             } else if (yaw <= 0.0f && yaw > -0.34f) {
@@ -238,25 +232,24 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                              follower->path->points[next].f[1] - follower->path->points[vars->follow[1].point].f[1]);
             next_heading = fast_atan2_r(follower->path->points[after].f[0] - follower->path->points[next].f[0],
                                         follower->path->points[after].f[1] - follower->path->points[next].f[1]);
-            turn = FastSubRots_r(heading, next_heading);
-            distance = FastVecDist_r(&moby->pos, &follower->path->points[next]);
-            distance /= FastVecDist_r(&follower->path->points[vars->follow[1].point], &follower->path->points[next]);
-            moby->rot.z = FastAddRots_r(turn * distance, next_heading);
+            turn = FastSubRots(heading, next_heading);
+            distance = FastVecDist(&moby->pos, &follower->path->points[next]);
+            distance /= FastVecDist(&follower->path->points[vars->follow[1].point], &follower->path->points[next]);
+            moby->rot.z = FastAddRots(turn * distance, next_heading);
             qcopy(&point, &follower->path->points[next]);
-            if (FastVecDist_r(&moby->pos, &point) < 0.5f) {
+            if (FastVecDist(&moby->pos, &point) < 0.5f) {
                 vars->follow[1].point = next;
             }
-            FastVecSub_r(&step, &point, &moby->pos);
-            if (FastVecLength_r(&step) > D_L08_00161DC4_2EAF48 * g_frame_time_r) {
+            FastVecSub(&step, &point, &moby->pos);
+            if (FastVecLength(&step) > D_L08_00161DC4_2EAF48 * g_frame_time_r) {
                 vec_scale_to_length_r(&step, &step, D_L08_00161DC4_2EAF48 * g_frame_time_r);
             }
-            FastVecAdd_r(&moby->pos, &moby->pos, &step);
+            FastVecAdd(&moby->pos, &moby->pos, &step);
             update_commando_parts(moby);
             if (!fast_dec_timer_r(&vars->fire_timer)) {
                 break;
             }
-            vars->fire_timer =
-                truncate_float_to_s32_r(multiply_global_factor_r(random_float_between_r(300.0f, 600.0f)));
+            vars->fire_timer = truncate_float_to_s32_r(multiply_global_factor(random_float_between_r(300.0f, 600.0f)));
             Moby_GetJointWorldPos(vars->parts[3].moby, 1, &muzzle);
             pitch = random_float_between_r(-0.5235988f, -0.2617994f);
             yaw = random_angle_radians();
@@ -284,7 +277,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                 if (part != 0) {
                     Vec4 *drift = (Vec4 *)part->pvars;
                     SpawnExplosionFx(moby, &part->pos, -1, 3.0f, 13.0f);
-                    FastVecSub_r(drift, &part->pos, &moby->pos);
+                    FastVecSub(drift, &part->pos, &moby->pos);
                     vec_scale_to_length_r(drift, drift, g_frame_time_r * 5.0f);
                     part->state = 1;
                     vars->parts[i].moby = 0;
@@ -439,8 +432,6 @@ void update_swing_gate_from_driver(struct Moby *moby) {
     }
 }
 
-extern int GetEffectTex(int);
-
 extern int scrolled_mesh_unscaled_fixed_alpha SDATA(scrolled_mesh_unscaled_fixed_alpha);
 extern int offset_mesh_first_pass_fixed_alpha SDATA(offset_mesh_first_pass_fixed_alpha);
 extern int pair_offset_mesh_fixed_alpha SDATA(pair_offset_mesh_fixed_alpha);
@@ -575,7 +566,6 @@ typedef u32 u128_F5980 __attribute__((mode(TI), aligned(16)));
 extern char gHeroPos[];
 extern f32 batalia_zero_vec[] MACRO_ADDR;
 extern s32 MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern f32 vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
 
@@ -753,9 +743,6 @@ extern float frame_scale MACRO_ADDR;
 extern Sound45 batalia_lights[];
 
 extern int truncate_float_to_s32(float);
-extern int GetEffectTex(int);
-
-extern int fast_dec_timer(int *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float SmoothNoise(float, char *);
@@ -1100,7 +1087,7 @@ extern char D_L08_001FC5C0[];
 extern void release_point_light_slot_r(int) __asm__("func_L00_0023F1D0");
 extern void draw_flickering_mesh_effect_r(void) __asm__("func_L08_002F7318");
 extern f32 random_float_between_r2(f32, f32) __asm__("func_002140F8");
-extern f32 FastVecDist_r2(void *, void *) __asm__("func_001F9D10");
+
 extern int FastBSphereCheck_r(char *, float) __asm__("func_L00_00200290");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
 
@@ -1147,7 +1134,7 @@ void update_flickering_mesh_effect(struct Moby *m) {
     }
     m->scale = m->pclass->scale * (d->size_x > d->size_y ? d->size_x : d->size_y) * 0.25f;
     view = IntToFloat(m->draw_dist);
-    dist = FastVecDist_r2(at, batalia_hero_pos_r);
+    dist = FastVecDist(at, batalia_hero_pos_r);
     fade = view - d->fade_range;
     if (fade < 0.0f)
         fade = 0.0f;
@@ -1189,11 +1176,6 @@ void update_flickering_mesh_effect(struct Moby *m) {
 
 extern void set_ground_height_band(void *);
 
-extern float vec_distance_xy(void *, void *);
-
-extern int fast_dec_timer(int *arg0);
-
-extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char batalia_commando_dialogue_name[];
 extern int commando_height_probe_distance_limit SDATA(commando_height_probe_distance_limit);
@@ -1610,8 +1592,6 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
     }
 }
 extern void attach_batalia_plumber_class_manipulator(char *moby);
-
-extern int fast_dec_timer(int *arg0);
 
 extern char batalia_plumber_dialogue_name[];
 /* KEPT: short and MACRO_ADDR select how each function addresses this global. */

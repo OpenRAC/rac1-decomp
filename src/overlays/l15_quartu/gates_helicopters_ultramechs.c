@@ -1177,7 +1177,6 @@ typedef struct {
     } pos;
     OvlQuad rest[4];
 } Goal_52b8;
-extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1344,8 +1343,6 @@ extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int)
 extern void set_ground_height_band(void *);
 
 extern void moby_build_matrix_v(void *, void *) __asm__("func_L00_00251E30");
-
-extern float vec_length_xy(void *);
 
 extern float helicopter_bob_amplitude SDATA(helicopter_bob_amplitude);
 extern float helicopter_bob_period SDATA(helicopter_bob_period);
@@ -1798,7 +1795,6 @@ void process_helicopter_hits(char *m) {
     StepColorFade(m, &helicopter_vars->color_fade);
 }
 extern void FindNearestTargetMoby_t(void *, float *, float) __asm__("func_L00_00260D30");
-extern void clear_u64_value_t(void *) __asm__("func_001F9BC0");
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1816,7 +1812,7 @@ float compute_ultramech_flocking_steering_point(void *m_, void *out, float r) {
     char *o;
     FindNearestTargetMoby_t(m, tgt, r);
     dist = vec_distance_xy(&((struct Moby *)m)->pos, tgt);
-    clear_u64_value_t(out);
+    clear_u64_value(out);
     for (o = quartu_moby_list; o != 0; o = *(char **)(o + 0x28)) {
         if (o == m)
             continue;
@@ -1944,7 +1940,7 @@ extern float SpringTurn(float *vel, float cur, float target, float k, float d, f
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
-extern int fast_dec_timer(int *);
+
 extern int IsFrameWithinWindow(char *, float);
 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
@@ -2730,14 +2726,13 @@ extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern float ProbeGroundHeight_r(void *, int, float) __asm__("func_00214358");
 extern int func_L00_00261478(void *, void *, void *, void *, void *, void *);
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
 /* Poison vessel update (moby Poison Vessel): tracks its target and fires its effect. */
 void PoisonVesselUpdate(Moby *moby) {
@@ -2751,7 +2746,7 @@ void PoisonVesselUpdate(Moby *moby) {
     Res *r;
 
     s20.q = (*(u128 *)&moby->pos);
-    clear_u64_value_r(&s30);
+    clear_u64_value(&s30);
     if (coll_sphere(0.5f, &moby->pos, 1, moby)) {
         if (quartu_coll_hit_moby_r == 0 || moby_get_ride_transform(quartu_coll_hit_moby_r) == 0) {
             moby->command = 1;
@@ -2794,7 +2789,7 @@ void PoisonVesselUpdate(Moby *moby) {
                     p20 = moby_get_ride_transform(quartu_coll_hit_moby_r);
                     if (p20 != 0) {
                         RotateWithMoby(moby, data->target, &moby->pos, &moby->rot, &moby->pos, &moby->rot);
-                        FastVecSub_r(&s40, &moby->pos, &s20);
+                        FastVecSub(&s40, &moby->pos, &s20);
                         *(u128 *)data = s40.q;
                     }
                 }
@@ -2891,7 +2886,6 @@ void update_poison_vessel_spawner(Moby *moby) {
             break;
     }
 }
-extern int GetEffectTex(int);
 
 extern int quartu_frame_count MACRO_ADDR;
 extern short quartu_ripple_strip_counts;

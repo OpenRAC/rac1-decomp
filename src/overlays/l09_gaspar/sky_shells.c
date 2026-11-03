@@ -10,6 +10,7 @@
 #include "game/render/vuchain.h"
 #include "asm_functions/level_02.h"
 #include "asm_functions/level_09.h"
+#include "asm_functions/executable.h"
 
 LINKER_REMNANT("asm/overlays", func_L09_0021E3E8);
 typedef struct Strip_21E410 {
@@ -18,7 +19,6 @@ typedef struct Strip_21E410 {
     unsigned short b; /* 0xA */
     char padC[4];
 } Strip_21E410;
-extern long func_001F4868(int);
 
 extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern int *l09_packet_r __asm__("D_L09_00161240") MACRO_ADDR;

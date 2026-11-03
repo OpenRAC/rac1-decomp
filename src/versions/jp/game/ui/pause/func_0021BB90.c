@@ -17,8 +17,8 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
             }
         } else {
             fade_timer = menu->data.list.items[entry_index].fade_timer;
-            if (scale_game_frame_count_r(D_001602B4_1BB90) < fade_timer) {
-                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count_r(D_001602B4_1BB90);
+            if (scale_game_frame_count(D_001602B4_1BB90) < fade_timer) {
+                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count(D_001602B4_1BB90);
             }
             menu->data.list.items[entry_index].fade_timer = menu->data.list.items[entry_index].fade_timer > 0
                                                                 ? menu->data.list.items[entry_index].fade_timer - 1

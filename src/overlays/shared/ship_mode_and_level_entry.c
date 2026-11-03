@@ -337,7 +337,6 @@ extern V_28efc8 variant_effect_quad_corners[];
 extern int variant_effect_quad_counts SDATA(variant_effect_quad_counts);
 void FastVecScale_v(float, void *, void *) __asm__("func_001F9C30");
 
-long GetEffectTex(int);
 int random_integer_below(int);
 
 void draw_world_quad(void *, void *, int);

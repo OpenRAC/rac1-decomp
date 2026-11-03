@@ -35,13 +35,9 @@ typedef struct {
     float pos[4];
     float mtx[4];
 } Moby_0031AD00;
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 
-extern int func_001F9908(int *arg0);
 extern int play_voice_r(int, int, void *, int) __asm__("func_L00_0028F0B0");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
 
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char camera_pos_r[] __asm__("D_L01_001672C0");
@@ -67,10 +63,10 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
     r[0] = m->radius;
     r[1] = m->radius;
     r[2] = m->radius;
-    FastVecSub_r(d, camera_pos_r, m->pos);
+    FastVecSub(d, camera_pos_r, m->pos);
     d[3] = 0;
-    matrix_mul_vec3_r(b, d, m->mtx);
-    matrix_mul_vec3_r(c, r, m->mtx);
+    matrix_mul_vec3(b, d, m->mtx);
+    matrix_mul_vec3(c, r, m->mtx);
     outer = FastVecLength(c);
     inner = FastVecLength(b);
     if (inner < outer) {
@@ -104,7 +100,7 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
             if (fast_dec_timer(&p->timer)) {
                 p->handle = play_voice_r(p->cls, flags, m, vol);
                 if (p->tmax > 0) {
-                    p->timer = (float)scale_ticks_r(p->tmin + random_integer_below_r(p->tmax - p->tmin)) * 60.0f;
+                    p->timer = (float)scale_ticks(p->tmin + random_integer_below_r(p->tmax - p->tmin)) * 60.0f;
                 }
             } else {
                 p->handle = -1;
@@ -112,7 +108,7 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
         }
         if (p->handle != -1) {
             Sound_SetPitchBend(p->handle, vol);
-            matrix_mul_vec3_r(d, b, m->f10);
+            matrix_mul_vec3(d, b, m->f10);
             FastVecAdd(d, d, m->pos);
             qcopy(voice_positions_r + p->handle * 0x70, d);
         }

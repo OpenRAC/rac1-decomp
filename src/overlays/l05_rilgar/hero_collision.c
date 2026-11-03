@@ -503,7 +503,6 @@ extern char *rilgar_coll_hit_moby;
 extern float g_frame_time MACRO_ADDR;
 
 extern s32 coll_line(void *, void *, s32, s32, s32);
-extern float vec_length_xy(void *);
 
 extern void HeroL05_GroundProbe(void);
 

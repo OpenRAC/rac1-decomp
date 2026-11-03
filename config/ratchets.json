@@ -1,8 +1,8 @@
 {
-  "address_names_in_code": 10720,
+  "address_names_in_code": 9710,
   "address_names_in_comments": 849,
-  "asm_aliases": 5907,
-  "extern_lines": 21841,
+  "asm_aliases": 4985,
+  "extern_lines": 20332,
   "fakematch_tags": 29,
   "float_int_casts": 596,
   "hex_compares": 3827,

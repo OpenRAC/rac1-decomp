@@ -557,8 +557,6 @@ extern u8 D_001E8398[];
 
 extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
 
-extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
-
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
 
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64);
@@ -852,7 +850,7 @@ void draw_map_overlay(void) {
                                 sprite_height = s * 256.0f;
                                 sprite_width = sprite_height;
                                 if (map_data_001A01F0.icons[i].flags & 0x400) {
-                                    angle = fast_add_rotations(angle, 1.5707964f);
+                                    angle = FastAddRots(angle, 1.5707964f);
                                     texture_width = 0x40;
                                     sprite_width = s * map_data_0015FE48;
                                     sprite_height = s * map_data_0015FE4C;
@@ -861,7 +859,7 @@ void draw_map_overlay(void) {
                                     }
                                 }
                                 if (map_data_001A01F0.icons[i].flags & 0x800) {
-                                    angle = fast_add_rotations(angle, 1.5707964f);
+                                    angle = FastAddRots(angle, 1.5707964f);
                                     texture_width = 0x40;
                                     sprite_width = s * map_data_0015FE40;
                                     sprite_height = s * map_data_0015FE44;
@@ -870,7 +868,7 @@ void draw_map_overlay(void) {
                                     }
                                 }
                                 if (map_data_001A01F0.icons[i].flags & 0x1000) {
-                                    angle = fast_add_rotations(angle, 1.5707964f);
+                                    angle = FastAddRots(angle, 1.5707964f);
                                     sprite_width = s * map_data_0015FE50;
                                     sprite_height = s * map_data_0015FE54;
                                 }
@@ -941,12 +939,12 @@ void draw_map_overlay(void) {
             angle = g_hero.motion.rot.f[2];
             flip = g_hero.state.control_mode == HERO_MODE_GRIND;
             if (flip) {
-                angle = fast_add_rotations(angle, 1.5707964f);
+                angle = FastAddRots(angle, 1.5707964f);
             }
             if (map_data_0015FE20 != 0) {
                 world_to_map_coords_r(&label_buffer.f[0], &label_buffer.f[1], map_data_0015EE84 + 100,
                                       g_hero.motion.pos.f[0], g_hero.motion.pos.f[1]);
-                angle = fast_add_rotations(angle, 1.5707964f);
+                angle = FastAddRots(angle, 1.5707964f);
             } else {
                 world_to_map_coords_xy_205E70(g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], &label_buffer.f[0],
                                               &label_buffer.f[1], map_current_level_205E70);
@@ -954,7 +952,7 @@ void draw_map_overlay(void) {
             label_buffer.f[0] = (f32)rx0 + label_buffer.f[0] * (f32)(rx1 - rx0);
             label_buffer.f[1] = (f32)ry0 + label_buffer.f[1] * (f32)(ry1 - ry0);
             if (draw_map51[0] != 0) {
-                angle = FastSubRots(-fast_add_rotations(angle, 1.5707964f), 1.5707964f);
+                angle = FastSubRots(-FastAddRots(angle, 1.5707964f), 1.5707964f);
             }
             {
                 f32 sz = s * 256.0f;

@@ -45,8 +45,6 @@ struct LedgeSpot {
 extern struct LedgeSpot *kerwan_rails MACRO_ADDR;
 extern s32 registered_path_count MACRO_ADDR;
 
-extern f32 vec_distance_xy(void *, void *);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/hero/00205830.c, FUN_L03_00205830. */
 s32 find_first_nearby_registered_path(Vec4 *from, s32 **outOwner, Vec4 *to, s32 *outI, f32 *outF, s32 *outKind,
                                       s32 *skip, s32 *only) {
@@ -120,10 +118,7 @@ extern HeroSpeedBands kerwan_hero_speed_bands;
 extern float kerwan_hero_stride_speeds[];
 extern float kerwan_hero_anim_step_lengths[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
@@ -132,8 +127,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float ApproachValue(float *, float, float);
 
 extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
 
 extern float Spring(float *, float *, float, float, float, float);
 

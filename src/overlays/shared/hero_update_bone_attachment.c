@@ -240,7 +240,7 @@ extern Hero g_hero;
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
-f32 vec_distance_xy(void *, void *);
+
 f32 ApproachValue(f32, f32, f32 *);
 void Spring(f32 *, f32 *, f32, f32, f32, f32);
 
@@ -290,8 +290,6 @@ void update_hero_smoothing_parameters(void) {
 
 extern char quartu_coll_hit_type[];
 extern char quartu_coll_hit[];
-
-extern float vec_length_xy(void *);
 
 extern int coll_line(void *, void *, int, int, int);
 
@@ -565,8 +563,6 @@ extern struct PadState g_controller_state;
 extern Entry70_215e58 quartu_idle_fidgets_field_60[];
 extern short quartu_game_mode_r __asm__("D_L15_0015F6A8");
 extern u8 gHaveBoltGrabber NOT_SDA;
-
-extern s32 fast_dec_timer(s32 *);
 
 extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
 

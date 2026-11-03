@@ -120,8 +120,6 @@ extern void update_electric_water_bolt_effect(Moby *);
 extern void draw_electric_water_countdown(char *);
 extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
 
-extern float vec_distance_xy(void *, void *);
-
 #define MOBY_2D7C00(i) ((unsigned char *)(((i) << 8) + (int)D_L15_00160058))
 #define MOBYP_2D7C00(i) (D_L15_00160058 + ((i) << 8))
 #define CUBP_2D7C00(i) (D_L15_0016016C + ((i) << 7))
@@ -611,8 +609,6 @@ typedef struct {
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void lerp_vector(void *, void *, void *, float);
-
 extern char hero_globals_base[];
 extern char hero_gravity_dir_r[] __asm__("D_0013F6E0");
 extern float electric_water_bolt_wave_point_phase SDATA(electric_water_bolt_wave_point_phase);
@@ -902,13 +898,11 @@ extern short D_L15_00161D38;
 extern V2d8e48 D_L15_00167440 __asm__("D_L15_00167440") NOT_SDA;
 extern V2d8e48 D_L15_001D39C0[] __asm__("D_L15_001D39C0") NOT_SDA;
 extern UV2d8e48 D_L15_001D3A00[] __asm__("D_L15_001D3A00") NOT_SDA;
-extern void vsub_2d8e48(void *, void *, void *) __asm__("func_001F9BF0");
-extern void vadd_2d8e48(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void vscl_2d8e48(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void cross_2d8e48(void *, void *, void *) __asm__("func_001F9CA0");
+
 extern void vmul_2d8e48(float, void *, void *) __asm__("func_001F9C30");
-extern void xform_2d8e48(void *, void *, void *) __asm__("func_001F9EE8");
-extern long func_001F4868(int);
+
 extern float rnd_2d8e48(float, float) __asm__("func_L00_00258C80");
 extern void func_L00_001FD1D8(void *, void *, int);
 /* Draw callback: builds a camera-facing matrix from the moby's position and draws two quads, each with a jittered scale. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d6810.c, FUN_L15_002d8e48. */
@@ -925,15 +919,15 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     quad.unk88 = 0x8000000048L;
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
-    vsub_2d8e48(&mat[3], &quartu_camera_pos, pos);
+    FastVecSub(&mat[3], &quartu_camera_pos, pos);
     vscl_2d8e48(&mat[3], &mat[3], 0.3f);
-    vadd_2d8e48(&mat[3], &mat[3], pos);
+    FastVecAdd(&mat[3], &mat[3], pos);
     mat[3].f[3] = 1.0f;
-    vsub_2d8e48(&mat[0], &quartu_camera_pos, &mat[3]);
+    FastVecSub(&mat[0], &quartu_camera_pos, &mat[3]);
     vscl_2d8e48(&mat[0], &mat[0], 1.0f);
-    cross_2d8e48(&mat[1], &mat[0], hero_gravity_dir_r);
+    FastVecCross(&mat[1], &mat[0], hero_gravity_dir_r);
     vscl_2d8e48(&mat[1], &mat[1], -1.0f);
-    cross_2d8e48(&mat[2], &mat[1], &mat[0]);
+    FastVecCross(&mat[2], &mat[1], &mat[0]);
     c = *(unsigned int *)&electric_water_glow_core_color;
     quad.color[3] = c;
     quad.color[2] = c;
@@ -942,7 +936,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     s = *(float *)&electric_water_glow_core_size + rnd_2d8e48(0.0f, 0.025f);
     for (i = 0; i < 4; i++) {
         vmul_2d8e48(s, &quad.corner[i], &electric_water_glow_quad_corners[i]);
-        xform_2d8e48(&quad.corner[i], &quad.corner[i], &mat[0]);
+        transform_vector(&quad.corner[i], &quad.corner[i], &mat[0]);
         quad.uv[i].u = electric_water_glow_quad_uvs[i].u;
         quad.uv[i].v = electric_water_glow_quad_uvs[i].v;
     }
@@ -955,7 +949,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     s = *(float *)&electric_water_glow_halo_size + rnd_2d8e48(0.0f, 0.05f);
     for (i = 0; i < 4; i++) {
         vmul_2d8e48(s, &quad.corner[i], &electric_water_glow_quad_corners[i]);
-        xform_2d8e48(&quad.corner[i], &quad.corner[i], &mat[0]);
+        transform_vector(&quad.corner[i], &quad.corner[i], &mat[0]);
         quad.uv[i].u = electric_water_glow_quad_uvs[i].u;
         quad.uv[i].v = electric_water_glow_quad_uvs[i].v;
     }
@@ -974,7 +968,7 @@ extern float g_frame_time MACRO_ADDR;
 
 extern int coll_line(void *, void *, int, void *, void *);
 extern int coll_sphere(void *, int, void *, float);
-extern int fast_dec_timer(void *);
+
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
 extern void SpawnExplosionFx_v(void *, void *, float, float, int) __asm__("func_L00_00260108");
 
@@ -1012,8 +1006,6 @@ void update_spinning_projectile(unsigned char *m) {
     if (quartu_frame_count % 3 == 0)
         spawn_moby_point_offset_particle_v(m, 30000.0f, 0, 0.1f);
 }
-
-extern float vec_length_xy(void *);
 
 extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);
 

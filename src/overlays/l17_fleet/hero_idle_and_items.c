@@ -36,7 +36,7 @@ typedef struct {
 } T2C;
 
 extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
+
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int truncate_float_to_s32(float);

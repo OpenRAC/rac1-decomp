@@ -54,8 +54,6 @@ typedef int Q_222D18 __attribute__((mode(TI)));
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float vec_length_xy(void *);
-
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void Hero_ApplyMotionCollisionL02(void) {
     Vec4 previous;
@@ -346,8 +344,6 @@ extern Rec2C D_L02_0017C2A8[];
 extern int D_L02_0015F754 SDATA(D_L02_0015F754);
 
 extern int truncate_float_to_s32(float);
-
-extern int func_001F9908(int *);
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */
 int process_hero_item_action_input(void) {

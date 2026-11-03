@@ -54,7 +54,6 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float hoven_hero_speed_bands_field_18[];
 
-extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");

@@ -1712,7 +1712,6 @@ extern struct GlobalIndex D_0013E130;
 extern struct Hero D_0013F450;
 extern int g_game_mode MACRO_ADDR;
 extern int D_00160588[];
-extern int fast_decompress_2(int, int) __asm__("func_0020C468");
 
 /* update_world_object_animation: relocate the model record loaded for the
    current chunk (render_sequence+0x58) and hook each of its parts to a moby,
@@ -1733,7 +1732,7 @@ void update_world_object_animation(void *arg0) {
     int pc;
 
     flush_cache(0);
-    fast_decompress_2(render_sequence_t.unk5C, (int)render_sequence_t.rec);
+    fast_decompress(render_sequence_t.unk5C, (int)render_sequence_t.rec);
     flush_cache(0);
 
     rec = render_sequence_t.rec;

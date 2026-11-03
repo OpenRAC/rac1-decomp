@@ -44,7 +44,7 @@ void update_enemy_fighter(struct Moby *moby) {
             moby->update_dist = 0xff;
             moby->draw_dist = 0xff;
             data->sound = -1;
-            data->timer = scale_ticks_r2(D_L14_0016202C_FD578);
+            data->timer = scale_ticks(D_L14_0016202C_FD578);
             break;
         case 1:
             advance_enemy_fighter_along_flight_path_r(moby);
@@ -54,7 +54,7 @@ void update_enemy_fighter(struct Moby *moby) {
                 path = oltanis_paths_r3[data->path];
                 moby->flags &= 0xffbe;
                 moby->collision = moby->pclass->collision;
-                data->timer = scale_ticks_r2(D_L14_0016202C_FD578);
+                data->timer = scale_ticks(D_L14_0016202C_FD578);
                 moby->state = 1;
                 data->segment = 0;
                 data->along = 0;

@@ -202,7 +202,7 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);
     return 1;
 }
-extern float vec_distance_xy(void *, void *);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern float frame_scale MACRO_ADDR;

@@ -248,15 +248,8 @@ extern E_2eb938 *camera_descriptors_r __asm__("D_L00_0015F050") MACRO_ADDR;
 extern char *g_current_follow_cam_r __asm__("D_L00_00166F00") NOT_SDA;
 extern char D_L00_00166F10[] NOT_SDA;
 
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern f32 FastCos_r(f32) __asm__("func_001F9F90");
-extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
-extern f32 FastArcSin_r(f32) __asm__("func_001F9FC0");
 extern void set_follow_camera_angle_blend_from_direction_r(void *, f32, f32) __asm__("func_L00_002E9DC8");
-extern f32 FastVecDot_r(void *, void *) __asm__("func_001F9C78");
-extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern f32 FastVecLength_r(void *) __asm__("func_001F9CB8");
+
 extern void init_camera_system_r(void) __asm__("func_L00_001ED600");
 extern void fast_dec_timer_r(void *) __asm__("func_001F9908");
 #define P g_hero_r2
@@ -292,13 +285,13 @@ int camera_transition_update(u8 *m, char *a1) {
         q->i24 = 0;
         q->h22 = 1;
         q->h20++;
-        if (q->h20 >= scale_ticks_r(7)) {
+        if (q->h20 >= scale_ticks(7)) {
             if (*(s16 *)(o + 0x86) == 0)
                 m[0x7C] = 5;
             return 1;
         }
-        v.f[0] = FastCos_r(P.motion.rot.f[2]);
-        v.f[1] = FastSin_r(P.motion.rot.f[2]);
+        v.f[0] = FastCos(P.motion.rot.f[2]);
+        v.f[1] = FastSin(P.motion.rot.f[2]);
         *(s32 *)&v.f[2] = 0;
         set_follow_camera_angle_blend_from_direction_r(&v, 0.06981316953897476f, v.f[2]);
         goto tail;
@@ -314,27 +307,27 @@ int camera_transition_update(u8 *m, char *a1) {
     b = camera_view;
     b2 = b - 0x190;
     vec = b + 0x30;
-    FastVecScale_r(&v, vec, FastVecDot_r(vec, *(char **)(b2 + 0x180)));
-    FastVecSub_r(&d1, *(char **)(b2 + 0x180), &v);
-    FastVecScale_r(&v, vec, FastVecDot_r(vec, ((char *)g->moby) + 0xC0));
-    FastVecSub_r(&d2, ((char *)g->moby) + 0xC0, &v);
-    l = FastVecLength_r(&d2);
+    FastVecScale(&v, vec, FastVecDot(vec, *(char **)(b2 + 0x180)));
+    FastVecSub(&d1, *(char **)(b2 + 0x180), &v);
+    FastVecScale(&v, vec, FastVecDot(vec, ((char *)g->moby) + 0xC0));
+    FastVecSub(&d2, ((char *)g->moby) + 0xC0, &v);
+    l = FastVecLength(&d2);
     if (l != 0.0f) {
-        l *= FastVecLength_r(&d1);
+        l *= FastVecLength(&d1);
     }
     if (l != 0.0f) {
-        x = FastArcSin_r(FastVecDot_r(&d2, &d1) / l);
+        x = FastArcSin(FastVecDot(&d2, &d1) / l);
         if (1.3962633609771729f <= 1.5707964f - x) {
             init_camera_system_r();
             return 0;
         }
     }
-    q->i24 = scale_ticks_r(30);
+    q->i24 = scale_ticks(30);
 tail:
     if (q->i24) {
         fast_dec_timer_r(&q->i24);
-        v.f[0] = FastCos_r(P.motion.rot.f[2]);
-        v.f[1] = FastSin_r(P.motion.rot.f[2]);
+        v.f[0] = FastCos(P.motion.rot.f[2]);
+        v.f[1] = FastSin(P.motion.rot.f[2]);
         *(s32 *)&v.f[2] = 0;
         set_follow_camera_angle_blend_from_direction_r(&v, 0.13962633907794952f, v.f[2]);
     }
@@ -542,7 +535,6 @@ void initialize_camera_pose_springs(Camera *m) {
     matrix_copy_rows(m, v);
     m->transition_state = 0;
 }
-extern int fast_dec_timer(int *);
 
 extern float Cam_InterpValues_v(void *, float, float, float, float, float) __asm__("func_001EC120");
 
@@ -747,7 +739,6 @@ typedef int u128 __attribute__((mode(TI)));
 
 extern void initialize_orbit_camera_from_parameters(char *, void *, void *, float);
 
-extern float vec_distance_xy(void *, void *);
 extern float orbit_cam_target_offset_x;
 extern char player_camera_c[] __asm__("D_L00_00166D80") NOT_SDA;
 
@@ -974,18 +965,16 @@ extern CamGlobals cam_globals_2ED320 __asm__("D_L00_00166D80");
 extern s32 current_level_2ED320 __asm__("D_0015EE84") MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 extern void func_00214D28(float, float, float *);
-extern void FastVecSub_2ED320(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern void normalize_2ED320(float, void *, void *) __asm__("func_L00_001FF4B0");
 extern void FastVecScale_2ED320(float, void *, void *) __asm__("func_001F9C30");
-extern void FastVecAdd_2ED320(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern int coll_sphere_2ED320(float, void *, int, int) __asm__("func_L00_001F10E0");
-extern float FastVecDot_2ED320(void *, void *) __asm__("func_001F9C78");
-extern float FastVecLength_2ED320(void *) __asm__("func_001F9CB8");
+
 extern float rope_spring_turn_2ED320(void *, float, float, float, float, float) __asm__("func_L00_001EB6A8");
 extern float FastArcTan_2ED320(float, float) __asm__("func_L00_001FF860");
-extern f32 FastCos_2ED320(f32) __asm__("func_001F9F90");
-extern f32 FastSin_2ED320(f32) __asm__("func_001F9FA8");
+
 extern unsigned short *D_L00_001ABBC0[];
 extern char *D_L00_00160098 MACRO_ADDR;
 extern OvlQuad_2ED320 D_L00_00173F60;
@@ -1056,14 +1045,14 @@ void update_target_tracking_camera_position(Camera *cam) {
                     candidate = moby_array_start + (*neighbours & 0x7fff) * 0x100;
                     if (candidate != current_target &&
                         (*(short *)(candidate + 0xa6) == 0x323 || *(short *)(candidate + 0xa6) == 0x2f6)) {
-                        FastVecSub_2ED320(offset, candidate + 0x10, current_target + 0x10);
+                        FastVecSub(offset, candidate + 0x10, current_target + 0x10);
                         normalize_2ED320(1.0f, direction, offset);
-                        aim[0] = FastCos_2ED320(hero_2ED320.motion.rot.f[2]);
-                        aim[1] = FastSin_2ED320(hero_2ED320.motion.rot.f[2]);
+                        aim[0] = FastCos(hero_2ED320.motion.rot.f[2]);
+                        aim[1] = FastSin(hero_2ED320.motion.rot.f[2]);
                         aim[2] = 0.0f;
-                        score = FastVecDot_2ED320(direction, aim);
+                        score = FastVecDot(direction, aim);
                         if (score > 0.0f) {
-                            target = FastVecLength_2ED320(offset) - score * 10.0f;
+                            target = FastVecLength(offset) - score * 10.0f;
                             if (target < best) {
                                 chosen = candidate;
                                 best = target;
@@ -1073,7 +1062,7 @@ void update_target_tracking_camera_position(Camera *cam) {
                 } while ((short)*neighbours++ >= 0);
             }
             if (chosen != 0) {
-                FastVecSub_2ED320(offset, chosen + 0x10, current_target + 0x10);
+                FastVecSub(offset, chosen + 0x10, current_target + 0x10);
                 *angle = rope_spring_turn_2ED320(turn, *angle, FastArcTan_2ED320(offset[0], offset[1]), 0.00125f,
                                                  0.175f, 0.0f);
             } else if (*(int *)(follow + 0x40) == 1)
@@ -1090,20 +1079,20 @@ void update_target_tracking_camera_position(Camera *cam) {
             *angle = rope_spring_turn_2ED320(angle + 1, *angle, hero_2ED320.motion.rot.f[2], rope_turn_k_2ED320, 0.175f,
                                              0.0f);
     }
-    *(float *)(follow + 0x30) = FastCos_2ED320(*angle);
-    *(float *)(follow + 0x34) = FastSin_2ED320(*angle);
+    *(float *)(follow + 0x30) = FastCos(*angle);
+    *(float *)(follow + 0x34) = FastSin(*angle);
     *(int *)(follow + 0x38) = 0;
     *(float *)(follow + 0x3c) = *(float *)(follow + 0x38);
     normalize_2ED320(-*distance, position, follow + 0x30);
     position[2] += distance[4];
-    FastVecAdd_2ED320(position, position, &hero_2ED320.motion.pos);
+    FastVecAdd(position, position, &hero_2ED320.motion.pos);
     if (coll_line(&cam->pos, position, 0x12, 0, 0) != 0) {
-        FastVecSub_2ED320(offset, &collision_hit_point, &cam->pos);
+        FastVecSub(offset, &collision_hit_point, &cam->pos);
         collision_position = &collision_hit_point;
-        length = FastVecLength_2ED320(offset);
+        length = FastVecLength(offset);
         if (length > 0.5f) {
             FastVecScale_2ED320((length - 0.5f) / length, offset, offset);
-            FastVecAdd_2ED320(position, &cam->pos, offset);
+            FastVecAdd(position, &cam->pos, offset);
             for (i = 0; i < 5; i++) {
                 if (coll_sphere_2ED320(0.75f, position, 0, 0) != 0)
                     qcopy(position, collision_position + 1);
@@ -1112,7 +1101,7 @@ void update_target_tracking_camera_position(Camera *cam) {
             }
         }
         qcopy(&cam->pos, position);
-        FastVecSub_2ED320(offset, &hero_2ED320.motion.pos, &cam->pos);
+        FastVecSub(offset, &hero_2ED320.motion.pos, &cam->pos);
         *angle = FastArcTan_2ED320(offset[0], offset[1]);
         *(int *)(angle + 1) = 0;
     } else
@@ -2054,7 +2043,6 @@ extern u8 g_debug_camera_r2[] __asm__("D_L00_00166EC0");
 extern VoicePoolRow voice_pool[];
 extern T_2ed950 *level_sound_slots MACRO_ADDR;
 
-s32 fast_dec_timer(s32 *);
 s32 func_L00_0028F0B0_EEE00(s32, s32, void *, s32) __asm__("func_L00_0028F0B0");
 s32 random_integer_below(s32);
 

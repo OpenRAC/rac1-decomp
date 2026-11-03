@@ -229,7 +229,7 @@ s32 HeroL06_TryApplyHitKnockback(s32 arg) {
     FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);
     return 1;
 }
-extern float vec_distance_xy(void *, void *);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern float frame_scale MACRO_ADDR;
@@ -496,7 +496,6 @@ extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_time_sq MACRO_ADDR;
 extern float blarg_hero_speed_bands_6[];
 
-extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
@@ -661,8 +660,6 @@ extern HeroAttackRecord blarg_attack_records[];
 extern float blarg_hero_speed_bands_3;
 extern float blarg_hero_anim_frame_speeds_a[];
 extern float blarg_hero_anim_frame_speeds_b[];
-
-extern int fast_dec_timer(int *);
 
 extern int truncate_float_to_s32(float);
 

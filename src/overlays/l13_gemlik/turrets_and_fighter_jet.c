@@ -291,8 +291,6 @@ void update_moby_volume_trigger(Moby *moby) {
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w);
 
-extern float vec_distance_xy(void *, void *);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -527,14 +525,13 @@ extern void *spawn_blarg_turret_child_r(void *) __asm__("func_L13_002B5B08");
 extern void Manipulator_ApplyScale_r(float, void *, int, void *) __asm__("func_L00_00264B40");
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
+
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern float func_L00_0025CE58(void *, float, void *, float, float, float);
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
-extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
+
 extern void fire_blarg_turret_projectile_r(void *) __asm__("func_L13_002B5950");
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
@@ -566,7 +563,7 @@ void blarg_turret_update(Moby *m) {
             m->state = 1;
             break;
         case 1:
-            r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
+            r = FastDiffRots(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
             if (r < 1.5707964f && vec_distance_xy_r(&m->pos, &t->pos) < 20.0f &&
                 (data->volume == -1 || is_point_inside_clip_volume_r(&g_hero.motion.body_center, data->volume) != 0)) {
                 data->f68 = 8.0f;
@@ -589,7 +586,7 @@ void blarg_turret_update(Moby *m) {
             }
             break;
         case 3:
-            r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
+            r = FastDiffRots(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
             if (r >= 1.5707964f || vec_distance_xy_r(&m->pos, &t->pos) > 22.0f ||
                 (data->volume != -1 && is_point_inside_clip_volume_r(&g_hero.motion.body_center, data->volume) == 0)) {
                 if (m->prev_seq != 0) {
@@ -599,14 +596,14 @@ void blarg_turret_update(Moby *m) {
             } else {
                 float lim;
                 ApproachValue_r(&data->f68, 20.0f, g_frame_time_r * 6.0f);
-                r = FastSubRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
+                r = FastSubRots(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
                 lim = data->f6C * 0.017453292f;
                 if (lim < r) {
                     r = lim;
                 } else if (r < -lim) {
                     r = -lim;
                 }
-                r = FastAddRots_r(r, data->f54);
+                r = FastAddRots(r, data->f54);
                 SteerAngleWithVelocity(&m->rot.z, r, &data->f60, g_frame_time_sq_r * 12.566371f,
                                        g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
                 fire_blarg_turret_projectile_r(m);
@@ -649,8 +646,6 @@ void blarg_turret_update(Moby *m) {
         data->gun = 0;
     }
 }
-
-extern float vec_distance_xy(void *, void *);
 
 extern int gemlik_frame_count MACRO_ADDR;
 extern int gemlik_turret_fire_interval SDATA(gemlik_turret_fire_interval);
@@ -922,7 +917,6 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern int func_001160D8(void);
 extern void InitKnockback(float, void *, void *, int, int, int);
 
-extern float vec_length_xy(void *);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
@@ -1865,7 +1859,6 @@ void robosquawker_update(Moby *m) {
         }
     }
 }
-extern int GetEffectTex(int);
 
 /* Append the same effect quad four times at x, y, each turned a further quarter turn. */
 void append_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
@@ -2196,7 +2189,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
 }
 extern unsigned char pad_globals_base[];
 extern char gemlik_camera_rot[];
-extern void fast_dec_timer(int *arg0);
+
 extern int select_fighter_jet_target_and_draw_indicators(int, char *, char *, void *, float, float, float, char *,
                                                          char *);
 

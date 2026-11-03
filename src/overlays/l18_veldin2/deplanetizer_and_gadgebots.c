@@ -1364,7 +1364,7 @@ short count_group_gadgebot_1906_mobys_not_in_state_8(int idx) {
     return n;
 }
 INCLUDE_ASM("asm/overlays", func_L18_002FDCC4);
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
+extern int FastTweenColor(int, int, float);
 typedef struct {
     float m[4][4];
     int col[4];
@@ -1383,9 +1383,9 @@ extern short D_L18_001626DC;
 extern short D_L18_001626E0;
 extern char veldin2_camera_pos_r[] __asm__("D_L18_00167840");
 extern float D_L18_001EFF90[4][2];
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
+extern void clear_u64_value(void *);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern unsigned long GetEffectTex_r(int) __asm__("func_001F4868");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
@@ -1406,11 +1406,11 @@ void func_L18_002FDD20_r(struct Moby *m) {
     w = 1.0f - d->glow + (*(float *)&gadgebot_launch_glow_horizontal_scale_adjustment);
     qcopy(mat[3], &m->pos);
     mat[3][2] -= (*(float *)&gadgebot_launch_glow_z_offset);
-    clear_u64_value_r(mat[2]);
+    clear_u64_value(mat[2]);
     mat[2][2] = h;
-    FastVecSub_r(mat[0], veldin2_camera_pos_r, &m->pos);
-    FastVecCross_r(mat[1], mat[0], mat[2]);
-    FastVecCross_r(mat[0], mat[1], mat[2]);
+    FastVecSub(mat[0], veldin2_camera_pos_r, &m->pos);
+    FastVecCross(mat[1], mat[0], mat[2]);
+    FastVecCross(mat[0], mat[1], mat[2]);
     vec_scale_to_length_r(mat[0], mat[0], w);
     vec_scale_to_length_r(mat[1], mat[1], w);
     pk.b = GetEffectTex_r((*(int *)&gadgebot_launch_glow_texture_index));
@@ -1420,12 +1420,12 @@ void func_L18_002FDD20_r(struct Moby *m) {
            ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_subtrahend_selector) << 2) |
            ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_alpha_factor_selector) << 4) |
            ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_addend_selector) << 6) | 0x8000000000ULL;
-    c = FastTweenColor_r((*(int *)&gadgebot_launch_glow_tint_start), (*(int *)&gadgebot_launch_glow_tint_end), d->glow);
+    c = FastTweenColor((*(int *)&gadgebot_launch_glow_tint_start), (*(int *)&gadgebot_launch_glow_tint_end), d->glow);
     for (i = 0; i < 4; i++) {
         pk.uv[i][0] = gadgebot_launch_glow_uvs[i][0];
         pk.uv[i][1] = gadgebot_launch_glow_uvs[i][1];
         p = pk.m[i];
-        clear_u64_value_r(p);
+        clear_u64_value(p);
         if (i & 1)
             p[2] = 1.0f;
         else

@@ -484,7 +484,6 @@ void build_water_render_setup_packet(void);
 extern void ripple_heights_to_scratchpad_r(void *, void *) __asm__("func_L01_00262BC0");
 
 extern void update_animated_offset_pairs(f32 *);
-extern u64 GetEffectTex(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b91c8. */
 void render_water_grids(f32 *pos, s32 count) {
@@ -634,8 +633,6 @@ extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern float vec_distance_xy(void *, void *);
 
 extern int Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
 
@@ -818,7 +815,6 @@ void novalis_elevator_update(unsigned char *moby) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L01_002C05B8);
-extern float vec_length_xy(void *);
 
 extern char *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern char novalis_coll_hit_point[];
@@ -857,7 +853,6 @@ typedef int OvlQuad __attribute__((mode(TI)));
 
 extern s32 truncate_float_to_s32(f32);
 void spawn_collision_particle_bursts(void);
-extern int fast_dec_timer(void *);
 
 extern int coll_sphere_mobys(float, void *, int, int, void *);
 extern void PostHitMessage_v(float, void *, void *, int, void *, void *) __asm__("func_L00_0025AC00");
@@ -1725,7 +1720,7 @@ extern void MobySpringTurn_r(void *moby, float target, float *vel, float k, floa
                              float max) __asm__("func_L00_002592B0");
 
 extern int func_L00_0025A060(void *m, void *p, float *pos, float *v);
-extern int fast_dec_timer(void *);
+
 extern void update_hover_moby_steering_r(void *, void *) __asm__("func_L01_002E4BA8");
 extern int update_sand_mouse_fall_motion_r(void *, void *) __asm__("func_L01_002E4580");
 extern void add_random_offset_to_vector_xyz(float *v, float s);
@@ -2839,12 +2834,9 @@ extern f32 D_L01_00161AC8_0B48 SDATA(D_L01_00161AC8);
 extern void add_random_offset_to_vector_xyz_r(void *, f32) __asm__("func_L00_00260958");
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
+
 extern int FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
-extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
+
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002ef770. */
@@ -2870,17 +2862,17 @@ void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
             radius = random_float_between_r(D_L01_00161A90_0B48, D_L01_00161A94_0B48);
             lateral = random_float_between_r(D_L01_00161A98_0B48, D_L01_00161A9C_0B48);
             vertical = random_float_between_r(0.0f, D_L01_00161AC8_0B48);
-            FastVecScale_r(origin_copy, mode, vertical * g_frame_time_r);
-            scale = FastCos_r(angle);
+            FastVecScale(origin_copy, mode, vertical * g_frame_time_r);
+            scale = FastCos(angle);
             origin[0] += scale * (radius * g_frame_time_r);
-            scale = FastSin_r(angle);
+            scale = FastSin(angle);
             scaled_radius = radius * g_frame_time_r;
             origin[1] += scale * scaled_radius;
             scaled_vertical = lateral * g_frame_time_r;
             origin[2] += scaled_vertical;
             qcopy(velocity, origin_copy);
             next = i + 1;
-            velocity[2] -= D_L01_00161AA0_0B48 * g_frame_time_sq_r2 * (f32)scale_ticks_r(D_L01_00161AC0_0B48);
+            velocity[2] -= D_L01_00161AA0_0B48 * g_frame_time_sq_r2 * (f32)scale_ticks(D_L01_00161AC0_0B48);
             for (j = 0; j < D_L01_00161A80_0B48; j++) {
                 scale = random_float_between_r(0.5f, 1.5f);
                 origin[3] = scale * D_L01_00161AA4_0B48;
@@ -2889,9 +2881,9 @@ void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
                 add_random_offset_to_vector_xyz_r(velocity, D_L01_00161A8C_0B48 * g_frame_time_r);
                 lower = FastTweenColor_r(random_float_between_r(0.0f, 1.0f), D_L01_00161AAC_0B48, D_L01_00161AB4_0B48);
                 upper = FastTweenColor_r(random_float_between_r(0.0f, 1.0f), D_L01_00161AB0_0B48, D_L01_00161AB8_0B48);
-                first = scale_ticks_r(D_L01_00161ABC_0B48);
-                second = scale_ticks_r(D_L01_00161AC0_0B48);
-                duration = truncate_float_to_s32_r2(multiply_global_factor_r(
+                first = scale_ticks(D_L01_00161ABC_0B48);
+                second = scale_ticks(D_L01_00161AC0_0B48);
+                duration = truncate_float_to_s32_r2(multiply_global_factor(
                     random_float_between_r((f32)D_L01_00161AC4_0B48 * 0.5f, (f32)D_L01_00161AC4_0B48 * 2.5f)));
                 PartType02Spawn(pos, origin_copy, velocity, lower, upper, first, second, duration, -1);
             }

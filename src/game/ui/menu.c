@@ -599,7 +599,6 @@ int map_filter_l12_2(void) {
 }
 
 typedef float FVec4[4] __attribute__((aligned(16)));
-extern float vec_distance_xy(float *, float *);
 
 /* True when (x, y) is within 35 of the point (161.5, 249), or always
    while map_region_enabled_0 is set. Both vectors are 16-byte aligned like the

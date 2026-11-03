@@ -142,7 +142,6 @@ extern Hero g_hero;
 extern struct Moby *gemlik_moby_array_start MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gemlik_coll_hit_moby __attribute__((section(".data")));
-extern int fast_dec_timer(void *);
 
 extern int coll_sphere(float, void *, int, void *);
 
@@ -370,13 +369,11 @@ typedef struct Tex {
 
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
 
 extern unsigned char *func_L00_0026DA50(void *pos, void *dir, int c, int d, int n, int k, float f);
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern float func_001F9D48(void *, void *);
+
 extern float func_L00_0025CE58(float *, float, float *, float, float, float);
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
@@ -410,16 +407,16 @@ void update_ship_rocket(Moby *m) {
     vel = dir;
     vec_scale_to_length_r(&vel, &vel, random_float_between_r(0.1f, 0.2f) * g_frame_time_r);
     vec_scale_to_length_r(&tmp, d, -random_float_between_r(g_frame_time_r * 0.1f, g_frame_time_r));
-    FastVecAdd_r(&vel, &vel, &tmp);
-    p = PartType44Spawn(&*(Vec4A *)&m->pos, (float *)&vel, scale_ticks_r(6), 0x7F, 0xB0B0B0, 3, 40000.0f, 1000.0f, 1.0f,
+    FastVecAdd(&vel, &vel, &tmp);
+    p = PartType44Spawn(&*(Vec4A *)&m->pos, (float *)&vel, scale_ticks(6), 0x7F, 0xB0B0B0, 3, 40000.0f, 1000.0f, 1.0f,
                         -0.0004f, 0.0f);
     if (p != 0) {
         p[3] = 0x48;
     }
     for (t = 0.0f; t < 1.0f; t += 0.33333334f) {
         vec_scale_to_length_r(&tmp, d, random_float_between_r(t, t + 0.33333334f) * d->speed);
-        FastVecAdd_r(&tmp, &tmp, &*(Vec4A *)&m->pos);
-        p = PartType44Spawn(&tmp, (float *)&vel, scale_ticks_r(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f,
+        FastVecAdd(&tmp, &tmp, &*(Vec4A *)&m->pos);
+        p = PartType44Spawn(&tmp, (float *)&vel, scale_ticks(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f,
                             -0.0002f, 0.0f);
         if (p != 0) {
             Tex *tex = &gemlik_part_type_textures;
@@ -430,7 +427,7 @@ void update_ship_rocket(Moby *m) {
         dir.z = 0.02f;
         matrix_mul_vec3(&dir, &dir, &*(Vec4A *)&m->rot_row0);
         build_look_at_matrix(&dir, &dir, &*(Vec4A *)&m->rot_row0, random_angle_radians());
-        p = PartType21Spawn(&tmp, &dir, 0x4F007FFF, 0x1FFFFFFF, scale_ticks_r(5), 1, 20000.0f);
+        p = PartType21Spawn(&tmp, &dir, 0x4F007FFF, 0x1FFFFFFF, scale_ticks(5), 1, 20000.0f);
         if (p != 0) {
             p[3] = 0x48;
         }
@@ -440,7 +437,7 @@ void update_ship_rocket(Moby *m) {
         d->target = 0;
     }
     if (d->target != 0 && d->target->oclass == d->target_uid && d->target->state != 0xFE && d->target->state != 0xFD &&
-        FastVecDist_r(&d->tpos, &*(Vec4A *)&d->target->pos) < 3.0f) {
+        FastVecDist(&d->tpos, &*(Vec4A *)&d->target->pos) < 3.0f) {
         m->rot.z = fast_atan2_r(d->target->pos.x - m->pos.x, d->target->pos.y - m->pos.y);
         m->rot.y =
             -fast_atan2_r(vec_distance_xy(&*(Vec4A *)&m->pos, &*(Vec4A *)&d->target->pos), d->target->pos.z - m->pos.z);
@@ -453,7 +450,7 @@ void update_ship_rocket(Moby *m) {
         d->target = 0;
     }
     BuildSphericalOffset_r(d, d->speed, m->rot.z, -m->rot.y);
-    FastVecAdd_r(&*(Vec4A *)&m->pos, &*(Vec4A *)&m->pos, d);
+    FastVecAdd(&*(Vec4A *)&m->pos, &*(Vec4A *)&m->pos, d);
     if (m->pos.x < 2.0f || m->pos.x > 1021.0f || m->pos.y < 2.0f || m->pos.y > 1021.0f || m->pos.z < 2.0f ||
         m->pos.z > 1021.0f) {
         DeleteMoby_r(m);

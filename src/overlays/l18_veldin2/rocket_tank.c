@@ -65,7 +65,7 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern int veldin2_cinematic_mode MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float vec_distance_xy(void *, void *);
+
 extern float g_frame_time MACRO_ADDR;
 
 extern int veldin2_frame_count MACRO_ADDR;
@@ -261,8 +261,6 @@ extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, short *);
 extern int FindNearestTargetMoby(unsigned char *, char *, float);
-
-extern float vec_length_xy(void *);
 
 extern void StepColorFade(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);

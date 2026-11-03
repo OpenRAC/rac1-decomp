@@ -29,8 +29,6 @@
 
 extern int space_load_in_progress MACRO_ADDR;
 
-extern int GetEffectTex(int);
-
 extern int g_game_mode MACRO_ADDR;
 extern int memory_card_request;
 extern char mode_freeze_info[];

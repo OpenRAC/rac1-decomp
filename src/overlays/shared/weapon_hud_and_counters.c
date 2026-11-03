@@ -1625,16 +1625,14 @@ extern int D_L00_0015F8BC_239918 SDATA(D_L00_0015F8BC);
 extern Ids D_L00_0015F8C0;
 extern char texture_group_header_r3[] __asm__("D_L00_0017E5D8");
 
-extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
+
 extern int GetIconFrame_r(int, int) __asm__("func_00200198");
 extern void HudSprite_r(int, int, int, int, int, int) __asm__("func_00200468");
 extern void HudFrame_r(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
 extern int msg_string_r(int) __asm__("func_001FE540");
 extern int libc_strlen_r(int) __asm__("func_00116810");
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
+
 extern int FontPrintCenter_r(int, int, int, int, int) __asm__("func_001F6EA8");
 extern int hud_screen_position_r(void *, int *, int *) __asm__("func_L00_00236400");
 
@@ -1672,7 +1670,7 @@ int draw_hud_radial_selector_panel(Elem *e) {
         float s;
         t = t / IntToFloat(D_L00_0015F890_239918);
         t = t * 6.2831802f;
-        wave = FastSin_r(t - 3.1415901f);
+        wave = FastSin(t - 3.1415901f);
         s = f22 * 128.0f;
         a = truncate_float_to_s32_r(s);
         wave = wave * 0.125f;
@@ -1691,9 +1689,9 @@ int draw_hud_radial_selector_panel(Elem *e) {
     for (i = 0; i < quick_select_slot_count_r2; i++) {
         int X, Y;
         float f20 =
-            FastAddRots_r((float)i * 2.0f * 3.1415927f / (float)quick_select_slot_count_r2 - 3.1415927f, 1.5707964f);
-        X = x + D_L00_0015F800_239918 + (int)(D_L00_0015F86C_239918 * FastCos_r(f20) * D_L00_0015F8A4_239918);
-        Y = y + D_L00_0015F804_239918 + (int)(D_L00_0015F86C_239918 * FastSin_r(f20));
+            FastAddRots((float)i * 2.0f * 3.1415927f / (float)quick_select_slot_count_r2 - 3.1415927f, 1.5707964f);
+        X = x + D_L00_0015F800_239918 + (int)(D_L00_0015F86C_239918 * FastCos(f20) * D_L00_0015F8A4_239918);
+        Y = y + D_L00_0015F804_239918 + (int)(D_L00_0015F86C_239918 * FastSin(f20));
         if (e->sel == i && hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0 != 0) {
             HudSprite_r(GetIconFrame_r(0xE99C, 0), X - 0x13, Y - 0x13, 0x26, 0x26, b);
         }
@@ -1723,8 +1721,8 @@ int draw_hud_radial_selector_panel(Elem *e) {
             str = msg_string_r(tmp.v[k]);
             if (str != 0 && libc_strlen_r(str) != 0) {
                 float f20 = f23 * f22;
-                col = FastTweenColor_r(D_L00_0015F8B4_239918, D_L00_0015F8B8_239918, f20);
-                shadow = FastTweenColor_r(0, 0x80000000, f20);
+                col = FastTweenColor(D_L00_0015F8B4_239918, D_L00_0015F8B8_239918, f20);
+                shadow = FastTweenColor(0, 0x80000000, f20);
                 yy = y + D_L00_0015F8BC_239918 + D_L00_0015F804_239918;
                 FontPrintCenter_r(x + D_L00_0015F800_239918 - 1, yy - 1, shadow, str, -1);
                 FontPrintCenter_r(x + D_L00_0015F800_239918, yy, col, str, -1);

@@ -184,8 +184,6 @@ extern int walker_gait_mask(WalkAnim *a, float t);
 
 extern int truncate_float_to_s32(float);
 
-extern float vec_distance_xy(void *, void *);
-
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
 extern float g_frame_time MACRO_ADDR;

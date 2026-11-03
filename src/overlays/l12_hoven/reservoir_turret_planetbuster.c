@@ -122,15 +122,10 @@ extern float D_L12_00161A80_2EDAA0 SDATA(D_L12_00161A80);
 extern float D_L12_00161A84_2EDAA0 SDATA(D_L12_00161A84);
 extern float D_L12_00161A88_2EDAA0 SDATA(D_L12_00161A88);
 
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern void draw_water_reservoir_r(char *) __asm__("func_L12_002EDE40");
@@ -157,12 +152,12 @@ void water_reservoir_update(Moby *moby) {
         case 1:
             if (moby->command & 8) {
                 moby->command = 1;
-                data->timer = scale_ticks_r(D_L12_00161A50_2EDAA0);
+                data->timer = scale_ticks(D_L12_00161A50_2EDAA0);
             } else if (moby->command & 4) {
                 moby->command = 2;
-                data->timer = scale_ticks_r(D_L12_00161A50_2EDAA0);
+                data->timer = scale_ticks(D_L12_00161A50_2EDAA0);
             }
-            data->angle = FastAddRots_r(data->angle, D_L12_00161A4C_2EDAA0 * 0.0174532924f * g_frame_time_r);
+            data->angle = FastAddRots(data->angle, D_L12_00161A4C_2EDAA0 * 0.0174532924f * g_frame_time_r);
             break;
     }
 
@@ -180,14 +175,14 @@ void water_reservoir_update(Moby *moby) {
                 rand_vec_r(v10, 0.0f, D_L12_00161A54_2EDAA0);
                 rand_vec_r(v20, 0.0f, D_L12_00161A54_2EDAA0);
                 rand_vec_r(v30, 0.0f, D_L12_00161A54_2EDAA0);
-                FastVecSub_r(v40, v10, v20);
+                FastVecSub(v40, v10, v20);
                 v40[2] = v40[2] + (D_L12_00161A80_2EDAA0 - D_L12_00161A7C_2EDAA0);
-                FastVecSub_r(v50, v20, v30);
+                FastVecSub(v50, v20, v30);
                 v50[2] = v50[2] + (D_L12_00161A84_2EDAA0 - D_L12_00161A80_2EDAA0);
                 k = 2.0f / (float)D_L12_00161A6C_2EDAA0;
-                FastVecScale_r(v40, v40, k);
-                FastVecScale_r(v50, v50, k);
-                FastVecAdd_r(v10, v10, ((float *)&moby->pos));
+                FastVecScale(v40, v40, k);
+                FastVecScale(v50, v50, k);
+                FastVecAdd(v10, v10, ((float *)&moby->pos));
                 if (moby->command & 1) {
                     v10[2] = v10[2] + D_L12_00161A84_2EDAA0;
                     v40[2] = -v40[2];
@@ -198,7 +193,7 @@ void water_reservoir_update(Moby *moby) {
                 v40[3] = random_float_between_r(D_L12_00161A60_2EDAA0, D_L12_00161A64_2EDAA0);
                 v50[3] = random_float_between_r(D_L12_00161A60_2EDAA0, D_L12_00161A64_2EDAA0);
                 PartType02Spawn(v10, v40, v50, D_L12_00161A74_2EDAA0, D_L12_00161A74_2EDAA0, D_L12_00161A68_2EDAA0,
-                                scale_ticks_r(D_L12_00161A6C_2EDAA0), D_L12_00161A70_2EDAA0, D_L12_00161A78_2EDAA0);
+                                scale_ticks(D_L12_00161A6C_2EDAA0), D_L12_00161A70_2EDAA0, D_L12_00161A78_2EDAA0);
             }
         }
         if ((moby->command & 1) && data->timer == 0) {
@@ -209,8 +204,6 @@ void water_reservoir_update(Moby *moby) {
     }
     AddDrawCallback_r(draw_water_reservoir_r, moby);
 }
-
-extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
 extern char water_reservoir_quad_corners[];
@@ -277,8 +270,6 @@ void draw_water_reservoir(Moby *moby) {
     }
 }
 
-extern float vec_length_xy(void *);
-
 /* Rocket pvars (Rocket). */
 struct HovenRocketVars {
     f32 dir[4]; /* 0x00: flight direction */
@@ -338,8 +329,6 @@ typedef struct {
     int moby;
 } ShotColl;
 extern ShotColl hoven_coll_hit;
-
-extern int fast_dec_timer(int *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float g_frame_time MACRO_ADDR;
@@ -533,10 +522,9 @@ typedef struct Data_303CA8 {
 } Data_303CA8;
 
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern int GetEffectTex_r(int) __asm__("func_001F4868");
 
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern Moby *hoven_mobys_r __asm__("D_L12_00160058") MACRO_ADDR;
 extern float D_L12_001FB870[][4];
@@ -580,7 +568,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
         } else {
             qcopy(vec, pos);
         }
-        FastVecAdd_r2(row, row, vec);
+        FastVecAdd(row, row, vec);
         row += 16;
         cp[15] = 1.0f;
     }
@@ -606,7 +594,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
             t = 1.0f - IntToFloat(data->phase[idx]) / IntToFloat(oscillating_link_strip_fade_pivot_ticks);
         }
         quad[1].c[0] = quad[1].c[1] = quad[1].c[2] = quad[1].c[3] =
-            FastTweenColor_r(D_L12_00161E6C_303CA8, D_L12_00161E70_303CA8, t);
+            FastTweenColor(D_L12_00161E6C_303CA8, D_L12_00161E70_303CA8, t);
         u = 0.0f;
         for (j = 0; j < data->count - 1; j++) {
             u = u + D_L12_00161E74_303CA8;
@@ -617,7 +605,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
                 quad[1].uv[k * 2] = target_link_strip_uvs[k * 2] + u + D_L12_00161E78_303CA8;
             }
             for (n = 0; n < 4; n++) {
-                FastVecAdd_r2(&quad[1].v[n * 4], target_link_strip_corners[n], data->ring[idx][j + (n >> 1)]);
+                FastVecAdd(&quad[1].v[n * 4], target_link_strip_corners[n], data->ring[idx][j + (n >> 1)]);
             }
             for (d = 0; d < 2; d++) {
                 draw_world_quad_r(&quad[1], mats[d], 0);
@@ -625,7 +613,6 @@ void draw_oscillating_target_link_strips(Moby *moby) {
         }
     }
 }
-extern int fast_dec_timer(int *);
 
 extern void rand_vec(float *, float, float);
 
@@ -717,14 +704,10 @@ typedef struct Row {
     u128 v20;
 } Row;
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
 
 extern void LerpVec4_r(void *, void *, void *, float) __asm__("func_L00_0025C710");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
+
 extern int func_L00_00200290(void *, float);
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void update_oscillating_target_link_strips_r(void *) __asm__("func_L12_00304038");
@@ -763,10 +746,10 @@ void update_oscillating_target_link(Moby *moby) {
         case 1:
             moby->rot.z = fast_atan2_r(hoven_mobys_r[data->target].pos.x - moby->pos.x,
                                        hoven_mobys_r[data->target].pos.y - moby->pos.y);
-            data->dist = FastVecDist_r(((float *)&moby->pos), (char *)hoven_mobys_r + (data->target << 8) + 0x10);
-            data->angle = FastAddRots_r2(data->angle, data->turn * 0.017453292f * g_frame_time_r);
+            data->dist = FastVecDist(((float *)&moby->pos), (char *)hoven_mobys_r + (data->target << 8) + 0x10);
+            data->angle = FastAddRots(data->angle, data->turn * 0.017453292f * g_frame_time_r);
             row = hoven_paths_r[data->row];
-            a = FastSin_r(data->angle);
+            a = FastSin(data->angle);
             if (1.5707964f < data->angle && data->angle < 3.1415927f) {
                 a = 2.0f - a;
             }
@@ -787,8 +770,8 @@ void update_oscillating_target_link(Moby *moby) {
                 return;
             }
             if (moby->visible == 0 && hoven_mobys_r[data->target].visible == 0) {
-                FastVecAdd_r3(&tmp0, ((float *)&moby->pos), ((float *)&hoven_mobys_r[data->target].pos));
-                FastVecScale_r2(&tmp0, &tmp0, half);
+                FastVecAdd(&tmp0, ((float *)&moby->pos), ((float *)&hoven_mobys_r[data->target].pos));
+                FastVecScale(&tmp0, &tmp0, half);
                 tmp0.f[3] = 16.0f;
                 if (FastBSphereCheck(&tmp0, 32.0f) == -1) {
                     return;
@@ -836,8 +819,6 @@ void update_hoven_turret_camera(char *moby) {
 }
 typedef u32 u128_04750 __attribute__((mode(TI), aligned(16)));
 extern short hoven_mobys_r2 __asm__("D_L12_00160058");
-extern int fast_dec_timer(int *);
-extern float vec_distance_xy(void *, void *);
 
 typedef struct {
     u8 pad0[0x140];
@@ -971,8 +952,6 @@ extern float hoven_turret_firing_offset_rate SDATA(hoven_turret_firing_offset_ra
 extern float hoven_turret_destruction_view_offset_distance_min SDATA(hoven_turret_destruction_view_offset_distance_min);
 extern float hoven_turret_destruction_view_offset_distance_max SDATA(hoven_turret_destruction_view_offset_distance_max);
 extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
-
-extern float vec_distance_xy(void *, void *);
 
 extern void update_hoven_turret_target_alignment_timer(void *);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
@@ -2100,7 +2079,6 @@ extern float planetbuster_sway_amplitude SDATA(planetbuster_sway_amplitude);
 
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void lerp_vector(void *, void *, void *, float);
 
 /* Planetbuster part update: rides its path, drops its parts and hands its voice slot back when done. */
 void planetbuster_maximus_part_update(char *moby) {
@@ -2398,7 +2376,6 @@ void spawn_next_linked_moby(char *moby) {
 }
 extern void update_homing_mine_spawner_target(char *m);
 
-extern float vec_distance_xy(void *, void *);
 extern void spawn_next_linked_moby(char *);
 
 /* Door/switch moby: clears its linked mobys, waits for the hero, opens, fires its list one by one, closes. */
@@ -2648,8 +2625,6 @@ void BreakableUpdate(char *m) {
             break;
     }
 }
-
-extern int GetEffectTex(int);
 
 extern char hoven_overlay_uv_buffer[];
 extern char hoven_overlay_uv_scroll[] MACRO_ADDR;

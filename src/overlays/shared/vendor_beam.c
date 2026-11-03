@@ -21,7 +21,7 @@ typedef struct Pkt {
 
 extern void vec_scale_to_length(void *, void *, float);
 
-u64 GetEffectTex(s32);
+u64 GetEffectTex_v(s32) __asm__("func_001F4868");
 extern void draw_world_quad(void *, void *, int);
 typedef struct {
     float v[8][4];
@@ -67,7 +67,7 @@ void draw_vendor_beam(char *m) {
     qcopy_nc(&M1[12], ((Frame *)oltanis_clip_volumes)[d->idx].v[3]);
     FastVecSub(v230, oltanis_camera_pos, ((Frame *)oltanis_clip_volumes)[d->idx].v[3]);
     matrix_mul_vec3(v230, v230, M2);
-    tex = GetEffectTex(oltanis_vendor_beam_tex_index);
+    tex = GetEffectTex_v(oltanis_vendor_beam_tex_index);
     flags = (long)vendor_beam_blend_minuend_selector_gp | ((long)vendor_beam_blend_subtrahend_selector_gp << 2) |
             ((long)vendor_beam_blend_alpha_factor_selector_gp << 4) |
             ((long)vendor_beam_blend_addend_selector_gp << 6) | (0x8000L << 24);

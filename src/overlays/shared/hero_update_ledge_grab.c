@@ -389,8 +389,6 @@ extern float g_frame_time MACRO_ADDR;
 extern int blarg_coll_hit_type;
 extern char blarg_coll_hit[];
 
-extern float vec_length_xy(void *);
-
 extern int coll_line(void *, void *, int, int, int);
 
 typedef struct {
@@ -583,8 +581,6 @@ extern Entry70_2348d0 blarg_idle_fidgets_field_60[];
 extern short level_game_mode_q_r __asm__("D_L06_0015F6A8");
 extern u8 gHaveBoltGrabber NOT_SDA;
 extern f32 g_frame_time MACRO_ADDR;
-
-extern s32 fast_dec_timer(s32 *);
 
 extern void restore_hero_from_vehicle_mode(void);
 

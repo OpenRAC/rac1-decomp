@@ -458,8 +458,6 @@ int HeroL16_ApplyPositionOffset(int mode) {
     return 1;
 }
 
-extern float vec_length_xy(void *);
-
 extern float g_frame_time MACRO_ADDR;
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */

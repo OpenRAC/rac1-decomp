@@ -2,7 +2,7 @@ void suck_cannon_update(Moby *moby) {
     PortalVars_002E2DF0 *vars = (PortalVars_002E2DF0 *)moby->pvars;
     Exit_002E2DF0 *exit;
 
-    moby->rot.z = add_rot_002E2DF0(moby->rot.z, g_frame_time_r * 1.5707964f);
+    moby->rot.z = FastAddRots(moby->rot.z, g_frame_time_r * 1.5707964f);
     if (eudora_game_mode_r == 2)
         moby->flags |= 0x41;
     else if (moby->flags & 1)

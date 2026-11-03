@@ -117,8 +117,6 @@ void draw_lens_flare(void) {
     effect_ribbon.intensity = 0.0f;
 }
 
-extern int GetEffectTex(int);
-
 /*
  * Spawns a burst of particle effects around (arg1, arg2) using the source
  * object's unk10 (a size, scaled by 40.0f) and unk18 (looked up through

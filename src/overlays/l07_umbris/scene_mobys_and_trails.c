@@ -299,7 +299,7 @@ typedef struct {
 extern int func_001FA898(float);
 
 extern int func_L00_0025E860(void *, void *, int *, float *, float, int);
-extern float func_001F9D48(void *, void *);
+
 extern int func_00120778_31E6B0(float) __asm__("func_00120778");
 
 extern float random_float_between_r(float, float) __asm__("func_002140F8");

@@ -41,8 +41,6 @@ extern float g_frame_time MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float vec_length_xy(void *);
-
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void HeroMovePipeline(void) {
     Vec4 previous;
@@ -338,15 +336,12 @@ extern HeroSpeedBands novalis_hero_speed_bands;
 extern float novalis_hero_stride_speeds[];
 extern float novalis_hero_ledge_shimmy_frame_speeds[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void ClampVectorLength(void *, float);
 
-extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);

@@ -147,8 +147,6 @@ extern float vendor_inset_quad_margins[][4];
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int GetEffectTex(int);
-
 extern void draw_world_quad(void *, void *, int);
 
 // draws five glass quads around a moby's joints

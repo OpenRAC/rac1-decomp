@@ -152,10 +152,6 @@ extern Vec4f blarg_camera_pos;
 extern s32 *blarg_paths[];
 extern f32 blarg_zero_vec[] MACRO_ADDR;
 
-extern s32 fast_dec_timer(s32 *);
-
-extern f32 vec_distance_xy(void *, void *);
-
 extern s32 truncate_float_to_s32(f32);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
@@ -490,7 +486,6 @@ extern void RerollEffectCounter(void *m, short *p);
 extern void SetDeathBits(void *, int, int);
 extern void StepColorFade(void *, void *);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
-extern float vec_distance_xy(void *, void *);
 
 extern int *blarg_paths[];
 extern float g_frame_time MACRO_ADDR;
@@ -804,7 +799,7 @@ extern s32 space_commando_beam_inner_color_a SDATA(space_commando_beam_inner_col
 extern s32 space_commando_beam_inner_color_b SDATA(space_commando_beam_inner_color_b);
 extern f32 space_commando_beam_uvs[4][2];
 
-extern u64 GetEffectTex(s32);
+extern u64 GetEffectTex_v(s32) __asm__("func_001F4868");
 
 extern void vec_scale_to_length(void *, void *, f32);
 extern u32 FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
@@ -826,8 +821,8 @@ void DrawBeam(char *moby) {
 
     VU1_addGSregister(0x47, 0x5380B);
     i = 0;
-    pk[0].tag[1] = GetEffectTex((space_commando_beam_texture));
-    pk[1].tag[1] = GetEffectTex((space_commando_beam_texture));
+    pk[0].tag[1] = GetEffectTex_v((space_commando_beam_texture));
+    pk[1].tag[1] = GetEffectTex_v((space_commando_beam_texture));
     regs = (beam_blend_minuend_selector_gp);
     regs |= (u64)(beam_blend_subtrahend_selector_gp) << 2;
     regs |= (u64)(beam_blend_alpha_multiplier_selector_gp) << 4;
@@ -881,8 +876,6 @@ void DrawBeam(char *moby) {
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern void lerp_vector(void *, void *, void *, float);
 
 extern short beam_spark_initial_word_gp, beam_spark_second_word_gp, space_commando_beam_spark_start_w,
     space_commando_beam_spark_end_w, space_commando_beam_spark_time_a_min, space_commando_beam_spark_time_a_max;
@@ -1092,7 +1085,7 @@ void draw_bot_door_lock_glow(char *o) {
     pk.tag[2] = 1;
     pk.tag[3] = 0x4000000044L;
     pk.tag[0] = 0;
-    pk.tag[1] = GetEffectTex(0x18);
+    pk.tag[1] = GetEffectTex_v(0x18);
     for (i = 0; i < 4; i++) {
         matrix_mul_vec3(v[0], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][0] * 16, mat);
         matrix_mul_vec3(v[1], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][1] * 16, mat);
@@ -1124,7 +1117,7 @@ void draw_bot_door_lock_glow(char *o) {
         pk.uv[7] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][3]][1] + *(float *)(data + 0x1C);
         draw_world_quad(&pk, 0, 1);
     }
-    pk.tag[1] = GetEffectTex(0x1B);
+    pk.tag[1] = GetEffectTex_v(0x1B);
     f = *(float *)(data + 0x20) + 0.01f;
     *(float *)(data + 0x20) = f;
     if (1.0f < f) {
@@ -1510,7 +1503,7 @@ void draw_projected_fading_quad(char *moby) {
     corners[2] += x + radius;
     corners[3] += (y + radius) << 16;
     corners[3] += x - radius;
-    texture = GetEffectTex(D_L06_001624A4_FF000);
+    texture = GetEffectTex_v(D_L06_001624A4_FF000);
     draw_geometry_quad_5188_v(corners, uvs, colors, texture, 1);
     VU1_addGSregister(0x47, 0x5360B);
 }

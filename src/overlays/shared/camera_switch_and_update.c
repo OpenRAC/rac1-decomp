@@ -59,13 +59,12 @@ INCLUDE_ASM("asm/overlays", func_L00_001EB5A8);
 LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
 
 /* steers *p toward a target with damping, clamps it, then calls FA748 */
-float func_001FA790_EB6A8(float, float) __asm__("func_001FA790");
 
 /* Cam_InterpValues for angles: steers vel toward the angle to (the shortest way round, from
    the current angle from), clamps the step to max when max is set, and returns the angle plus vel
    through FastAddRots. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/camera/init_camera_system.c, FUN_L00_001eb328. */
 float Camera_SmoothAngle(float *vel, float from, float to, float stiffness, float damping, float max) {
-    float t = func_001FA790_EB6A8(to, from);
+    float t = FastSubRots(to, from);
     *vel = *vel + (stiffness * t - damping * *vel);
     if (max != 0.0f) {
         if (*vel > max)
@@ -517,8 +516,6 @@ void compute_position_from_spherical_offset(float *out, float *polar, void *orig
     FastVecAdd(out, out, origin);
 }
 typedef float W[4] __attribute__((aligned(16)));
-
-extern float vec_length_xy(float *);
 
 extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");
 /* polar = (yaw, pitch, distance) of pos as seen from origin; the FastSubRots result is unused (kept, as retail). */

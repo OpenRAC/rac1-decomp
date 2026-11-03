@@ -1018,7 +1018,6 @@ void gravity_flatten(float *dst, float *src) {
             break;
     }
 }
-extern float vec_length_xy(void *);
 
 /* The xy length (vec_length_xy) of V. In view modes 1 and 2
    (g_hero + 0x20B3) V is first taken through the inverse of the
@@ -1142,7 +1141,6 @@ float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step) 
     }
     return 0.0f;
 }
-extern float vec_length_xy(void *);
 
 /* Returns fast_atan2 (handwritten, apparently an atan2) of V's z
    and its xy length (vec_length_xy): V's pitch. In view modes 1 and 2

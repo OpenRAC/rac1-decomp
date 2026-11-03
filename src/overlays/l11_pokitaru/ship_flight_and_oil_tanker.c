@@ -144,8 +144,6 @@ struct BubbleVars {
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern int GetEffectTex(int);
-
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
 /* One radar icon: its texture, its rectangle in that texture and its hot spot. */
@@ -297,7 +295,7 @@ void count_active_and_visible_listed_mobys(void *a0, void *a1, void *a2) {
 extern float pokitaru_camera_rot[];
 extern int lock_hold_frames SDATA(lock_hold_frames);
 extern int lock_fade_frames SDATA(lock_fade_frames);
-extern void fast_dec_timer(int *arg0);
+
 extern char *f12e10(float, int, char *, float *, float *, float, float, char *, int) __asm__("func_L11_00312E10");
 
 typedef struct {
@@ -546,7 +544,7 @@ extern short D_L11_001620F0;
 extern short ship_speed_scale_d __asm__("D_L11_00162120");
 extern unsigned char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 void build_spherical_offset(f32 *out, f32 scale, f32 a, f32 b) __asm__("func_00215C00");
 /* Update. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_003125a8. */
@@ -557,22 +555,21 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
     char d[16];
 
     build_spherical_offset((f32 *)a, *(float *)&ship_reticle_distance * *(float *)&ship_speed_scale_d, p2, p3);
-    FastVecAdd_r(a, a, obj);
+    FastVecAdd(a, a, obj);
     if (fast_dec_timer_c(obj + 0x80) && (*(int *)(pad_globals_base_r + 0x2610) & 0x84)) {
         vec_scale_to_length_r(c, a, 2.2f);
         Moby_GetJointWorldPos_r(moby, 3 + (obj[0x61] & 1), b);
-        FastVecAdd_r(b, b, c);
+        FastVecAdd(b, b, c);
         spawn_class_3f1_moby_r(moby, a, b, 200.0f, -1.0f);
         *(int *)(obj + 0x80) = *(int *)&ship_shot_cooldown_ticks;
         obj[0x61] ^= 1;
         Moby_PlaySound_c(3, 0, (int)moby);
     }
     vec_scale_to_length_r(a, a, 23.0f);
-    FastVecAdd_r(d, a, moby + 0x10);
+    FastVecAdd(d, a, moby + 0x10);
     project_world_point_to_screen_pixels_r(d, &((struct ShipVars *)obj)->reticle_x,
                                            &((struct ShipVars *)obj)->reticle_y, 0);
 }
-extern void fast_dec_timer(int *arg0);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -719,22 +716,17 @@ extern float D_L11_001621C8_313D00 SDATA(D_L11_001621C8);
 extern float D_L11_001621E0_313D00 SDATA(D_L11_001621E0);
 extern float D_L11_001621E4_313D00 SDATA(D_L11_001621E4);
 extern float D_L11_001621E8_313D00 SDATA(D_L11_001621E8);
-extern int ticks_313D00(int) __asm__("func_001F9850");
+
 extern void stick_313D00(Moby *, float *, float *) __asm__("func_L11_003153D0");
 extern float func_L00_0025C918(float *, float *, float, float, float, float);
 extern float func_L00_0025CCF0(float *, float, float *, int, float, float, float);
-extern float angle_delta_313D00(float, float) __asm__("func_001FA790");
-extern float angle_add_313D00(float, float) __asm__("func_001FA748");
+
 extern void spherical_313D00(float *, float, float, float) __asm__("func_00215C00");
 extern void vec_scale_313D00(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void vec_add_313D00(void *, void *, void *) __asm__("func_001F9BD8");
-extern void vec_sub_313D00(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern void euler_matrix_313D00(void *, void *) __asm__("func_001FA1F8");
-extern void apply_313D00(void *, void *, void *) __asm__("func_001F9EC0");
 
 extern float approach_313D00(float *, float *, float, float, float, float) __asm__("func_00214D88");
-extern float cosine_313D00(float) __asm__("func_001F9FA8");
-extern float sine_313D00(float) __asm__("func_001F9F90");
 
 extern int func_L00_001F10E0(float, void *, int, Moby *);
 extern void burst_313D00(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -782,8 +774,8 @@ void update_player_ship_flight(void *a0, void *a1) {
             if (s->uses <= 0xFFFE)
                 s->uses++;
             per = 600;
-            if (ticks_313D00(gameplay_event_frame_count_r) / per > s->best)
-                s->best = ticks_313D00(gameplay_event_frame_count_r) / 600;
+            if (scale_ticks(gameplay_event_frame_count_r) / per > s->best)
+                s->best = scale_ticks(gameplay_event_frame_count_r) / 600;
             s->levels = s->levels | (1 << g_current_level_index_r) | 0x80000000;
             {
                 float step = D_L11_0016208C_313D00 * D_L11_00162120_313D00;
@@ -830,7 +822,7 @@ void update_player_ship_flight(void *a0, void *a1) {
         SpringAngle(&o->f30, o->f6C * D_L11_0016210C_313D00, &o->f98, 0, D_L11_0016214C_313D00, D_L11_00162150_313D00,
                     D_L11_00162154_313D00);
         {
-            float p = angle_delta_313D00(o->f34, o->f70 * D_L11_001620A4_313D00);
+            float p = FastSubRots(o->f34, o->f70 * D_L11_001620A4_313D00);
             o->f34 = p;
             if (1.3962634f < p) {
                 o->f34 = 1.3962634f;
@@ -838,12 +830,12 @@ void update_player_ship_flight(void *a0, void *a1) {
                 o->f34 = -1.3962634f;
             }
         }
-        o->f38 = angle_delta_313D00(o->f38, o->f6C * D_L11_001620A8_313D00);
+        o->f38 = FastSubRots(o->f38, o->f6C * D_L11_001620A8_313D00);
     }
     spherical_313D00(ofs.f, o->f64, o->f38, -o->f34);
     vec_scale_313D00(&o->f10, ofs.f, 1.0f);
     qcopy(start.f, ((float *)&moby->pos));
-    vec_add_313D00(((float *)&moby->pos), ((float *)&moby->pos), ofs.f);
+    FastVecAdd(((float *)&moby->pos), ((float *)&moby->pos), ofs.f);
     {
         float den = D_L11_00162088_313D00 - D_L11_00162084_313D00;
         float t = o->f64 - D_L11_00162084_313D00;
@@ -868,31 +860,31 @@ void update_player_ship_flight(void *a0, void *a1) {
     lag.f[2] = o->fBC;
     lag.f[3] = 0.0f;
     euler_matrix_313D00(&mat, &o->f30);
-    apply_313D00(cam.f, lag.f, &mat);
-    vec_add_313D00(goal.f, ((float *)&moby->pos), cam.f);
+    matrix_mul_vec3(cam.f, lag.f, &mat);
+    FastVecAdd(goal.f, ((float *)&moby->pos), cam.f);
     set_camera_position(goal.f);
-    ang[0] = angle_add_313D00(o->f30 * D_L11_001620C8_313D00, o->f6C * D_L11_001620C4_313D00);
-    ang[1] = angle_delta_313D00(angle_add_313D00(o->f34, D_L11_001620CC_313D00), o->f70 * D_L11_001620A4_313D00);
+    ang[0] = FastAddRots(o->f30 * D_L11_001620C8_313D00, o->f6C * D_L11_001620C4_313D00);
+    ang[1] = FastSubRots(FastAddRots(o->f34, D_L11_001620CC_313D00), o->f70 * D_L11_001620A4_313D00);
     ang[2] = o->f38;
     SpringAngle(&o->f20, ang[0], &o->fA0, 0, D_L11_00162170_313D00, D_L11_00162174_313D00, D_L11_00162178_313D00);
     SpringAngle(&o->f24, ang[1], &o->fA4, 0, D_L11_0016217C_313D00, D_L11_00162180_313D00, D_L11_00162184_313D00);
     SpringAngle(&o->f28, ang[2], &o->fA8, 0, D_L11_00162188_313D00, D_L11_0016218C_313D00, D_L11_00162190_313D00);
     rot.f[0] = o->f20;
-    rot.f[2] = angle_delta_313D00(o->f28, o->fD4);
-    rot.f[1] = angle_delta_313D00(o->f24, o->fD8);
+    rot.f[2] = FastSubRots(o->f28, o->fD4);
+    rot.f[1] = FastSubRots(o->f24, o->fD8);
     set_camera_rotation(rot.f);
     rate = (((PadState *)g_controller_state)->raw_held & boost) ? D_L11_001621C8_313D00 : D_L11_001621C4_313D00;
     approach_313D00(&o->fB0, &o->fC0, rate, g_frame_time_sq_r + g_frame_time_sq_r,
                     g_frame_time_sq_r + g_frame_time_sq_r, g_frame_time_r + g_frame_time_r);
     {
         float h = o->fB0 * 0.5f;
-        float r = cosine_313D00(h) / sine_313D00(h);
+        float r = FastSin(h) / FastCos(h);
         pokitaru_view_cot_half_fov_r = r;
     }
     UpdateViewContext();
-    moby->rot.x = angle_add_313D00(o->f30, o->f6C * D_L11_001621E0_313D00);
-    moby->rot.y = angle_add_313D00(o->f34, -o->f70 * D_L11_001621E4_313D00);
-    moby->rot.z = angle_add_313D00(o->f38, -o->f6C * D_L11_001621E8_313D00);
+    moby->rot.x = FastAddRots(o->f30, o->f6C * D_L11_001621E0_313D00);
+    moby->rot.y = FastAddRots(o->f34, -o->f70 * D_L11_001621E4_313D00);
+    moby->rot.z = FastAddRots(o->f38, -o->f6C * D_L11_001621E8_313D00);
     if (coll_sphere(2.0f, ((float *)&moby->pos), 0, moby)) {
         if (pokitaru_coll_hit.moby == 0) {
             burst_313D00(moby, pokitaru_zero_vec_r, 0, 8.0f, 100.0f, 30, 10, 24, 16.0f, 8.0f, 9.0f, -1, 1.0f, 50.0f, 1,
@@ -900,22 +892,22 @@ void update_player_ship_flight(void *a0, void *a1) {
             moby->visible = 0;
             moby->state = 7;
             moby->flags |= 1;
-            o->tF8 = ticks_313D00(90);
+            o->tF8 = scale_ticks(90);
         } else {
             short t = pokitaru_coll_hit.moby->oclass;
             if (t != 0 && t != 0x192 && t != 0x4C2 && t != 0x4C3) {
                 float f;
                 qcopy(((float *)&moby->pos), pokitaru_coll_hit.pos.f);
                 reflect_313D00(ofs.f, ofs.f, pokitaru_coll_hit.dir.f);
-                f = angle_delta_313D00(angle_313D00(ofs.f[0], ofs.f[1]), o->f38);
-                o->f38 = angle_add_313D00(o->f38, f * D_L11_00162098_313D00);
-                f = angle_delta_313D00(-angle_313D00(length_313D00(ofs.f), ofs.f[2]), o->f34);
-                o->f34 = angle_add_313D00(o->f34, f * D_L11_0016209C_313D00);
+                f = FastSubRots(angle_313D00(ofs.f[0], ofs.f[1]), o->f38);
+                o->f38 = FastAddRots(o->f38, f * D_L11_00162098_313D00);
+                f = FastSubRots(-angle_313D00(length_313D00(ofs.f), ofs.f[2]), o->f34);
+                o->f34 = FastAddRots(o->f34, f * D_L11_0016209C_313D00);
                 o->f64 = o->f64 * D_L11_001620DC_313D00;
                 if (o->tDC == 0) {
                     ((Hero *)g_hero)->ship_hp = ((Hero *)g_hero)->ship_hp - D_L11_001620E0_313D00;
                     if (((Hero *)g_hero)->ship_hp < 0.0f) {
-                        vec_sub_313D00(dir.f, pokitaru_coll_hit.a.f, pokitaru_coll_hit.b.f);
+                        FastVecSub(dir.f, pokitaru_coll_hit.a.f, pokitaru_coll_hit.b.f);
                         vec_scale_313D00(dir.f, dir.f, 1.0f);
                         reflect_313D00(back.f, ofs.f, pokitaru_coll_hit.dir.f);
                         vec_scale_313D00(back.f, back.f, g_frame_time_r + g_frame_time_r);
@@ -934,8 +926,8 @@ void update_player_ship_flight(void *a0, void *a1) {
     }
     AddDrawCallback(draw_313D00, moby);
     exhaust_313D00(moby, o);
-    r = angle_add_313D00(o->f28, -o->f6C / 7.0f);
-    wings_313D00(moby, o, r, -angle_add_313D00(o->f24, -(o->f70 / 7.0f) - 0.1f));
+    r = FastAddRots(o->f28, -o->f6C / 7.0f);
+    wings_313D00(moby, o, r, -FastAddRots(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
 
 extern int try_set_help_message(int, int);
@@ -948,7 +940,6 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 extern char *MobyGetHitMessage(void *, int, int);
-extern float vec_length_xy(void *);
 
 extern unsigned char item_available[];
 extern char voice_pool[];
@@ -1387,8 +1378,6 @@ void jet_fighter_update(Moby *moby) {
     }
 }
 
-extern float vec_length_xy(void *);
-
 // Clamps and blends camera inputs near the edges of the movement bounds. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_00313f60.
 void adjust_ship_steering_for_flight_bounds(char *moby, float *a, float *b) {
     struct ShipVars *d = (struct ShipVars *)((Moby *)moby)->pvars;
@@ -1532,7 +1521,6 @@ extern void update_moby_target_heading_and_conditional_movement(char *a0, float 
 extern short count_group_puffoid_mobys_in_states_13_to_17(struct Moby *self);
 extern void Manipulator_ApplyScale(struct Moby *, int, void *, float);
 
-extern float vec_distance_xy();
 extern void set_ground_height_band(struct Moby *);
 extern int truncate_float_to_s32(float);
 
@@ -2083,10 +2071,10 @@ extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
 extern void func_L00_002584A8(void *, int, int);
 extern void func_L00_0025E4B0(void *, void *);
 extern void func_L00_0025E590(void *, void *);
-extern int scale_ticks_r(int) __asm__("func_001F9850");
+
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern float multiply_global_factor_r(float) __asm__("func_001F9878");
+
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int func_L00_00260FB0(void *, void *, float, int, int, void *, int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -2211,12 +2199,12 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
         if (m->state == 2 || (m->state == 3 && (m->anim_flags & 2))) {
             m->state = 0xA;
             if (m->prev_seq != 2) {
-                MobyBlendAnimation_r(m, 2, 0, scale_ticks_r(0xA));
+                MobyBlendAnimation_r(m, 2, 0, scale_ticks(0xA));
             }
         }
     }
     if (d->f38 != 0) {
-        d->f244 = truncate_float_to_s32_r2(multiply_global_factor_r(random_float_between_r(180.0f, 240.0f)));
+        d->f244 = truncate_float_to_s32_r2(multiply_global_factor(random_float_between_r(180.0f, 240.0f)));
         d->f38 = 0;
     }
     fast_dec_timer_r(&d->f244);
@@ -2375,8 +2363,6 @@ struct L11GateVars {
     f32 speed;
     s32 unk10;
 };
-
-extern float vec_distance_xy(float *, float *);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
@@ -2652,10 +2638,6 @@ void oil_tanker_front_update(char *moby) {
     }
 }
 
-extern float vec_distance_xy(float *, float *);
-
-extern void lerp_vector(void *, void *, void *, float);
-
 /* Orients a moby along a path of three points read from its data table. */
 void update_oil_tanker_front_path_pose(char *moby) {
     Moby *m = (Moby *)moby;
@@ -2820,9 +2802,9 @@ extern struct Moby *MobyGetHitMessage_r2(void *, s32, s32) __asm__("func_L00_002
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 extern void start_oil_tanker_link_destruction_r(struct Moby *) __asm__("func_L11_003198F8");
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
+
 extern void SpawnExplosionFx_r(void *, void *, int, float, float) __asm__("func_L00_00260108");
-extern s32 scale_ticks_r2(s32) __asm__("func_001F9850");
+
 extern void SpawnBreakFragment_r(char *, int, float *, char *, int, int, float *, float *, float,
                                  float *) __asm__("func_L00_00265050");
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
@@ -2875,15 +2857,15 @@ void process_oil_tanker_damage_and_destruction(void *moby_v) {
             char *p1 = (char *)&moby->pos;
             char *p2 = (char *)&moby->rot;
             float *dv = pokitaru_zero_vec_r2;
-            FastVecScale_r(vec, &moby->rot_row0, D_L11_001623C0_19108 * frame_scale_r);
+            FastVecScale(vec, &moby->rot_row0, D_L11_001623C0_19108 * frame_scale_r);
             vec[2] += frame_scale_r * 0.08f;
             Moby_PlaySound_r(2, 0, moby);
             SpawnExplosionFx_r(moby, p1, -1, 3.0f, 13.0f);
-            SpawnBreakFragment_r((char *)moby, 0x602, (float *)p1, p2, scale_ticks_r2(0x5A), 0, vec, dv,
+            SpawnBreakFragment_r((char *)moby, 0x602, (float *)p1, p2, scale_ticks(0x5A), 0, vec, dv,
                                  g_frame_time_sq_r2 * 12.0f, dv);
-            SpawnBreakFragment_r((char *)moby, 0x603, (float *)p1, p2, scale_ticks_r2(0x5A), 0, vec, dv,
+            SpawnBreakFragment_r((char *)moby, 0x603, (float *)p1, p2, scale_ticks(0x5A), 0, vec, dv,
                                  g_frame_time_sq_r2 * 12.0f, dv);
-            SpawnBreakFragment_r((char *)moby, 0x784, (float *)p1, p2, scale_ticks_r2(0x5A), 0, vec, dv,
+            SpawnBreakFragment_r((char *)moby, 0x784, (float *)p1, p2, scale_ticks(0x5A), 0, vec, dv,
                                  g_frame_time_sq_r2 * 12.0f, dv);
             DeleteMoby_r2(moby);
         }
@@ -3209,7 +3191,6 @@ extern int FastBSphereCheck(char *, float);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
 
 extern char flying_craft_gun_offset_a[];
 extern char flying_craft_gun_offset_b[];

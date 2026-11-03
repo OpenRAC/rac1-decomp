@@ -542,24 +542,23 @@ extern void Manipulator_SetScale_r(void *, float) __asm__("func_L00_00264BB0");
 extern int select54(char *, char *, float) __asm__("func_L00_00260D30");
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
 extern void MoveCtl_Init_r(char *) __asm__("func_L01_0026E8E0");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
+
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern int func_001160D8_2E2EF0(void) __asm__("func_001160D8");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern float ProbeGroundHeight_r(void *, int, float) __asm__("func_00214358");
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float smooth54(float *, float, float) __asm__("func_00214D28");
 extern void update_object_wander_movement_r(char *, char *, float, float) __asm__("func_L00_002626A8");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
+
 extern int func_L00_0025A208(int *, int, int, int);
 extern int func_L00_0025A2F0(int *, int, int, int);
-extern int FastDecTimer_r(void *) __asm__("func_001F9938");
+
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern void spawn_spark_scatter_r(void *) __asm__("func_L12_002E2CB8");
 extern void MobySpringTurn_r(char *, float *, float, float, float, float) __asm__("func_L00_002592B0");
@@ -570,10 +569,7 @@ extern int mine_fall_r(void *, void *) __asm__("func_L00_0025D6F0");
 extern int move_hoven_anklebiter_toward_heading_r(char *, float) __asm__("func_L12_002E41C8");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern int IsFrameWithinWindow_r(char *, float) __asm__("func_00215B18");
-extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
+
 extern void PostHitMessage_r(void *, int, int, void *, void *, float) __asm__("func_L00_0025AC00");
 extern int IsPointInPolygon_r(void *, void *, int) __asm__("func_L00_0025A778");
 extern int func_L00_002DDEA0(void *, void *);
@@ -642,12 +638,12 @@ void update_hoven_anklebiter(Moby *m) {
                 d->effect_size1 = 0.5f;
                 d->effect_size0 = 0.5f;
                 if (d->group_enabled) {
-                    first = scale_ticks_r(20);
-                    d->group_timer = rand_range_r(first, scale_ticks_r(170));
+                    first = scale_ticks(20);
+                    d->group_timer = rand_range_r(first, scale_ticks(170));
                 }
                 qcopy(d->idle_pos, &m->pos);
-                first = scale_ticks_r(120);
-                d->idle_timer = rand_range_r(first, scale_ticks_r(700));
+                first = scale_ticks(120);
+                d->idle_timer = rand_range_r(first, scale_ticks(700));
                 qcopy(work.v0, &m->pos);
                 work.v0[2] += 0.8f;
                 m->pos.z = ProbeGroundHeight_r(work.v0, 0, 0.5f);
@@ -658,31 +654,31 @@ void update_hoven_anklebiter(Moby *m) {
             break;
         case 1: {
             float idle_distance, idle_angle, idle_difference;
-            idle_distance = FastVecDist_r(&target->pos, d->home);
+            idle_distance = FastVecDist(&target->pos, d->home);
             idle_angle = fast_atan2_r(target->pos.x - m->pos.x, target->pos.y - m->pos.y);
-            idle_difference = FastDiffRots_r(m->rot.z, idle_angle);
+            idle_difference = FastDiffRots(m->rot.z, idle_angle);
             if (idle_distance < d->range && FastAbsF(m->pos.z - target->pos.z) < 4.0f) {
                 m->state = 3;
                 if (idle_difference < 0.9599311f) {
                     if (m->prev_seq != 2)
-                        MobyBlendAnimation_r(m, 2, 0, scale_ticks_r(5));
+                        MobyBlendAnimation_r(m, 2, 0, scale_ticks(5));
                     m->anim_speed = 1.55f;
                 } else if (m->prev_seq != 17)
-                    MobyBlendAnimation_r(m, 17, 0, scale_ticks_r(5));
+                    MobyBlendAnimation_r(m, 17, 0, scale_ticks(5));
             } else if (((m->command & 1) && random_integer_below_r(19) == 0) || m->command == 7) {
                 if (random_integer_below_r(256) & 1)
                     d->circle_rate = -d->circle_rate;
                 d->circle_angle = d->circle_rate * 0.017453292f;
-                d->circle_timer = scale_ticks_r((int)random_float_between_r(30.0f, 90.0f));
+                d->circle_timer = scale_ticks((int)random_float_between_r(30.0f, 90.0f));
                 m->state = 3;
                 if (m->prev_seq != 2)
-                    MobyBlendAnimation_r(m, 2, 0, scale_ticks_r(7));
+                    MobyBlendAnimation_r(m, 2, 0, scale_ticks(7));
                 m->command = 0;
             } else {
                 if (m->prev_seq != 15)
-                    MobyBlendAnimation_r(m, 15, 0, scale_ticks_r(14));
+                    MobyBlendAnimation_r(m, 15, 0, scale_ticks(14));
                 n = d->idle_timer;
-                if (n > scale_ticks_r(20))
+                if (n > scale_ticks(20))
                     smooth54(&d->idle_speed, g_frame_time_r * 2.5f, g_frame_time_sq_r * 7.0f);
                 else
                     smooth54(&d->idle_speed, 0.0f, g_frame_time_sq_r * 7.0f);
@@ -709,12 +705,12 @@ void update_hoven_anklebiter(Moby *m) {
                 if (*d->group_count >= 6)
                     break;
             }
-            FastVecSub_r(work.v0, &target->pos, &m->pos);
-            if (FastVecLength_r(work.v0) < d->range && FastAbsF(m->pos.z - target->pos.z) < 8.0f &&
+            FastVecSub(work.v0, &target->pos, &m->pos);
+            if (FastVecLength(work.v0) < d->range && FastAbsF(m->pos.z - target->pos.z) < 8.0f &&
                 random_integer_below_r(19) == 0) {
                 if (m->group != 255)
                     MobyGroup_SetByteBC_r(m->group, 1);
-            } else if (!((m->command & 1) && FastDecTimer_r(&d->group_timer)) && m->command != 7)
+            } else if (!((m->command & 1) && FastDecTimer(&d->group_timer)) && m->command != 7)
                 break;
             m->state = 13;
             if (m->prev_seq != 7)
@@ -733,7 +729,7 @@ void update_hoven_anklebiter(Moby *m) {
                 if (random_integer_below_r(256) & 1)
                     d->circle_rate = -d->circle_rate;
                 d->circle_angle = d->circle_rate * 0.017453292f;
-                d->circle_timer = scale_ticks_r((int)random_float_between_r(30.0f, 90.0f));
+                d->circle_timer = scale_ticks((int)random_float_between_r(30.0f, 90.0f));
                 m->state = 4;
                 d->blocked = 0;
                 select_hoven_anklebiter_pursuit_animation_r((unsigned char *)m);
@@ -744,9 +740,8 @@ void update_hoven_anklebiter(Moby *m) {
         case 11:
             angle = fast_atan2_r(d->home[0] - m->pos.x, d->home[1] - m->pos.y);
             MobySpringTurn_r((char *)m, &d->turn_velocity, angle, 0.05f, 0.3f, 0.2f);
-            FastVecSub_r(work.v0, &target->pos, d->home);
-            if ((FastVecLength_r(work.v0) < d->range && FastAbsF(d->home[2] - target->pos.z) < 8.0f) ||
-                m->command == 2) {
+            FastVecSub(work.v0, &target->pos, d->home);
+            if ((FastVecLength(work.v0) < d->range && FastAbsF(d->home[2] - target->pos.z) < 8.0f) || m->command == 2) {
                 if (m->group != 255)
                     MobyGroup_SetByteBC_r(m->group, 2);
                 m->draw_dist = 0x40;
@@ -769,7 +764,7 @@ void update_hoven_anklebiter(Moby *m) {
             if (mine_fall_r(m, d->fall) & 1) {
                 m->state = 14;
                 if (m->prev_seq != 9)
-                    MobyBlendAnimation_r(m, 9, 8, scale_ticks_r(7));
+                    MobyBlendAnimation_r(m, 9, 8, scale_ticks(7));
                 return;
             }
             if (m->pos.z < 0.0f) {
@@ -784,7 +779,7 @@ void update_hoven_anklebiter(Moby *m) {
                 if (random_integer_below_r(256) & 1)
                     d->circle_rate = -d->circle_rate;
                 d->circle_angle = d->circle_rate * 0.017453292f;
-                d->circle_timer = scale_ticks_r((int)random_float_between_r(30.0f, 90.0f));
+                d->circle_timer = scale_ticks((int)random_float_between_r(30.0f, 90.0f));
                 select_hoven_anklebiter_pursuit_animation_r((unsigned char *)m);
             }
             break;
@@ -800,25 +795,25 @@ void update_hoven_anklebiter(Moby *m) {
         case 4: {
             float chase_angle, look_difference, clamp;
             chase_angle = fast_atan2_r(target->pos.x - m->pos.x, target->pos.y - m->pos.y);
-            look_difference = FastSubRots_r(chase_angle, m->rot.z);
+            look_difference = FastSubRots(chase_angle, m->rot.z);
             clamp = 0.6981317f;
             if (look_difference > clamp || (clamp = -0.6981317f, look_difference < clamp))
                 look_difference = clamp;
             d->look_angle = look_difference;
-            if (move_hoven_anklebiter_toward_heading_r((char *)m, FastAddRots_r(chase_angle, d->circle_angle)) == 2) {
+            if (move_hoven_anklebiter_toward_heading_r((char *)m, FastAddRots(chase_angle, d->circle_angle)) == 2) {
                 m->state = 6;
                 d->return_timer = 0;
             } else {
                 if (fast_dec_timer_r(&d->circle_timer)) {
-                    d->circle_timer = scale_ticks_r((int)random_float_between_r(30.0f, 90.0f));
+                    d->circle_timer = scale_ticks((int)random_float_between_r(30.0f, 90.0f));
                     d->circle_angle = -d->circle_angle;
                 }
-                FastVecSub_r(work.v0, &target->pos, d->home);
+                FastVecSub(work.v0, &target->pos, d->home);
                 if (vec_distance_xy_r(&m->pos, &target->pos) < 1.5f) {
                     m->state = 5;
                     if (m->prev_seq != 4)
-                        MobyBlendAnimation_r(m, 4, 0, scale_ticks_r(5));
-                } else if (FastVecLength_r(work.v0) < d->range + 5.5f && FastAbsF(m->pos.z - target->pos.z) < 4.4f) {
+                        MobyBlendAnimation_r(m, 4, 0, scale_ticks(5));
+                } else if (FastVecLength(work.v0) < d->range + 5.5f && FastAbsF(m->pos.z - target->pos.z) < 4.4f) {
                     if (m->group != 255)
                         MobyGroup_SetByteBC_r(m->group, 1);
                 } else if (m->command != 1 && random_integer_below_r(9) == 0) {
@@ -835,10 +830,9 @@ void update_hoven_anklebiter(Moby *m) {
             MobySpringTurn_r((char *)m, &d->turn_velocity, angle, 0.05f, 0.3f, 0.2f);
             if (m->seq == m->prev_seq && IsFrameWithinWindow_r((char *)m, 13.0f) &&
                 FastAbsF(m->pos.z - target->pos.z) < 0.5f && vec_distance_xy_r(&m->pos, &target->pos) < 2.0f &&
-                FastDiffRots_r(fast_atan2_r(target->pos.x - m->pos.x, target->pos.y - m->pos.y), m->rot.z) <
-                    0.2617994f) {
-                work.v0[0] = FastCos_r(m->rot.z) * 0.2f;
-                work.v0[1] = FastSin_r(m->rot.z) * 0.2f;
+                FastDiffRots(fast_atan2_r(target->pos.x - m->pos.x, target->pos.y - m->pos.y), m->rot.z) < 0.2617994f) {
+                work.v0[0] = FastCos(m->rot.z) * 0.2f;
+                work.v0[1] = FastSin(m->rot.z) * 0.2f;
                 work.v0[2] = 0.0f;
                 qcopy(work.v10, &target->pos);
                 work.v10[2] += 0.75f;
@@ -857,9 +851,9 @@ void update_hoven_anklebiter(Moby *m) {
             if (vec_distance_xy_r(&m->pos, d->home) < 2.0f) {
                 m->state = 1;
                 if (m->prev_seq != 0)
-                    MobyBlendAnimation_r(m, 0, 0, scale_ticks_r(7));
+                    MobyBlendAnimation_r(m, 0, 0, scale_ticks(7));
             }
-            return_distance = FastVecDist_r(&target->pos, d->home);
+            return_distance = FastVecDist(&target->pos, d->home);
             d->return_timer++;
             blocked = 0;
             if (d->path != -1) {
@@ -868,7 +862,7 @@ void update_hoven_anklebiter(Moby *m) {
             }
             if (!blocked) {
                 if (return_distance < d->range) {
-                    if (d->return_timer > scale_ticks_r(70)) {
+                    if (d->return_timer > scale_ticks(70)) {
                         if (m->group != 255)
                             MobyGroup_SetByteBC_r(m->group, 1);
                         m->state = 4;
@@ -890,7 +884,7 @@ void update_hoven_anklebiter(Moby *m) {
             if (mine_fall_r(m, d->fall) & 1) {
                 m->state = 10;
                 if (m->prev_seq != 13)
-                    MobyBlendAnimation_r(m, 13, 8, scale_ticks_r(8));
+                    MobyBlendAnimation_r(m, 13, 8, scale_ticks(8));
                 return;
             }
             if (m->pos.z < 27.0f) {
@@ -941,7 +935,7 @@ void update_hoven_anklebiter(Moby *m) {
     if (m->visible && m->state != 9 && m->state != 8) {
         EaseManipulatorOffsets_r((char *)m, d->collision_data, 0, g_frame_scale_sq_r * 0.018f,
                                  g_frame_scale_sq_r * 0.3f);
-        if (m->visible && FastVecDist_r(&m->pos, hoven_camera_pos_r) < 28.0f) {
+        if (m->visible && FastVecDist(&m->pos, hoven_camera_pos_r) < 28.0f) {
             set_ground_height_band_r(m);
             m->shadow_range = 22;
         }
@@ -1127,8 +1121,6 @@ extern f32 D_L12_00161950_E4838 SDATA(D_L12_00161950);
 extern f32 D_L12_00161954_E4838 SDATA(D_L12_00161954);
 extern f32 g_frame_time MACRO_ADDR;
 extern s32 g_hero_moby;
-
-extern s32 fast_dec_timer(s32 *);
 
 extern void PostHitMessage_r2(struct Moby *, s32, s32, Vec4f *, f32 *, f32) __asm__("func_L00_0025AC00");
 extern TrollHit *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
@@ -1359,12 +1351,9 @@ extern Path *hoven_paths_r2[] __asm__("D_L12_001B0C30");
 
 extern void steer_platform_toward_target_r(void *, void *, void *, int, int) __asm__("func_L12_002E4F18");
 
-extern int fast_dec_timer(int *arg0);
-
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
-extern float vec_distance_xy(void *, void *);
 extern void update_entity_matrix(char *, void *, void *, void *);
 
 /* Update of the Hoven flying platform: follows or eases along its path, bobs, falls, and reports its motion. */
@@ -1599,7 +1588,6 @@ void HovenPlatformUpdate(Moby *moby) {
     update_entity_matrix(d->f60, delta, oldRot, (*(float (*)[4]) & moby->rot));
 }
 
-extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r2(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
 typedef struct Data_2E7FC8 {
@@ -3472,8 +3460,6 @@ void edwina_update(char *m) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern int PlayBankSound(int, int, int);
 
-extern int fast_dec_timer(int *arg0);
-
 extern int helicopter_hit_count SDATA(helicopter_hit_count);
 extern int planetbuster_engaged SDATA(planetbuster_engaged);
 
@@ -3600,7 +3586,6 @@ void helicopter_336_update(Moby *m) {
         }
     }
 }
-extern float vec_distance_xy(void *, void *);
 
 /* Idle critter: waits a random time, then plays one of its fidget animations (or reacts when the hero comes close). */
 void crane_arm_update(Moby *m) {
