@@ -1073,7 +1073,6 @@ extern char D_L08_001FC540[];
 extern char D_L08_001FC590[];
 extern char D_L08_001FC5C0[];
 
-extern void release_point_light_slot_r(int) __asm__("func_L00_0023F1D0");
 extern void draw_flickering_mesh_effect_r(void) __asm__("func_L08_002F7318");
 
 extern int FastBSphereCheck_r(char *, float) __asm__("func_L00_00200290");
@@ -1156,7 +1155,7 @@ void update_flickering_mesh_effect(struct Moby *m) {
             }
         }
     } else if (d->light != -1) {
-        release_point_light_slot_r(d->light);
+        release_point_light_slot(d->light);
         d->light = -1;
     }
     d->flags |= 2;

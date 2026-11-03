@@ -41,6 +41,8 @@
 #include "overlays/shared/space_commando_and_door_lock.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
 #include "overlays/shared/helicopter_gunship_and_spawners.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -1095,7 +1097,6 @@ void fred_update(Moby *moby) {
     EaseManipulatorOffsets_v(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->fC0, 2);
 }
 
-extern int count_active_moby_group_members_r(int, int) __asm__("func_L01_0026EFB8");
 extern void begin_red_button_rotation_r(char *) __asm__("func_L06_00305BF8");
 extern int get_red_button_sequence_status_r(char *) __asm__("func_L06_00305C38");
 extern void queue_moby_dialogue_line_r(char *, int) __asm__("func_L06_00303858");
@@ -1104,10 +1105,6 @@ extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
 extern void set_moby_list_state_17_r(int) __asm__("func_L06_00301068");
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
-extern void set_selected_object_float_triplets_r(float, float, float, float, float, float) __asm__("func_L02_002F9ED8");
-
-extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
@@ -1119,7 +1116,7 @@ extern int allocate_voice_for_group_entry_r(int, int, int) __asm__("func_0022EEB
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
 
 extern void set_moby_state_5_r(char *) __asm__("func_L06_003054C8");
-extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
+
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -1177,7 +1174,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             ((Moby *)m)->update_dist = 0xFF;
             return;
         case 1:
-            if (count_active_moby_group_members_r(d->group, -1) != 0)
+            if (count_active_moby_group_members(d->group, -1) != 0)
                 return;
             begin_red_button_rotation_r(level_mobys_q_p + (d->red_button << 8));
             if (get_red_button_sequence_status_r(level_mobys_q_p + (d->red_button << 8)) != 1)
@@ -1212,15 +1209,14 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 r2 = vec_distance_xy_r(va, vb);
                 vc[1] = -fast_atan2(r2, vb[2] - va[2]);
                 CameraScript(va, vc, 2, scale_ticks(0x12C), 0);
-                set_selected_object_float_triplets_r(*(float *)&D_L06_00162128_302FE8, *(float *)&D_L06_0016212C_302FE8,
-                                                     *(float *)&D_L06_00162130_302FE8, *(float *)&D_L06_00162134_302FE8,
-                                                     *(float *)&D_L06_00162138_302FE8,
-                                                     *(float *)&D_L06_00162140_302FE8);
+                set_selected_object_float_triplets(*(float *)&D_L06_00162128_302FE8, *(float *)&D_L06_0016212C_302FE8,
+                                                   *(float *)&D_L06_00162130_302FE8, *(float *)&D_L06_00162134_302FE8,
+                                                   *(float *)&D_L06_00162138_302FE8, *(float *)&D_L06_00162140_302FE8);
                 set_camera_position(va);
                 set_camera_rotation(vc);
                 {
                     char *q = blarg_scene_points_r + (d->scene_point_b << 7);
-                    Hero_ResetToPosition_r(q + 0x30, q + 0x70, 0x72, 0);
+                    Hero_ResetToPosition(q + 0x30, q + 0x70, 0x72, 0);
                 }
             }
             return;
@@ -1295,7 +1291,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
         }
         case 5:
             if (d->ramp == 1.0f) {
-                Hero_OnKilled_r();
+                Hero_OnKilled();
                 linked_sequence_exit_ramp_progress = 0.0f;
                 return;
             }
@@ -1840,8 +1836,6 @@ int update_shuttle_path_ride(char *moby, int path) {
     return ride->progress == 1.0f;
 }
 
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-
 extern char scatter_explode_spark_colors_start[];
 extern char scatter_explode_spark_colors_end[];
 extern float scatter_explode_speed_min SDATA(scatter_explode_speed_min);
@@ -1956,7 +1950,6 @@ extern int shuttle_breakup_particle_second_color_blend_a_gp SDATA(shuttle_breaku
 extern int shuttle_breakup_particle_second_color_blend_b_gp SDATA(shuttle_breakup_particle_second_color_blend_b_gp);
 extern int shuttle_debris_particles_per_piece SDATA(shuttle_debris_particles_per_piece);
 extern int shuttle_breakup_particle_table_index_and_flags_gp SDATA(shuttle_breakup_particle_table_index_and_flags_gp);
-extern void spawn_timed_projected_sprite_effect_r(void *, int, int, int) __asm__("func_L06_0030D338");
 
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
 
@@ -1990,9 +1983,9 @@ void break_apart_shuttle_linked_mobys(struct Moby *moby) {
     center[0] = 426.0f;
     center[1] = 189.75f;
     center[2] = 173.07f;
-    spawn_timed_projected_sprite_effect_r(center, scale_ticks((*(int *)&blarg_explosion_flash_ticks_r)),
-                                          (*(int *)&blarg_explosion_flash_color_a_r),
-                                          (*(int *)&blarg_explosion_flash_color_b_r));
+    spawn_timed_projected_sprite_effect(center, scale_ticks((*(int *)&blarg_explosion_flash_ticks_r)),
+                                        (*(int *)&blarg_explosion_flash_color_a_r),
+                                        (*(int *)&blarg_explosion_flash_color_b_r));
     largest = 0.0f;
     clear_u64_value(middle);
     list = blarg_moby_groups[vars->unk_CC];
@@ -2120,11 +2113,6 @@ extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern int try_set_help_message_r(int, int) __asm__("func_00215F80");
 extern int remove_help_message_for_selector_r(int) __asm__("func_L00_00265558");
 
-extern void set_selected_object_float_triplets_r2(float, float, float, float, float,
-                                                  float) __asm__("func_L02_002F9ED8");
-
-extern void Hero_ResetToPosition_r2(void *, void *, int, int) __asm__("func_L00_00217718");
-
 extern void emit_red_button_particle_burst_r(void *, void *) __asm__("func_L06_00305C58");
 
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
@@ -2189,9 +2177,8 @@ void red_button_update(Moby *m) {
                 d->vel = 0.0f;
                 FadeToBlack(scale_ticks(0xF));
                 CameraScript(&v0, &v10, 2, scale_ticks(0x12C), 0);
-                set_selected_object_float_triplets_r2(D_L06_00162228_3054D8, D_L06_0016222C_3054D8,
-                                                      D_L06_00162230_3054D8, D_L06_00162234_3054D8,
-                                                      D_L06_00162238_3054D8, D_L06_00162240_3054D8);
+                set_selected_object_float_triplets(D_L06_00162228_3054D8, D_L06_0016222C_3054D8, D_L06_00162230_3054D8,
+                                                   D_L06_00162234_3054D8, D_L06_00162238_3054D8, D_L06_00162240_3054D8);
                 set_camera_position(&v0);
                 set_camera_rotation(&v10);
                 scripted_camera_sequence_active_r = 1;
@@ -2228,7 +2215,7 @@ void red_button_update(Moby *m) {
                 }
             }
             if (1.075f <= d->t) {
-                Hero_ResetToPosition_r2(&blarg_scene_points_r2[d->cut2].a, &blarg_scene_points_r2[d->cut2].b, 0x72, 0);
+                Hero_ResetToPosition(&blarg_scene_points_r2[d->cut2].a, &blarg_scene_points_r2[d->cut2].b, 0x72, 0);
                 FadeToBlack(scale_ticks(10));
                 m->state = 6;
                 CameraScript2(3);
@@ -2258,7 +2245,7 @@ void red_button_update(Moby *m) {
             if (2.0f <= d->t) {
                 m->state = 7;
                 d->timer2 = scale_ticks(0xE10);
-                Hero_ResetToPosition_r2(&blarg_scene_points_r2[d->cut2].a, &blarg_scene_points_r2[d->cut2].b, 0, 0);
+                Hero_ResetToPosition(&blarg_scene_points_r2[d->cut2].a, &blarg_scene_points_r2[d->cut2].b, 0, 0);
                 CameraScript2(3);
                 set_moby_state_two(&level_mobys_q_r[d->moby3]);
             }
@@ -2286,7 +2273,6 @@ s32 get_red_button_sequence_status(const u8 *moby) {
     return 0;
 }
 
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern IntVec6 red_button_burst_colors_end;
 extern IntVec6 red_button_burst_colors_start;
 extern int red_button_burst_count SDATA(red_button_burst_count);

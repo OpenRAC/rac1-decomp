@@ -93,7 +93,7 @@ void update_hero_hoverboard_race_progress(void) {
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
                 g_hero.off_course_frames = 0;
                 g_hero.board_air_yaw = v1[2];
-                Hero_ResetToPosition_r(v0, v1, 0x6B, 1);
+                Hero_ResetToPosition(v0, v1, 0x6B, 1);
                 if (((Path *)g_hero.race_path) != 0) {
                     int r = select_point_index_by_distance_r(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
@@ -177,7 +177,7 @@ void update_hero_hoverboard_race_progress(void) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
             g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
-            mode_freeze_init_r(0, 0, 0);
+            mode_freeze_init(0, 0, 0);
         }
         if (race_best_times_r[0] == 0) {
             race_best_times_r[0] = g_hero.race_time_frames;
@@ -192,10 +192,10 @@ void update_hero_hoverboard_race_progress(void) {
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
         if (g_hero.trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            Hud_SetBarValueById(g_hero.trick_hud_handle, 0);
             g_hero.trick_hud_handle = -1;
         }
-        update_resource_counter_r();
+        update_resource_counter();
     } else if (g_current_level_index_r == LEVEL_KALEBO3) {
         if (d->f28 == -1) {
             return;
@@ -204,7 +204,7 @@ void update_hero_hoverboard_race_progress(void) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
             g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
-            mode_freeze_init_r(0, 0, 0);
+            mode_freeze_init(0, 0, 0);
         }
         if (race_best_times_r[1] == 0) {
             race_best_times_r[1] = g_hero.race_time_frames;
@@ -219,9 +219,9 @@ void update_hero_hoverboard_race_progress(void) {
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
         if (g_hero.trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            Hud_SetBarValueById(g_hero.trick_hud_handle, 0);
             g_hero.trick_hud_handle = -1;
         }
-        update_resource_counter_r();
+        update_resource_counter();
     }
 }

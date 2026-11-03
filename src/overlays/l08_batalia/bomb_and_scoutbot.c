@@ -176,9 +176,7 @@ extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern void initialize_bolt_pickup_r(void *moby) __asm__("func_L08_002B9438");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void initialize_bolt_counter_hud_r(void) __asm__("func_L00_0023A658");
-extern void update_bolt_counter_hud_animation_and_visibility_r(void) __asm__("func_L00_0023A690");
-extern void draw_bolt_counter_hud_panel_r(void) __asm__("func_L00_0023A788");
+
 extern char *batalia_mobys_r __asm__("D_L08_00160058") MACRO_ADDR;
 extern int D_L08_0015F6B0 MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -280,8 +278,8 @@ void update_bolt_pickup(Moby *m) {
             gBolts = gBolts + d->f20;
             ((int *)level_bolts)[g_current_level_index_r] = ((int *)level_bolts)[g_current_level_index_r] + d->f20;
             Moby_PlaySound_r(0, 0, m);
-            queue_animation_update(2, 0x754E, initialize_bolt_counter_hud_r,
-                                   update_bolt_counter_hud_animation_and_visibility_r, draw_bolt_counter_hud_panel_r,
+            queue_animation_update(2, 0x754E, initialize_bolt_counter_hud,
+                                   update_bolt_counter_hud_animation_and_visibility, draw_bolt_counter_hud_panel,
                                    &gBolts, 0x98967F);
             DeleteMoby(m);
             return;
@@ -1345,7 +1343,6 @@ extern char batalia_zero_vec_r3[] __asm__("D_L08_0015F660") MACRO_ADDR;
 
 extern int Sound_IsPlaying_r(struct Moby *, int) __asm__("func_L00_0028EB98");
 
-extern void PartType35Spawn_r(void *, void *, int, int) __asm__("func_L00_002703E8");
 extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
 
 extern s32 truncate_float_to_s32_r3(f32) __asm__("func_001FA898");
@@ -1386,7 +1383,7 @@ void update_hero_water_entry_effects(struct Moby *moby) {
         v.f[1] = FastSin(ang) * k;
         v.f[2] = random_float_between(g_frame_time_r2 * 3.0f, g_frame_time_r2 * 6.5f);
         n = rand_range(0x5A, 0x78);
-        PartType35Spawn_r(&pos, &v, random_integer_below(2), n);
+        PartType35Spawn(&pos, &v, random_integer_below(2), n);
     }
     for (i = 0; i < 16; i++) {
         unsigned char *q;
@@ -1404,9 +1401,6 @@ void update_hero_water_entry_effects(struct Moby *moby) {
 extern float batalia_line_puff_rise_speed_max SDATA(batalia_line_puff_rise_speed_max);
 extern float batalia_line_puff_size SDATA(batalia_line_puff_size);
 extern u16 batalia_line_puff_life_frames;
-
-extern unsigned char *PartType23Spawn(void *, float, float, float, int, void *, float, int);
-extern char *PartType21Spawn(void *, void *, int, int, int, int, float);
 
 /* Strings count glowing puffs from one point to another, growing from size0 to size1, then bursts a spark shower at
    each end.

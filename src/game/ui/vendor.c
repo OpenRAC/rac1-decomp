@@ -14,14 +14,13 @@
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
 #include "core/libc/sprintf.h"
+#include "game/ui/help.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern void *msg_string_id(int) __asm__("func_001FE540");
 
 extern void truncate_float_to_s32(float);
 
@@ -131,7 +130,7 @@ void update_scrolling_status_message(void) {
     if (libc_strlen(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
         *(int *)(v + 0x44) += 2;
     } else {
-        set_scrolling_status_message(msg_string_id(status_message_text_ids[random_integer_below(0x18)]));
+        set_scrolling_status_message(msg_string(status_message_text_ids[random_integer_below(0x18)]));
     }
     w = vendor_state;
     render_capture_scrolling_text(*(char **)(w + 0x2C), -*(int *)(w + 0x44), 8, 2.0f);
@@ -304,8 +303,8 @@ void render_vendor_item_details_pass(void) {
     DrawMobyList(vendor_state_m.f20, 1);
     if (vendor_state_m.slots[vendor_state_m.idx].kind == 1) {
         FontPrintSmall(6, 8, 0x80F0F0F0L,
-                       msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
-        FontPrintSmall(0x18, 0x18, 0x80F0F0F0L, msg_string_id(0x4F5D), -1);
+                       msg_string(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall(0x18, 0x18, 0x80F0F0F0L, msg_string(0x4F5D), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
         font_print_right_small(0x76, 0x65, 0x80F0F0F0L, buf, -1);
         if (vendor_state_m.f40 != 0) {
@@ -324,7 +323,7 @@ void render_vendor_item_details_pass(void) {
         }
     } else {
         FontPrintSmall(6, 8, 0x80F0F0F0L,
-                       msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+                       msg_string(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
         font_print_right_small(0x76, 0x65, item_available_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
         if (item_available_b[0x23] != 0) {
@@ -423,10 +422,10 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
     }
     if (m != 0) {
         *(unsigned short *)(sp + 0x12) |= 4;
-        font_print_window_small(sp, 0x80F0F0F0L, msg_string_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, msg_string(m), -1);
         *(unsigned short *)(sp + 0x12) ^= 4;
         *(short *)(sp + 0xA) = (y - *(short *)(sp + 0xE)) >> 1;
-        font_print_window_small(sp, 0x80F0F0F0L, msg_string_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, msg_string(m), -1);
     }
 }
 
@@ -489,11 +488,11 @@ void VendorDrawAmmoPrompt(void) {
                 price = ((WeaponInfo *)(vendor_item_prices + v->slots[idx].type * 0x18))->price;
             }
             if (gBolts >= price) {
-                FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
+                FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string(0x4EE0), -1);
             }
         }
     } else {
-        FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
+        FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string(0x4EE0), -1);
     }
 }
 

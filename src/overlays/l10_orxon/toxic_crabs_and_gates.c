@@ -1761,7 +1761,6 @@ typedef struct Flags_2E9978 {
     unsigned char f5;
 } Flags_2E9978;
 
-extern int Help_Request_r(int a, int b) __asm__("func_L00_00203F20");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 extern int orxon_cinematic_mode_r __asm__("D_L10_0015F6A8") MACRO_ADDR;
@@ -1796,30 +1795,30 @@ void update_conditional_help_messages(Moby *m) {
                 (((HeroPos *)(&g_hero.motion.pos))->f200C < 2 || ((HeroPos *)(&g_hero.motion.pos))->f200C == 9) &&
                 ((Msg *)orxon_help_state_r)->f0 == 0 && ((Msg *)orxon_help_state_r)->f24 == -1 &&
                 *(unsigned short *)(help_stats_base_r + 0x4F5) == 0) {
-                Help_Request_r(0x2710, 0x35);
+                Help_Request(0x2710, 0x35);
             }
             if (is_point_inside_clip_volume(&g_hero.motion.pos, d->f4) != 0 &&
                 (((HeroPos *)(&g_hero.motion.pos))->f200C < 2 || ((HeroPos *)(&g_hero.motion.pos))->f200C == 9) &&
                 ((Msg *)orxon_help_state_r)->f0 == 0 && ((Msg *)orxon_help_state_r)->f24 == -1) {
                 if (((Flags_2E9978 *)gSpecialItems)->f4 == 0) {
                     if (*(unsigned short *)(help_stats_base_r + 0x505) == 0) {
-                        Help_Request_r(0x2712, 0x37);
+                        Help_Request(0x2712, 0x37);
                     }
                 } else if (((Flags_2E9978 *)gSpecialItems)->f5 == 0) {
                     if (*(unsigned short *)(help_stats_base_r + 0x50D) == 0) {
-                        Help_Request_r(0x2713, 0x38);
+                        Help_Request(0x2713, 0x38);
                     }
                 }
             }
             if (orxon_cinematic_mode_r == 0 && race_gates_base[7] != 0 && ((Msg *)orxon_help_state_r)->f0 == 0 &&
                 ((Msg *)orxon_help_state_r)->f24 == -1 && *(unsigned short *)(help_stats_base_r + 0x4FD) == 0) {
-                Help_Request_r(0x2711, 0x36);
+                Help_Request(0x2711, 0x36);
             }
             if (is_point_inside_clip_volume(&g_hero.motion.pos, d->f8) != 0 &&
                 (((HeroPos *)(&g_hero.motion.pos))->f200C < 2 || ((HeroPos *)(&g_hero.motion.pos))->f200C == 9) &&
                 gHaveHeliPack_r[9] == 0 && ((Msg *)orxon_help_state_r)->f0 == 0 &&
                 ((Msg *)orxon_help_state_r)->f24 == -1 && *(unsigned short *)(help_stats_base_r + 0x62D) == 0) {
-                Help_Request_r(0x2715, 0x5C);
+                Help_Request(0x2715, 0x5C);
             }
             flag = 0;
             for (p = orxon_moby_list; p != 0; p = p->next) {
@@ -1831,7 +1830,7 @@ void update_conditional_help_messages(Moby *m) {
             if (d->f10 != -1 && vec_distance_xy_r2(&g_hero.motion.pos, &orxon_mobys_r[d->f10].pos) < 15.0f &&
                 d->f14 != -1 && vec_distance_xy_r2(&g_hero.motion.pos, &orxon_mobys_r[d->f14].pos) < 15.0f &&
                 *(unsigned short *)(help_stats_base_r + 0x69D) == 0) {
-                Help_Request_r(0x2717, 0x6A);
+                Help_Request(0x2717, 0x6A);
             }
             if (flag == 0)
                 break;
@@ -1846,7 +1845,7 @@ void update_conditional_help_messages(Moby *m) {
             if (((Save_2E9978 *)help_records)->f358 != 0) {
                 sub = scale_ticks(gameplay_event_frame_count) - ((Save_2E9978 *)help_records)->f35A * 600;
                 if ((int)((float)scale_ticks(0x12) * 60.0f) < sub || ((Save_2E9978 *)help_records)->f35A * 600 == 0) {
-                    Help_Request_r(0x2718, 0x6B);
+                    Help_Request(0x2718, 0x6B);
                     break;
                 }
                 if (scale_ticks(gameplay_event_frame_count) / 600 > ((Save_2E9978 *)help_records)->f35A) {
@@ -2138,7 +2137,6 @@ extern unsigned char D_0013DE4B[];
 extern Moby *orxon_mobys_r2 __asm__("D_L10_00160058") MACRO_ADDR;
 extern int orxon_moby_killed_r[] __asm__("D_L10_001BAC60");
 extern LevelState orxon_collected_flags_base_r __asm__("D_L10_001BB9C0");
-extern void activate_descriptor_r(int) __asm__("func_L10_002F6E10");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
@@ -2193,7 +2191,7 @@ void gate_2_update(Moby *m) {
                     st << (m->save_id & 0x1F);
                 orxon_moby_killed_r[(short)m->save_id >> 5] |= st << (m->save_id & 0x1F);
                 if (d->sound > 0) {
-                    activate_descriptor_r(d->sound);
+                    activate_descriptor(d->sound);
                 }
                 d->timer = truncate_float_to_s32_r2(multiply_global_factor(90.0f));
                 m->state = 2;

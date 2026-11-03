@@ -107,8 +107,6 @@ typedef struct Rocket {
     float maxspeed;
 } Rocket;
 
-extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/unclassified_002c13b0.c, FUN_L13_002c13b0. */
 unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, char *vec, int arg, float scale,
                                             float f2) {
@@ -165,8 +163,6 @@ typedef struct Tex {
     char pad0[0x5C];
     unsigned char *p5C;
 } Tex;
-
-extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -764,7 +760,6 @@ typedef int u128x_2C3FB8 __attribute__((mode(TI)));
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
-extern void PartType04Spawn_r(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
 extern char *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, void *, void *, int, int) __asm__("func_L00_0025B4D0");
 
@@ -856,23 +851,23 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
     Moby_GetJointWorldPos(m, 2, point_2_position);
     Moby_GetJointWorldPos(m, 3, point_3_position);
     if (gemlik_frame_count_r & 1) {
-        PartType04Spawn_r(point_2_position, downward_effect_vector, 0xCF0000FF, 0xCF,
-                          scale_ticks(rand_range(0x12, 0x16)), 0x32, -0xA, 1);
-        PartType04Spawn_r(point_3_position, downward_effect_vector, 0xCF0000FF, 0xCF,
-                          scale_ticks(rand_range(0x12, 0x16)), 0x32, -0xA, 1);
+        PartType04Spawn(point_2_position, downward_effect_vector, 0xCF0000FF, 0xCF, scale_ticks(rand_range(0x12, 0x16)),
+                        0x32, -0xA, 1);
+        PartType04Spawn(point_3_position, downward_effect_vector, 0xCF0000FF, 0xCF, scale_ticks(rand_range(0x12, 0x16)),
+                        0x32, -0xA, 1);
     } else {
-        PartType04Spawn_r(point_2_position, downward_effect_vector, 0x6000FFFF, 0x80,
-                          scale_ticks(rand_range(0x14, 0x18)), 0x64, -0xA, 1);
-        PartType04Spawn_r(point_3_position, downward_effect_vector, 0x6000FFFF, 0x80,
-                          scale_ticks(rand_range(0x14, 0x18)), 0x64, -0xA, 1);
+        PartType04Spawn(point_2_position, downward_effect_vector, 0x6000FFFF, 0x80, scale_ticks(rand_range(0x14, 0x18)),
+                        0x64, -0xA, 1);
+        PartType04Spawn(point_3_position, downward_effect_vector, 0x6000FFFF, 0x80, scale_ticks(rand_range(0x14, 0x18)),
+                        0x64, -0xA, 1);
     }
     {
         int ra = rand_range(0xA, 0x19);
         int rb = rand_range(0xA, 0xF);
-        PartType04Spawn_r(point_2_position, downward_effect_vector, 0xEFFF7F4F, 0xFF0000, scale_ticks(rb), ra, -ra, 1);
+        PartType04Spawn(point_2_position, downward_effect_vector, 0xEFFF7F4F, 0xFF0000, scale_ticks(rb), ra, -ra, 1);
         ra = rand_range(0xA, 0x19);
         rb = rand_range(0xA, 0xF);
-        PartType04Spawn_r(point_3_position, downward_effect_vector, 0xEFFF7F4F, 0xFF0000, scale_ticks(rb), ra, -ra, 1);
+        PartType04Spawn(point_3_position, downward_effect_vector, 0xEFFF7F4F, 0xFF0000, scale_ticks(rb), ra, -ra, 1);
     }
     m->scale = m->pclass->scale * D_L13_00161520_2C3FB8;
     damage_amount = 0.0f;
@@ -1714,7 +1709,7 @@ typedef struct {
 
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
 
-extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
+extern void PartType11Spawn_v(void *, void *, int, int, int, int, int, float, int, float) __asm__("func_L00_0026B890");
 
 extern float gemlik_zero_vec[] MACRO_ADDR;
 extern Blk24 forcefield_tower_debris_start_colors;
@@ -1811,7 +1806,7 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
             D = scale_ticks(25);
             E = scale_ticks(30);
             F = rand_range(D, E);
-            PartType11Spawn(pA, vC, *pa, *pb, C, F, 0, 1200000.0f, 0, yv);
+            PartType11Spawn_v(pA, vC, *pa, *pb, C, F, 0, 1200000.0f, 0, yv);
         } while (j != 0);
     }
     if (optional_glow_suppression_level < 0.95f) {
@@ -2865,7 +2860,6 @@ extern int D_L13_001D37F0[];
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern void PartType04Spawn_r2(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
 typedef struct {
     char pad[0xC4];
     int on[1];
@@ -2885,15 +2879,15 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
             Moby_GetJointWorldPos(m, gemlik_joint_effect_bone[i], a);
             if (gemlik_frame_count_r & 1) {
                 r = scale_ticks(rand_range(0xF, 0x14));
-                PartType04Spawn_r2(a, &zv, 0xCF0000FF, 0xCF, r, truncate_float_to_s32_r2(s * 350.0f), -100, 1);
+                PartType04Spawn(a, &zv, 0xCF0000FF, 0xCF, r, truncate_float_to_s32_r2(s * 350.0f), -100, 1);
             } else if (m->command == 0 || gemlik_stage_part_slot[m->command - 1] != gemlik_joint_effect_part_slot[i] ||
                        random_integer_below(9) == 0) {
                 r = scale_ticks(rand_range(0xF, 0x16));
-                PartType04Spawn_r2(a, &zv, 0x6000FFFF, 0x80, r, truncate_float_to_s32_r2(s * 600.0f), -100, 1);
+                PartType04Spawn(a, &zv, 0x6000FFFF, 0x80, r, truncate_float_to_s32_r2(s * 600.0f), -100, 1);
             }
             k = truncate_float_to_s32_r2(random_float_between(100.0f, 250.0f) * s);
             r = scale_ticks(rand_range(8, 0xC));
-            PartType04Spawn_r2(a, &zv, 0xEFFF7F4F, 0xFF0000, r, k, -k, 1);
+            PartType04Spawn(a, &zv, 0xEFFF7F4F, 0xFF0000, r, k, -k, 1);
         }
     }
 }

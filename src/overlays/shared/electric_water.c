@@ -34,6 +34,7 @@
 #include "overlays/shared/homing_missile_and_water_sheet.h"
 #include "overlays/shared/sentrybot.h"
 #include "overlays/l15_quartu/gates_helicopters_ultramechs.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -998,8 +999,6 @@ void update_spinning_projectile(unsigned char *m) {
     if (quartu_frame_count % 3 == 0)
         spawn_moby_point_offset_particle_v(m, 30000.0f, 0, 0.1f);
 }
-
-extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);
 
 // Spawns a moby of class 0x3A6 aimed along a direction, copying position and flags from the caller.
 char *spawn_class_3a6_moby(char *src, float *v, char *pos) {

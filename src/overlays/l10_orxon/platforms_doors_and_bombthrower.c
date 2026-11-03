@@ -32,6 +32,11 @@
 #include "overlays/shared/music_track_requests.h"
 #include "asm_functions/level_10.h"
 #include "overlays/l10_orxon/toxic_crabs_and_gates.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/rocket_and_path_camera.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -327,15 +332,10 @@ extern int orxon_cinematic_mode_r __asm__("D_L10_0015F6A8") MACRO_ADDR;
 extern int dialogue_message_duration_r __asm__("D_L10_0015F720") MACRO_ADDR;
 extern char *orxon_mobys_r __asm__("D_L10_00160058") MACRO_ADDR;
 
-extern void initialize_moby_particle_effect_r(void *) __asm__("func_L00_002D80A0");
-extern void emit_moby_sprite_particles_r(void *) __asm__("func_L10_00299AF0");
 extern float dist_00299818(void *, void *) __asm__("func_001F9D48");
 
-extern void start_scene_00299818(int) __asm__("func_L00_00299B68");
 extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
 extern void grant_inventory_item(int, int);
-extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
-extern int save_00299818(int, int) __asm__("func_0020BFC8");
 
 /* Spinning pickup: waits until the hero is close and level with it, then plays the scene, saves and goes away.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_00298668. */
@@ -344,7 +344,7 @@ void magnetboots_update(Moby *m) {
     m->rot.z = FastAddRots(m->rot.z, g_frame_time_x * 1.5707964f);
     switch (m->state) {
         case 0:
-            initialize_moby_particle_effect_r(m);
+            initialize_moby_particle_effect(m);
             if (*(race_gates_base_r + 7) != 0) {
                 DeleteMoby(m);
                 return;
@@ -354,12 +354,12 @@ void magnetboots_update(Moby *m) {
             m->scale = m->scale * 0.667f;
             break;
         case 1:
-            emit_moby_sprite_particles_r(m);
+            emit_moby_sprite_particles(m);
             if (dist_00299818(&m->pos, g_hero_r + 0x80) < 5.0f) {
                 struct Hero *h = (struct Hero *)g_hero_r;
                 if (FastAbsF(m->pos.z - h->motion.pos.f[2]) < 2.0f && h->health.hp != 0) {
                     m->flags |= 0x41;
-                    start_scene_00299818(2);
+                    StartCutscene(2);
                     m->state = 2;
                 }
             }
@@ -371,9 +371,9 @@ void magnetboots_update(Moby *m) {
                 grant_inventory_item(0x1C, 1);
                 if (d->unk_04 != -1) {
                     char *o = orxon_mobys_r + (d->unk_04 << 8);
-                    jet_reset_camera_r(o + 0x10, o + 0x40);
+                    jet_reset_camera(o + 0x10, o + 0x40);
                 }
-                save_00299818(0, -1);
+                memcard_Save(0, -1);
                 m->state = 3;
             }
             break;
@@ -2159,7 +2159,7 @@ extern unsigned char *CreateMoby_r(int) __asm__("func_0020D348");
 extern void set_moby_color_r2(unsigned char *, int, int, int) __asm__("func_L00_00251328");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float random_float_between(float, float);
-extern void func_L00_0026E940(unsigned char *, int, int, int, float);
+
 unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, float z) __asm__("func_L10_002DE630");
 
 /* Spawns moby 0x442 at pos, sets its colour, stores the caller's parameters and a lifetime in its data and starts its sound. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/entities/00295a38.c, FUN_L10_002dd270. */

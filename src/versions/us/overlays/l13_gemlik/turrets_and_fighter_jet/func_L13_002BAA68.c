@@ -78,7 +78,7 @@ void DrawGemlikTurretHud(char *moby) {
                                0.5f, 0.5f);
     b = (char *)&g_hero;
     if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (gemlik_frame_count / 90) & 1) {
-        FontPrintCenterSmall(0x100, 0x186, 0x80000080L, msg_string_id(0x5269), 0x64);
+        FontPrintCenterSmall(0x100, 0x186, 0x80000080L, msg_string(0x5269), 0x64);
     }
     h = (char *)&g_hero;
     f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);

@@ -682,7 +682,6 @@ void draw_scoutbot_glow_quad(char *arg) {
 typedef u32 u128_E9288 __attribute__((mode(TI), aligned(16)));
 extern f32 g_frame_time MACRO_ADDR;
 
-extern void *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 
 extern int batalia_frame_count MACRO_ADDR;

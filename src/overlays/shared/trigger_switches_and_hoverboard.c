@@ -325,7 +325,6 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
     }
 }
 
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int rilgar_frame_count SDATA(rilgar_frame_count);
 extern int hoverboard_race_finished MACRO_ADDR;
 extern int hoverboard_effect_displacement_w_gp SDATA(hoverboard_effect_displacement_w_gp);
@@ -1104,8 +1103,6 @@ extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001
 
 extern struct Moby *SpawnBreakFragment_v(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *,
                                          void *) __asm__("func_L00_00265050");
-
-extern struct Spark_c8e0 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, s32);
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern char *spawn_lamp_destroyed_from_source(unsigned char *);

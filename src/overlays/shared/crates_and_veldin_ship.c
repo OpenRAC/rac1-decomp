@@ -555,7 +555,7 @@ extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 
 extern int truncate_float_to_s32(float);
 
-extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
+extern void PartType11Spawn_v(void *, void *, int, int, int, int, int, float, int, float) __asm__("func_L00_0026B890");
 
 extern int level_frame_counter MACRO_ADDR;
 extern int crate_break_sound_frame MACRO_ADDR;
@@ -789,7 +789,7 @@ void break_crate(void *mv, int a1, int av) {
                 dd = scale_ticks(0x19);
                 ee = scale_ticks(0x1E);
                 c2 = rand_range(dd, ee);
-                PartType11Spawn(v60, v80, *q1, *q2, c1, c2, 0, 4e5f, 0, f20);
+                PartType11Spawn_v(v60, v80, *q1, *q2, c1, c2, 0, 4e5f, 0, f20);
             }
         }
 
@@ -3360,7 +3360,7 @@ void func_0020D678_D83D8(P *) __asm__("func_0020D678");
 
 void func_L00_002D9208_D83D8(P *, int) __asm__("func_L00_002D9208");
 
-E *PartType23Spawn(Vec4f *, int, float, float, Vec4f *, float, int, float);
+E *PartType23Spawn_v(Vec4f *, int, float, float, Vec4f *, float, int, float) __asm__("func_L00_0026DEA0");
 s16 scale_ticks_r(int) __asm__("func_001F9850");
 
 void draw_smoke_fire_spawner(P *);
@@ -3434,8 +3434,8 @@ void particle_spawner_smoke_fire_update(P *p) {
                     col = rand_range(q->h2C, q->h2E) << 24 | (smoke_fire_emitted_particle_base_color_gp);
                     r = rand_range((smoke_fire_emitted_particle_sign_randomized_sample_min_gp),
                                    (smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
-                    ent = PartType23Spawn(&b, r, (smoke_fire_emitted_particle_position_spread_gp), 1.0f, &a,
-                                          (smoke_fire_emitted_particle_random_scalar_upper_bound_gp), col, f);
+                    ent = PartType23Spawn_v(&b, r, (smoke_fire_emitted_particle_position_spread_gp), 1.0f, &a,
+                                            (smoke_fire_emitted_particle_random_scalar_upper_bound_gp), col, f);
                     if (ent) {
                         sub = &ent->sub;
                         ent->h0A = scale_ticks_r(rand_range(q->x30, q->x34));

@@ -32,6 +32,7 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/walloper_and_beam_effects.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -1321,9 +1322,6 @@ void draw_moby_oscillating_textured_quads(char *m) {
 
 int func_001160D8(void);
 
-extern void func_L00_0026AA10_C4748(float *, unsigned char, unsigned char, unsigned char, float, float,
-                                    int) __asm__("func_L00_0026AA10");
-
 extern char decoy_list[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002bffa8.c, FUN_L00_002c3440. */
@@ -1342,7 +1340,7 @@ void destroy_decoy_with_particles(unsigned char *m) {
         g = (func_001160D8() + 0x20) & 0x3F;
         b = func_001160D8() & 0x2F;
         s = random_float_between(100000.0f, 600000.0f);
-        func_L00_0026AA10_C4748(v, r, g, b, s, 0.0f, scale_ticks(func_001160D8() % 40 + 10));
+        PartType05Spawn(v, r, g, b, s, 0.0f, scale_ticks(func_001160D8() % 40 + 10));
     }
     moby_index_list_remove(m, decoy_list);
     DeleteMoby(m);
@@ -2461,7 +2459,6 @@ extern PadState pad_2C74B8 __asm__("D_0013CA40");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 
-extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 extern Moby *spawn_swingshot_hook_r(void *, float) __asm__("func_L00_002C82E8");
 extern void func_L00_001EE2E0(int, int, float, void *, int, float, int, float, int);
 
@@ -2490,7 +2487,7 @@ void func_L00_002C74B8_r(Moby *m) {
     if (m == 0)
         return;
     if (((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK)
-        HeroEnterMoveState_r(HERO_STATE_LOOK_RELEASE_WAIT, 1);
+        HeroEnterMoveState(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     d = (void *)m->pvars;
     if (d == 0)
         return;
@@ -2569,9 +2566,9 @@ void func_L00_002C74B8_r(Moby *m) {
             v10.f.z += 0.5f;
             if (coll_line_r4(&v10, &((Hero *)g_hero_r5)->grapple_target->pos, 2, 0, 0)) {
                 if (0.5f < ((Hero *)g_hero_r5)->ground_distance) {
-                    HeroEnterMoveState_r(HERO_STATE_FALL, 1);
+                    HeroEnterMoveState(HERO_STATE_FALL, 1);
                 } else {
-                    HeroEnterMoveState_r(HERO_STATE_IDLE, 0);
+                    HeroEnterMoveState(HERO_STATE_IDLE, 0);
                     set_hero_animation(hero_idle_sequence(0), 0, (float)scale_ticks(14));
                 }
                 m->state = 6;
@@ -2595,9 +2592,9 @@ void func_L00_002C74B8_r(Moby *m) {
             v0.f.z += 0.5f;
             if (coll_line_r4(&v0, &((Hero *)g_hero_r5)->grapple_target->pos, 2, 0, 0)) {
                 if (((Hero *)g_hero_r5)->air_frames.s)
-                    HeroEnterMoveState_r(HERO_STATE_FALL, 1);
+                    HeroEnterMoveState(HERO_STATE_FALL, 1);
                 else
-                    HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
+                    HeroEnterMoveState(HERO_STATE_IDLE, 1);
                 m->state = 6;
                 break;
             }
@@ -2613,19 +2610,19 @@ void func_L00_002C74B8_r(Moby *m) {
                 if (d->hook && 3.5f < FastVecDist(&d->hook->pos, &((Hero *)g_hero_r5)->motion.pos)) {
                     if (!(pad_2C74B8.held & ((Hero *)g_hero_r5)->items[0].button_mask)) {
                         ((Hero *)g_hero_r5)->unk988 = 1;
-                        HeroEnterMoveState_r(HERO_STATE_IDLE, 0);
+                        HeroEnterMoveState(HERO_STATE_IDLE, 0);
                         set_hero_animation(hero_idle_sequence(0), 0, (float)scale_ticks(14));
                         m->state = 6;
                     } else {
                         Moby_PlaySound_r(2, 0, m);
                         if (((Hero *)g_hero_r5)->unk978)
-                            HeroEnterMoveState_r(HERO_STATE_CONSTRAIN_TO_TARGET_RADIUS, 1);
+                            HeroEnterMoveState(HERO_STATE_CONSTRAIN_TO_TARGET_RADIUS, 1);
                         else
-                            HeroEnterMoveState_r(HERO_STATE_APPROACH_TARGET_MOBY, 1);
+                            HeroEnterMoveState(HERO_STATE_APPROACH_TARGET_MOBY, 1);
                         m->state = 5;
                     }
                 } else {
-                    HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
+                    HeroEnterMoveState(HERO_STATE_IDLE, 1);
                     m->state = 6;
                 }
             }
@@ -3050,12 +3047,8 @@ extern s32 gameplay_event_frame_count_r2 __asm__("D_0015EFA4") MACRO_ADDR;
 extern s32 g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern void Moby_GetJointWorldPos_r3(unsigned char *, int, void *) __asm__("func_L00_00250800");
 
-extern int HeroEnterMoveState_r2(int, int) __asm__("func_L00_00222B80");
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
-extern int allocate_hero_voice_for_entry_r(int, int) __asm__("func_L00_00217570");
-extern int use_ammo_r(int, int) __asm__("func_L00_00234638");
-extern int get_ammo_r(int) __asm__("func_L00_00234718");
 extern void compute_glove_of_doom_throw_velocity_r(struct Moby *, CarrierVars_2C8DB8 *,
                                                    Vec4 *) __asm__("func_L00_002C88A8");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
@@ -3087,16 +3080,16 @@ void glove_of_doom_update(struct Moby *moby) {
         vars->held = 0;
     }
     if (((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK) {
-        HeroEnterMoveState_r2(HERO_STATE_LOOK_RELEASE_WAIT, 1);
+        HeroEnterMoveState(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     }
     if (fast_dec_timer_r(&vars->timer) && !((Hero *)g_hero_r5)->item_use_locked) {
         if ((((Hero *)g_hero_r5)->item_anim_active && ((Hero *)g_hero_r5)->item_anim_frames == scale_ticks(0x11)) ||
             ((pad0_pressed_r & ((Hero *)g_hero_r5)->items[0].button_mask) &&
-             ((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK_RELEASE_WAIT && get_ammo_r(-1)) ||
+             ((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK_RELEASE_WAIT && get_ammo(-1)) ||
             (((Hero *)g_hero_r5)->state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
              ((Hero *)g_hero_r5)->state_timer == scale_ticks(0x10))) {
-            allocate_hero_voice_for_entry_r(0x1A, 0);
-            use_ammo_r(-1, 1);
+            allocate_hero_voice_for_entry(0x1A, 0);
+            use_ammo(-1, 1);
             moby->state = 3;
         }
     }
@@ -3153,7 +3146,7 @@ void glove_of_doom_update(struct Moby *moby) {
     }
     if (vars->held != 0) {
         qcopy(&vars->held->pos, &vars->grip);
-    } else if (get_ammo_r(-1)) {
+    } else if (get_ammo(-1)) {
         qzero(&grip);
         vars->held = (struct Moby *)spawn_glove_of_doom_held_moby_r((int)moby, (void *)&vars->grip, (void *)&grip);
     }

@@ -22,6 +22,7 @@
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/shared/ship_mode_and_level_entry.h"
 #include "overlays/shared/moby_path_advance.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -91,10 +92,6 @@ extern int D_L13_0015F504 MACRO_ADDR;
 extern unsigned char D_L13_0015FD08[] MACRO_ADDR;
 extern unsigned char D_001414F5[] NOT_SDA;
 
-extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-
-extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
-
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
 void update_gemlik_scene_controller(Moby *moby) {
     MobyData *data = (MobyData *)moby->pvars;
@@ -108,7 +105,7 @@ void update_gemlik_scene_controller(Moby *moby) {
             if (((Flags *)gSpecialItems)->f64 == 0) {
                 ((Flags *)gSpecialItems)->f64 = 1;
                 moby->state = 2;
-                StartCutscene_r(0);
+                StartCutscene(0);
             } else {
                 moby->state = 3;
             }
@@ -130,7 +127,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                             e->flags |= 0x41;
                         }
                         moby->state = 5;
-                        StartCutscene_r(1);
+                        StartCutscene(1);
                     }
                 } else {
                     moby->state = 7;
@@ -185,17 +182,17 @@ void update_gemlik_scene_controller(Moby *moby) {
             }
             MusicRequestTrack(0, 5);
             moby->state = 8;
-            StartCutscene_r(2);
+            StartCutscene(2);
             break;
         case 8:
             if (gemlik_game_mode_r != 2) {
                 moby->state = 9;
-                PlayMovieEntryIfIdle_r(0xE);
+                PlayMovieEntryIfIdle(0xE);
             }
             break;
         case 9:
             if (gemlik_game_mode_r != 2) {
-                StartCutscene_r(3);
+                StartCutscene(3);
                 moby->state = 10;
             }
             break;

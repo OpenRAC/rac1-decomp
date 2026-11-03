@@ -255,10 +255,6 @@ extern s32 D_0015F6C8 MACRO_ADDR;
 extern s32 D_0015F6F0 MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 
-extern void snd_ReadGlobalTableEntry_DD68(void) __asm__("func_0012EC30");
-extern s32 snd_FlushSoundCommands_DD68(void) __asm__("func_0012DDC0");
-extern void snd_SetMasterVolume_DD68(s32, s32) __asm__("func_0012E348");
-
 extern void snd_ResetStateAndFlush_DD68() __asm__("func_0012EC40");
 
 extern s32 truncate_float_to_s32_DD68(f32) __asm__("func_001FA898");
@@ -321,7 +317,7 @@ s32 func_0022DD68_r(void) {
     if (underwater != 0) {
         water_height = water_level_DD68[0];
     }
-    snd_FlushSoundCommands_DD68();
+    snd_FlushSoundCommands();
 
     if (voice_pool_DD68.reverb_commands & 8) {
         snd_set_reverb_ex(2, 0, 0, 0, 0);
@@ -365,21 +361,21 @@ s32 func_0022DD68_r(void) {
     }
 
     if (g_game_mode == 2) {
-        snd_SetMasterVolume_DD68(1, 0);
-        snd_SetMasterVolume_DD68(0, voice_pool_DD68.group_0_volume / 2);
-        snd_SetMasterVolume_DD68(3, voice_pool_DD68.group_3_volume / 2);
+        snd_SetMasterVolume(1, 0);
+        snd_SetMasterVolume(0, voice_pool_DD68.group_0_volume / 2);
+        snd_SetMasterVolume(3, voice_pool_DD68.group_3_volume / 2);
     } else {
         group_volume = voice_pool_DD68.group_1_volume;
         if (underwater) {
             group_volume = group_volume * 3 / 5;
         }
-        snd_SetMasterVolume_DD68(1, group_volume);
-        snd_SetMasterVolume_DD68(0, voice_pool_DD68.group_0_volume);
-        snd_SetMasterVolume_DD68(3, voice_pool_DD68.group_3_volume);
+        snd_SetMasterVolume(1, group_volume);
+        snd_SetMasterVolume(0, voice_pool_DD68.group_0_volume);
+        snd_SetMasterVolume(3, voice_pool_DD68.group_3_volume);
     }
-    snd_SetMasterVolume_DD68(2, voice_pool_DD68.group_2_volume);
-    snd_SetMasterVolume_DD68(4, voice_pool_DD68.group_4_volume);
-    snd_SetMasterVolume_DD68(5, voice_pool_DD68.group_5_volume);
+    snd_SetMasterVolume(2, voice_pool_DD68.group_2_volume);
+    snd_SetMasterVolume(4, voice_pool_DD68.group_4_volume);
+    snd_SetMasterVolume(5, voice_pool_DD68.group_5_volume);
 
     voice_flags = flags;
     volumes = voice_volumes;
@@ -618,8 +614,8 @@ s32 func_0022DD68_r(void) {
 
     music_Update();
     snd_ResetStateAndFlush_DD68();
-    snd_FlushSoundCommands_DD68();
-    snd_ReadGlobalTableEntry_DD68();
+    snd_FlushSoundCommands();
+    snd_reenable_command_flush();
     voice_pool_DD68.pending_commands = 0;
     return 0;
 }

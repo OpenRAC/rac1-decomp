@@ -15,7 +15,7 @@ int draw_selected_item_ammo(char *arg0) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
     if (*(unsigned short *)(rec + 8) == 0) {
-        sprintf(text, msg_string_id(0x4F53));
+        sprintf(text, msg_string(0x4F53));
     } else {
         char *q;
         if (have < 1000) {

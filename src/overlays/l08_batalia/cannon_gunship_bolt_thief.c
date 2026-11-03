@@ -32,6 +32,9 @@
 #include "overlays/l08_batalia/commando_deserter_and_effects.h"
 #include "overlays/l08_batalia/axis_roll_matrix.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -473,14 +476,11 @@ extern int hero_state52(int, int) __asm__("func_L08_00231228");
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
-
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern int find_batalia_cannon_aim_target_r(char *) __asm__("func_L08_002E15A0");
 
 extern int sound52(int, int, void *) __asm__("func_0022ED80");
-extern char *func_L00_0026EBC0(char *, char *, int, int, float);
 
 extern void draw_batalia_cannon_hud_r(void *) __asm__("func_L08_002E0258");
 
@@ -533,7 +533,7 @@ void update_batalia_cannon(Moby *moby) {
             return;
         }
         if (visited52[g_current_level_index_r][moby->mission] != 0xFF && (g_hero.ship_flags & 1))
-            Hero_OnKilled_r();
+            Hero_OnKilled();
         if (((pad_globals_base.pressed & 0x10) || (g_hero.ship_flags & 1)) &&
             visited52[g_current_level_index_r][moby->mission] == 0xFF) {
             g_hero.ship_flags = 0;
@@ -906,7 +906,7 @@ typedef struct {
     int v[2];
 } Pair;
 
-extern void func_L00_0026B890(void *, void *, int, int, int, int, int, int, float, float);
+extern void PartType11Spawn_v(void *, void *, int, int, int, int, int, int, float, float) __asm__("func_L00_0026B890");
 
 extern int truncate_float_to_s32(float);
 
@@ -969,8 +969,8 @@ void update_falling_debris(Moby *m) {
                     int lo = scale_ticks(25);
                     b = rand_range(lo, scale_ticks(30));
                 }
-                PartType11Spawn(&m->pos, v10, 0x2F3F3F7F, *q, a, b, 0, 0, 400000.0f,
-                                random_float_between(8.0f, 16.0f) * g_frame_time);
+                PartType11Spawn_v(&m->pos, v10, 0x2F3F3F7F, *q, a, b, 0, 0, 400000.0f,
+                                  random_float_between(8.0f, 16.0f) * g_frame_time);
             }
             if (m->pos.z < 15.2f) {
                 for (i = 0; i < falling_debris_burst_particle_count; i++) {
@@ -1842,8 +1842,6 @@ extern void draw_batalia_bolt_pickup_rotating_quad(char *m);
 extern float step_angle_toward_target_v(float *, float, float, int) __asm__("func_L00_0025CC58");
 
 extern void initialize_bolt_counter_hud_r(void) __asm__("func_L00_0023A658");
-extern void update_bolt_counter_hud_animation_and_visibility_r(void) __asm__("func_L00_0023A690");
-extern void draw_bolt_counter_hud_panel_r(void) __asm__("func_L00_0023A788");
 
 extern int batalia_bolt_sound_frame SDATA(batalia_bolt_sound_frame);
 extern short batalia_bolt_scale, batalia_bolt5_scale, batalia_bolt10_scale;
@@ -2146,8 +2144,8 @@ void update_batalia_bolt_pickup(Moby *m) {
                     gBolts += value;
                     level_bolts[g_current_level_index] += value;
                     queue_animation_update(2, 0x754E, initialize_bolt_counter_hud_r,
-                                           update_bolt_counter_hud_animation_and_visibility_r,
-                                           draw_bolt_counter_hud_panel_r, &gBolts, 9999999);
+                                           update_bolt_counter_hud_animation_and_visibility,
+                                           draw_bolt_counter_hud_panel, &gBolts, 9999999);
                     if (m < batalia_mobys_last) {
                         batalia_current_level_state.killed[(short)m->save_id] = m->mission + 2;
                         if (m->mission == 0xFF || (batalia_mission_group_state[m->mission] != 0xFF &&

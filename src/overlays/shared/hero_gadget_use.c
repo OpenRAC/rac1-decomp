@@ -31,6 +31,8 @@
 #include "overlays/l05_rilgar/hero_collision.h"
 #include "callees.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/ui/hud.h"
+#include "game/gameplay/freeze.h"
 extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -1461,13 +1463,9 @@ extern float rilgar_off_course_reset_rate SDATA(rilgar_off_course_reset_rate);
 extern int hoverboard_race_finished SDATA(hoverboard_race_finished);
 
 extern void compute_hero_hoverboard_respawn_transform_r(void *, void *) __asm__("func_L05_00254B38");
-extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
+
 extern int select_point_index_by_distance_r(void *, void *, float) __asm__("func_L01_0028C2D8");
 extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
-
-extern void mode_freeze_init_r(int, void *, int) __asm__("func_001FBC80");
-extern void Hud_SetBarValueById_r(int, int) __asm__("func_001FFDA0");
-extern void update_resource_counter_r(void) __asm__("func_001FFFA0");
 
 /* Hoverboard race tick: advances the hero's and the opponents' path nodes and laps, handles wrong-way and fall resets,
    ranks everyone and finishes the race after three laps. */
@@ -1566,7 +1564,7 @@ void update_hero_hoverboard_race_progress(void) {
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
                 g_hero.off_course_frames = 0;
                 g_hero.board_air_yaw = v1[2];
-                Hero_ResetToPosition_r(v0, v1, 0x6B, 1);
+                Hero_ResetToPosition(v0, v1, 0x6B, 1);
                 if (((Path *)g_hero.race_path) != 0) {
                     int r = select_point_index_by_distance_r(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
@@ -1650,7 +1648,7 @@ void update_hero_hoverboard_race_progress(void) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
             g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
-            mode_freeze_init_r(0, 0, 0);
+            mode_freeze_init(0, 0, 0);
         }
         if (race_best_times_r[0] == 0) {
             race_best_times_r[0] = g_hero.race_time_frames;
@@ -1665,10 +1663,10 @@ void update_hero_hoverboard_race_progress(void) {
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
         if (g_hero.trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            Hud_SetBarValueById(g_hero.trick_hud_handle, 0);
             g_hero.trick_hud_handle = -1;
         }
-        update_resource_counter_r();
+        update_resource_counter();
     } else if (g_current_level_index_r == LEVEL_KALEBO3) {
         if (d->f28 == -1) {
             return;
@@ -1677,7 +1675,7 @@ void update_hero_hoverboard_race_progress(void) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
             g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
-            mode_freeze_init_r(0, 0, 0);
+            mode_freeze_init(0, 0, 0);
         }
         if (race_best_times_r[1] == 0) {
             race_best_times_r[1] = g_hero.race_time_frames;
@@ -1692,10 +1690,10 @@ void update_hero_hoverboard_race_progress(void) {
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
         if (g_hero.trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            Hud_SetBarValueById(g_hero.trick_hud_handle, 0);
             g_hero.trick_hud_handle = -1;
         }
-        update_resource_counter_r();
+        update_resource_counter();
     }
 }
 extern unsigned char g_hero_race_ammo NOT_SDA;

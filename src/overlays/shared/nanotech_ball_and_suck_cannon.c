@@ -1932,7 +1932,6 @@ extern I6_DD3D8 suck_cannon_explosion_colors_a;
 extern I6_DD3D8 suck_cannon_explosion_colors_b;
 extern int *coll_sphere_moby_hits[];
 
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern char *spawn_randomly_rotated_colored_moby_r(float, void *, void *, void *, int, unsigned char, unsigned char,
                                                    unsigned char, unsigned char) __asm__("func_L00_002E0CB8");
 typedef struct {
@@ -2739,8 +2738,6 @@ extern V41 suck_beam_ring_unit_offsets[];
 extern float suck_beam_segment_turn_angles[];
 extern char collision_hit_point[];
 
-extern Particle41 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
-
 void suck_beam_update(void *moby, void *position) {
     V41 step, up, orient[3], ray_end, start, end, axis, tmp_a, tmp_b, frame[3], tmp_c, motion, tmp_d, tmp_e, interp,
         cross_c, basis_c, tmp_f, unused_a, unused_b;
@@ -3259,8 +3256,6 @@ extern char g_debug_camera_r3[] __asm__("D_L00_00166EC0");
 
 extern int Moby_PlaySound_r2(int, int, Moby *) __asm__("func_0022ED80");
 
-extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
-
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
 
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
@@ -3329,7 +3324,7 @@ void hydrodisplacer_update(Moby *m) {
                 break;
             }
             m->state = 3;
-            HeroEnterMoveState_r(0x38, 0);
+            HeroEnterMoveState(0x38, 0);
             if (g_hero.hydro_tank_full != 0) {
                 set_hero_animation(0x83, 0, scale_ticks(6));
             } else {
@@ -3349,7 +3344,7 @@ void hydrodisplacer_update(Moby *m) {
             }
             e = (void *)g_hero.ground_moby->pvars;
             q = moby_array_start + ((*(int *)&e->pad_0) << 8);
-            HeroEnterMoveState_r(0x39, 0);
+            HeroEnterMoveState(0x39, 0);
             if (g_hero.hydro_tank_full != 0) {
                 set_hero_animation(0x84, 0, scale_ticks(6));
             } else {
@@ -3449,7 +3444,7 @@ void hydrodisplacer_update(Moby *m) {
                         return;
                     }
                     m->state = 2;
-                    HeroEnterMoveState_r(HERO_STATE_ANIMATION_WAIT_TO_IDLE, 0);
+                    HeroEnterMoveState(HERO_STATE_ANIMATION_WAIT_TO_IDLE, 0);
                     if (g_hero.hydro_tank_full != 0) {
                         set_hero_animation(0x48, 0, scale_ticks(6));
                     } else {

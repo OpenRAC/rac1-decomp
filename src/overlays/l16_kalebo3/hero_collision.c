@@ -153,8 +153,6 @@ typedef int Q __attribute__((mode(TI)));
 extern u8 kalebo3_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 
-void func_L00_00233D50_105C8(void *, void *, f32) __asm__("func_L00_00233D50");
-
 extern Hero g_hero;
 extern struct CollisionHit kalebo3_coll_hit;
 
@@ -230,7 +228,7 @@ void HeroL16_UpdateGroundCollision(void) {
         if (is_moby_in_class_range_500_to_540(kalebo3_coll_hit.moby)) {
             g_hero.on_flagged_ground_moby = 1;
             if ((u32)(g_hero.state.control_mode - 0x15) < 2) {
-                func_L00_00233D50_105C8((u8 *)&kalebo3_coll_hit.point, (u8 *)&kalebo3_coll_hit.point, 1.0f);
+                HeroMoveDownAlongNormal((u8 *)&kalebo3_coll_hit.point, (u8 *)&kalebo3_coll_hit.point, 1.0f);
             }
         }
         p = GetFlaggedPvarWord(kalebo3_coll_hit.moby);

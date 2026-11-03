@@ -38,6 +38,7 @@
 #include "overlays/shared/helicopter_gunship_and_spawners.h"
 #include "overlays/l12_hoven/moby_heading_moves.h"
 #include "overlays/l12_hoven/reservoir_turret_planetbuster.h"
+#include "overlays/shared/rocket_and_path_camera.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -548,7 +549,6 @@ extern float smooth54(float *, float, float) __asm__("func_00214D28");
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern void spawn_spark_scatter_r(void *) __asm__("func_L12_002E2CB8");
 extern void MobySpringTurn_r(char *, float *, float, float, float, float) __asm__("func_L00_002592B0");
 extern void select_hoven_anklebiter_pursuit_animation_r(unsigned char *) __asm__("func_L12_002E2BF8");
@@ -562,7 +562,7 @@ extern int IsFrameWithinWindow_r(char *, float) __asm__("func_00215B18");
 extern int func_L00_002DDEA0(void *, void *);
 
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
-extern void spawn_type_52_particle_near_moby_r(char *) __asm__("func_L10_002E51A8");
+
 extern void TrollSpawnBurst_r(void *) __asm__("func_L12_002E43A8");
 
 extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__("func_L00_00263950");
@@ -696,7 +696,7 @@ void update_hoven_anklebiter(Moby *m) {
             if (FastVecLength(work.v0) < d->range && FastAbsF(m->pos.z - target->pos.z) < 8.0f &&
                 random_integer_below(19) == 0) {
                 if (m->group != 255)
-                    MobyGroup_SetByteBC_r(m->group, 1);
+                    MobyGroup_SetByteBC(m->group, 1);
             } else if (!((m->command & 1) && FastDecTimer(&d->group_timer)) && m->command != 7)
                 break;
             m->state = 13;
@@ -730,7 +730,7 @@ void update_hoven_anklebiter(Moby *m) {
             FastVecSub(work.v0, &target->pos, d->home);
             if ((FastVecLength(work.v0) < d->range && FastAbsF(d->home[2] - target->pos.z) < 8.0f) || m->command == 2) {
                 if (m->group != 255)
-                    MobyGroup_SetByteBC_r(m->group, 2);
+                    MobyGroup_SetByteBC(m->group, 2);
                 m->draw_dist = 0x40;
                 d->zero = 0.0f;
                 d->gravity = D_L12_0016195C_2E2EF0 * g_frame_time_sq_r;
@@ -802,7 +802,7 @@ void update_hoven_anklebiter(Moby *m) {
                         MobyBlendAnimation(m, 4, 0, scale_ticks(5));
                 } else if (FastVecLength(work.v0) < d->range + 5.5f && FastAbsF(m->pos.z - target->pos.z) < 4.4f) {
                     if (m->group != 255)
-                        MobyGroup_SetByteBC_r(m->group, 1);
+                        MobyGroup_SetByteBC(m->group, 1);
                 } else if (m->command != 1 && random_integer_below(9) == 0) {
                     m->state = 6;
                     d->return_timer = 0;
@@ -850,7 +850,7 @@ void update_hoven_anklebiter(Moby *m) {
                 if (return_distance < d->range) {
                     if (d->return_timer > scale_ticks(70)) {
                         if (m->group != 255)
-                            MobyGroup_SetByteBC_r(m->group, 1);
+                            MobyGroup_SetByteBC(m->group, 1);
                         m->state = 4;
                         d->blocked = 0;
                         select_hoven_anklebiter_pursuit_animation_r((unsigned char *)m);
@@ -866,7 +866,7 @@ void update_hoven_anklebiter(Moby *m) {
         }
         case 7:
             if (m->group != 255)
-                MobyGroup_SetByteBC_r(m->group, 1);
+                MobyGroup_SetByteBC(m->group, 1);
             if (mine_fall_r(m, d->fall) & 1) {
                 m->state = 10;
                 if (m->prev_seq != 13)
@@ -907,10 +907,10 @@ void update_hoven_anklebiter(Moby *m) {
                     return;
                 }
             } else if (hit & 1)
-                spawn_type_52_particle_near_moby_r((char *)m);
+                spawn_type_52_particle_near_moby((char *)m);
             break;
         case 15:
-            spawn_type_52_particle_near_moby_r((char *)m);
+            spawn_type_52_particle_near_moby((char *)m);
             TrollSpawnBurst_r(m);
             TrollSpawnBurst_r(m);
             {
@@ -1192,8 +1192,6 @@ void process_hoven_anklebiter_damage_and_alerts(struct Moby *moby) {
     StepColorFade_r(moby, vars->anim);
 }
 extern short platform_exhaust_local_offset;
-extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
-extern void *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
 /* Hoven engine exhaust: emits a flame and a smoke puff from each of the moby's two nozzles (the second one
  * mirrored across its local Y axis), with random jitter. */

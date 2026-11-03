@@ -2126,8 +2126,6 @@ typedef struct {
     PuffTail tail; /* 0x20 */
 } Puff;
 
-extern Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
-extern void PartType21Spawn(void *, void *, int, int, int, int, f32);
 extern f32 eudora_smoke_puff_rise_speed SDATA(eudora_smoke_puff_rise_speed);
 extern f32 smoke_trail_puff_position_jitter_scale_gp SDATA(smoke_trail_puff_position_jitter_scale_gp);
 

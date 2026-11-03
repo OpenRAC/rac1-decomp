@@ -299,8 +299,6 @@ extern float g_frame_time MACRO_ADDR, g_frame_time_sq MACRO_ADDR;
 
 extern float SpringAngle_spark(void *, void *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
 
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 /* Advance a homing spark, emit its trail, and test its collision or impact state. */

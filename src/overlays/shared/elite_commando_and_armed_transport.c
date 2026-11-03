@@ -849,7 +849,7 @@ void select_blarg_elite_commando_movement_animation(char *moby) {
     }
 }
 
-extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
+extern void PartType11Spawn_v(void *, void *, int, int, int, int, int, int, float, float) __asm__("func_L00_0026B890");
 
 extern float blarg_elite_commando_extra_glow_gate SDATA(blarg_elite_commando_extra_glow_gate);
 typedef struct {
@@ -898,7 +898,7 @@ void emit_blarg_elite_commando_death_particles(void *m) {
                 int lo = scale_ticks(25), hi = scale_ticks(30);
                 duration2 = rand_range(lo, hi);
             }
-            PartType11Spawn(origin, movement, *a, *b, duration1, duration2, 0, 0, 400000.0f, delay);
+            PartType11Spawn_v(origin, movement, *a, *b, duration1, duration2, 0, 0, 400000.0f, delay);
         } while (remaining != 0);
     }
     if (blarg_elite_commando_extra_glow_gate < 0.95f && distance > 9.0f) {

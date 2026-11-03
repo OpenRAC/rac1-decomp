@@ -245,9 +245,6 @@ extern E_2eb938 *camera_descriptors_r __asm__("D_L00_0015F050") MACRO_ADDR;
 extern char *g_current_follow_cam_r __asm__("D_L00_00166F00") NOT_SDA;
 extern char D_L00_00166F10[] NOT_SDA;
 
-extern void set_follow_camera_angle_blend_from_direction_r(void *, f32, f32) __asm__("func_L00_002E9DC8");
-
-extern void init_camera_system_r(void) __asm__("func_L00_001ED600");
 extern void fast_dec_timer_r(void *) __asm__("func_001F9908");
 #define P g_hero_r2
 /* Camera-mode transition update for an InitCamera moby: counts frames while the player and the other camera are in an allowed state, and eases the camera (0.07 / 0.14 rad) toward the target. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ea488. */
@@ -290,7 +287,7 @@ int camera_transition_update(u8 *m, char *a1) {
         v.f[0] = FastCos(P.motion.rot.f[2]);
         v.f[1] = FastSin(P.motion.rot.f[2]);
         *(s32 *)&v.f[2] = 0;
-        set_follow_camera_angle_blend_from_direction_r(&v, 0.06981316953897476f, v.f[2]);
+        set_follow_camera_angle_blend_from_direction(&v, 0.06981316953897476f, v.f[2]);
         goto tail;
     off:
         q->h20 = 0;
@@ -315,7 +312,7 @@ int camera_transition_update(u8 *m, char *a1) {
     if (l != 0.0f) {
         x = FastArcSin(FastVecDot(&d2, &d1) / l);
         if (1.3962633609771729f <= 1.5707964f - x) {
-            init_camera_system_r();
+            init_camera_system();
             return 0;
         }
     }
@@ -326,7 +323,7 @@ tail:
         v.f[0] = FastCos(P.motion.rot.f[2]);
         v.f[1] = FastSin(P.motion.rot.f[2]);
         *(s32 *)&v.f[2] = 0;
-        set_follow_camera_angle_blend_from_direction_r(&v, 0.13962633907794952f, v.f[2]);
+        set_follow_camera_angle_blend_from_direction(&v, 0.13962633907794952f, v.f[2]);
     }
     return 0;
 }
@@ -968,8 +965,6 @@ extern void FastVecScale_2ED320(float, void *, void *) __asm__("func_001F9C30");
 
 extern int coll_sphere_2ED320(float, void *, int, int) __asm__("func_L00_001F10E0");
 
-extern float rope_spring_turn_2ED320(void *, float, float, float, float, float) __asm__("func_L00_001EB6A8");
-
 extern unsigned short *D_L00_001ABBC0[];
 extern char *D_L00_00160098 MACRO_ADDR;
 extern OvlQuad_2ED320 D_L00_00173F60;
@@ -1024,7 +1019,7 @@ void update_target_tracking_camera_position(Camera *cam) {
         if ((current_level_2ED320 != 14 && current_level_2ED320 != 7 && current_level_2ED320 != 9) ||
             (hero_2ED320.swing_target_moby != 0 &&
              *(unsigned char *)((char *)hero_2ED320.swing_target_moby + 0x21) == 255)) {
-            *angle = rope_spring_turn_2ED320(angle + 1, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
+            *angle = Camera_SmoothAngle(angle + 1, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
         } else {
             chosen = 0;
             turn = angle + 1;
@@ -1058,21 +1053,20 @@ void update_target_tracking_camera_position(Camera *cam) {
             }
             if (chosen != 0) {
                 FastVecSub(offset, chosen + 0x10, current_target + 0x10);
-                *angle =
-                    rope_spring_turn_2ED320(turn, *angle, fast_atan2(offset[0], offset[1]), 0.00125f, 0.175f, 0.0f);
+                *angle = Camera_SmoothAngle(turn, *angle, fast_atan2(offset[0], offset[1]), 0.00125f, 0.175f, 0.0f);
             } else if (*(int *)(follow + 0x40) == 1)
-                *angle = rope_spring_turn_2ED320(turn, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48), 0.00125f,
-                                                 0.175f, 0.0f);
+                *angle = Camera_SmoothAngle(turn, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48), 0.00125f,
+                                            0.175f, 0.0f);
             else
-                *angle = rope_spring_turn_2ED320(turn, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
+                *angle = Camera_SmoothAngle(turn, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
         }
     } else if (hero_2ED320.state.current == HERO_STATE_APPROACH_TARGET_MOBY) {
         if (*(int *)(follow + 0x40) == 1)
-            *angle = rope_spring_turn_2ED320(angle + 1, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48),
-                                             rope_turn_k_2ED320, 0.175f, 0.0f);
+            *angle = Camera_SmoothAngle(angle + 1, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48),
+                                        rope_turn_k_2ED320, 0.175f, 0.0f);
         else
-            *angle = rope_spring_turn_2ED320(angle + 1, *angle, hero_2ED320.motion.rot.f[2], rope_turn_k_2ED320, 0.175f,
-                                             0.0f);
+            *angle =
+                Camera_SmoothAngle(angle + 1, *angle, hero_2ED320.motion.rot.f[2], rope_turn_k_2ED320, 0.175f, 0.0f);
     }
     *(float *)(follow + 0x30) = FastCos(*angle);
     *(float *)(follow + 0x34) = FastSin(*angle);

@@ -31,6 +31,7 @@
 #include "overlays/shared/trespasser_and_throwing_gloves.h"
 #include "overlays/shared/collision_queries.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -1115,8 +1116,6 @@ int GetMobyPvarWord5(struct Moby *m) {
 }
 typedef int w128 __attribute__((mode(TI)));
 
-extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
-
 extern int truncate_float_to_s32(float);
 extern void clear_homing_shot_trail_and_spawn_end_effects(unsigned char *, int);
 extern unsigned char coll_hit_normal[];
@@ -1470,7 +1469,7 @@ void update_homing_shot(Moby *m) {
     PartType27Spawn_r(&*(Vec4A *)&m->pos, &c, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
 }
 
-extern u8 *PartType23Spawn(void *, s32, f32, f32, void *, u32, f32, f32);
+extern u8 *PartType23Spawn_v(void *, s32, f32, f32, void *, u32, f32, f32) __asm__("func_L00_0026DEA0");
 
 /* Kill the homing shot's 17 trail particles, and if enabled spawn its end burst effects. */
 void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled) {
@@ -1516,7 +1515,7 @@ void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled) {
             vectors[0].f[2] = 1.0f;
             vectors[0].f[3] = 1.0f;
             vectors[0].f[2] = random_float_between(0.01f, 0.025f) * frame_scale;
-            effect = PartType23Spawn(pos, sign, 0.2f, 1.0f, &vectors[0], color, 1.02f, 140000.0f);
+            effect = PartType23Spawn_v(pos, sign, 0.2f, 1.0f, &vectors[0], color, 1.02f, 140000.0f);
             if (effect != 0) {
                 *(s16 *)(effect + 0xa) = scale_ticks(rand_range(50, 80));
                 i = (s32)(effect + 0x20);
@@ -1762,11 +1761,7 @@ extern int timer16_2CDAB8(short *) __asm__("func_001F9938");
 extern Moby *find_target_2CDAB8(float *, float *, Moby **, float, float, float) __asm__("func_L00_002CD7B0");
 
 extern Bounds *bounds_2CDAB8(Moby *) __asm__("func_L00_0025D390");
-extern int has_ammo_2CDAB8(int) __asm__("func_L00_00234718");
-extern int use_ammo_2CDAB8(int, int) __asm__("func_L00_00234638");
 
-extern void fire_start_2CDAB8(void) __asm__("func_L00_0020EB60");
-extern void fire_end_2CDAB8(void) __asm__("func_L00_0020ED30");
 extern void apply_mat4_2CDAB8(float *, float *, void *) __asm__("func_001F9EE8");
 
 extern void add_2CDAB8(float *, void *, void *) __asm__("func_001F9BD8");
@@ -1812,7 +1807,7 @@ void ryno_update(Moby *m) {
                 d->life = b->radius;
             }
         }
-        if (d->target != 0 && timer16_2CDAB8(&d->track_timer) && has_ammo_2CDAB8(-1)) {
+        if (d->target != 0 && timer16_2CDAB8(&d->track_timer) && get_ammo(-1)) {
             if (d->target == 0 || d->target->state == 0xFE || d->target->state == 0xFD) {
                 d->target = 0;
                 d->height = 0;
@@ -1843,7 +1838,7 @@ void ryno_update(Moby *m) {
                 return;
             if (g_hero.item_use_locked != 0)
                 return;
-            if (use_ammo_2CDAB8(-1, 1) == 0)
+            if (use_ammo(-1, 1) == 0)
                 return;
             {
                 int per;
@@ -1860,7 +1855,7 @@ void ryno_update(Moby *m) {
             d->shot_timer = 0;
             d->slot = 0;
             d->shots = 0;
-            fire_start_2CDAB8();
+            start_equipped_item_animation();
             {
                 int k;
                 for (k = 6; k >= 0; k--)
@@ -1878,7 +1873,7 @@ void ryno_update(Moby *m) {
                 return;
             if (g_hero.item_use_locked != 0)
                 return;
-            if (use_ammo_2CDAB8(-1, 1) == 0)
+            if (use_ammo(-1, 1) == 0)
                 return;
             {
                 int per;
@@ -1895,7 +1890,7 @@ void ryno_update(Moby *m) {
             d->shot_timer = 0;
             d->slot = 0;
             d->shots = 0;
-            fire_start_2CDAB8();
+            start_equipped_item_animation();
             {
                 int k;
                 for (k = 6; k >= 0; k--)
@@ -1928,11 +1923,11 @@ void ryno_update(Moby *m) {
             }
             pitch = -fast_atan2(length_2CDAB8(dir.f), dir.f[2]);
             Moby_GetJointWorldPos(m, d->slot, aim.f);
-            fire_start_2CDAB8();
+            start_equipped_item_animation();
             missile_2CDAB8(m, aim.f, d->target, d->height, yaw, pitch);
             if (d->shots >= 7) {
                 g_hero.items[0].switch_lock = 0;
-                fire_end_2CDAB8();
+                cancel_hero_item_animation();
                 m->state = 5;
                 d->shot_timer = scale_ticks(60);
                 d->track_timer = scale_ticks(60);

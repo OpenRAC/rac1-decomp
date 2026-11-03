@@ -29,6 +29,8 @@
 #include "game/render/shrubfunc.h"
 #include "game/system/bmain.h"
 #include "game/gameplay/freeze.h"
+#include "game/system/memcard.h"
+#include "game/system/pad.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -700,8 +702,6 @@ extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
 
 extern void InitMemSlots_r(void) __asm__("func_00201E10");
 
-extern void parse_space_scene_chunk_r(s32) __asm__("func_00205220");
-
 extern void func_00217628(u8 *, s32, s32);
 extern unsigned int Load_r(s32, s32, s32) __asm__("func_002176C8");
 extern void func_00217748(s32);
@@ -849,7 +849,7 @@ void transition_load_wad(void) {
             out++;
         } while ((cnt < 0x46) && (snd->size != 0));
     }
-    parse_space_scene_chunk_r(0);
+    parse_space_scene_chunk(0);
     help_msg_data_r = level_resource_buffers.x1C;
     Load_r(level_resource_buffers.x1C, disc_table_r.help_text.sector, disc_table_r.help_text.size);
     help_offset_table_r = help_msg_data_r;
@@ -976,15 +976,14 @@ extern s32 g_game_mode_r __asm__("D_0015F6E8") MACRO_ADDR;
 extern s32 pad0_pressed_r[] __asm__("D_0013CBE4");
 extern void initialize_transfer_command_r(void) __asm__("func_00219E60");
 extern void noop_callback_e_r(RenderSequenceActor *) __asm__("func_001E9790");
-extern void noop_callback_h_r(void) __asm__("func_001E97A8");
-extern void noop_callback_i_r(void) __asm__("func_001E97B0");
+
 extern void Transition_UpdateMovieCamera_r(void) __asm__("func_001EB338");
 
 extern void FastVecAdd_r(Vec4A *, Vec4A *, Vec4A *) __asm__("func_001F9BD8");
 extern void FastVecScale_r(Vec4A *, Vec4A *, f32) __asm__("func_001F9C30");
 
 extern void update_mode_freeze_r(void) __asm__("func_001FD3E8");
-extern void parse_space_scene_chunk_r2(s32) __asm__("func_00205220");
+
 extern void update_moby_animation_state_r(RenderSequenceActor *) __asm__("func_0020D6D0");
 extern void refresh_moby_spatial_bounds_r(RenderSequenceActor *) __asm__("func_0020ED48");
 extern void update_menu_system_r(void) __asm__("func_0021A1A0");
@@ -1001,7 +1000,7 @@ void update_gameplay_frame(void) {
     s32 actor_index;
     f32 fade;
 
-    noop_callback_i_r();
+    noop_callback_i();
     fade = gFade_r - 0.0625f;
     render_sequence_r2.frame++;
     render_sequence_r2.time++;
@@ -1012,9 +1011,9 @@ void update_gameplay_frame(void) {
     if (render_sequence_r2.time >= render_sequence_r2.end_time) {
         render_sequence_r2.time = 0;
         render_sequence_r2.sequence_frame = 0;
-        parse_space_scene_chunk_r2(0);
+        parse_space_scene_chunk(0);
     } else if (render_sequence_r2.frame >= 0x60) {
-        parse_space_scene_chunk_r2(++render_sequence_r2.sequence_frame);
+        parse_space_scene_chunk(++render_sequence_r2.sequence_frame);
     }
     Transition_UpdateMovieCamera_r();
     for (actor_index = 0; actor_index < render_sequence_r2.count; actor_index++) {
@@ -1036,7 +1035,7 @@ void update_gameplay_frame(void) {
             noop_callback_e_r(actor);
         }
     }
-    noop_callback_h_r();
+    noop_callback_h();
     if (g_game_mode_r == 0) {
         intro_overlay_timer_r++;
         if (scale_game_frame_count(0x1E) < intro_overlay_timer_r) {
@@ -1254,27 +1253,16 @@ extern s32 tex_cursor_BB48 __asm__("D_0015EF74") MACRO_ADDR;
 extern volatile s32 tex_base_BB48 __asm__("D_0015EF8C") MACRO_ADDR;
 extern s32 D_0015F538 MACRO_ADDR;
 
-extern void load_and_init_BB48(void) __asm__("func_00209DC0");
 extern void transition_load_wad_BB48(void) __asm__("func_001EABE8");
 extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
 
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
 
-extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
-
-extern void put_draw_small_BB48(void) __asm__("func_001FB598");
-
-extern void put_draw_large_BB48(void) __asm__("func_001FB498");
-extern s32 memcard_update_BB48(void) __asm__("func_00209E68");
-
-extern void update_pad_BB48(void) __asm__("func_00218908");
 extern void queue_dma_BB48(s32) __asm__("func_001EB300");
 extern s32 is_active_BB48(s32, s32) __asm__("func_001EBAF0");
 
 extern void update_gameplay_BB48(void) __asm__("func_001EB458");
 extern void default_draw_BB48(void) __asm__("func_001EB7C0");
-
-extern void parse_space_scene_BB48(s32) __asm__("func_00205220");
 
 extern s32 reset_vif1_gif_BB48(void) __asm__("func_001207B8");
 extern void reset_graph_BB48(s16, s16, s16, s16) __asm__("func_00121B78");
@@ -1297,7 +1285,7 @@ void transition_do_transition(void) {
     *(volatile u32 *)0x10000010 = 0x83;
     *(volatile u32 *)0x10000000 = 0;
     saved = playback_mode;
-    load_and_init_BB48();
+    load_and_initialize_level_chunk();
     playback_mode = saved;
     transition_load_wad_BB48();
     tbl = &disc_table_BB48;
@@ -1335,18 +1323,18 @@ void transition_do_transition(void) {
     snd_reset_BB48();
     while (snd_FlushSoundCommands() != 0) {
     }
-    snd_reenable_command_flush_r();
+    snd_reenable_command_flush();
     level = 1;
     wait = 0;
     while (space_load_pending == 0) {
         VU1_sendChain();
         VU1_swapChain();
-        put_draw_small_BB48();
+        PutDrawBufferSmall();
         append_palette_transfer_packet();
-        put_draw_large_BB48();
-        memcard_update_BB48();
+        PutDrawBufferLarge();
+        memcard_update_state();
         Menu_RunStateHandler();
-        update_pad_BB48();
+        UpdatePad();
         queue_dma_BB48(dma_index_BB48);
         space_load_in_progress = 0;
         for (i = 0; transition_sound_cues[i].start != -1; i++) {
@@ -1386,7 +1374,7 @@ void transition_do_transition(void) {
             sequence_BB48 = 1.0f;
             transfer_BB48.time = 0;
             transfer_BB48.f3C = 0;
-            parse_space_scene_BB48(0);
+            parse_space_scene_chunk(0);
             intro_alpha_BB48 = 0;
             language_alpha_BB48 = 0;
             intro_timer_BB48 = 0;

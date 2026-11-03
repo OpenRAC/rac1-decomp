@@ -30,7 +30,7 @@ void MorphorayUpdate(Moby *m) {
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_LAND)) &&
         (*(int *)pad_held & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
-            start_equipped_item_animation_r();
+            start_equipped_item_animation();
         }
         if (p->seen == 0) {
             p->seen = 1;
@@ -48,7 +48,7 @@ void MorphorayUpdate(Moby *m) {
         }
         Moby_GetJointWorldPos(m, 0, p);
         if (((Hero *)g_hero_r)->state.current == HERO_STATE_LOOK) {
-            HeroEnterMoveState_r(HERO_STATE_LOOK_RELEASE_WAIT, 1);
+            HeroEnterMoveState(HERO_STATE_LOOK_RELEASE_WAIT, 1);
         }
         *(u128_2BDAF0 *)&v0 = 0;
         if (((Hero *)g_hero_r)->state.current == HERO_STATE_LOOK_RELEASE_WAIT &&
@@ -88,8 +88,8 @@ void MorphorayUpdate(Moby *m) {
                     if (p->total <= 1.0f) {
                         p->left = 0.0f;
                     }
-                    p->snd = queue_animation_update_r(4, 0x7533, Hud_InitParticles_r, Hud_UpdateParticles_r,
-                                                      draw_uniform_size_hud_stars_r, &D_L00_001617BC_2BDAF0, 10000);
+                    p->snd = queue_animation_update_r(4, 0x7533, hud_init_particles, hud_update_particles,
+                                                      draw_uniform_size_hud_stars, &D_L00_001617BC_2BDAF0, 10000);
                 }
             }
             {
@@ -114,7 +114,7 @@ void MorphorayUpdate(Moby *m) {
         }
         update_beam_ring_rail_and_pulse_effects_r(m);
         if (morphoray_light_slot_r == -1) {
-            morphoray_light_slot_r = allocate_packed_color_point_light_slot_r((float *)&m->pos, 7.5f, 0.0f, 0x207F7F);
+            morphoray_light_slot_r = allocate_packed_color_point_light_slot((float *)&m->pos, 7.5f, 0.0f, 0x207F7F);
         }
         if (morphoray_light_slot_r >= 0) {
             morphoray_light_fade_timer_r = scale_ticks(20);
@@ -133,7 +133,7 @@ void MorphorayUpdate(Moby *m) {
         p->seen = 0;
         p->delay = 0;
         if (p->snd != -1) {
-            remove_hud_item_r(p->snd);
+            remove_hud_item(p->snd);
             p->snd = -1;
         }
         D_L00_0016188C_2BDAF0 = 1;
@@ -150,12 +150,12 @@ void MorphorayUpdate(Moby *m) {
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[1] = f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[2] = f * 0.25f;
             if (fast_dec_timer_r2(&morphoray_light_fade_timer_r) != 0) {
-                release_point_light_slot_r(morphoray_light_slot_r);
+                release_point_light_slot(morphoray_light_slot_r);
                 morphoray_light_slot_r = -1;
             }
         }
         if (morphoray_light_slot_r >= 0 && morphoray_light_fade_timer_r == 0) {
-            release_point_light_slot_r(morphoray_light_slot_r);
+            release_point_light_slot(morphoray_light_slot_r);
             morphoray_light_slot_r = -1;
         }
         if (morphoray_beam_voice_r >= 0) {
@@ -166,10 +166,10 @@ void MorphorayUpdate(Moby *m) {
             }
             morphoray_beam_voice_r = -1;
         }
-        cancel_hero_item_animation_r();
+        cancel_hero_item_animation();
     }
     if (flag && morphoray_light_slot_r >= 0) {
-        release_point_light_slot_r(morphoray_light_slot_r);
+        release_point_light_slot(morphoray_light_slot_r);
         morphoray_light_slot_r = -1;
     }
 }

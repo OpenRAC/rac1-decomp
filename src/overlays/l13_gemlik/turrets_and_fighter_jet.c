@@ -39,6 +39,7 @@
 #include "overlays/l13_gemlik/moby_group_switches.h"
 #include "overlays/l13_gemlik/joint_particle.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/ui/help.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -2232,8 +2233,6 @@ extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void append_four_quarter_turn_effect_quads_f(float, float, float, float, unsigned char, unsigned char,
                                                     unsigned char, unsigned char) __asm__("func_L13_002B9590");
 
-extern void *msg_string_id(int) __asm__("func_001FE540");
-
 extern char gemlik_turret_hud_pip_strip[];
 extern int jet_hud_palette_backup[];
 extern int *jet_hud_palette SDATA(jet_hud_palette);
@@ -2320,7 +2319,7 @@ void DrawGemlikTurretHud(char *moby) {
                                0.5f, 0.5f);
     b = &g_hero;
     if (b->ship_hp < b->ship_hp_max / 10.0f && (gemlik_frame_count / 90) & 1) {
-        FontPrintCenterSmall(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
+        FontPrintCenterSmall(0x100, 0x186, 0x80000080L, msg_string(0x526E), 0x64);
     }
     h = &g_hero;
     f = h->ship_hp - d->hp_shown;

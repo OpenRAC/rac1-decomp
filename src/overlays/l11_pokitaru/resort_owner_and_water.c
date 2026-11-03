@@ -46,6 +46,7 @@
 #include "overlays/l11_pokitaru/ship_flight_and_oil_tanker.h"
 #include "overlays/l11_pokitaru/hero_idle_animation.h"
 #include "asm_functions/level_11.h"
+#include "overlays/shared/pause_menu.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -232,9 +233,6 @@ void trigger_pokitaru_paired_rotation(char *moby) {
     }
 }
 
-extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
-extern void clear_active_help_record_r(void) __asm__("func_L00_00203FB8");
-
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -299,9 +297,9 @@ void bob_update(char *m) {
                 moby->state = 1;
                 if (moby_vars->h04 == 2) {
                     grant_inventory_item(3, 1);
-                    jet_reset_camera_r(&g_hero.motion.pos, &g_hero.motion.rot);
+                    jet_reset_camera(&g_hero.motion.pos, &g_hero.motion.rot);
                     memcard_Save(0, -1);
-                    clear_active_help_record_r();
+                    clear_active_help_record();
                     Help_Request(0x2AFB, 0x3D);
                 }
             }
@@ -1212,7 +1210,7 @@ void fred_pokitaru_update(char *m) {
                     char *t;
                     jet_clear_persistent(moby->mission);
                     t = path_points_14b0_r2 + (moby_vars->slot << 7);
-                    jet_reset_camera_r(t + 0x30, t + 0x70);
+                    jet_reset_camera(t + 0x30, t + 0x70);
                 }
             }
             break;
@@ -1668,8 +1666,6 @@ extern float ApproachValue_r2(float *, float, float) __asm__("func_00214D28");
 extern float vec_length_xy_r3(void *) __asm__("func_001F9CE8");
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 
-extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
-
 extern int is_pokitaru_boat_target_group_clear_r(void *) __asm__("func_L11_0030BC20");
 extern float ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
 
@@ -1810,7 +1806,7 @@ void pokitaru_boat_update(Moby *m) {
                                      D_L11_00161E6C_30AE90 * 0.0174532924f * g_frame_time_d);
             if (d->fC0 != 0) {
                 Cam_SetDistanceGoal(D_L11_00161E7C_30AE90, 0.003f, 0);
-                follow_camera_set_height_r(D_L11_00161E80_30AE90, 0.003f);
+                follow_camera_set_height(D_L11_00161E80_30AE90, 0.003f);
             }
             b = path_table_r[d->fAC];
             a = path_table_r[d->fA8];

@@ -30,6 +30,9 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
 #include "overlays/shared/draw_buffers_and_walker_gait.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -1710,12 +1713,10 @@ extern char suck_cannon_no_exit_fmt_r[] __asm__("D_L04_001DCA60");
 extern Exit_002E2DF0 *portal_mobys_002E2DF0 __asm__("D_L04_00160058") MACRO_ADDR;
 
 extern f32 dist_002E2DF0(void *, void *) __asm__("func_001F9D48");
-extern void initialize_moby_particle_effect_r(Moby *) __asm__("func_L00_002D80A0");
+
 extern void remove_moby_002E2DF0(Moby *) __asm__("func_0020D678");
 extern void update_suck_cannon_particles_r(Moby *) __asm__("func_L04_002E30E0");
-extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 
-extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern void STUB_printf_r(char *, int) __asm__("func_001E9730");
 extern void memcard_Save_r(int, int) __asm__("func_0020BFC8");
 
@@ -1732,7 +1733,7 @@ void suck_cannon_update(Moby *moby) {
         moby->flags &= ~0x41;
     switch (moby->state) {
         case 0:
-            initialize_moby_particle_effect_r(moby);
+            initialize_moby_particle_effect(moby);
             if (*(discount_purchase_pricing_r + 0xE)) {
                 remove_moby_002E2DF0(moby);
                 break;
@@ -1744,7 +1745,7 @@ void suck_cannon_update(Moby *moby) {
             update_suck_cannon_particles_r(moby);
             if (dist_002E2DF0(&moby->pos, gHeroPos_r) < 3.0f) {
                 moby->flags |= 0x41;
-                StartCutscene_r(2);
+                StartCutscene(2);
                 moby->state = 2;
             }
             break;
@@ -1759,7 +1760,7 @@ void suck_cannon_update(Moby *moby) {
             grant_inventory_item(9, 1);
             if (vars->exitMoby != -1) {
                 exit = &portal_mobys_002E2DF0[vars->exitMoby];
-                jet_reset_camera_r(&exit->pos, &exit->rot);
+                jet_reset_camera(&exit->pos, &exit->rot);
             } else {
                 STUB_printf_r(suck_cannon_no_exit_fmt_r, *(s16 *)&moby->save_id);
             }

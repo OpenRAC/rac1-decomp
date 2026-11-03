@@ -35,6 +35,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -646,8 +647,6 @@ extern float blarg_hero_anim_frame_speeds_a[];
 extern float blarg_hero_anim_frame_speeds_b[];
 
 extern int truncate_float_to_s32(float);
-
-extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 extern void update_hero_airborne_planar_velocity(void);
 extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");

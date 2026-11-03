@@ -360,7 +360,7 @@ typedef union {
 
 extern void SetDeathBits(void *, int, int);
 
-extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
+extern void PartType11Spawn_v(void *, void *, int, int, int, int, int, int, float, float) __asm__("func_L00_0026B890");
 
 extern int func_001FA898(float);
 extern float g_frame_time MACRO_ADDR;
@@ -536,10 +536,10 @@ void update_airship_part(Moby *moby) {
             if (random_integer_below(3) == 0) {
                 clear_u64_value(vec);
                 buf.pair = airship_part_smoke_colors;
-                PartType11Spawn(((f32 *)&moby->pos), vec, 0x2F3F3F7F, buf.pair.v[random_integer_below(2)],
-                                rand_range(scale_ticks(0xF), scale_ticks(0x14)),
-                                rand_range(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, 400000.0f,
-                                random_float_between(8.0f, 16.0f) * g_frame_time);
+                PartType11Spawn_v(((f32 *)&moby->pos), vec, 0x2F3F3F7F, buf.pair.v[random_integer_below(2)],
+                                  rand_range(scale_ticks(0xF), scale_ticks(0x14)),
+                                  rand_range(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, 400000.0f,
+                                  random_float_between(8.0f, 16.0f) * g_frame_time);
             }
             if (moby->pos.z < 25.0f) {
                 int i;
@@ -891,7 +891,7 @@ void update_falling_asteroid(Moby *m) {
                         int lo = scale_ticks(25), hi = scale_ticks(30);
                         b = rand_range(lo, hi);
                     }
-                    PartType11Spawn(d->pos, v4, *pa, *pb, a, b, 0, 0, 400000.0f, sc);
+                    PartType11Spawn_v(d->pos, v4, *pa, *pb, a, b, 0, 0, 400000.0f, sc);
                 }
                 for (i = 9; i >= 0; i--) {
                     spawn_fading_asteroid_debris((char *)m, v0);
@@ -962,7 +962,7 @@ void update_falling_asteroid(Moby *m) {
                         int lo = scale_ticks(25), hi = scale_ticks(30);
                         b = rand_range(lo, hi);
                     }
-                    PartType11Spawn(v3, v2, *pa, *pb, a, b, 0, 0, 1200000.0f, sc);
+                    PartType11Spawn_v(v3, v2, *pa, *pb, a, b, 0, 0, 1200000.0f, sc);
                 }
                 for (i = 9; i >= 0; i--) {
                     spawn_fading_asteroid_debris((char *)m, v0);
@@ -1030,7 +1030,7 @@ void update_falling_asteroid(Moby *m) {
                     int lo = scale_ticks(25), hi = scale_ticks(30);
                     b = rand_range(lo, hi);
                 }
-                PartType11Spawn(v3, v2, *pa, *pb, a, b, 0, 0, 1200000.0f, sc);
+                PartType11Spawn_v(v3, v2, *pa, *pb, a, b, 0, 0, 1200000.0f, sc);
             }
             if (m->state >= 3) {
                 DeleteMoby(m);
@@ -1396,8 +1396,6 @@ extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern void *PartType27Spawn_r(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
-
 extern void vec_scale_to_length_r2(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 /* Per-frame update of a tumbling debris moby: moves and spins it under gravity, bounces it off what it hits, and
@@ -1431,7 +1429,7 @@ void update_tumbling_debris(Moby *moby) {
             vec_scale_to_length_r2(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length_r2(q, q, random_float_between(g_frame_time_r2 * 3.0f, g_frame_time_r2 * 6.0f));
-            PartType27Spawn_r(&moby->pos, q, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
+            PartType27Spawn(&moby->pos, q, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
         }
         DeleteMoby(moby);
         return;
@@ -1517,7 +1515,6 @@ typedef int OvlQuad __attribute__((mode(TI)));
 extern char gaspar_coll_hit_normal[];
 
 extern int coll_line_r2(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern void *PartType27Spawn_r2(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
 
 /* The heavier tumbling debris: as FUN_L09_002ef430, inside a 2..1021 box, with eight sparks; on a hit it either slows
    down or bounces off, shrinking, with a new random spin.
@@ -1550,7 +1547,7 @@ void update_shrinking_tumbling_debris(struct Moby *moby) {
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-            PartType27Spawn_r2(&moby->pos, q, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 100000.0f);
+            PartType27Spawn(&moby->pos, q, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 100000.0f);
         }
         DeleteMoby(moby);
         return;

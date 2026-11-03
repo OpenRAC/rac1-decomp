@@ -575,7 +575,6 @@ extern int Spline_AdvanceByDistance_r(void *, void *, void *, void *, int, float
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern unsigned char *PartType23Spawn_r(void *pos, float r, float lo, float hi, int n, void *vel, float size,
                                         int color) __asm__("func_L00_0026DEA0");
 
@@ -2646,7 +2645,7 @@ void ease_minibomber_position_and_heading(char *moby, float *target, float a, fl
     }
 }
 
-extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
+extern char *PartType23Spawn_v(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
 
 extern float oltanis_zero_vector[] MACRO_ADDR;
 extern char minibomber_drop_blast_params[];
@@ -2673,7 +2672,7 @@ void emit_minibomber_bomb_release_effects(char *m, float *input, float angle) {
             int hi = (color << 8) | 0x7F000000;
             color = color | ((color << 16) | hi);
         }
-        p = PartType23Spawn(pos, sign, oltanis_zero_vector, color, 0.2f, 1.0f, 1.01f, life);
+        p = PartType23Spawn_v(pos, sign, oltanis_zero_vector, color, 0.2f, 1.0f, 1.01f, life);
         if (p) {
             char *d = p + 0x20;
             *(short *)(p + 0xA) = scale_ticks(120);

@@ -810,7 +810,7 @@ void update_beam_slot_controller(unsigned char *m) {
     }
 }
 
-extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
+extern char *PartType23Spawn_v(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
 extern float veldin1_zero_vec_b[] __asm__("D_L00_0015F660") MACRO_ADDR;
 typedef struct {
     char pad[0x30];
@@ -867,7 +867,7 @@ void update_phase_effect_controller(M2 *m) {
                             h = rand_range(0, 4);
                             if (random_integer_below(2))
                                 h = -h;
-                            q = PartType23Spawn(buf, h, veldin1_zero_vec_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
+                            q = PartType23Spawn_v(buf, h, veldin1_zero_vec_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
                             if (q) {
                                 q[3] = 0x44;
                                 r = q + 0x20;

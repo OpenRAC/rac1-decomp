@@ -1123,10 +1123,6 @@ unsigned char *spawn_gravity_floor_burst_particle(void *pos, void *vel, float sc
 extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *pos, int x, int color, float size,
                                                                                float w);
 
-extern unsigned char *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *a, void *b, int c, int d,
-                                                                                        float f, int n, int e, int g,
-                                                                                        int h);
-
 extern int DefaultVtbl_DeleteMoby_r(int, int, float) __asm__("func_L00_00237B70");
 extern u32 floor_burst_bounce_chance SDATA(floor_burst_bounce_chance);
 extern f32 g_frame_time MACRO_ADDR;

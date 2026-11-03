@@ -2202,8 +2202,6 @@ extern char gemlik_camera_pos[];
 extern char poison_vessel_burst_colors[];
 extern char poison_vessel_burst_colors2[];
 
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V4A;

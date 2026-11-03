@@ -4,6 +4,7 @@
 #include "core/kernel/libkernl_glue.h"
 #include "data/executable.h"
 #include "core/newlib_types.h"
+#include "core/libc/findfp.h"
 
 /*
  * core_text object 0x1188C8-0x118A40. Boundaries are retail's linker fill
@@ -29,7 +30,6 @@ int _write_r(int *errOut, void *a, void *b, void *c) {
 /* _impure_ptr, typed; the declaration in scope above is `void *`. */
 extern struct _reent_nl *_impure_ptr_r __asm__("D_0012F86C") NOT_SDA;
 
-extern void __sinit_r(struct _reent_nl *) __asm__("func_00113AE0");
 extern void _free_r_r(struct _reent_nl *, void *) __asm__("func_00113B70");
 extern void __smakebuf_r(FILE_nl *) __asm__("func_00114578");
 
@@ -51,7 +51,7 @@ int libc_swsetup(FILE_nl *fp) {
         if ((fp)->_data == 0)
             (fp)->_data = _impure_ptr_r;
         if (!(fp)->_data->__sdidinit)
-            __sinit_r((fp)->_data);
+            __sinit((fp)->_data);
     } while (0);
 
     /*

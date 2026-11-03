@@ -125,14 +125,12 @@ extern Entry70_2215c8_21D50 D_L00_001799F0_21D50[] __asm__("D_L00_001799F0");
 extern short D_L00_0015F6A8_21D50 SDATA(D_L00_0015F6A8);
 extern u8 D_0013D5EA NOT_SDA;
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern void update_hero_tilt_r(void) __asm__("func_L00_00216D40");
+
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
 extern s32 pad_pressed_within_r(s32, s32, s32) __asm__("func_L00_00267BA8");
 
 extern void update_hero_planar_distance_spring_motion_r(void) __asm__("func_L00_002222F0");
-extern void transform_hero_local_offset_to_world_r(void *, f32, f32, f32) __asm__("func_L00_00233EE0");
-extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_002215c8. */
 void update_hero_timers_and_reach_state(void) {
@@ -144,7 +142,7 @@ void update_hero_timers_and_reach_state(void) {
     s32 n8;
 
     if (g_hero_r.tilt_disabled == 0) {
-        update_hero_tilt_r();
+        update_hero_tilt();
     }
     g_hero_r.state_timer++;
     g_hero_r.control_mode_timer++;
@@ -245,17 +243,17 @@ skip:
     update_hero_planar_distance_spring_motion_r();
     switch (g_hero_r.vehicle_mode) {
         case 1:
-            transform_hero_local_offset_to_world_r(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.4f);
+            transform_hero_local_offset_to_world(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.4f);
             g_hero_r.reach_distance = 2.125f;
             g_hero_r.reach_height = 1.25f;
             break;
         case 2:
-            transform_hero_local_offset_to_world_r(&g_hero_r.motion.body_center, 0.0f, 0.0f, 4.0f);
+            transform_hero_local_offset_to_world(&g_hero_r.motion.body_center, 0.0f, 0.0f, 4.0f);
             g_hero_r.reach_distance = 15.0f;
             g_hero_r.reach_height = 3.0f;
             break;
         default:
-            transform_hero_local_offset_to_world_r(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.7f);
+            transform_hero_local_offset_to_world(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.7f);
             if (gHaveBoltGrabber) {
                 g_hero_r.reach_distance = 12.0f;
                 g_hero_r.reach_height = 4.5f;
@@ -275,7 +273,7 @@ skip:
         }
     }
     if (g_hero_r.motion.pos.f[2] < 1.0f) {
-        Hero_OnKilled_r();
+        Hero_OnKilled();
     }
 }
 extern unsigned char hero_globals_base[] NOT_SDA;

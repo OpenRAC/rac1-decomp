@@ -41,6 +41,8 @@
 #include "overlays/l06_blarg/fred_and_commando.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/space_commando_and_door_lock.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -810,8 +812,6 @@ extern void update_drawbridge_segment_transforms_r(Moby *) __asm__("func_L06_002
 
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 
-extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
-
 extern int Moby_PlaySound_r2(int, int, Moby *) __asm__("func_0022ED80");
 
 extern float ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
@@ -820,8 +820,6 @@ extern int Sound_IsPlaying_r(Moby *, int) __asm__("func_L00_0028EB98");
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 
 extern void enter_hero_idle_state_for_current_vehicle_mode_r(void) __asm__("func_L06_00239CD0");
-
-extern int Help_Request_r(int, int) __asm__("func_L00_00203F20");
 
 /* Level 6 drawbridge (class 1028): spawns its two rows of deck pieces, waits for the hero's switch, then
    lowers through three hinge stages (drawbridge_slide/0C/10) while the camera follows the path nodes. */
@@ -891,7 +889,7 @@ void update_drawbridge(Moby *m) {
             ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks(20));
             blarg_fade_level = 1.0f - FastAbsF(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
-                Hero_ResetToPosition_r(&g_hero.motion.pos, &g_hero.motion.rot, 0x72, 1);
+                Hero_ResetToPosition(&g_hero.motion.pos, &g_hero.motion.rot, 0x72, 1);
                 CameraScript(blarg_scene_points_r + (s->i60 << 7) + 0x30, blarg_scene_points_r + (s->i60 << 7) + 0x70,
                              1, 0, 0);
             } else if (1.0f <= s->f6C) {
@@ -964,7 +962,7 @@ void update_drawbridge(Moby *m) {
                 CameraScript2(3);
             } else if (1.0f <= s->f6C) {
                 m->state = 6;
-                Help_Request_r(0x1776, 0x2D);
+                Help_Request(0x1776, 0x2D);
                 ShowBanner(0x177C, -1);
                 memcard_Save(0, -1);
             }
@@ -2272,7 +2270,7 @@ extern void Manipulator_ApplyScale_q(void *, int, float, void *) __asm__("func_L
 extern void set_ground_height_band_q(void *) __asm__("func_L00_0025B178");
 extern int queue_animation_update_q(int, int, void *, void *, void *, void *, int) __asm__("func_001FFB38");
 extern void reset_numeric_hud_element_q(void) __asm__("func_L00_00236710");
-extern void Hud_UpdateCounter_q(void) __asm__("func_L00_00236830");
+
 extern char draw_segmented_hud_meter_base_q[] __asm__("func_L06_0024A080");
 extern int truncate_float_to_s32_q(float) __asm__("func_001FA898");
 
@@ -2294,7 +2292,6 @@ extern int update_alien_queen_first_recovery_camera_q(void *) __asm__("func_L06_
 extern void clear_moby_list_state_18_q(int) __asm__("func_L06_002FADE0");
 extern void update_alien_queen_orbit_movement_q(void *) __asm__("func_L06_002FD0B8");
 extern int check_all_listed_frog_states_fe_fd_or_10_q(int) __asm__("func_L06_002EB2D0");
-extern int count_active_moby_group_members_q(int, int) __asm__("func_L01_0026EFB8");
 
 extern float SteerAngleWithVelocity_q(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 extern float ApproachValue_q(float *, float, float) __asm__("func_00214D28");
@@ -2311,7 +2308,6 @@ extern void spawn_color_swapped_explosion_burst_q(void *, void *, int, float, fl
 
 extern int PlayBankSound_q(int, int, int) __asm__("func_0022EE28");
 
-extern void SetTableEntryFlagIfKind18_q(char *) __asm__("func_L06_00317770");
 extern char blarg_camera_pos_q[] __asm__("D_L06_00167640");
 extern int *blarg_paths_q[] __asm__("D_L06_001B0FB0");
 extern char *level_mobys_q_q __asm__("D_L06_00160058") MACRO_ADDR;
@@ -2353,7 +2349,7 @@ void alien_queen_update(unsigned char *moby) {
         ((Moby *)moby)->shadow_range = 0x24;
     }
     if ((unsigned char)((Moby *)moby)->state >= 3 && (unsigned char)((Moby *)moby)->state <= 13) {
-        data->hud_handle = queue_animation_update_q(0x16, 0xFFFF, reset_numeric_hud_element_q, Hud_UpdateCounter_q,
+        data->hud_handle = queue_animation_update_q(0x16, 0xFFFF, reset_numeric_hud_element_q, Hud_UpdateCounter,
                                                     draw_segmented_hud_meter_base_q + 0x20, &data->hud_value, 0x1EF);
     }
     switch ((unsigned char)((Moby *)moby)->state) {
@@ -2469,7 +2465,7 @@ void alien_queen_update(unsigned char *moby) {
             if (((unsigned char)((Moby *)moby)->state == 4 &&
                  check_all_listed_frog_states_fe_fd_or_10_q(data->unk_F0) != 0) ||
                 ((unsigned char)((Moby *)moby)->state == 6 &&
-                 count_active_moby_group_members_q(data->list_f4, -1) == 0)) {
+                 count_active_moby_group_members(data->list_f4, -1) == 0)) {
                 ((Moby *)moby)->state = 8;
                 data->timer = scale_ticks(0x4B0);
                 if ((unsigned char)((Moby *)moby)->prev_seq != 3) {
@@ -2678,7 +2674,7 @@ void alien_queen_update(unsigned char *moby) {
                 if (blarg_camera_slot_used[i] != 0) {
                     m = blarg_camera_slots + i * 0xA0;
                     if (*(short *)(m + 0x86) == 0x12) {
-                        SetTableEntryFlagIfKind18_q(m);
+                        SetTableEntryFlagIfKind18(m);
                         break;
                     }
                 }

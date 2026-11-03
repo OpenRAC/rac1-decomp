@@ -34,6 +34,7 @@
 #include "overlays/shared/trespasser_and_throwing_gloves.h"
 #include "overlays/shared/collision_queries.h"
 #include "overlays/shared/glint_effects.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -1169,9 +1170,6 @@ extern BoltSourceStats bolt_source_stats[][64];
 extern s32 current_moby_mission_complete MACRO_ADDR;
 extern void *level_mobys_end SDATA(level_mobys_end);
 
-extern u8 *PartType53Spawn_r(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel,
-                             f32 f2) __asm__("func_L00_00272F00");
-
 /* collect_bolt: adds the bolt moby's value (1, or 5 / 20 / 50 for classes 0xE / 0xF / 0x10) to the bolt count, the
    level's total and its source's stats, shows the bolt counter and spawns two sparkles at the bolt.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002a4830.c, FUN_L00_002a6b70. */
@@ -1220,9 +1218,9 @@ void collect_bolt(struct Moby *bolt) {
     if (spin == 0)
         spin--;
     size = random_float_between(0.4f, 0.5f);
-    PartType53Spawn_r(&pos, scale_ticks(0x19), size * 0.2f, size, 0x7F207F7F, 0, spin, &vel, 0.0f);
+    PartType53Spawn(&pos, scale_ticks(0x19), size * 0.2f, size, 0x7F207F7F, 0, spin, &vel, 0.0f);
     spin = -spin;
-    PartType53Spawn_r(&pos, scale_ticks(0x19), size * 0.14f, size * k, 0x7F7F7F7F, 1, spin, &vel, 0.0f);
+    PartType53Spawn(&pos, scale_ticks(0x19), size * 0.14f, size * k, 0x7F7F7F7F, 1, spin, &vel, 0.0f);
 }
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held
@@ -1725,8 +1723,6 @@ typedef float V[4] __attribute__((aligned(16)));
 extern V collision_hit_point;
 extern V g_debug_camera;
 extern int coll_hit_result[];
-
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 /* Spawns a burst of particles around collision_hit_point aimed along the line from g_debug_camera. */
 void spawn_wrench_impact_effects(char *m) {

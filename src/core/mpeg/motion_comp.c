@@ -1881,7 +1881,7 @@ int mpeg_update_ref_image(void *p, int arg1) {
 
 extern char str_mpeg_buffer_too_small_fmt[];
 extern void sprintf_4(void *, char *, int, int) __asm__("func_00116248");
-extern void _Error_a(void *, void *) __asm__("func_0012C468");
+extern void _Error(void *, void *);
 
 /* Does the request at arg1 fit the heap described by arg0? A sized
    request (+0xE0 non-zero) has to fit both the byte budget at +0xDC and
@@ -1902,7 +1902,7 @@ int _isOutSizeOK(void *arg0, void *arg1) {
     }
     if (ok == 0) {
         sprintf_4(buf, str_mpeg_buffer_too_small_fmt, q->width, q->height);
-        _Error_a(arg0, buf);
+        _Error(arg0, buf);
     }
     return ok;
 }

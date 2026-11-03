@@ -8,6 +8,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/effect_particle_updates.h"
 
 LINKER_REMNANT("asm/overlays", func_L03_00249488);
 
@@ -44,7 +45,7 @@ void trooper_set_knockback(float *p, float a, float b) {
 }
 
 extern int truncate_float_to_s32(float);
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
+
 typedef int U128 __attribute__((mode(TI)));
 /* Convert a 60 Hz frame count to game ticks. */
 static inline int game_frames(int n) {

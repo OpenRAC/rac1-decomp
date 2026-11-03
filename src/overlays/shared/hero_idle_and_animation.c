@@ -2417,7 +2417,6 @@ void emit_hero_periodic_surface_particles(int n, int lim) {
     }
 }
 extern Hero D_0013F450_0A0B8 __asm__("D_0013F450");
-extern int PartType34Spawn(void *, void *, float, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_00209a40. */
 void emit_hero_randomized_motion_effects(int n, int mode) {
@@ -2511,8 +2510,6 @@ void emit_hero_surface_effect_burst(s32 puffs, s32 debris, s32 flash) {
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V4;
-
-extern void spawn_color_decaying_effect_particle(char *pos, char *vel, int flag);
 
 extern float g_frame_time_sq MACRO_ADDR;
 
@@ -2936,18 +2933,17 @@ typedef struct {
 } A_20b1d8;
 extern struct Hero D_0013F450_20b1d8 __asm__("D_0013F450");
 extern A_20b1d8 lean_state_r3 __asm__("D_L00_0017A780");
-extern s32 Hero_IsInSpecialState_r(void) __asm__("func_L00_0020DC00");
 
 extern void configure_hero_point_effect_emission_r(s32, s32, s32, s32, f32, f32) __asm__("func_L00_00233B08");
 
-extern void func_L00_0026ED30(void *, void *, f32);
+extern void spawn_jittered_effect_particle_with_optional_basis_v(void *, void *, f32) __asm__("func_L00_0026ED30");
 /* Hero movement check: tests the six stick/velocity thresholds against the pad and the state word, then runs the transition tests. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_0020b1d8. */
 void update_hero_easing_targets_and_point_effects(void) {
     u8 buf[0x10] __attribute__((aligned(16)));
     f32 a, b;
     u8 *q;
     s32 i;
-    if (Hero_IsInSpecialState_r())
+    if (hero_is_in_special_state())
         return;
     if (0.03f < FastAbsF(D_0013F450_20b1d8.unk2C0.f[0]) || 0.03f < FastAbsF(D_0013F450_20b1d8.unk2C0.f[1]) ||
         0.06981317f < FastAbsF(D_0013F450_20b1d8.unk2C8.f[0]) ||
@@ -2993,13 +2989,13 @@ void update_hero_easing_targets_and_point_effects(void) {
         D_0013F450_20b1d8.items[6].unk38--;
         Moby_GetJointWorldPos(D_0013F450_20b1d8.moby, 0x16, buf);
         for (i = 0; i < D_0013F450_20b1d8.items[6].unk3C; i++)
-            spawn_jittered_effect_particle_with_optional_basis(
+            spawn_jittered_effect_particle_with_optional_basis_v(
                 buf, q,
                 D_0013F450_20b1d8.items[6].unk30 +
                     random_float_between(-D_0013F450_20b1d8.items[6].unk34, D_0013F450_20b1d8.items[6].unk34));
         Moby_GetJointWorldPos(D_0013F450_20b1d8.moby, 0x17, buf);
         for (i = 0; i < D_0013F450_20b1d8.items[6].unk3C; i++)
-            spawn_jittered_effect_particle_with_optional_basis(
+            spawn_jittered_effect_particle_with_optional_basis_v(
                 buf, q,
                 D_0013F450_20b1d8.items[6].unk30 +
                     random_float_between(-D_0013F450_20b1d8.items[6].unk34, D_0013F450_20b1d8.items[6].unk34));
@@ -3013,10 +3009,8 @@ extern Vec4 D_L00_00173F80[];
 
 extern s32 probe_hero_ledge_edge_r(void *, void *) __asm__("func_L00_0020CDF0");
 extern s32 probe_hero_forward_collision_r(s32, f32, f32) __asm__("func_L00_0020A8B8");
-extern void transform_hero_polar_offset_to_world_r(void *, f32, f32, f32) __asm__("func_L00_00233E48");
-extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern f32 compute_gravity_relative_vector_inclination_r(void *) __asm__("func_L00_002345B0");
+extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
 
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 /* Hero ledge-grab check: predicts a position with gravity, probes for a ledge and tests angle and dot thresholds before setting the grab state. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_0020b5b8. */
@@ -3071,8 +3065,8 @@ void probe_hero_airborne_wall_contact(void) {
         }
     }
     k2 = (Hero *)D_0013F450_20b5b8;
-    transform_hero_polar_offset_to_world_r(&v, 0.0f, 0.0f, r);
-    transform_hero_polar_offset_to_world_r(&w, k2->capsule_radius + 1.4f, 0.0f, r);
+    transform_hero_polar_offset_to_world(&v, 0.0f, 0.0f, r);
+    transform_hero_polar_offset_to_world(&w, k2->capsule_radius + 1.4f, 0.0f, r);
     if (coll_line_r(&v, &w, 2, 0, 0) == 0) {
         return;
     }
@@ -3084,7 +3078,7 @@ void probe_hero_airborne_wall_contact(void) {
         return;
     }
     pz = (u8 *)coll_hit_normal;
-    if (compute_gravity_relative_vector_inclination_r(pz) < 1.3089969f) {
+    if (compute_gravity_relative_vector_inclination(pz) < 1.3089969f) {
         return;
     }
     transform_vector(&z, pz, k2->inv_rot_matrix);

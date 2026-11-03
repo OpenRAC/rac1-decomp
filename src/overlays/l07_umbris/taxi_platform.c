@@ -40,6 +40,7 @@
 #include "overlays/l07_umbris/moby_group_first.h"
 #include "overlays/shared/pivot_reorientation.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -490,12 +491,6 @@ extern Moby *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
 extern int D_L07_0015F6A8 MACRO_ADDR;
 extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
 
-extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-
-extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
-
-extern void initialize_global_state_entry_r(int) __asm__("func_0022F4A0");
-
 /* Update for moby class 436 on level 07: steps the moby's state byte through its table of cases. */
 void update_umbris_scene_progression(Moby *moby) {
     MobyData *data = (MobyData *)moby->pvars;
@@ -513,7 +508,7 @@ void update_umbris_scene_progression(Moby *moby) {
             if (((Flags *)gSpecialItems)->f28 == 0) {
                 ((Flags *)gSpecialItems)->f28 = 1;
                 moby->state = 2;
-                StartCutscene_r(0);
+                StartCutscene(0);
             } else {
                 moby->state = 3;
             }
@@ -539,7 +534,7 @@ void update_umbris_scene_progression(Moby *moby) {
                             e->flags |= 0x41;
                         }
                         moby->state = 5;
-                        StartCutscene_r(1);
+                        StartCutscene(1);
                     }
                 } else {
                     moby->state = 8;
@@ -559,7 +554,7 @@ void update_umbris_scene_progression(Moby *moby) {
                 e->flags |= 0x41;
             }
             moby->state = 6;
-            StartCutscene_r(2);
+            StartCutscene(2);
             break;
         case 6:
             if (umbris_scene_state == 2)
@@ -590,7 +585,7 @@ void update_umbris_scene_progression(Moby *moby) {
                             Hero_ResetToPosition(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72, 1);
                             ((Flags *)gSpecialItems)->f2A = 1;
                             moby->state = 9;
-                            StartCutscene_r(3);
+                            StartCutscene(3);
                         }
                     } else {
                         moby->state = 13;
@@ -608,13 +603,13 @@ void update_umbris_scene_progression(Moby *moby) {
             if (umbris_scene_state == 2)
                 break;
             moby->state = 10;
-            PlayMovieEntryIfIdle_r(8);
+            PlayMovieEntryIfIdle(8);
             break;
         case 10:
             if (umbris_scene_state == 2)
                 break;
             moby->state = 11;
-            StartCutscene_r(4);
+            StartCutscene(4);
             /* fall through */
         case 11:
             if (umbris_scene_state == 2)
@@ -632,7 +627,7 @@ void update_umbris_scene_progression(Moby *moby) {
             clear_bit_grid_rectangle(0x87, 0xC, 0x56, 0x3C);
             unlock_planet(8);
             memcard_Save(0, 8);
-            initialize_global_state_entry_r(8);
+            initialize_global_state_entry(8);
             moby->state = 12;
             break;
         case 12:
@@ -1217,9 +1212,6 @@ extern void func_L01_002B90A8(float);
 
 extern void func_L01_002B9440(void *, int, float, float, float, float);
 extern void initialize_level07_water_grid_neighbors_r(int) __asm__("func_L07_0030E128");
-extern void set_moby_list_state_r(int, int) __asm__("func_L01_0026F090");
-
-extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
@@ -1310,10 +1302,10 @@ void WaterPlateUpdate(Moby *m) {
             break;
         case 2:
             if (m->command & 4) {
-                set_moby_list_state_r(m->group, 1);
+                set_moby_list_state(m->group, 1);
             } else if (matches_first_moby_in_group(m, m->group, 1, 0) && m->command != 1) {
                 ApproachValue(&m->pos.z, d->lo, g_frame_time * 4.0f);
-                MobyGroup_SetByteBC_r(m->group, 1);
+                MobyGroup_SetByteBC(m->group, 1);
             } else if (m->command == 1) {
                 ApproachValue(&m->pos.z, d->lo, g_frame_time * 4.0f);
             }
@@ -1326,10 +1318,10 @@ void WaterPlateUpdate(Moby *m) {
             break;
         case 1:
             if (m->command & 8) {
-                set_moby_list_state_r(m->group, 2);
+                set_moby_list_state(m->group, 2);
             } else if (matches_first_moby_in_group(m, m->group, 1, 0) && m->command != 2) {
                 ApproachValue(&m->pos.z, d->hi, g_frame_time * 4.0f);
-                MobyGroup_SetByteBC_r(m->group, 2);
+                MobyGroup_SetByteBC(m->group, 2);
             } else if (m->command == 2) {
                 ApproachValue(&m->pos.z, d->hi, g_frame_time * 4.0f);
             }
@@ -1343,7 +1335,7 @@ void WaterPlateUpdate(Moby *m) {
         case 3:
             if (d->volume >= 0 && is_point_inside_clip_volume(&g_hero.motion.pos, d->volume)) {
                 d->f1C = 0;
-                set_moby_list_state_r(m->group, 4);
+                set_moby_list_state(m->group, 4);
             }
             break;
         case 4:
@@ -2017,8 +2009,6 @@ void update_fading_ring_effect(unsigned char *m) {
     }
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-
-extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);
 
 struct SpawnMobyClass1049Vars {
     u8 pad_00[0x10];
@@ -3139,8 +3129,6 @@ typedef struct D_3126A8 {
 
 extern int func_001160D8_3126A8(void) __asm__("func_001160D8");
 
-extern void MobyGroup_SetByteBC_r2(int, int) __asm__("func_L01_0026F040");
-
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
@@ -3205,7 +3193,7 @@ void update_command_triggered_falling_platform(Moby *m) {
                 if (d->fAC == 0)
                     d->fAC = func_001160D8_3126A8() % 10;
                 if (d->bBE != 0)
-                    MobyGroup_SetByteBC_r2(m->group, 2);
+                    MobyGroup_SetByteBC(m->group, 2);
                 k = 0.017453292f;
                 m->rot.x = FastAddRots(d->fA4, FastSin(normalize_angle(IntToFloat(d->fAC) * 0.75f)) * k);
                 m->rot.y = FastAddRots(d->fA8, FastCos(normalize_angle(IntToFloat(d->fAC) * 0.89f)) * k);

@@ -11,9 +11,8 @@ void alien_queen_update(unsigned char *moby) {
         moby[0x7F] = 0x24;
     }
     if ((unsigned char)moby[0x20] >= 3 && (unsigned char)moby[0x20] <= 13) {
-        *(int *)(data + 0x10C) =
-            queue_animation_update_q(0x16, 0xFFFF, reset_numeric_hud_element_q, Hud_UpdateCounter_q,
-                                     draw_segmented_hud_meter_base_q + 0x20, data + 0x110, 0x1EF);
+        *(int *)(data + 0x10C) = queue_animation_update_q(0x16, 0xFFFF, reset_numeric_hud_element_q, Hud_UpdateCounter,
+                                                          draw_segmented_hud_meter_base_q + 0x20, data + 0x110, 0x1EF);
     }
     switch ((unsigned char)moby[0x20]) {
         case 0: {
@@ -125,7 +124,7 @@ void alien_queen_update(unsigned char *moby) {
             update_alien_queen_orbit_movement_q(moby);
             if (((unsigned char)moby[0x20] == 4 &&
                  check_all_listed_frog_states_fe_fd_or_10_q(*(int *)(data + 0xF0)) != 0) ||
-                ((unsigned char)moby[0x20] == 6 && count_active_moby_group_members_q(*(int *)(data + 0xF4), -1) == 0)) {
+                ((unsigned char)moby[0x20] == 6 && count_active_moby_group_members(*(int *)(data + 0xF4), -1) == 0)) {
                 moby[0x20] = 8;
                 *(int *)(data + 0x120) = scale_ticks(0x4B0);
                 if ((unsigned char)moby[0x53] != 3) {
@@ -337,7 +336,7 @@ void alien_queen_update(unsigned char *moby) {
                 if (blarg_camera_slot_used[i] != 0) {
                     m = blarg_camera_slots + i * 0xA0;
                     if (*(short *)(m + 0x86) == 0x12) {
-                        SetTableEntryFlagIfKind18_q(m);
+                        SetTableEntryFlagIfKind18(m);
                         break;
                     }
                 }

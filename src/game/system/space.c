@@ -795,7 +795,7 @@ extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 
 extern s32 func_001FA898(f32);
 
-extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
+extern void draw_rotated_sprite_v(f32, f32, f32, f32, s32, s32, s64, f32) __asm__("func_00200E38");
 
 extern void build_resident_indexed_texture_warp_meshes(s32);
 extern void draw_resident_textured_quad();
@@ -861,7 +861,7 @@ void render_level_frame(void) {
         rotation_angle = ((game_frame_counter % 55) * (-6.2831855f)) / 55.0f;
         /* The frame counter contributes only the sprite angle modulo 55. */
         /* Retail passes the full texture value in a2 and the five floats in f12-f16. */
-        draw_rotated_sprite(1216.0f, screen_y, quad_extent, 272.0f, 0x40, 0x40, GetEffectTex_r(3), rotation_angle);
+        draw_rotated_sprite_v(1216.0f, screen_y, quad_extent, 272.0f, 0x40, 0x40, GetEffectTex_r(3), rotation_angle);
     }
     DoGifPaging();
     if (gFade > 0.0f) {
@@ -1090,13 +1090,11 @@ extern Vector4_230A90 resident_data_001DA010[] __asm__("D_001DA010");
 extern Vector4_230A90 resident_data_001DA040[] __asm__("D_001DA040");
 extern u8 resident_effect_entry[] __asm__("func_0022F4C0");
 
-extern void resident_call_00216EF0(s32) __asm__("func_00216EF0");
-extern void resident_call_00216F28(void) __asm__("func_00216F28");
 extern void resident_call_00125358(void *) __asm__("func_00125358");
 extern void resident_call_001254A0(void *, void *, f32) __asm__("func_001254A0");
 extern void resident_call_00125548(void *, void *, f32) __asm__("func_00125548");
 extern void resident_call_001253F8(void *, void *, f32) __asm__("func_001253F8");
-extern s32 resident_call_00122598(s32) __asm__("func_00122598");
+
 extern void resident_call_001E9770(void *, void *, s32, s32, s32) __asm__("func_001E9770");
 extern void resident_call_001E9778(void *) __asm__("func_001E9778");
 extern void resident_call_001E9780(void *) __asm__("func_001E9780");
@@ -1104,10 +1102,9 @@ extern void resident_call_001E9788(void) __asm__("func_001E9788");
 extern void resident_call_001E9790(ResidentRenderObject *) __asm__("func_001E9790");
 extern void resident_call_001E9798(ResidentRenderObject *) __asm__("func_001E9798");
 extern void resident_call_001E97A0(void) __asm__("func_001E97A0");
-extern void resident_call_001E97A8(void) __asm__("func_001E97A8");
-extern void resident_call_001E97B0(void) __asm__("func_001E97B0");
+
 extern void resident_call_001E97B8(void) __asm__("func_001E97B8");
-extern void resident_call_001E97C0(void *, void *, s32, s32) __asm__("func_001E97C0");
+
 extern void resident_call_001E97D0(ResidentRenderObject *, ResidentRenderObject *) __asm__("func_001E97D0");
 extern void resident_call_001EDE50(void) __asm__("func_001EDE50");
 
@@ -1121,7 +1118,7 @@ extern void resident_call_001F9C08(void *, void *, void *, f32) __asm__("func_00
 extern f32 resident_call_001F9D48(void *, void *, void *) __asm__("func_001F9D48");
 
 extern void resident_call_00202260(void) __asm__("func_00202260");
-extern void resident_call_00205220(s32) __asm__("func_00205220");
+
 extern ResidentRenderObject *resident_call_0020D348(s32) __asm__("func_0020D348");
 extern void resident_call_0020D678(ResidentRenderObject *) __asm__("func_0020D678");
 extern void resident_call_0020D6D0(ResidentRenderObject *) __asm__("func_0020D6D0");
@@ -1133,8 +1130,6 @@ extern f32 resident_call_00214D88(f32 *, f32 *, f32, f32, f32, f32) __asm__("fun
 extern void resident_call_00215CA8(ScriptedPath *, s32, void *, void *, s32, f32) __asm__("func_00215CA8");
 extern void resident_call_00216960(void) __asm__("func_00216960");
 extern void resident_call_00217748(s32) __asm__("func_00217748");
-
-extern void resident_call_00219C70(s32) __asm__("func_00219C70");
 
 extern void resident_call_0022FDC0(void) __asm__("func_0022FDC0");
 extern void resident_call_002308C8(ResidentRenderObject *, f32) __asm__("func_002308C8");
@@ -1172,7 +1167,7 @@ void update_resident_gameplay_state(void) {
     switch (resident_data_0013E130.state) {
         case 0:
         case 8:
-            resident_call_001E97B0();
+            noop_callback_i();
             update_visible_resident_objects();
             enqueue_voice_request();
             resident_call_001E97A0();
@@ -1206,7 +1201,7 @@ void update_resident_gameplay_state(void) {
                     resident_data_0018CC20.time = scale_game_frame_count(
                         ((s32 *)&resident_duration_base)[resident_data_0013E130.content_variant]);
                     resident_data_0018CC20.sequence_frame = resident_data_0018CC20.time / ticks_per_bank;
-                    resident_call_00205220(resident_data_0018CC20.sequence_frame);
+                    parse_space_scene_chunk(resident_data_0018CC20.sequence_frame);
                     resident_data_0018CC20.frame = resident_data_0018CC20.time % ticks_per_bank;
                     if (resident_data_0013E130.skip) {
                         resident_data_0013E130.skip = 0;
@@ -1245,13 +1240,13 @@ void update_resident_gameplay_state(void) {
                     }
                 }
                 if (resident_data_0013E130.state == 0) {
-                    resident_call_00219C70(0);
+                    PauseAllSounds(0);
                     resident_data_001D5F70 = 0xE;
                     resident_data_0015F6FC[0] = 1;
                     return;
                 }
                 resident_data_0015F6E8 = 0;
-                resident_call_00216F28();
+                music_Unpause();
                 resident_data_0015F6FC[0] = 1;
                 resident_data_001414F5[0] = 0;
                 resident_call_001E97B8();
@@ -1259,12 +1254,12 @@ void update_resident_gameplay_state(void) {
                     resident_call_001E9788();
                     return;
                 }
-                resident_call_001E97C0(&resident_data_0013E130.unk60, &resident_data_0013E130.unk70, 0, 1);
+                noop_callback_k(&resident_data_0013E130.unk60, &resident_data_0013E130.unk70, 0, 1);
                 return;
             }
             bank_tick_limit = resident_data_0015EE80 ? 0x50 : 0x60;
             if (resident_data_0018CC20.frame >= bank_tick_limit) {
-                resident_call_00205220(++resident_data_0018CC20.sequence_frame);
+                parse_space_scene_chunk(++resident_data_0018CC20.sequence_frame);
             }
             keyframe = &resident_data_0018CC20.frames[resident_data_0018CC20.frame];
             keyframe_angles = keyframe->rotation;
@@ -1464,23 +1459,23 @@ void update_resident_gameplay_state(void) {
             sound_update();
             resident_call_00202260();
             update_resident_packed_direction();
-            resident_call_001E97A8();
+            noop_callback_h();
             break;
 
         case 3:
-            resident_call_001E97B0();
+            noop_callback_i();
             update_visible_resident_objects();
             enqueue_voice_request();
             resident_call_001E97A0();
             UpdateParts();
             if (resident_data_0013E130.timer == 0) {
-                resident_call_00216EF0(0);
+                music_Pause(0);
                 resident_call_00217748(0);
                 resident_data_001517D0.unk1C = resident_data_0013E130.content_variant + 0x9C4F;
                 FadeToBlack(scale_game_frame_count(12));
                 while ((s16)resident_data_001517D0.unk5A != 3) {
                     sound_update();
-                    resident_call_00122598(0);
+                    sce_gs_sync_v(0);
                 }
                 resident_call_00216960();
                 resident_data_0013E130.player->selected_a = 1;
@@ -1691,7 +1686,7 @@ void update_resident_gameplay_state(void) {
             sound_update();
             resident_call_00202260();
             update_resident_packed_direction();
-            resident_call_001E97A8();
+            noop_callback_h();
             break;
 
         case 4:
@@ -2158,8 +2153,6 @@ struct CommonArchiveMemory {
     s32 archive_base;
 };
 
-extern s32 sce_cd_sync_s_r(s32 a0) __asm__("func_00120F30");
-
 extern s32 wait_for_graphics_pipeline_idle_r(s32 a0, s32 a1) __asm__("func_00120858");
 
 extern s32 Stream_SubmitRead(void *a0, u32 a1, u32 a2);
@@ -2184,7 +2177,7 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
     upload_index = 0;
     Stream_SubmitRead((void *)(archive_memory->archive_base + 0x100000),
                       disc_table.loading_slides[language_index].sector, disc_table.loading_slides[language_index].size);
-    sce_cd_sync_s_r(0);
+    sce_cd_sync_s(0);
     flush_cache(0);
     fast_decompress(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
     flush_cache(0);
@@ -2407,9 +2400,6 @@ extern int sound_bank_handle_m __asm__("D_0015EE5C") MACRO_ADDR;
 extern short D_0015EF48_m SDATA(D_0015EF48);
 extern int level_archive_load_busy_i __asm__("D_0015EF4A") MACRO_ADDR;
 extern char unloaded_sound_bank_format[];
-extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
-
-extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
 
 extern void play_level_loading_slides(int, int, int, int, int);
 extern void initialize_level_runtime(void);
@@ -2466,7 +2456,7 @@ void DoSpaceTransition(void) {
         FadeToBlack(scale_game_frame_count(6));
         g_current_level_index_m = space_load_level;
         load_level_chunk_from_disc();
-        sce_cd_sync_s_i(0);
+        sce_cd_sync_s(0);
         cd_read_state_b.fB = 0;
         DMAC_VIF1_Disable();
         return;
@@ -2546,7 +2536,7 @@ void DoSpaceTransition(void) {
             memcard_update_state();
             Menu_RunStateHandler();
             VU1_syncChain(1);
-            sce_gs_sync_v_i(0);
+            sce_gs_sync_v(0);
             game_frame_counter++;
             tick_space_transition();
             if (!done) {
@@ -2556,7 +2546,7 @@ void DoSpaceTransition(void) {
         if (!done) {
             do {
                 flush_cache(0);
-                sce_gs_sync_v_i(0);
+                sce_gs_sync_v(0);
                 memcard_update_state();
                 Menu_RunStateHandler();
                 tick_space_transition();
@@ -2564,13 +2554,13 @@ void DoSpaceTransition(void) {
         }
         while (memory_card_state_b.fDC != 2 || memory_card_state_b.fE4 >= 0) {
             flush_cache(0);
-            sce_gs_sync_v_i(0);
+            sce_gs_sync_v(0);
             memcard_update_state();
             Menu_RunStateHandler();
             tick_space_transition();
         }
     }
-    sce_cd_sync_s_i(0);
+    sce_cd_sync_s(0);
     cd_read_state_b.fB = 0;
     DMAC_VIF1_Disable();
 }

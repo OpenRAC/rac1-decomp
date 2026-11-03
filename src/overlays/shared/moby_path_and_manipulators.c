@@ -20,6 +20,7 @@
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
 #include "overlays/shared/particle_type_registry.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
@@ -1088,7 +1089,6 @@ typedef struct {
     EffectTail tail;
 } Effect;
 
-extern Effect *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, u32);
 extern u8 veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_002637f8. */

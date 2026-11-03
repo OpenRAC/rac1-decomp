@@ -2308,8 +2308,6 @@ void planetbuster_maximus_part_update(char *moby) {
     }
 }
 
-extern void spawn_jittered_effect_particle_with_optional_basis(float, void *, int);
-
 struct SpawnNextLinkedMobyVars {
     u8 pad_00[0xF0];
     s32 unk_F0;

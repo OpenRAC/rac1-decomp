@@ -35,6 +35,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/l14_oltanis/hero_idle_animation.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern int g_controller_state_no_direction;
 extern int pad_held;
 
@@ -309,8 +310,6 @@ extern HeroSpeedBands oltanis_hero_speed_bands;
 extern float oltanis_hero_ledge_shimmy_frame_speeds[];
 
 extern int truncate_float_to_s32(float);
-
-extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 

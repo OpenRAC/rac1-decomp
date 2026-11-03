@@ -27,7 +27,7 @@ void update_resident_gameplay_state(void) {
     switch (resident_data_0013E130.state) {
         case 0:
         case 8:
-            resident_call_001E97B0();
+            noop_callback_i();
             update_visible_resident_objects();
             enqueue_voice_request();
             resident_call_001E97A0();
@@ -61,7 +61,7 @@ void update_resident_gameplay_state(void) {
                     resident_data_0018CC20.time = scale_game_frame_count(
                         ((s32 *)&resident_duration_base)[resident_data_0013E130.content_variant]);
                     resident_data_0018CC20.sequence_frame = resident_data_0018CC20.time / ticks_per_bank;
-                    resident_call_00205220(resident_data_0018CC20.sequence_frame);
+                    parse_space_scene_chunk(resident_data_0018CC20.sequence_frame);
                     resident_data_0018CC20.frame = resident_data_0018CC20.time % ticks_per_bank;
                     if (resident_data_0013E130.skip) {
                         resident_data_0013E130.skip = 0;
@@ -100,13 +100,13 @@ void update_resident_gameplay_state(void) {
                     }
                 }
                 if (resident_data_0013E130.state == 0) {
-                    resident_call_00219C70(0);
+                    PauseAllSounds(0);
                     resident_data_001D5F70 = 0xE;
                     resident_data_0015F6FC[0] = 1;
                     return;
                 }
                 resident_data_0015F6E8 = 0;
-                resident_call_00216F28();
+                music_Unpause();
                 resident_data_0015F6FC[0] = 1;
                 resident_data_001414F5[0] = 0;
                 resident_call_001E97B8();
@@ -114,12 +114,12 @@ void update_resident_gameplay_state(void) {
                     resident_call_001E9788();
                     return;
                 }
-                resident_call_001E97C0(&resident_data_0013E130.unk60, &resident_data_0013E130.unk70, 0, 1);
+                noop_callback_k(&resident_data_0013E130.unk60, &resident_data_0013E130.unk70, 0, 1);
                 return;
             }
             bank_tick_limit = resident_data_0015EE80 ? 0x50 : 0x60;
             if (resident_data_0018CC20.frame >= bank_tick_limit) {
-                resident_call_00205220(++resident_data_0018CC20.sequence_frame);
+                parse_space_scene_chunk(++resident_data_0018CC20.sequence_frame);
             }
             keyframe = &resident_data_0018CC20.frames[resident_data_0018CC20.frame];
             keyframe_angles = keyframe->rotation;
@@ -319,23 +319,23 @@ void update_resident_gameplay_state(void) {
             sound_update();
             resident_call_00202260();
             update_resident_packed_direction();
-            resident_call_001E97A8();
+            noop_callback_h();
             break;
 
         case 3:
-            resident_call_001E97B0();
+            noop_callback_i();
             update_visible_resident_objects();
             enqueue_voice_request();
             resident_call_001E97A0();
             UpdateParts();
             if (resident_data_0013E130.timer == 0) {
-                resident_call_00216EF0(0);
+                music_Pause(0);
                 resident_call_00217748(0);
                 resident_data_001517D0.unk1C = resident_data_0013E130.content_variant + 0x9C4F;
                 FadeToBlack(scale_game_frame_count(12));
                 while ((s16)resident_data_001517D0.unk5A != 3) {
                     sound_update();
-                    resident_call_00122598(0);
+                    sce_gs_sync_v(0);
                 }
                 resident_call_00216960();
                 resident_data_0013E130.player->selected_a = 1;
@@ -546,7 +546,7 @@ void update_resident_gameplay_state(void) {
             sound_update();
             resident_call_00202260();
             update_resident_packed_direction();
-            resident_call_001E97A8();
+            noop_callback_h();
             break;
 
         case 4:

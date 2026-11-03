@@ -2686,12 +2686,12 @@ extern void func_L00_002E9DC8(float, float, float *);
 extern void func_L00_002E9E20(float, float, void *);
 extern void func_L00_002E9900(int, float, float);
 extern void func_L00_002E9AD0(void);
-extern void f_84b8_2FCE00(float, float) __asm__("func_L00_002E9968");
-extern void f_84f0_2FCE00(int, float, float) __asm__("func_L00_002E99A0");
-extern void f_8568_2FCE00(int) __asm__("func_L00_002E9A18");
-extern void f_8648_2FCE00(void) __asm__("func_L00_002E9AF8");
-extern void f_latspring_2FCE00(float, float) __asm__("func_L00_002E9A40");
-extern void f_upspring_2FCE00(float, float) __asm__("func_L00_002E9A40");
+extern void follow_camera_set_height(float, float);
+extern void Cam_SetEyeOffset(int, float, float);
+extern void set_follow_camera_orbit_clamp_mode(int);
+extern void follow_camera_start_slide(void);
+extern void follow_camera_set_lateral_spring(float, float);
+extern void follow_camera_set_lateral_spring(float, float);
 
 /* Camera setup of a camera moby: picks its target (the first live moby of its
    group, or one by index), checks the trigger, then sets the follow camera's
@@ -2889,26 +2889,26 @@ void apply_moby_camera_control(char *moby) {
         set_follow_camera_flag_226();
     }
     if (*(float *)(data + 0x38) != 0.0f)
-        f_84b8_2FCE00(*(float *)(data + 0x38), 0.003f);
+        follow_camera_set_height(*(float *)(data + 0x38), 0.003f);
     if (*(float *)(data + 0x4c) != 0.0f)
-        f_84f0_2FCE00(0, *(float *)(data + 0x4c), 0.005f);
+        Cam_SetEyeOffset(0, *(float *)(data + 0x4c), 0.005f);
     if (*(short *)(data + 0x3c) == 3) {
         float heading;
-        f_8568_2FCE00(0);
+        set_follow_camera_orbit_clamp_mode(0);
         set_follow_camera_flag_226();
-        f_8648_2FCE00();
-        f_upspring_2FCE00(0.01f, 0.2f);
+        follow_camera_start_slide();
+        follow_camera_set_lateral_spring(0.01f, 0.2f);
         if (*(short *)(data + 0x20) >= scale_ticks(120))
             heading = 0.03f;
         else
             heading = ((float)*(short *)(data + 0x20) / IntToFloat(scale_ticks(120))) * 0.02f + 0.01f;
-        f_latspring_2FCE00(heading, 0.2f);
+        follow_camera_set_lateral_spring(heading, 0.2f);
     }
     if ((unsigned short)(*(short *)(data + 0x3c) - 4) < 2) {
-        f_8568_2FCE00(0);
+        set_follow_camera_orbit_clamp_mode(0);
         set_follow_camera_flag_226();
-        f_8648_2FCE00();
-        f_upspring_2FCE00(0.02f, 0.2f);
+        follow_camera_start_slide();
+        follow_camera_set_lateral_spring(0.02f, 0.2f);
         Cam_SetDistanceGoal(0, 5.84f, 0.003f);
         if (*(short *)(data + 0x3c) == 4) {
             float angle;

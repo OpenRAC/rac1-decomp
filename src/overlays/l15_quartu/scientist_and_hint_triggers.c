@@ -911,7 +911,7 @@ extern void func_L00_002E9838(char *);
 extern void func_L00_002E9E20(void *, float, float);
 extern void func_L00_002E9900(int, float, float);
 extern void func_L00_002E9AD0(void);
-extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
+extern void follow_camera_set_height(float, float);
 extern void func_L00_002E99A0(int, float, float);
 
 void func_L15_002F9D38_r(char *m) __asm__("func_L15_002F9D38");
@@ -973,7 +973,7 @@ void func_L15_002F9D38_r(char *m) {
         set_follow_camera_flag_226();
     }
     if (*(float *)(s + 0x38) != 0.0f)
-        follow_camera_set_height_r(*(float *)(s + 0x38), 0.003f);
+        follow_camera_set_height(*(float *)(s + 0x38), 0.003f);
     if (*(float *)(s + 0x44) != 0.0f)
         Cam_SetEyeOffset(0, *(float *)(s + 0x44), 0.005f);
 }

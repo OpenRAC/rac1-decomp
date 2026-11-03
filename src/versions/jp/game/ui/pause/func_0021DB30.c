@@ -62,7 +62,7 @@ s32 sound_options_menu(struct SoundMenu *menu) {
         if (menu->selected_option == 2) {
             playback_mode_r = !playback_mode_r;
         }
-        func_0012E380_1DB30(!playback_mode_r);
+        snd_SetPlaybackMode(!playback_mode_r);
         Moby_PlaySound(0, 0x11, menu->sound_owner);
     }
     return 0;

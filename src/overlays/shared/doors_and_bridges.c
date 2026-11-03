@@ -78,8 +78,6 @@ void AmbientStreamL07Update(unsigned char *moby) {
 extern int D_0015EE84_30D370 SDATA(D_0015EE84);
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 
-extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
-
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 /* Timed activation pad update: runs the 10-state machine on the data block at moby+0x78.
@@ -150,7 +148,7 @@ void timed_activation_pads_update(unsigned char *moby) {
     switch (((Moby *)moby)->state) {
         case 0:
             set_moby_color(moby, 0x80, 0x80, 0x80);
-            MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
+            MobyGroup_SetByteBC(((Moby *)moby)->group, 0);
             set_moby_list_state(((Moby *)moby)->group, 1);
             break;
         case 1:
@@ -164,7 +162,7 @@ void timed_activation_pads_update(unsigned char *moby) {
                 on = 1;
                 set_moby_color(moby, 0, 0xFF, 0);
                 d->active = on;
-                MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
+                MobyGroup_SetByteBC(((Moby *)moby)->group, 0);
                 ((Moby *)moby)->command = on;
                 Moby_PlaySound_r(3, 0, (int)moby);
                 set_moby_list_state(((Moby *)moby)->group, 2);

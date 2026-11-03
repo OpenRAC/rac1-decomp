@@ -759,8 +759,6 @@ L2:
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6);
-
 extern void draw_menu_flashing_panel(int);
 
 typedef struct PageMenu {
@@ -1225,7 +1223,6 @@ void process_unlock_code_input(void) {
         unlock_code_input_count = 0;
     }
 }
-extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 
 extern char player_camera[];
 
@@ -1233,7 +1230,7 @@ extern char player_camera[];
 int enter_streamed_moby_screen(char *h) {
     char *m;
     int r;
-    m = create_menu_preview_moby_a(0x7A5);
+    m = create_menu_preview_moby(0x7A5);
     *(int *)(h + 0x34) = 0;
     if (m != 0) {
         char *d;

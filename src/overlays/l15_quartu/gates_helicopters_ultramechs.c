@@ -837,8 +837,6 @@ void update_destructible_moby_on_hit(struct Moby *moby) {
 
 extern int truncate_float_to_s32(float);
 
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-
 extern int quartu_moby_groups[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float quartu_zero_vec[] MACRO_ADDR;

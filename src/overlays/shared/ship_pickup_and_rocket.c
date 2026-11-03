@@ -14,6 +14,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "callees.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/effect_particle_updates.h"
 
 /* Ship rocket: homes in on a target. Same layout as Rocket below (defined after use). */
 struct ShipRocketVars {
@@ -298,8 +299,6 @@ frame_tail:
         ((Moby *)moby)->pos.z = 1003.0f;
 }
 
-extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
-
 // Spawns an effect moby attached to a target and positioned from a source.
 unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, int arg, float scale) {
     unsigned char *moby = CreateMoby(0x127);
@@ -363,8 +362,6 @@ typedef struct Tex {
 } Tex;
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern unsigned char *func_L00_0026DA50(void *pos, void *dir, int c, int d, int n, int k, float f);
 
 extern float SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 

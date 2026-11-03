@@ -3284,8 +3284,6 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 aridia_coll_hit_normal[];
 extern f32 aridia_coll_hit_point;
 
-extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_002360c8.c, FUN_L02_002360c8. */
 f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
     f32 t[4];
@@ -3331,9 +3329,9 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             if (coll_line(&(&g_hero_r)->motion.pos, t, 0x324, 0, 0) != 0) {
                 f32 nb;
                 nb = b * -0.5f;
-                z = gravity_z_r(&(&g_hero_r)->motion.velocity) - nb;
-                x = gravity_z_r(&(&g_hero_r)->motion.pos);
-                y = gravity_z_r(&aridia_coll_hit_point);
+                z = gravity_z(&(&g_hero_r)->motion.velocity) - nb;
+                x = gravity_z(&(&g_hero_r)->motion.pos);
+                y = gravity_z(&aridia_coll_hit_point);
                 if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                     return o[2];
                 }
@@ -3355,9 +3353,9 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             if (coll_line(&(&g_hero_r)->motion.pos, t, 0x324, 0, 0) != 0) {
                 f32 nb;
                 nb = b * -0.5f;
-                z = gravity_z_r(&(&g_hero_r)->motion.velocity) - nb;
-                x = gravity_z_r(&(&g_hero_r)->motion.pos);
-                y = gravity_z_r(&aridia_coll_hit_point);
+                z = gravity_z(&(&g_hero_r)->motion.velocity) - nb;
+                x = gravity_z(&(&g_hero_r)->motion.pos);
+                y = gravity_z(&aridia_coll_hit_point);
                 if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                     return o[4];
                 }

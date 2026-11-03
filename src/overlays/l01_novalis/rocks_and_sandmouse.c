@@ -36,6 +36,8 @@
 #include "overlays/shared/moby_context_table.h"
 #include "overlays/l01_novalis/spark_particles.h"
 #include "overlays/shared/tracked_moby_show.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/pause_menu.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -91,7 +93,6 @@ typedef struct {
 extern DebrisColors rock_formation_debris_colors;
 extern float g_frame_time MACRO_ADDR;
 
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern void SetDeathBits(void *, int, int);
 
 extern void spawn_debris_moby_v(void *, void *, u32, s32, f32, f32, f32, f32, s32) __asm__("func_L01_002F9908");
@@ -311,7 +312,6 @@ typedef struct {
     int a[4];
 } Vy __attribute__((aligned(16)));
 
-extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 extern void moby_build_matrix_v(void *, int) __asm__("func_L00_00251E30");
 
 /* Spawns a beam moby (0x2D2) from owner between two points, colored, with random rotation and two glow sprites.
@@ -365,7 +365,7 @@ extern BurstPalette D_L01_0020B7E0;
 extern BurstPalette D_L01_0020B7F8;
 extern char D_L01_001E3720[];
 
-extern void func_L00_0026B890(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32);
+extern void PartType11Spawn_v(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32) __asm__("func_L00_0026B890");
 
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
 
@@ -396,9 +396,9 @@ void func_L01_002FB588_r(struct Moby *moby, u128_2FB588 *where, s32 sound, f32 s
         size = scale * 400000.0f;
         inner = novalis_explosion_inner_colors;
         outer = novalis_explosion_outer_colors;
-        PartType11Spawn(pos_p, &vel, inner_p->c[random_integer_below(6)], outer.c[random_integer_below(6)], size,
-                        rand_range(scale_ticks(0xF), scale_ticks(0x14)),
-                        rand_range(scale_ticks(0x19), scale_ticks(0x1E)), speed * scale, 0, 0);
+        PartType11Spawn_v(pos_p, &vel, inner_p->c[random_integer_below(6)], outer.c[random_integer_below(6)], size,
+                          rand_range(scale_ticks(0xF), scale_ticks(0x14)),
+                          rand_range(scale_ticks(0x19), scale_ticks(0x1E)), speed * scale, 0, 0);
     }
 
     if (moby != 0) {
@@ -528,9 +528,6 @@ extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478")
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void spawn_effect_particle_with_target_scalar_r(void *, void *, int, int, float,
-                                                       int) __asm__("func_L00_0026DD70");
-
 extern void spawn_debris_moby_r(void *, void *, unsigned int, float, int, float, float, float,
                                 int) __asm__("func_L01_002F9908");
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
@@ -594,7 +591,7 @@ void destroyable_cave_wall_update(char *moby) {
         x = random_float_between(1.5f, 3.5f);
         t = x * 210000.0f;
         r = rand_range(0x78, 0xF0);
-        spawn_effect_particle_with_target_scalar_r(&a, &tab, 0x5F787878, 0x181818, t, scale_ticks(r));
+        spawn_effect_particle_with_target_scalar(&a, &tab, 0x5F787878, 0x181818, t, scale_ticks(r));
     }
 
     for (m = 0; m < 100; m++) {
@@ -705,14 +702,9 @@ extern char novalis_saved_moby_bytes_r[] __asm__("D_L01_001BADB0");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void apply_cutscene_big_head_cheat_r(void) __asm__("func_L01_002FC058");
 
-extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern void deactivate_recorded_moby_r(void) __asm__("func_L00_0028FC68");
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
-extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
-
-extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 
 /* Agnogg ship update (moby classes 730, 731, 790 on level 01): state machine on moby->state. */
 void agnogg_ship_front_update(Moby *moby) {
@@ -755,7 +747,7 @@ void agnogg_ship_front_update(Moby *moby) {
                 if (novalis_game_mode_r == 0) {
                     unsigned char *pp = gSpecialItems;
                     if (pp[0xF] == 0) {
-                        StartCutscene_r(5);
+                        StartCutscene(5);
                         pp[0xF] = 1;
                     }
                 }
@@ -846,21 +838,21 @@ void agnogg_ship_front_update(Moby *moby) {
             }
             data->fA = (*(unsigned short *)&moby->draw_dist);
             moby->flags = moby->flags | 0x41;
-            StartCutscene_r(3);
+            StartCutscene(3);
             moby->state = 6;
             break;
         case 6:
             if (novalis_game_mode_r == 2) {
                 break;
             }
-            PlayMovieEntryIfIdle_r(3);
+            PlayMovieEntryIfIdle(3);
             moby->state = 7;
             break;
         case 7:
             if (novalis_game_mode_r == 2) {
                 break;
             }
-            StartCutscene_r(4);
+            StartCutscene(4);
             moby->state = 8;
             break;
         case 8:
@@ -896,7 +888,7 @@ void agnogg_ship_front_update(Moby *moby) {
             }
             jet_clear_persistent(moby->mission);
             if (data->rec != -1) {
-                jet_reset_camera_r(&camera_points[data->rec].a, &camera_points[data->rec].b);
+                jet_reset_camera(&camera_points[data->rec].a, &camera_points[data->rec].b);
             }
             memcard_Save(0, -1);
             show_tracked_moby();
@@ -1406,7 +1398,6 @@ void door_left_update(Moby *m) {
     m->pos.y = v->home.f[1] + off.f[1];
 }
 
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern char *spawn_pipe_replacement_moby(char *owner);
 typedef int u128b __attribute__((mode(TI)));
 
@@ -1471,8 +1462,6 @@ char *spawn_pipe_replacement_moby(char *owner) {
     }
     return moby;
 }
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 typedef int u128 __attribute__((mode(TI)));
 typedef union {
@@ -1648,7 +1637,7 @@ typedef struct {
     u8 pad21[0x57];
     void *pvars;
 } SpawnerMoby;
-extern s32 count_active_moby_group_members_r(s32, s32) __asm__("func_L01_0026EFB8");
+
 extern ClonedMoby *initialize_beehive_spawn_moby_r(ClonedMoby *) __asm__("func_L01_00303700");
 
 extern void InitKnockback_v(void *, void *, s32, s32, s32, f32) __asm__("func_L00_0025D5B0");
@@ -1669,7 +1658,7 @@ void beehive_update(SpawnerMoby *m) {
             if (v->src_id < 0) {
                 break;
             }
-            if (count_active_moby_group_members_r(v->src_id, 0xC) != 0) {
+            if (count_active_moby_group_members(v->src_id, 0xC) != 0) {
                 break;
             }
             if (v->count >= *(int *)&beehive_max_spawns) {
@@ -1973,8 +1962,7 @@ extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern BlobHitInfo novalis_coll_hit;
 
-extern void PartType21Spawn(void *, void *, int, int, float, int, int);
-extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
+extern void PartType21Spawn_v(void *, void *, int, int, float, int, int) __asm__("func_L00_0026DA50");
 
 /* Flying explosive blob: drag, gravity and spin; explodes on hit or timeout, leaves smoke. */
 void update_explosive_moby(struct Moby *m) {
@@ -2026,8 +2014,8 @@ void update_explosive_moby(struct Moby *m) {
         return;
     }
     s = random_float_between(0.5f, 1.5f) * 210000.0f;
-    PartType21Spawn(&m->pos, novalis_zero_vec, 0x4F007FFF, 0x1FFFFFFF, s, rand_range(scale_ticks(10), scale_ticks(20)),
-                    1);
+    PartType21Spawn_v(&m->pos, novalis_zero_vec, 0x4F007FFF, 0x1FFFFFFF, s,
+                      rand_range(scale_ticks(10), scale_ticks(20)), 1);
     alpha = 0x60000000;
     for (i = 0; i < 2; i++) {
         n = random_integer_below(6);
@@ -2083,7 +2071,6 @@ extern u128_D568 fx_prev_pos MACRO_ADDR;
 
 extern int truncate_float_to_s32(float);
 extern char *spawn_splash_v(float, float, void *, void *, void *) __asm__("func_L00_00272770");
-extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
 #define fx_cutscene_D568 (*(CutsceneFx_D568 *)&D_L01_0016CD60)
 

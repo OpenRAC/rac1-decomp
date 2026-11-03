@@ -193,8 +193,6 @@ extern char g_screen_extent[];
 
 extern s32 truncate_float_to_s32(f32);
 
-extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
-
 /* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */
 static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, struct TextRegionP box) {
     s32 tint;

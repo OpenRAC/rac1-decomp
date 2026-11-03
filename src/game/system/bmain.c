@@ -23,6 +23,7 @@
 #include "game/ui/transition.h"
 #include "game/system/initonce.h"
 #include "game/gameplay/actuator.h"
+#include "game/system/pad.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -149,15 +150,7 @@ extern u8 D_0016044C[] MACRO_ADDR;
 extern s32 D_0015F6E4 MACRO_ADDR;
 extern u8 D_0013E130[];
 
-extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
-
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
-
-extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
-
-extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
-
-extern void UpdatePad_r(void) __asm__("func_00218908");
 
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
 
@@ -198,7 +191,7 @@ void startlevel(void) {
     DMAC_VIF1_Enable();
     clear_dma_queue_entry();
     game_frame_counter = 0;
-    sce_gs_sync_v_r(0);
+    sce_gs_sync_v(0);
     g_game_mode_r = 0;
     ResetGsRegisters();
     ResetGsRegistersPr();
@@ -218,22 +211,22 @@ void startlevel(void) {
             flush_cache(0);
         }
         SetBackgroundColor_r(0, 0, 0);
-        PutDrawBufferLarge_r();
+        PutDrawBufferLarge();
         append_gif_transfer_packet();
         queue_framebuffer_upload(hdr->code + (s32)hdr);
         if (frames < 8) {
             VU1_addGSregister(0x42, 0x8000000044);
             emit_rgba_draw_packet(0, 0, 0, fade);
         }
-        PutDrawBufferSmall_r();
+        PutDrawBufferSmall();
         append_palette_transfer_packet();
         VU1_sendChain();
         VU1_swapChain();
         VU1_syncChain(1);
-        sce_gs_sync_v_r(0);
+        sce_gs_sync_v(0);
         prev = cur;
         fade -= 0x10;
-        UpdatePad_r();
+        UpdatePad();
         frames++;
     }
     if (prev != 0) {
@@ -260,15 +253,15 @@ void startlevel(void) {
     flush_cache(0);
     VU1_initChain();
     SetBackgroundColor_r(0, 0, 0);
-    PutDrawBufferLarge_r();
+    PutDrawBufferLarge();
     append_gif_transfer_packet();
     draw_boot_image(hdr->code + (s32)hdr);
-    PutDrawBufferSmall_r();
+    PutDrawBufferSmall();
     append_palette_transfer_packet();
     VU1_sendChain();
     VU1_swapChain();
     VU1_syncChain(1);
-    sce_gs_sync_v_r(0);
+    sce_gs_sync_v(0);
     game_frame_counter++;
     STUB_printf(str_loading_sound_bank);
     bank = load_audio_bank_by_location(disc_table_r.sound_bank);

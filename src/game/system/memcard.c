@@ -12,6 +12,7 @@
 #include "game/system/stub.h"
 #include "game/ui/help.h"
 #include "core/gs/put_draw_env.h"
+#include "core/libc/sprintf.h"
 
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
@@ -249,15 +250,14 @@ extern s32 mc_call_0020BD70(u8 *, s32, u32 *) __asm__("func_0020BD70");
 extern s32 mc_call_00217628(McChunk *, s32, s32) __asm__("func_00217628");
 extern s32 mc_call_00123A10(s32 fd) __asm__("func_00123A10");
 extern s32 mc_call_00124410(s32 port, s32 slot, char *name) __asm__("func_00124410");
-extern s32 mc_call_001241F0(s32, s32, char *, s32, s32, void *) __asm__("func_001241F0");
-extern s32 mc_call_00124068(s32, s32, s32 *, s32 *, s32 *) __asm__("func_00124068");
+
 extern s32 mc_call_001239D8(s32 port, s32 slot, char *name) __asm__("func_001239D8");
 extern s32 mc_call_001238B0(s32 port, s32 slot, char *name, s32 mode) __asm__("func_001238B0");
 extern s32 mc_call_00123C30(s32 fd, void *buf, s32 size) __asm__("func_00123C30");
 extern s32 mc_call_00123AC8(s32 fd, s32 offset, s32 origin) __asm__("func_00123AC8");
-extern s32 mc_call_00123F30(s32 mode, s32 *cmd, s32 *result) __asm__("func_00123F30");
+
 extern s32 mc_call_00123D48(s32 fd, void *buf, s32 size) __asm__("func_00123D48");
-extern s32 mc_call_00116248(char *str, const char *format, ...) __asm__("func_00116248");
+
 extern char *mc_call_001166FC(char *, const char *) __asm__("func_001166FC");
 
 /* Memory card state machine: polls the async call, then steps through card checks. */
@@ -272,7 +272,7 @@ void memcard_update_state(void) {
     McState *finished_card;
 
     if (mc_data_0013D390.busy) {
-        mc_data_0013D390.busy = mc_call_00123F30(1, &mc_data_0013D390.cmd, &mc_data_0013D390.result) == 0;
+        mc_data_0013D390.busy = sce_mc_sync(1, &mc_data_0013D390.cmd, &mc_data_0013D390.result) == 0;
         return;
     }
     mc_data_0013D390.busy = 1;
@@ -282,11 +282,11 @@ void memcard_update_state(void) {
             if (mc_data_0013D390.cur < 0) {
                 mc_data_0013D390.cur = 0;
             }
-            if (mc_call_00124068(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                 mc_data_0013D390.card[mc_data_0013D390.cur].slot,
-                                 &mc_data_0013D390.card[mc_data_0013D390.cur].type,
-                                 &mc_data_0013D390.card[mc_data_0013D390.cur].free,
-                                 &mc_data_0013D390.card[mc_data_0013D390.cur].format) == 0) {
+            if (sce_mc_get_info(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                                mc_data_0013D390.card[mc_data_0013D390.cur].slot,
+                                &mc_data_0013D390.card[mc_data_0013D390.cur].type,
+                                &mc_data_0013D390.card[mc_data_0013D390.cur].free,
+                                &mc_data_0013D390.card[mc_data_0013D390.cur].format) == 0) {
                 mc_data_0013D390.state = 1;
             }
             break;
@@ -387,9 +387,9 @@ void memcard_update_state(void) {
             break;
 
         case 7:
-            if (mc_call_001241F0(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                 mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2E8, 0, 11,
-                                 mc_data_001A0980) == 0) {
+            if (sce_mc_get_dir(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                               mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2E8, 0, 11,
+                               mc_data_001A0980) == 0) {
                 mc_data_0013D390.sub = 0;
                 mc_data_0013D390.state = 8;
             }
@@ -461,7 +461,7 @@ void memcard_update_state(void) {
                     }
                     break;
                 case 1:
-                    mc_call_00116248(workspace.directory.name, mc_data_0013D370, 0);
+                    sprintf(workspace.directory.name, mc_data_0013D370, 0);
                     if (mc_call_001238B0(mc_data_0013D390.card[mc_data_0013D390.cur].port,
                                          mc_data_0013D390.card[mc_data_0013D390.cur].slot, workspace.directory.name,
                                          1) == 0) {
@@ -628,8 +628,7 @@ void memcard_update_state(void) {
                             mc_call_001166FC(workspace.name, mc_data_0013D340);
                             break;
                         case 13:
-                            mc_call_00116248(workspace.name, mc_data_0013D370,
-                                             mc_data_0013D390.card[mc_data_0013D390.cur].x14);
+                            sprintf(workspace.name, mc_data_0013D370, mc_data_0013D390.card[mc_data_0013D390.cur].x14);
                             break;
                     }
                     if (mc_call_001238B0(mc_data_0013D390.card[mc_data_0013D390.cur].port,
@@ -758,15 +757,15 @@ void memcard_update_state(void) {
         case 12:
             switch (mc_data_0013D390.sub) {
                 case 0:
-                    if (mc_call_001241F0(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                         mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2E8, 0, 1,
-                                         mc_data_001A0980) == 0) {
+                    if (sce_mc_get_dir(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                                       mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2E8, 0, 1,
+                                       mc_data_001A0980) == 0) {
                         mc_data_0013D390.sub = 1;
                     }
                     break;
                 case 1:
                     if (mc_data_0013D390.result == 1) {
-                        mc_call_00116248(workspace.name, mc_data_0015FF68, mc_data_0013D2D0, mc_data_001A09A0);
+                        sprintf(workspace.name, mc_data_0015FF68, mc_data_0013D2D0, mc_data_001A09A0);
                         mc_call_001E9730(mc_data_0015FF70, workspace.name);
                         if (mc_call_00124410(mc_data_0013D390.card[mc_data_0013D390.cur].port,
                                              mc_data_0013D390.card[mc_data_0013D390.cur].slot, workspace.name) == 0) {
@@ -793,9 +792,9 @@ void memcard_update_state(void) {
                     }
                     break;
                 case 2:
-                    if (mc_call_001241F0(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                         mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2E8, 1, 1,
-                                         mc_data_001A0980) == 0) {
+                    if (sce_mc_get_dir(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                                       mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2E8, 1, 1,
+                                       mc_data_001A0980) == 0) {
                         mc_data_0013D390.sub = 1;
                     }
                     break;
@@ -865,11 +864,9 @@ void memcard_update_state(void) {
             switch (mc_data_0013D390.sub) {
                 case 0:
                     if (mc_data_0013D390.state == 23) {
-                        mc_call_00116248(workspace.name, mc_data_0013D370,
-                                         mc_data_0013D390.card[mc_data_0013D390.cur].x18);
+                        sprintf(workspace.name, mc_data_0013D370, mc_data_0013D390.card[mc_data_0013D390.cur].x18);
                     } else {
-                        mc_call_00116248(workspace.name, mc_data_0013D370,
-                                         mc_data_0013D390.card[mc_data_0013D390.cur].x14);
+                        sprintf(workspace.name, mc_data_0013D370, mc_data_0013D390.card[mc_data_0013D390.cur].x14);
                     }
                     if (mc_call_001238B0(mc_data_0013D390.card[mc_data_0013D390.cur].port,
                                          mc_data_0013D390.card[mc_data_0013D390.cur].slot, workspace.name, 1) == 0) {
@@ -1083,7 +1080,7 @@ void memcard_update_state(void) {
         case 16:
             switch (mc_data_0013D390.sub) {
                 case 0:
-                    mc_call_00116248(workspace.name, mc_data_0013D370, mc_data_0013D390.card[mc_data_0013D390.cur].x14);
+                    sprintf(workspace.name, mc_data_0013D370, mc_data_0013D390.card[mc_data_0013D390.cur].x14);
                     if (mc_call_001238B0(mc_data_0013D390.card[mc_data_0013D390.cur].port,
                                          mc_data_0013D390.card[mc_data_0013D390.cur].slot, workspace.name, 2) == 0) {
                         mc_data_0013D390.sub = 1;
@@ -1275,7 +1272,7 @@ void memcard_update_state(void) {
         case 20:
             switch (mc_data_0013D390.sub) {
                 case 0:
-                    mc_call_00116248(workspace.name, mc_data_0013D370, mc_data_0013D390.card[mc_data_0013D390.cur].x14);
+                    sprintf(workspace.name, mc_data_0013D370, mc_data_0013D390.card[mc_data_0013D390.cur].x14);
                     if (mc_call_001238B0(mc_data_0013D390.card[mc_data_0013D390.cur].port,
                                          mc_data_0013D390.card[mc_data_0013D390.cur].slot, workspace.name, 2) == 0) {
                         mc_data_0013D390.sub = 1;

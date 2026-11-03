@@ -78,8 +78,6 @@ extern int D_L00_00160628_240398 __asm__("D_L00_00160628") MACRO_ADDR;
 extern int D_L00_00160624_240398 __asm__("D_L00_00160624") MACRO_ADDR;
 extern int D_L00_0016062C_240398 __asm__("D_L00_0016062C") MACRO_ADDR;
 
-extern void register_moby_class_r(void *, void *, void *, int) __asm__("func_00203E78");
-
 /* Loads a level's four packed images through the GS loader and registers the image records and their data blocks. */
 char *load_level_texture_bank(char *buf, int *tbl) {
     int img[24];
@@ -136,8 +134,8 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     buf += 0x14000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
     if (g_class_slot_r[first_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
-        register_moby_class_r(base + a, &D_L00_0015FCC0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                              first_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
+        register_moby_class(base + a, &D_L00_0015FCC0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
+                            first_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     idx2 = moby_texture_count_r + 1;
     second_record_m240398.h[5] = tbl[0x2E] >> 8;
@@ -148,8 +146,8 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     buf += 0x4000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
     if (g_class_slot_r[second_class_ids[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
-        register_moby_class_r(base + b, &D_L00_0015FCD0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                              second_class_ids[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
+        register_moby_class(base + b, &D_L00_0015FCD0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
+                            second_class_ids[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     D_L00_00160624_240398 = 1;
     D_L00_00160628_240398 = 1;

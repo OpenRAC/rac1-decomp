@@ -17,6 +17,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern Hero g_hero;
 
 extern int level_frame_counter MACRO_ADDR;
@@ -2588,7 +2589,7 @@ void update_flag_controlled_pulsing_effect_particle(struct PartBase *m) {
         m->color = 0;
     }
 }
-extern int DefaultVtbl_DeleteMoby_r2(float, int, int) __asm__("func_L00_00237B70");
+
 extern float g_debug_camera_r4[] __asm__("D_L00_00166EC0");
 
 typedef struct PartType37Data {
@@ -2616,8 +2617,8 @@ void update_offset_and_pulse_effect_particle(struct PartBase *p) {
     color_blend_peak_ticks = particle_data->blend_peak_ticks;
     k = p->timer - color_blend_peak_ticks;
     k = k < 0 ? -k : k;
-    p->color = DefaultVtbl_DeleteMoby_r2((float)(color_blend_peak_ticks - k) / (float)color_blend_peak_ticks, 0,
-                                         particle_data->blend_from);
+    p->color = DefaultVtbl_DeleteMoby((float)(color_blend_peak_ticks - k) / (float)color_blend_peak_ticks, 0,
+                                      particle_data->blend_from);
 }
 typedef struct PartType38Data {
     Vec4 vel;

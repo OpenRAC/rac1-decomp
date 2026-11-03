@@ -41,6 +41,7 @@
 #include "overlays/l17_fleet/hero_idle_and_items.h"
 #include "overlays/l17_fleet/trail_particles.h"
 #include "overlays/l17_fleet/moby_class_flag_update.h"
+#include "game/ui/help.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -1708,8 +1709,6 @@ extern void update_fighter_jet_target_lock(int a, char *p);
 extern void draw_four_quarter_turn_effect_quads_f(float, float, float, float, unsigned char, unsigned char,
                                                   unsigned char, unsigned char) __asm__("func_L17_002EBF08");
 
-extern void *msg_string_id(int) __asm__("func_001FE540");
-
 extern char fleet_hud_ammo_pip_shape[];
 extern int fleet_hud_health_clut_backup[];
 extern int fleet_jet_lock_anim_start SDATA(fleet_jet_lock_anim_start);
@@ -1805,10 +1804,10 @@ void DrawFleetHud(char *moby) {
                                0.5f, 0.5f);
     b = &g_hero;
     if (b->ship_hp < b->ship_hp_max / 10.0f && (fleet_frame_count / 90) & 1) {
-        FontPrintCenterSmall(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
+        FontPrintCenterSmall(0x100, 0x186, 0x80000080L, msg_string(0x526E), 0x64);
     }
     if (((Moby *)moby)->state == 8) {
-        FontPrintCenterSmall(0x100, 0xC8, 0x80005080L, msg_string_id(0x5243), 0x64);
+        FontPrintCenterSmall(0x100, 0xC8, 0x80005080L, msg_string(0x5243), 0x64);
     }
     h = &g_hero;
     f = h->ship_hp - d->shown_hp;

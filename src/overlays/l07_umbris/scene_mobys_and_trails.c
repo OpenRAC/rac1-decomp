@@ -416,7 +416,7 @@ typedef struct {
     int arr[8];
 } L07SparkState;
 
-extern char *func_L00_0026DEA0(void *, int, void *, int, float, float, float, float);
+extern char *PartType23Spawn_v(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
 extern int umbris_scene_state MACRO_ADDR;
 extern char umbris_cutscene_state_c[] __asm__("D_L07_0016C960");
 extern float umbris_zero_vec[] MACRO_ADDR;
@@ -466,7 +466,7 @@ void update_scene_moby_effect_bursts(struct Moby *m) {
                         char *q;
                         if (random_integer_below(2) != 0)
                             v = -v;
-                        p = PartType23Spawn(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
+                        p = PartType23Spawn_v(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
                         if (p != 0) {
                             q = p + 0x20;
                             *(short *)(p + 0xA) = scale_ticks(rand_range(0x3C, 0x5A));

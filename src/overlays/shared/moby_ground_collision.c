@@ -2622,17 +2622,18 @@ extern unsigned swap_packed_color_channels_r(unsigned, int) __asm__("func_L00_00
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void initialize_hit_descriptor_r(void *, void *, int, float) __asm__("func_L00_0025A890");
 extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void *func_L00_0026CA10(void *, void *, int, int, int, int, int, int, float);
+extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_v(void *, void *, int, int, int, int,
+                                                                                 int, int,
+                                                                                 float) __asm__("func_L00_0026CA10");
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern void *SpawnFallingSpark_r(void *, void *, int, int, int) __asm__("func_L00_002B0738");
 extern void PartType11Spawn_r(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
-extern void spawn_particle_alt_9768_r(void *, void *, int, int, int, float) __asm__("func_L00_0026B368");
+
 extern int spawn_glow_particle_r(void *, void *, void *, float, int, int, int, int, int) __asm__("func_L00_002ADBB0");
 extern int FastBSphereCheck_r(void *, float) __asm__("func_L00_00200290");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void mine_camera_blast_r(void *, void *, int, int) __asm__("func_L00_002D4CE8");
 
 /* Beam explosion at moby m: a spark burst from a spawn event, optional glow sparks and a flash, with a cam tint. */
 void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB, int n, int k8, int k9, float fC,
@@ -2679,7 +2680,7 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             BuildSphericalOffset(&dir, fF * (random_float_between(7.0f, 10.5f) * g_frame_time_r), b, a);
             dir.f[2] += g_frame_time_r * 3.0f;
             dist = fF * 40000.0f;
-            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
+            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_v(
                 pos, &dir, swap_packed_color_channels_r(0x4F007FFF, flag),
                 swap_packed_color_channels_r(0x1F00007F, flag),
                 rand_range_r(scale_ticks(0x3C), scale_ticks(0x78)) - s18 * 10, 1, -1, -1, dist);
@@ -2772,8 +2773,8 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             vec_scale_to_length_r(&vel, &vel, fF * (random_float_between(0.0f, 3.0f) * g_frame_time_r));
             p1 = swap_packed_color_channels_r(c0.v[random_integer_below(6)], flag);
             p2 = swap_packed_color_channels_r(c1.v[random_integer_below(6)], flag);
-            spawn_particle_alt_9768_r(pos, &vel, p1, p2, rand_range_r(scale_ticks(0x1E), scale_ticks(0x2D)) - s18 * 5,
-                                      200000.0f);
+            spawn_particle_alt_9768(pos, &vel, p1, p2, rand_range_r(scale_ticks(0x1E), scale_ticks(0x2D)) - s18 * 5,
+                                    200000.0f);
         }
     }
     if (m != 0 && fC > 0.0f) {
@@ -2826,9 +2827,9 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
                     ((Fl *)beam_explosion_blast_params)->f[8] = 15.0f;
                 }
                 if (flag) {
-                    mine_camera_blast_r(beam_explosion_alt_color_blast_params, pos, 0, 0);
+                    mine_camera_blast(beam_explosion_alt_color_blast_params, pos, 0, 0);
                 } else {
-                    mine_camera_blast_r(beam_explosion_blast_params, pos, 0, 0);
+                    mine_camera_blast(beam_explosion_blast_params, pos, 0, 0);
                 }
             }
         }
@@ -2845,8 +2846,6 @@ extern S6y10_60108 color_swapped_burst_colors_r2 __asm__("D_L00_001E93B0");
 extern S6y10_60108 color_swapped_burst_fade_colors_r2 __asm__("D_L00_001E93C8");
 extern CameraSystem player_camera_r2 __asm__("D_L00_00166D80");
 extern float blast_spawn_params[] NOT_SDA;
-
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
 extern int FastBSphereCheck_r2(void *, float) __asm__("func_L00_00200290");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
@@ -2911,7 +2910,6 @@ extern S6y10 color_swapped_burst_colors;
 extern S6y10 color_swapped_burst_fade_colors;
 
 extern unsigned swap_packed_color_channels(unsigned, int);
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
 // Spawn three bursts of coloured sparks around a point, then optional glow pieces and a flash.
 void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {

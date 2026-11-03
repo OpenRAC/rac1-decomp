@@ -382,8 +382,6 @@ typedef struct {
     f32 turn_speed;
 } Missile;
 
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-
 extern char pokitaru_particle_textures_ptr_base[];
 extern char pokitaru_collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;

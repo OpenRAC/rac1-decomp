@@ -212,7 +212,6 @@ extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float 
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern char *rocket_smoke_texture_ptr_c __asm__("D_L18_001B2DDC");
@@ -2364,7 +2363,7 @@ extern Blk24 hit_burst_start_colors;
 extern Blk24 hit_burst_end_colors;
 extern unsigned char help_stats_base[];
 
-extern void PartType11Spawn(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32);
+extern void PartType11Spawn_v(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32) __asm__("func_L00_0026B890");
 
 void set_moby_group_state_two(char *arg);
 
@@ -2431,12 +2430,12 @@ void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
                     u.s1.v[2] += random_float_between(0.0f, 6.0f);
                     ca = u.s1.a + random_integer_below(6);
                     cb = b1 + random_integer_below(6);
-                    PartType11Spawn(u.s1.v, veldin2_zero_vec_r, *ca, *cb, 1500000.0f,
-                                    rand_range(scale_ticks(15), scale_ticks(20)),
-                                    rand_range(scale_ticks(30), scale_ticks(45)), s, 0, 0);
-                    PartType11Spawn(u.s1.v, veldin2_zero_vec_r, 0x7FFFFFFF, 0xFFFFFF, 1500000.0f,
-                                    rand_range(scale_ticks(5), scale_ticks(10)),
-                                    rand_range(scale_ticks(15), scale_ticks(20)), s * 0.5f, 0, 0);
+                    PartType11Spawn_v(u.s1.v, veldin2_zero_vec_r, *ca, *cb, 1500000.0f,
+                                      rand_range(scale_ticks(15), scale_ticks(20)),
+                                      rand_range(scale_ticks(30), scale_ticks(45)), s, 0, 0);
+                    PartType11Spawn_v(u.s1.v, veldin2_zero_vec_r, 0x7FFFFFFF, 0xFFFFFF, 1500000.0f,
+                                      rand_range(scale_ticks(5), scale_ticks(10)),
+                                      rand_range(scale_ticks(15), scale_ticks(20)), s * 0.5f, 0, 0);
                 }
                 for (j = 0; j < 10.0f;) {
                     int *a2 = u.s2.a;
@@ -2818,7 +2817,7 @@ void spawn_explosion_burst(void *source_moby) {
                                    I(explosion_burst_particle_frame_count_range_end_gp)));
         b = scale_ticks(rand_range(I(explosion_burst_particle_second_frame_count_range_start_gp),
                                    I(explosion_burst_particle_second_frame_count_range_end_gp)));
-        PartType11Spawn(offset, &velocity, color1, color2, scale, a, b, speed, 0, 0);
+        PartType11Spawn_v(offset, &velocity, color1, color2, scale, a, b, speed, 0, 0);
     }
     if (F(explosion_burst_first_glow_scale_multiplier_gp) > 0.0f) {
         char *pos = (char *)&moby->pos;

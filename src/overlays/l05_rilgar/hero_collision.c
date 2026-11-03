@@ -192,8 +192,6 @@ extern u8 rilgar_coll_hit_point[];
 extern f32 rilgar_coll_hit_z;
 extern s32 g_current_level_index MACRO_ADDR;
 
-void func_L00_00233D50_40968(void *, void *, f32) __asm__("func_L00_00233D50");
-
 extern Hero g_hero_r __asm__("D_0013F450");
 extern struct CollisionHit rilgar_coll_hit;
 
@@ -279,7 +277,7 @@ void HeroL05_GroundProbe(void) {
         if (is_moby_in_class_range_500_to_540(rilgar_coll_hit.moby)) {
             g_hero_r.on_flagged_ground_moby = 1;
             if ((u32)(g_hero_r.state.control_mode - 0x15) < 2) {
-                func_L00_00233D50_40968((u8 *)&rilgar_coll_hit.point, (u8 *)&rilgar_coll_hit.point, 1.0f);
+                HeroMoveDownAlongNormal((u8 *)&rilgar_coll_hit.point, (u8 *)&rilgar_coll_hit.point, 1.0f);
             }
         }
         p = GetFlaggedPvarWord(rilgar_coll_hit.moby);

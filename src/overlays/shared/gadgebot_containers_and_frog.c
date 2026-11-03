@@ -1316,7 +1316,7 @@ extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm_
 
 extern void select_nearest_gadgebot_interaction_target(void *);
 
-extern char *spawn_source_attached_fading_effect_particle(float, char *, int, int, int);
+extern char *spawn_source_attached_fading_effect_particle_v(float, char *, int, int, int) __asm__("func_L00_0026E940");
 
 extern void PartType53Spawn_v(void *, int, float, float, int, int, int, float, void *) __asm__("func_L00_00272F00");
 
@@ -1867,8 +1867,8 @@ void GadgebotUpdate(Moby *moby) {
             (*(float (*)[4]) & moby->pos)[1] = v40[1] + (*(float (*)[4]) & d->f304->pos)[1];
             if (rr < 1.0f) {
                 moby->scale = (*(GbClass **)&moby->pclass)->f24 * rr;
-                spawn_source_attached_fading_effect_particle((1.0f - rr) * 0.5f * 210000.0f, (char *)moby, 0x3000407F,
-                                                             scale_ticks(2), 3);
+                spawn_source_attached_fading_effect_particle_v((1.0f - rr) * 0.5f * 210000.0f, (char *)moby, 0x3000407F,
+                                                               scale_ticks(2), 3);
             }
             if (moby->visible != 0) {
                 update_gadgebot_glow_effects((char *)moby);
@@ -2973,9 +2973,6 @@ extern int blarg_holder_spark_life_ticks SDATA(blarg_holder_spark_life_ticks);
 
 extern int truncate_float_to_s32_g(float) __asm__("func_001FA898");
 
-extern void spawn_moving_hero_relative_alpha_fade_particle_g(void *, void *, int, int, int, int,
-                                                             float) __asm__("func_L00_00273F80");
-
 typedef struct {
     float ph[4];
     float spd[4];
@@ -3024,7 +3021,7 @@ void update_energy_sphere_holder_beam_effects(char *m) {
         vec_scale_to_length(b, a, -2.0f / (float)scale_ticks(blarg_holder_spark_life_ticks));
         FastVecAdd(a, a, m + 0x10);
         a[2] += 0.85f;
-        spawn_moving_hero_relative_alpha_fade_particle_g(
+        spawn_moving_hero_relative_alpha_fade_particle(
             a, b, *(int *)&blarg_holder_spark_color,
             (unsigned char)truncate_float_to_s32_g((float)scale_ticks(blarg_holder_spark_life_ticks)),
             (unsigned char)random_integer_below(0xFF), 0, *(float *)&blarg_holder_spark_scale);

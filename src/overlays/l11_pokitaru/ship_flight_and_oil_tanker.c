@@ -41,6 +41,7 @@
 #include "overlays/l11_pokitaru/hero_idle_animation.h"
 #include "asm_functions/level_11.h"
 #include "overlays/l11_pokitaru/resort_owner_and_water.h"
+#include "game/ui/help.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -342,7 +343,6 @@ extern void update_ship_lock_on_target(int a, char *moby);
 extern void draw_quarter_turn_textured_quads_f(float, float, float, float, unsigned char, unsigned char, unsigned char,
                                                unsigned char) __asm__("func_L11_00312510");
 
-extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
 
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
@@ -506,7 +506,7 @@ void draw_ship_hud(char *moby) {
         }
     }
     if (((Moby *)moby)->state == 8) {
-        FontPrintCenterLarge_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x5243), 0x11);
+        FontPrintCenterLarge_c(0x100, 0xC8, 0x80005080L, msg_string(0x5243), 0x11);
     }
     {
         struct Hero *h = (struct Hero *)g_hero;
@@ -723,7 +723,6 @@ extern void burst_313D00(void *, void *, void *, float, float, int, int, int, fl
                          int, int, int, int) __asm__("func_L00_0025F4A8");
 
 extern float length_313D00(void *) __asm__("func_001F9CE8");
-extern int play_313D00(int, int) __asm__("func_L00_00203F20");
 
 extern void draw_313D00(char *) __asm__("func_L11_00313218");
 extern void exhaust_313D00(Moby *, Jet *) __asm__("func_L11_00313BC0");
@@ -911,7 +910,7 @@ void update_player_ship_flight(void *a0, void *a1) {
         }
     }
     if (*(unsigned short *)(help_stats_base_r + 0x5F5) == 0) {
-        play_313D00(0x2AFC, 0x55);
+        Help_Request(0x2AFC, 0x55);
     }
     AddDrawCallback(draw_313D00, moby);
     exhaust_313D00(moby, o);

@@ -289,10 +289,6 @@ typedef struct {
 extern T_215340 lean_state_r __asm__("D_L00_0017A780");
 extern f32 g_frame_time MACRO_ADDR;
 
-extern void set_first_hero_easing_parameters_r(f32, f32) __asm__("func_L00_0020A858");
-extern void set_first_hero_easing_parameters_r2(f32, f32) __asm__("func_L00_0020A858");
-extern void set_first_hero_easing_parameters_r3(f32, f32) __asm__("func_L00_0020A858");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00215340.c, FUN_L00_00215340. */
 void adjust_hero_pose_targets_from_motion(void) {
     f32 v, nv, k, a, s, ang;
@@ -302,9 +298,9 @@ void adjust_hero_pose_targets_from_motion(void) {
 
     if (g_hero_r2.state.current == HERO_STATE_RUN) {
         Hero_SetTiltSpringParams(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r2(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r3(0.02f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.02f, 0.2f);
         if (g_hero_r2.state.step == 1) {
             v = g_hero_r2.motion.yaw_error;
             if (1.4f < v)
@@ -350,9 +346,9 @@ void adjust_hero_pose_targets_from_motion(void) {
     } else if (g_hero_r2.state.current == HERO_STATE_LAND ||
                g_hero_r2.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
         Hero_SetTiltSpringParams(0.008f, 0.08f);
-        set_first_hero_easing_parameters_r(0.015f, 0.08f);
-        set_first_hero_easing_parameters_r2(0.015f, 0.08f);
-        set_first_hero_easing_parameters_r3(0.008f, 0.1f);
+        Hero_SetTiltSpringParams(0.015f, 0.08f);
+        Hero_SetTiltSpringParams(0.015f, 0.08f);
+        Hero_SetTiltSpringParams(0.008f, 0.1f);
         b = g_hero_r2.motion.yaw_error * 1.6f;
         if (1.25f < b)
             b = 1.25f;
@@ -410,9 +406,9 @@ void adjust_hero_pose_targets_from_motion(void) {
         (lean_state_r.f[(0xB68) / 4]) = -b * 0.3f;
     } else if (g_hero_r2.state.control_mode == HERO_MODE_FALL || g_hero_r2.state.control_mode == HERO_MODE_JUMP) {
         Hero_SetTiltSpringParams(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r2(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r3(0.02f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.02f, 0.2f);
         x = g_hero_r2.motion.yaw_error;
         if (1.4f < x)
             x = 1.4f;

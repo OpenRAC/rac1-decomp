@@ -1147,8 +1147,6 @@ typedef struct {
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void PartType04Spawn_r(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
-
 extern Vec4 D_0013F590;
 extern short D_L03_00161BA8_D5790 SDATA(D_L03_00161BA8);
 extern char D_L03_00173FC0[];
@@ -1192,10 +1190,10 @@ void update_homing_rocket(struct Moby *m) {
             side.q = trail.q;
             vec_scale_to_length_r(&back, v, -0.2f);
             add_vectors(&trail, &back, pos);
-            PartType04Spawn_r(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(0xF, 0x16)), 0x28,
-                              rand_range(0x14, 0x23), 1);
-            PartType04Spawn_r(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(0x1E, 0x3C)), 0x28,
-                              rand_range(0x32, 0x4B), 0);
+            PartType04Spawn(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(0xF, 0x16)), 0x28,
+                            rand_range(0x14, 0x23), 1);
+            PartType04Spawn(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(0x1E, 0x3C)), 0x28,
+                            rand_range(0x32, 0x4B), 0);
             if (target.found != 0) {
                 pitch = -fast_atan2(vec_distance_xy_r(pos, &target.pos), target.pos.f[2] - m->pos.z);
                 m->rot.y = SpringTurn(&v->turn_vel, m->rot.y, pitch, g_frame_time_sq_r * 0.7853982f,
@@ -2076,11 +2074,9 @@ struct RailPath_DE088 {
 extern struct RailPath_DE088 *kerwan_paths_r4[] __asm__("D_L03_001B08B0");
 extern u32 pad0_pressed_r __asm__("D_0013CBE4");
 extern short D_L03_0015F674_DE088 SDATA(D_L03_0015F674);
-extern void set_moby_dialogue_record_value_r(void *, int) __asm__("func_L00_002676A0");
 
-extern int is_hero_on_moby_r(void *) __asm__("func_L01_00278FA8");
 extern void request_hero_target_pose_r(void *, float, int) __asm__("func_L00_00234768");
-extern s32 get_hero_target_pose_status_r(void) __asm__("func_L00_002347B8");
+
 extern void update_entity_matrix_r3(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 s32 func_L03_002D4CE0_DE088(struct Moby *m, s32 path, s32 *snd) __asm__("func_L03_002D4CE0");
 
@@ -2115,7 +2111,7 @@ void update_rail_lift(struct Moby *m) {
 
     if (d->path[0] == -1 || d->path[1] == -1)
         return;
-    set_moby_dialogue_record_value_r(m, func_L03_002DDEF8_DE088((unsigned char *)m));
+    set_moby_dialogue_record_value(m, func_L03_002DDEF8_DE088((unsigned char *)m));
     qcopy(&oldPos, &m->pos);
     oldRot.q = *(u128_DE088 *)&m->rot;
     fast_dec_timer_r5(&d->timer);
@@ -2150,7 +2146,7 @@ void update_rail_lift(struct Moby *m) {
             if (!d->started) {
                 m->collision = 0;
                 m->flags |= 0x41;
-            } else if (d->ready && is_hero_on_moby_r(m)) {
+            } else if (d->ready && is_hero_on_moby(m)) {
                 func_L03_002DDF90_DE088((char *)m, d->help[m->command ^ 1]);
                 if ((pad0_pressed_r & PAD_TRIANGLE) && (*(s32 *)&D_L03_0015F674_DE088) == 8) {
                     request_hero_target_pose_r(&m->pos, m->rot.z, 0);
@@ -2167,11 +2163,11 @@ void update_rail_lift(struct Moby *m) {
             }
             break;
         case 2:
-            if (!get_hero_target_pose_status_r())
+            if (!get_hero_target_pose_status())
                 m->state = 3;
             break;
         case 3:
-            if (is_hero_on_moby_r(m)) {
+            if (is_hero_on_moby(m)) {
                 g_hero_r.jump_lock_timer = 4;
                 g_hero_r.unk1F4 = 4;
             }
@@ -2184,7 +2180,7 @@ void update_rail_lift(struct Moby *m) {
     func_L03_002DE4B8_DE088(m);
     FastVecSub(&move, &m->pos, &oldPos);
     update_entity_matrix_r3(d->coll, &move, &oldRot, &m->rot);
-    if (!is_hero_on_moby_r(m) && vec_distance_xy_r2(&m->pos, &g_hero_r.motion.pos) > 2.0f && d->timer == 0)
+    if (!is_hero_on_moby(m) && vec_distance_xy_r2(&m->pos, &g_hero_r.motion.pos) > 2.0f && d->timer == 0)
         d->ready = 1;
 }
 extern float kerwan_moby_bob_height SDATA(kerwan_moby_bob_height);

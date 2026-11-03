@@ -122,8 +122,6 @@ extern int truncate_float_to_s32(float);
 
 extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
-extern void spawn_color_decaying_effect_particle(char *, char *, int);
-
 struct HeroL03UpdateStatePhysicsVars {};
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 03 build). */

@@ -23,6 +23,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -127,8 +128,7 @@ extern void func_L00_0025F4A8_2C6B30(struct Moby *, Vec4 *, void *, s32, f32, f3
                                      s32, s32, s32, s32, s32) __asm__("func_L00_0025F4A8");
 
 extern void Manipulator_ApplyScale_r(struct Moby *, s32, void *, f32) __asm__("func_L00_00264B40");
-extern void MoveCtl_Init_r(void *) __asm__("func_L01_0026E8E0");
-extern void MobyGroup_SetByteBC_r(s32, s32) __asm__("func_L01_0026F040");
+
 extern void update_seeker_damage_and_target_r(struct Moby *) __asm__("func_L09_002C73D0");
 
 /* Update of the oClass 52 moby: follows its target at a hover height above the hero, with a voice while it moves,
@@ -170,7 +170,7 @@ void seeker_update(struct Moby *moby) {
                 DeleteMoby_r(moby);
                 break;
             }
-            MoveCtl_Init_r(&vars->unkD0);
+            MoveCtl_Init(&vars->unkD0);
             vars->unkDC = 0.5f;
             vars->unkD8 = 0.5f;
             vars->unkD0 = truncate_float_to_s32_r(512.0f);
@@ -198,7 +198,7 @@ void seeker_update(struct Moby *moby) {
             }
             if (vars->unk164 != 2) {
                 if (moby->group != 0xFF) {
-                    MobyGroup_SetByteBC_r(moby->group, 1);
+                    MobyGroup_SetByteBC(moby->group, 1);
                 }
                 if (vars->voice == -1) {
                     vars->voice = Moby_PlaySound_r(1, 4, moby);
@@ -210,7 +210,7 @@ void seeker_update(struct Moby *moby) {
         case 3:
             if (moby->anim_flags & 2) {
                 if (moby->group != 0xFF) {
-                    MobyGroup_SetByteBC_r(moby->group, 1);
+                    MobyGroup_SetByteBC(moby->group, 1);
                 }
                 vars->moving = 1;
                 moby->state = 4;
@@ -391,7 +391,7 @@ extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
 extern void InitKnockback_r(void *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
-extern void MobyGroup_SetByteBC_r2(int, int) __asm__("func_L01_0026F040");
+
 extern void SetDeathBits_r2(void *, int, int) __asm__("func_L00_002584A8");
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
 
@@ -475,7 +475,7 @@ void update_seeker_damage_and_target(Moby *m) {
                 InitKnockback_r(m, d->f70, ang1, 4, 1, 0);
                 m->state = 5;
                 if (m->group != 0xFF) {
-                    MobyGroup_SetByteBC_r2(m->group, 1);
+                    MobyGroup_SetByteBC(m->group, 1);
                 }
                 d->reactTime = 0x78;
                 break;
@@ -638,8 +638,6 @@ extern int hit_check_2E39E0(Moby *, Hit_2E39E0 *, float *, int, int *, float *, 
 extern int timer16_2E39E0(short *) __asm__("func_001F9938");
 extern int timer32_2E39E0(int *) __asm__("func_001F9908");
 
-extern void event_2E39E0(int, int) __asm__("func_L01_0026F040");
-
 extern void knock_2E39E0(Moby *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
 extern void explode_2E39E0(Moby *, int, int) __asm__("func_L00_002584A8");
 extern void effects_start_2E39E0(Moby *, void *) __asm__("func_L00_0025E4B0");
@@ -691,7 +689,7 @@ void update_ground_melee_enemy(Moby *m) {
                     hit->damage = 1.0f;
             }
             if (m->group != 0xFF)
-                event_2E39E0(m->group, 1);
+                MobyGroup_SetByteBC(m->group, 1);
             if (hit->damage != 0.0f) {
                 float health = d->health - hit->damage;
                 float up = lift_2E39E0 * g_frame_time_r2;
@@ -821,7 +819,7 @@ void update_ground_melee_enemy(Moby *m) {
             if ((kind < 2 || FastVecLength(&step) < d->range) && FastAbsF(m->pos.z - query.z) < 8.0f &&
                 !random_integer_below(19)) {
                 if (m->group != 0xFF)
-                    event_2E39E0(m->group, 1);
+                    MobyGroup_SetByteBC(m->group, 1);
                 if (random_integer_below(0x100) & 1)
                     d->side_deg = -d->side_deg;
                 d->side = d->side_deg * 0.017453292f;
@@ -872,7 +870,7 @@ void update_ground_melee_enemy(Moby *m) {
                 m->state = 5;
             } else if (FastVecLength(&away) < d->range + 4.0f && FastAbsF(m->pos.z - query.z) < 8.0f) {
                 if (m->group != 0xFF)
-                    event_2E39E0(m->group, 1);
+                    MobyGroup_SetByteBC(m->group, 1);
             } else if (m->command != 1) {
                 m->state = 5;
             }
@@ -924,7 +922,7 @@ void update_ground_melee_enemy(Moby *m) {
             FastVecSub(&away, &query, &d->home);
             if (expired && FastVecLength(&away) < d->range) {
                 if (m->group != 0xFF)
-                    event_2E39E0(m->group, 1);
+                    MobyGroup_SetByteBC(m->group, 1);
                 m->state = 3;
                 if (m->prev_seq != 0)
                     animate_2E39E0(m, 0, 0, scale_ticks(rand_range(10, 13)));
@@ -1086,7 +1084,8 @@ extern struct Moby *CreateMoby_r(s32) __asm__("func_0020D348");
 extern f32 vec_length_xy_r(Vec4 *) __asm__("func_001F9CE8");
 
 extern f32 FastVecDist_r2(Vec4 *, Vec4 *) __asm__("func_001F9D10");
-extern u8 *func_L00_0026E940(f32, struct Moby *, u32, s32, s32);
+extern u8 *spawn_source_attached_fading_effect_particle_v(f32, struct Moby *, u32, s32,
+                                                          s32) __asm__("func_L00_0026E940");
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00307ba8.c, FUN_L09_00307ba8. */
@@ -1126,8 +1125,8 @@ struct Moby *spawn_class_4ea_projectile(void *owner, Vec4 *pos, Vec4 *vel, s32 l
         trail = life * 5 / 4;
         m->flags |= 0x200;
         m->alpha = 0x40;
-        spawn_source_attached_fading_effect_particle(400000.0f, m, 0x2F7F4F4F, trail, -1);
-        spawn_source_attached_fading_effect_particle(160000.0f, m, 0x4F7F7F7F, trail, -1);
+        spawn_source_attached_fading_effect_particle_v(400000.0f, m, 0x2F7F4F4F, trail, -1);
+        spawn_source_attached_fading_effect_particle_v(160000.0f, m, 0x4F7F7F7F, trail, -1);
         moby_build_matrix_r(m);
     }
     return m;
@@ -1166,7 +1165,6 @@ extern s32 coll_line_r(void *, void *, s32, void *, CollisionProbe *) __asm__("f
 
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
-extern void func_L00_0026EBC0(void *, void *, u32, s32, f32);
 extern void spawn_explosion_r(void *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, s32, f32, f32, s32, s32,
                               s32, s32) __asm__("func_L00_0025F4A8");
 

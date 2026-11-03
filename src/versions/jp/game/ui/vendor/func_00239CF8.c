@@ -7,8 +7,8 @@ void render_vendor_item_details_pass(void) {
     DrawMobyList(vendor_state_m.f20, 1);
     if (vendor_state_m.slots[vendor_state_m.idx].kind == 1) {
         FontPrintSmall(6, 8, 0x80F0F0F0L,
-                       msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
-        FontPrintSmall(0x18, 0x18, 0x80F0F0F0L, msg_string_id(0x4F5E), -1);
+                       msg_string(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall(0x18, 0x18, 0x80F0F0F0L, msg_string(0x4F5E), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
         font_print_right_small(0x76, 0x65, 0x80F0F0F0L, buf, -1);
         if (vendor_state_m.f40 != 0) {
@@ -27,7 +27,7 @@ void render_vendor_item_details_pass(void) {
         }
     } else {
         FontPrintSmall(6, 8, 0x80F0F0F0L,
-                       msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+                       msg_string(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
         font_print_right_small(0x76, 0x65, item_available_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
         if (item_available_b[0x23] != 0) {

@@ -40,6 +40,8 @@
 #include "asm_functions/level_14.h"
 #include "overlays/shared/tracked_moby_show.h"
 #include "overlays/l14_oltanis/bolt_thief_and_path_cameras.h"
+#include "overlays/shared/rocket_and_path_camera.h"
+#include "overlays/shared/space_commando_and_door_lock.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -3028,10 +3030,9 @@ extern void initialize_flight_path_state_r2(Moby *) __asm__("func_L14_002FDD18")
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern void activate_descriptor_r(int) __asm__("func_L10_002F6E10");
+
 extern int advance_moby_along_flight_path_r(Moby *) __asm__("func_L14_002FEDA0");
 
-extern void set_moby_state_two_r(Moby *) __asm__("func_L06_00304590");
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 extern void spawn_moby_exhaust_puffs_r(Moby *) __asm__("func_L14_002FE798");
 
@@ -3150,7 +3151,7 @@ void update_enemy_fighter_921(Moby *m) {
                             m->collision = *(int *)((char *)((struct Moby *)m->pclass) + 0x10);
                             jet->flags &= 0xFFBE;
                             m->state = 2;
-                            activate_descriptor_r(d->f90);
+                            activate_descriptor(d->f90);
                             seat->draw_dist = 0xFF;
                             seat->update_dist = 0xFF;
                         }
@@ -3176,7 +3177,7 @@ void update_enemy_fighter_921(Moby *m) {
                     qcopy((*(Vec_2FE038 *)&jet->pos), vb);
                     qcopy((*(Vec_2FE038 *)&jet->rot), (*(Vec_2FE038 *)&m->rot));
                     if (d->f94 == 1) {
-                        set_moby_state_two_r(jet);
+                        set_moby_state_two(jet);
                         d->f94 = 2;
                     }
                 }
@@ -3223,7 +3224,6 @@ typedef struct {
     L14PuffTail tail; /* 0x20 */
 } L14Puff;
 
-extern L14Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
 extern f32 fighter921_exhaust_forward_offset SDATA(fighter921_exhaust_forward_offset);
 extern f32 fighter921_exhaust_side_offset SDATA(fighter921_exhaust_side_offset);
 extern f32 fighter921_exhaust_up_offset SDATA(fighter921_exhaust_up_offset);

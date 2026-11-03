@@ -481,7 +481,6 @@ extern unsigned water_last_tex1 SDATA(water_last_tex1);
 extern unsigned water_last_alpha2 SDATA(water_last_alpha2);
 extern unsigned water_last_alpha1 SDATA(water_last_alpha1);
 void build_water_render_setup_packet(void);
-extern void ripple_heights_to_scratchpad_r(void *, void *) __asm__("func_L01_00262BC0");
 
 extern void update_animated_offset_pairs(f32 *);
 
@@ -550,7 +549,7 @@ void render_water_grids(f32 *pos, s32 count) {
             if ((near_bits & 0x20202020) == 0x20202020)
                 goto next_entity;
 
-            ripple_heights_to_scratchpad_r((void *)0x70000000, (u8 *)pos + ((ripple_draw_buffer) * 0x5c0 + 0x50));
+            ripple_heights_to_scratchpad((void *)0x70000000, (u8 *)pos + ((ripple_draw_buffer) * 0x5c0 + 0x50));
             ripple_shade_vertices(pos);
             build_height_grid_positions(pos);
             update_animated_offset_pairs(pos);
@@ -814,7 +813,6 @@ void novalis_elevator_update(unsigned char *moby) {
 }
 LINKER_REMNANT("asm/overlays", func_L01_002C05B8);
 
-extern char *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern char novalis_coll_hit_point[];
 extern float novalis_coll_hit[];
 
@@ -2068,7 +2066,6 @@ extern void process_amoeboid_hits_and_update_targeting(char *);
 extern void spawn_amoeboid_movement_particles(unsigned char *);
 extern void spawn_amoeboid_burst_sparks(unsigned char *, float *);
 extern int follow_path_v(int *, int, int, float, void *, void *, void *) __asm__("func_L01_00277FD8");
-extern void MoveCtl_Init_r(void *) __asm__("func_L01_0026E8E0");
 
 extern void PostHitMessage_r(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
@@ -2142,7 +2139,7 @@ void large_amoeboid_update(unsigned char *moby) {
             }
             if (data->unk_224 == 0.0f)
                 data->unk_224 = 15.0f;
-            MoveCtl_Init_r(&data->move_ctl);
+            MoveCtl_Init(&data->move_ctl);
             data->unk_17C = 2.0f;
             data->unk_178 = 2.0f;
             result = truncate_float_to_s32(data->size * 0.8f * 1024.0f);

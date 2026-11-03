@@ -99,8 +99,6 @@ extern union PacketCursor D_L01_00161240 MACRO_ADDR;
 extern u8 D_L01_001CAF00[];
 extern s32 FastBSphereCheck_r(void *, f32) __asm__("func_L00_00200290");
 
-extern void emit_textured_strip_packet_r(s32, s32, s32, s32, s32, s32) __asm__("func_L01_0021F9C8");
-
 void func_L01_002BA898_r(s32 count, ScrollLayer *l) __asm__("func_L01_002BA898");
 
 /* Scrolls the UV offsets of count overlay layers (wrapping into [-1, 1]) and, for each one in view, queues its
@@ -161,7 +159,7 @@ void func_L01_002BA898_r(s32 count, ScrollLayer *l) {
         q[9] = 7;
         l01_packet.tag = tag + 6;
         build_overlay_layer_wave_vertices(l);
-        emit_textured_strip_packet_r(l->shape, 0x70000000, 0x70003000, 0x70001000, 0x70002000, 1 - vis);
+        emit_textured_strip_packet(l->shape, 0x70000000, 0x70003000, 0x70001000, 0x70002000, 1 - vis);
     }
 }
 LINKER_REMNANT("asm/overlays", func_L01_002BABE8);
@@ -2551,8 +2549,6 @@ typedef struct {
     int kind;
     float len;
 } BeamVars;
-
-extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 
 /* Spawns a beam moby from an owner, position, direction and colour vectors. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f68a0. */
 BeamMoby *spawn_beam(void *owner, u128_t *pos, u128_t *dir, u128_t *color, int kind) {

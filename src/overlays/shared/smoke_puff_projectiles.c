@@ -29,8 +29,6 @@ typedef struct {
 } ShotVars_B0068;
 extern struct Moby *CreateMoby_r(int oclass) __asm__("func_0020D348");
 
-extern void func_L00_0026E940(struct Moby *, int color, int life, int, float size);
-
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aee30.c, FUN_L04_002aee30. */

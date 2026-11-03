@@ -40,6 +40,7 @@
 #include "overlays/l07_umbris/white_particles.h"
 #include "overlays/l07_umbris/snagglebeast_sphere_draw.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -347,9 +348,7 @@ extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
 
 extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
-extern void set_moby_dialogue_record_value_r(void *, int) __asm__("func_L00_002676A0");
 
-extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern float split_float_fraction_r(float *, float) __asm__("func_L00_002001D8");
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
@@ -403,10 +402,10 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                         HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
                     }
                     if (data->f1F0 != -1) {
-                        set_moby_dialogue_record_value_r(moby, 1);
+                        set_moby_dialogue_record_value(moby, 1);
                         SetDeathBits_r(moby, 0, -1);
                         jet_clear_persistent(moby->mission);
-                        jet_reset_camera_r(scene_points_r[data->f1F0].f30, scene_points_r[data->f1F0].f70);
+                        jet_reset_camera(scene_points_r[data->f1F0].f30, scene_points_r[data->f1F0].f70);
                     }
                     moby->state = 10;
                 } else {
@@ -2025,8 +2024,6 @@ typedef struct {
     char padC[0x14];
     RopeTail tail;
 } RopePuff;
-
-extern RopePuff *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
 extern RopeVec_319080 rope_previous_points_prev_base[];
 extern RopeVec_319080 rope_grid_prev_row_base[][20];

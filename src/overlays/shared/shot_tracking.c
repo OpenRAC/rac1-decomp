@@ -40,8 +40,6 @@ extern float aridia_shot_stream_spread_near SDATA(aridia_shot_stream_spread_near
 
 extern int truncate_float_to_s32(float);
 
-extern void spawn_color_decaying_effect_particle(void *, void *, int);
-
 typedef struct {
     char *p[7];
     short timer;

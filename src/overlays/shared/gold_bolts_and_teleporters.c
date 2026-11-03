@@ -301,11 +301,6 @@ extern int rand_range(int, int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-
-extern void spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int, int,
-                                                                              int, int);
-
 /* Update of moby class 686, a flying burst: drifts and trails smoke; on reaching its target it damages around it,
    sprays particles, arms nearby class 0x2BC targets and deletes itself. */
 void update_explosive_projectile(Moby *moby) {
@@ -986,7 +981,6 @@ void the_plumber_update(char *m) {
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern s32 D_0014C290[][64];
 
-extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 typedef struct {
     s32 volume; /* 0x00: clip volume that arms it */
     u8 pad4[4];
@@ -1052,7 +1046,7 @@ void spawn_point_update(struct Moby *moby) {
             if (FastAbsF(moby->pos.z - pos.z) > 2.0f) {
                 pos.z = moby->pos.z;
             }
-            jet_reset_camera_r(&pos, &moby->rot);
+            jet_reset_camera(&pos, &moby->rot);
             novalis_current_level_state.collected[(s16)moby->save_id] = 0;
             novalis_checkpoint_level_state_r.collected[(s16)moby->save_id] = 0;
             level_moby_killed[g_current_level_index_r][(s16)moby->save_id >> 5] &= ~(armed << (moby->save_id & 0x1F));
@@ -1235,8 +1229,6 @@ extern f32 dist_00309078(void *, void *) __asm__("func_001F9D48");
 
 extern int countdown_00309078(int *) __asm__("func_001F9908");
 
-extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
-
 extern void save_00309078(int, int) __asm__("func_0020BFC8");
 
 /* Update of the Novalis collectible that starts a short cutscene: spins and bobs at its spawn point until the hero
@@ -1310,7 +1302,7 @@ void gold_bolt_update(Moby *moby) {
             if (hero_00309078.vehicle_mode == 3) {
                 exit_hero_vehicle_mode_and_restore_moby_r();
             }
-            Hero_ResetToPosition_r(&at, &look, 0x72, 0);
+            Hero_ResetToPosition(&at, &look, 0x72, 0);
             voice_00309078(0, 0, moby);
             at2.x = FastCos(vars->home.w) * 1.25f;
             at2.y = FastSin(vars->home.w) * 1.25f;
@@ -1369,7 +1361,7 @@ void gold_bolt_update(Moby *moby) {
             ShowBanner(0x53B8, -1);
             gold_bolts_collected_r[vars->id + g_current_level_index_r * 4] = 1;
             cutscene_active_r = 0;
-            Hero_ResetToPosition_r(&h->motion.pos, &h->motion.rot, 0, 0);
+            Hero_ResetToPosition(&h->motion.pos, &h->motion.rot, 0, 0);
             CameraScript2(0);
             save_00309078(0, -1);
             DeleteMoby(moby);

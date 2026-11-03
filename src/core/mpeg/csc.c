@@ -9,7 +9,7 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
-extern void _Error_a(void *, void *) __asm__("func_0012C468");
+extern void _Error(void *, void *);
 
 extern void dispatch_mpeg_callback();
 
@@ -94,7 +94,7 @@ void do_csc2(void *arg0, unsigned int arg1, int arg2) {
     while (rec.done < rec.total) {
     }
     if (rec.err != 0) {
-        _Error_a(p, csc_handler_error_msg);
+        _Error(p, csc_handler_error_msg);
     }
     while (*(volatile int *)0x10002010 < 0) {
     }

@@ -186,8 +186,6 @@ extern float batalia_hero_anim_frame_speeds[];
 
 extern int truncate_float_to_s32(float);
 
-extern void spawn_color_decaying_effect_particle(char *, char *, int);
-
 extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 struct HeroL08UpdateStatePhysicsVars {};

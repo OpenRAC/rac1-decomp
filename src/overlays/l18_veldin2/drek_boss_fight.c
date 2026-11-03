@@ -38,6 +38,7 @@
 #include "asm_functions/level_18.h"
 #include "overlays/l18_veldin2/deplanetizer_and_gadgebots.h"
 #include "overlays/l18_veldin2/flagged_pvar_word.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -2651,7 +2652,6 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
 
-extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern int drek_boss_fire_puff_color SDATA(drek_boss_fire_puff_color);
 extern int drek_boss_fire_puff_end_color SDATA(drek_boss_fire_puff_end_color);
 extern int drek_boss_fire_spark_count SDATA(drek_boss_fire_spark_count);

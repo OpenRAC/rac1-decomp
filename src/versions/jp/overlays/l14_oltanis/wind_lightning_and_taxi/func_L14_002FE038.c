@@ -98,7 +98,7 @@ void update_enemy_fighter_921(Moby *m) {
                             m->collision = *(int *)((char *)((struct Moby *)m->pclass) + 0x10);
                             jet->flags &= 0xFFBE;
                             m->state = 2;
-                            activate_descriptor_r(d->f90);
+                            activate_descriptor(d->f90);
                             seat->draw_dist = 0xFF;
                             seat->update_dist = 0xFF;
                         }
@@ -124,7 +124,7 @@ void update_enemy_fighter_921(Moby *m) {
                     qcopy((*(Vec_2FE038 *)&jet->pos), vb);
                     qcopy((*(Vec_2FE038 *)&jet->rot), (*(Vec_2FE038 *)&m->rot));
                     if (d->f94 == 1) {
-                        set_moby_state_two_r(jet);
+                        set_moby_state_two(jet);
                         d->f94 = 2;
                     }
                 }

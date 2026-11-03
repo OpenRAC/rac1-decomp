@@ -34,6 +34,9 @@
 #include "game/audio/music.h"
 #include "overlays/shared/blarg_commander.h"
 #include "overlays/l14_oltanis/heavy_interceptor_and_turrets.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -169,7 +172,6 @@ extern float D_L14_00162068_2FF358 SDATA(D_L14_00162068);
 extern float D_L14_0016206C_2FF358 SDATA(D_L14_0016206C);
 extern float D_L14_00162070_2FF358 SDATA(D_L14_00162070);
 extern int D_L14_00162074_2FF358 SDATA(D_L14_00162074);
-extern Part *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
 /* Spawns the effect pieces for a moby: two sparks, the ring of three and a final coloured one. */
 void spawn_moby_offset_puffs(Moby *p) {
@@ -1044,11 +1046,6 @@ extern void initialize_morphoray_private_state_r(void *) __asm__("func_L14_00306
 extern void update_morphoray_particles_r(struct Moby *) __asm__("func_L14_00306FA0");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void StartCutscene_r(s32) __asm__("func_L00_00299B68");
-
-extern int memcard_Save_r(s32, s32) __asm__("func_0020BFC8");
-
-extern void Help_Request_r(s32, s32) __asm__("func_L00_00203F20");
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00305758. */
@@ -1089,20 +1086,20 @@ void CollectiblePickupUpdate(struct Moby *moby) {
             else
                 d->picked_up = 0;
             grant_inventory_item(0x15, 1);
-            StartCutscene_r(6);
+            StartCutscene(6);
             moby->state = 2;
             break;
         case 2:
             if (oltanis_game_mode_r != state) {
                 if (saved_mission_state_r[moby->mission + g_current_level_index_r * 16] != 0xFF) {
                     jet_clear_persistent(moby->mission);
-                    memcard_Save_r(0, -1);
+                    memcard_Save(0, -1);
                 }
                 if (d->picked_up != 0)
                     ShowBanner(0x53e5, -1);
                 else
                     ShowBanner(0x36b2, -1);
-                Help_Request_r(0x36b0, 0x7a);
+                Help_Request(0x36b0, 0x7a);
                 DeleteMoby(moby);
                 return;
             }
@@ -2282,8 +2279,6 @@ extern float oltanis_key_cam_path_distances_r[][1000] __asm__("D_L14_001F6FC0");
 extern float oltanis_path_camera_keys_r[] __asm__("D_L14_001F67C8");
 extern float D_L14_00162578_16E60 SDATA(D_L14_00162578);
 
-extern void compute_position_from_spherical_offset_r(void *, void *, void *) __asm__("func_L00_001ED900");
-
 extern void normalize_16E60(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 /* Start a path-key camera: sum its three paths' lengths, aim it at the hero, set key durations. */
@@ -2354,7 +2349,7 @@ void initialize_path_key_camera(struct UpdateCam *cam) {
     ang[1] = v[1];
     ang[0] = f;
     ang[2] = v[2];
-    compute_position_from_spherical_offset_r(&cam->pos, ang, &g_hero.motion);
+    compute_position_from_spherical_offset(&cam->pos, ang, &g_hero.motion);
     FastVecSub(dir, &g_hero.motion, &cam->pos);
     FastVecScale(up, &g_hero.gravity_dir, -1.5f);
     FastVecAdd(dir, dir, up);

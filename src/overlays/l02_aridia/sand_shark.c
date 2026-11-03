@@ -137,8 +137,6 @@ void begin_animated_frame_rendering(int a, int b, int c, int d, float x, float y
 }
 typedef int u128b __attribute__((mode(TI)));
 
-extern char *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
-
 extern float sand_shark_dust_rise_speed SDATA(sand_shark_dust_rise_speed);
 extern float sand_shark_dust_puff_size SDATA(sand_shark_dust_puff_size);
 extern unsigned short sand_shark_dust_puff_ticks SDATA(sand_shark_dust_puff_ticks);
@@ -1331,8 +1329,6 @@ extern int func_001160D8(void);
    11. */
 extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
-
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 

@@ -26,6 +26,8 @@
 #include "game/render/partupd.h"
 #include "asm_functions/level_14.h"
 #include "overlays/shared/vendor_beam.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -612,9 +614,6 @@ extern void AddDrawCallback_r(void (*)(struct Moby *), struct Moby *) __asm__("f
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobyTransformScaledVertex_r(struct Moby *, s32, void *) __asm__("func_0020DAF8");
 
-extern Particle *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, s32,
-                                                                      struct Moby *) __asm__("func_L00_002757E8");
-
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 /* Ship engine effects: puffs exhaust particles from joint 1 and places the nozzle and beam points from joints 7 and 2.
@@ -640,12 +639,12 @@ void update_plasmabot_visual_effects(struct Moby *m) {
     vec_scale_to_length_r(&dir, &dir, -0.5f);
     FastVecAdd(&pv->exhaust, &pos, &dir);
     random_spherical_offset(&vel, 0.005f, 0.03f);
-    p = spawn_mode_controlled_rotating_alpha_fade_particle_r(&pos, &vel, 0x7F, m);
+    p = spawn_mode_controlled_rotating_alpha_fade_particle(&pos, &vel, 0x7F, m);
     if (p != 0) {
         p->life = random_float_between(6000.0f, 32000.0f);
     }
     for (i = 0; i < 3; i++) {
-        p = spawn_mode_controlled_rotating_alpha_fade_particle_r(&pos, oltanis_zero_vector_r, 0x7F, m);
+        p = spawn_mode_controlled_rotating_alpha_fade_particle(&pos, oltanis_zero_vector_r, 0x7F, m);
         if (p == 0) {
             continue;
         }
@@ -1304,9 +1303,6 @@ extern float spinning_debris_drag_min_speed SDATA(spinning_debris_drag_min_speed
 extern float spinning_debris_drag SDATA(spinning_debris_drag);
 extern float spinning_debris_gravity SDATA(spinning_debris_gravity);
 
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern void *PartType23Spawn(void *, float, float, float, int, void *, float, int);
-
 extern float oltanis_zero_vector[] MACRO_ADDR;
 
 /* Moby update for a falling debris particle. */
@@ -1761,7 +1757,6 @@ typedef struct {
     T_eca8 tail;
 } P_eca8;
 
-extern void *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 extern float oltanis_zero_vector[] MACRO_ADDR;
 extern float offset_particles_first_offset_x SDATA(offset_particles_first_offset_x);
 extern float offset_particles_first_offset_y SDATA(offset_particles_first_offset_y);

@@ -206,9 +206,6 @@ extern int MoveKeepingOverGround_v(void *, void *, void *, float, float, float, 
 
 extern int DefaultVtbl_DeleteMoby_v(int, int, float) __asm__("func_L00_00237B70");
 
-extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
-                                                                               int, int, int);
-
 extern int truncate_float_to_s32(float);
 
 /* Mine (moby Mine) update: falls and bounces, sticks to what it hits, homes on a nearby target and explodes. */
@@ -1477,8 +1474,6 @@ extern int bomb_trail_spark_upper_color_b SDATA(bomb_trail_spark_upper_color_b);
 extern int bomb_trail_spark_count SDATA(bomb_trail_spark_count);
 extern int bomb_trail_spark_texture SDATA(bomb_trail_spark_texture);
 extern int predict_throw_landing(void *, void *, int);
-
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
 /* Update of moby class 121, a thrown bomb: it flies and spins, bounces once on the ground, explodes on a hit or when
    its timer runs out, then its blast ring grows for 15 frames. */
@@ -2868,7 +2863,6 @@ typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V_2b1af0_B30C8;
 
-void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern V_2b1af0_B30C8 hero_basis_2;
 
 int truncate_float_to_s32(float);

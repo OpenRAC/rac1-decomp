@@ -9,7 +9,7 @@ void suck_cannon_update(Moby *moby) {
         moby->flags &= ~0x41;
     switch (moby->state) {
         case 0:
-            initialize_moby_particle_effect_r(moby);
+            initialize_moby_particle_effect(moby);
             if (*(discount_purchase_pricing_r + 0xE)) {
                 remove_moby_002E2DF0(moby);
                 break;
@@ -21,7 +21,7 @@ void suck_cannon_update(Moby *moby) {
             update_suck_cannon_particles_r(moby);
             if (dist_002E2DF0(&moby->pos, gHeroPos_r) < 3.0f) {
                 moby->flags |= 0x41;
-                StartCutscene_r(2);
+                StartCutscene(2);
                 moby->state = 2;
             }
             break;
@@ -36,7 +36,7 @@ void suck_cannon_update(Moby *moby) {
             grant_inventory_item(9, 1);
             if (vars->exitMoby != -1) {
                 exit = &portal_mobys_002E2DF0[vars->exitMoby];
-                jet_reset_camera_r(&exit->pos, &exit->rot);
+                jet_reset_camera(&exit->pos, &exit->rot);
             } else {
                 STUB_printf_r(suck_cannon_no_exit_fmt_r, *(s16 *)&moby->save_id);
             }

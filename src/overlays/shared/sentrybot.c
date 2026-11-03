@@ -1686,14 +1686,9 @@ extern char quartu_coll_hit[];
 extern char *quartu_coll_sphere_moby_hits[];
 extern char quartu_player_camera[];
 
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-
 extern int coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
-extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
-                                                                               int, int, int);
-
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, float, int, int);
+extern void PartType11Spawn_v(void *, void *, int, int, float, int, int, float, int, int) __asm__("func_L00_0026B890");
 
 /* update of moby class 256: a homing missile that leads its target, trails smoke and explodes on contact */
 void update_target_leading_missile(M_29E8A0 *m) {
@@ -1971,10 +1966,10 @@ void update_target_leading_missile(M_29E8A0 *m) {
                         int l1 = rand_range(scale_ticks(0xF), scale_ticks(0x14));
                         int l2 = rand_range(scale_ticks(0x19), scale_ticks(0x1E));
                         int l3, l4;
-                        PartType11Spawn(m->pos, v70, *p1, *p2, 400000.0f, l1, l2, sz, 0, 0);
+                        PartType11Spawn_v(m->pos, v70, *p1, *p2, 400000.0f, l1, l2, sz, 0, 0);
                         l3 = rand_range(scale_ticks(5), scale_ticks(0xA));
                         l4 = rand_range(scale_ticks(0xF), scale_ticks(0x14));
-                        PartType11Spawn(m->pos, v70, 0x7FFFFFFF, 0xFFFFFF, 400000.0f, l3, l4, sz * 0.5f, 0, 0);
+                        PartType11Spawn_v(m->pos, v70, 0x7FFFFFFF, 0xFFFFFF, 400000.0f, l3, l4, sz * 0.5f, 0, 0);
                         i++;
                     }
                 }
@@ -2103,11 +2098,9 @@ typedef struct {
     PartSub29FF90 sub;
 } Part29FF90;
 
-extern void func_L00_0026AA10(void *, unsigned char, unsigned char, unsigned char, float, float, int);
-
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
-extern char *func_L00_0026E940(float, char *, int, int, int);
+extern char *spawn_source_attached_fading_effect_particle_v(float, char *, int, int, int) __asm__("func_L00_0026E940");
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(void *, void *, int, int, float, int,
                                                                                  int, int,
@@ -2247,10 +2240,10 @@ void update_charged_blast(Moby29FF90 *moby) {
             *(u128_29FF90 *)v2 = *(u128_29FF90 *)moby->pos;
             SendRadialMessageToMobys(moby, v2, quartu_coll_sphere_moby_hits, n, 0, 0x8B0000, 2, 1, 20.0f, 1.0f, 1.0f);
             cnt = scale_ticks(0x3C) - d->f14 < scale_ticks(5) ? scale_ticks(0x3C) - d->f14 : scale_ticks(5);
-            spawn_source_attached_fading_effect_particle(r * 0.5f * 210000.0f, (char *)moby,
-                                                         (0x4F << 24) | (rand_range(0x3F, 0x7F) << 16) |
-                                                             (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F),
-                                                         cnt, -1);
+            spawn_source_attached_fading_effect_particle_v(r * 0.5f * 210000.0f, (char *)moby,
+                                                           (0x4F << 24) | (rand_range(0x3F, 0x7F) << 16) |
+                                                               (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F),
+                                                           cnt, -1);
             random_spherical_offset(w, r * g_frame_time, r * 2.0f * g_frame_time);
             col = (0x7F << 24) | (rand_range(0x3F, 0x7F) << 16) | (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F);
             spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(
