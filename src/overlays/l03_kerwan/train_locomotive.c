@@ -24,6 +24,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -215,8 +217,6 @@ extern void gunship_follow_path(char *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-
-extern int STUB_printf();
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -445,9 +445,6 @@ extern char voice_pool[];
 extern void update_metropolis_train_idle_motion_r(void *) __asm__("func_L03_00293EB8");
 
 extern void MusicRequestTrack(int, int);
-extern void set_moby_dialogue_record_value(void *, int);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern int fast_dec_timer(int *);
 
@@ -754,13 +751,13 @@ typedef struct {
     float accel;
 } Data_295DB0;
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001E9768(void *);
+
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
-extern int func_L00_0028EF68(int, int, void *, int);
+
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
@@ -974,7 +971,6 @@ void add_moby_rotation_based_offsets(char *moby, float *out) {
     }
 }
 extern int D_L03_0015F6B0 MACRO_ADDR;
-extern int Sound_IsPlaying(void *, int);
 
 typedef struct EmitterVoiceData {
     u8 pad_000[0x14A];

@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
 
 extern int cinematic_mode MACRO_ADDR;
 extern int effect_queue[];
@@ -50,7 +51,7 @@ typedef int q128 __attribute__((mode(TI)));
 extern f32 vec_length_xy(void *);
 extern s32 truncate_float_to_s32(f32);
 extern s32 *camera_collision_grid MACRO_ADDR;
-extern void STUB_printf(char *);
+
 extern char camera_collision_out_of_grid_msg[];
 extern s32 test_point_in_camera_collision_volume_r(Vec4 *, s32 *, f32) __asm__("func_L00_001EE698");
 

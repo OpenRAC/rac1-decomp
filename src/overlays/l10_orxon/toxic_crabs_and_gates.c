@@ -25,6 +25,8 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -1267,7 +1269,7 @@ extern float blarg_ship_fire_anim_speed SDATA(blarg_ship_fire_anim_speed);
 extern float frame_scale MACRO_ADDR;
 extern char orxon_help_state[];
 extern unsigned char gHaveHeliPack[];
-extern void STUB_printf(char *, ...);
+
 extern void update_blarg_ship_hit_reactions_and_targeting(char *m);
 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
@@ -1682,7 +1684,7 @@ void emit_moby_directional_particles(char *m) {
                                            c1, c2, variant);
     }
 }
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern int try_set_help_message(int, int);
 
 extern int memcard_Save(int, int);

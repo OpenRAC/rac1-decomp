@@ -11,6 +11,9 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -38,7 +41,6 @@
 
 extern void SkyLevelGeneric___maybe(void);
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 
 /* VU1_addGSregister is (int, long) and depth_buffer_address MACRO_ADDR; the older
@@ -156,10 +158,7 @@ typedef struct {
 
 extern void FastMemZero16(void *, int);
 
-extern void STUB_printf(char *);
-
 extern void SetBackgroundColor(int, int, int);
-extern int VU0_loadMicroProgram();
 
 extern void scale_vector(void *, void *, float);
 
@@ -687,7 +686,7 @@ extern u8 D_001B6C00[];
 extern s32 D_001D8840[];
 extern s32 D_001E0C00[];
 extern s32 D_001E2900[];
-extern void func_002348B8(void);
+
 extern void FastMemSet_r(void *, s32, s32) __asm__("func_001F99B0");
 extern void flush_cache_r(s32) __asm__("func_00118D80");
 extern void queue_dma_transfer_r(s32) __asm__("func_001EB300");
@@ -1102,7 +1101,6 @@ extern u8 occl_visibility[];
 extern u8 shrub_scratchpad_copy[];
 extern u8 tfrag_dma_block[];
 extern u8 tie_light_data[];
-extern s32 append_dma_tag();
 
 extern s32 Transition_DrawSky_r() __asm__("func_001E9E70");
 extern s32 Transition_UpdateMovieCamera_r2() __asm__("func_001EB338");
@@ -1120,10 +1118,8 @@ extern void DrawShrubs();
 
 extern s32 PatchTfragGifs();
 extern void DrawTfrag();
-extern s32 VU0_loadMicroProgram();
-extern s32 VU1_syncChain();
+
 extern s32 VU1_addGSregister_r() __asm__("func_00234C98");
-extern void vu1_gs_regs_alt();
 
 extern s32 PatchTieGifs();
 extern void DrawTies_1();
@@ -1284,10 +1280,10 @@ extern s32 D_0015F538 MACRO_ADDR;
 extern void load_and_init_BB48(void) __asm__("func_00209DC0");
 extern void transition_load_wad_BB48(void) __asm__("func_001EABE8");
 extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
-extern void func_001FFA90(void);
+
 extern void func_00233FF8(void);
 extern void func_00234018(void);
-extern void func_001FF6B8(void);
+
 extern void func_002032D0(void);
 extern s32 func_00122598(s32);
 extern s32 scale_frames_BB48(s32) __asm__("func_001F98C0");

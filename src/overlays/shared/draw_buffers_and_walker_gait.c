@@ -12,6 +12,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 
 extern void wait_for_graphics_pipeline_idle(int, int);
 
@@ -185,7 +186,6 @@ extern int truncate_float_to_s32(float);
 
 extern float vec_distance_xy(void *, void *);
 
-extern void STUB_printf();
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
 extern float g_frame_time MACRO_ADDR;

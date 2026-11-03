@@ -10,6 +10,7 @@
 #include "game/render/vuchain.h"
 #include "asm_functions/executable.h"
 #include "game/audio/sound.h"
+#include "game/system/stub.h"
 
 /*
  * initonce.cpp in the original source; text 0x201E10-0x202260.
@@ -55,7 +56,6 @@ extern void sce_cd_init(int);
 extern void sce_cd_disk_ready(int);
 extern int sce_sif_reboot_iop(void *);
 extern int sce_sif_sync_iop(void);
-extern int STUB_printf(); /* debug-log stub: void STUB_printf(int, ...) */
 
 extern void sceSifInitRpc(int);
 
@@ -67,7 +67,6 @@ extern int wad_GetSectors_FiiPv(int lba, int sectors, void *buf);
 
 extern void memcard_get_name(void *arg0);
 
-extern void VU0_loadMicroProgram(void *);
 extern int load_disc_sectors_into_global_buffer(void);
 
 extern int LoadIRXModule(void *arg0, void *arg1);

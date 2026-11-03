@@ -539,7 +539,7 @@ typedef struct {
 /* FAKEMATCH: a second view of map_menu_state. One view with casts matches, but reads worse. */
 extern RenderArchiveState map_menu_state;
 extern u8 gHaveMapOMatic NOT_SDA;
-void Profile_Mark(void);
+void Profile_Mark_v(void) __asm__("func_001E9768");
 void update_map_icons(s32, s32);
 void start_audio_stream_read(s32, s32, s32);
 void update_audio_stream_until_idle(s32);
@@ -555,7 +555,7 @@ void initialize_render_archive_transfer(void) {
     s32 archive_index;
     RenderArchiveState *state = &map_menu_state;
 
-    Profile_Mark();
+    Profile_Mark_v();
     update_map_icons(state->archive_index, 1);
     first_base = level_menu_system.first_base;
     second_base = level_menu_system.second_base;

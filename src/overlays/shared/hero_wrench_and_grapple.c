@@ -18,6 +18,8 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/audio/sound.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
 extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
@@ -342,11 +344,8 @@ extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char D_0013D5C8[];
 extern Rec2C D_L02_0017C2A8[];
 extern int D_L02_0015F754 SDATA(D_L02_0015F754);
-extern int pad_pressed_within(int, int, int *);
 
 extern int truncate_float_to_s32(float);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern int HeroL02_SetMoveState(int, int);
 extern int func_001F9908(int *);

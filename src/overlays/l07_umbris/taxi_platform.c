@@ -24,6 +24,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -137,8 +138,6 @@ extern int func_001FA898(float);
 extern void HeroEnterMoveState(int, int);
 
 extern float vec_distance_xy(void *, void *);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern void update_entity_matrix(void *, void *, void *, void *);
 
@@ -717,7 +716,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
 extern void RerollEffectCounter(void *, short *);
 extern void StepColorFade(void *, void *);
 extern int get_first_moby_in_group(int *, int, int, int);
-extern int STUB_printf();
+
 extern int select_point_index_by_distance(void *, void *, float);
 extern int get_next_moby_in_group(int *, int, int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
@@ -2368,7 +2367,7 @@ extern void cache_path_segment_lengths(char *data);
 extern int classify_sharkigator_water_height_gap(char *moby, char *data);
 extern void set_sharkigator_idle_state_from_water_height_gap(char *arg);
 extern int func_001160D8(void);
-extern int STUB_printf();
+
 extern int scene_points_addr __asm__("D_L07_0016016C") MACRO_ADDR;
 extern char umbris_sharkigator_no_path_msg[];
 extern char umbris_sharkigator_no_other_path_msg[];
@@ -2619,7 +2618,7 @@ extern void MobySpringTurn(char *moby, float *vel, float target, float k, float 
 extern void handle_sharkigator_contact_attack(char *moby, char *obj, int state, int anim, int seq, int frame, int next,
                                               int id, float lo, float hi, float len, float scale, float radius);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern void Profile_Mark(void *, void *);
+extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 extern int mine_fall(void *, void *);
 extern char umbris_sharkigator_init_failed_msg[];
 extern char umbris_sharkigator_state0_msg[];
@@ -2921,8 +2920,8 @@ void SharkigatorUpdate(unsigned char *moby) {
                              ? ((struct SharkigatorVars *)data)->jump_blend
                              : one);
             FastVecAdd(mpos, step, start);
-            Profile_Mark(old, mpos);
-            Profile_Mark(start, mpos);
+            Profile_Mark_v(old, mpos);
+            Profile_Mark_v(start, mpos);
             FastVecSub(&((struct SharkigatorVars *)data)->velocity, mpos, old);
             if (one <= ((struct SharkigatorVars *)data)->jump_blend) {
                 struct Hero *g = &g_hero;

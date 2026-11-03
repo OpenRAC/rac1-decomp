@@ -17,6 +17,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/audio/sound.h"
+#include "overlays/shared/sound_playback.h"
 extern char g_hero[];
 extern u8 gHeroPos[];
 extern PadState g_controller_state;
@@ -2074,8 +2075,6 @@ s32 fast_dec_timer(s32 *);
 s32 func_L00_0028F0B0_EEE00(s32, s32, void *, s32) __asm__("func_L00_0028F0B0");
 s32 random_integer_below(s32);
 
-void Sound_StopSlot(s32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ed950. */
 void update_sound_emitter_playback_by_distance(u8 *m) {
     S_2ed950 *s = *(S_2ed950 **)(m + 8);
@@ -2109,7 +2108,7 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
     }
 }
 extern float g_debug_camera[];
-extern int play_voice(int a, int b, int c, int d);
+
 extern float random_float_between(float, float);
 extern int random_integer_below(int);
 

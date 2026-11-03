@@ -113,10 +113,9 @@ extern void update_electric_water_bolt_effect(Moby *);
 
 extern void draw_electric_water_countdown(char *);
 extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
-extern int Sound_PlayClassSound(int, int, void *, int);
 
 extern float vec_distance_xy(void *, void *);
-extern int Sound_IsPlaying(void *, int);
+
 extern int test_linked_moby_turn_trigger(void *);
 
 #define MOBY_2D7C00(i) ((unsigned char *)(((i) << 8) + (int)D_L15_00160058))

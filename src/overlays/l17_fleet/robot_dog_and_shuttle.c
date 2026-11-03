@@ -31,6 +31,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -432,7 +434,6 @@ void draw_three_moby_effect_quads(char *m) {
     }
 }
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
@@ -996,8 +997,6 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
 LINKER_REMNANT("asm/overlays", func_L17_002F4208);
 
 extern int PlayBankSound(int, int, int);
-
-extern void STUB_printf();
 
 extern void HeroL17_SetMoveState(int, int);
 

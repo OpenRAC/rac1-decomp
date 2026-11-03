@@ -33,6 +33,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -1245,7 +1246,7 @@ void hoven_turret_update(Moby *moby) {
             break;
     }
 }
-extern void VU1_addGSregister(int, long);
+
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 

@@ -9,6 +9,8 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
 
 extern void *libc_memset(void *, int, int);
 
@@ -143,7 +145,7 @@ extern float vendor_inset_quad_margins[][4];
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
+
 extern void draw_world_quad(void *, void *, int);
 
 // draws five glass quads around a moby's joints
@@ -401,7 +403,7 @@ extern A02b0_tab D_L00_001C92F0[];
 
 extern void func_001FB530(void);
 extern void DrawDebugProfiler_r(void) __asm__("func_001F3D78");
-extern void func_00234AC8(s32);
+
 extern s32 func_00122598(s32);
 extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
@@ -424,7 +426,6 @@ extern void func_0023AA38(s32);
 extern void draw_vendor_purchase_panel_r(void *) __asm__("func_L00_002A0F60");
 extern void draw_vendor_inset_quads_r(char *) __asm__("func_L00_002A0C20");
 extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
-extern void func_001FFFB8(void);
 
 extern void RestoreMobyClassDists_r(void) __asm__("func_0020E098");
 extern void DrawMobysCleanUp_r(void) __asm__("func_0020E200");

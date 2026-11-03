@@ -16,6 +16,7 @@
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -570,7 +571,7 @@ extern int deplanetizer_glow_tint_b SDATA(deplanetizer_glow_tint_b);
 extern float veldin2_deplanetizer_quad_corners[4][4];
 extern char veldin2_camera_pos[];
 extern unsigned long GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);

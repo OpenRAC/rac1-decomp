@@ -31,6 +31,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -227,7 +228,7 @@ extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 
 extern void set_ground_height_band(void *);
 extern void handle_sand_shark_damage_and_targeting(unsigned char *moby);
-extern void STUB_printf(char *, ...);
+
 extern void MoveCtl_Init(char *p);
 extern int func_001160D8(void);
 
@@ -1880,7 +1881,6 @@ extern float aridia_elevator_max_speed SDATA(aridia_elevator_max_speed);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
-extern int Sound_IsPlaying(void *, int);
 
 extern void DrawRotatingQuadRing(char *);
 
@@ -3115,7 +3115,7 @@ void rocket_launcher_update(unsigned char *m) {
             break;
     }
 }
-extern int Sound_SetPitchBend(int, int);
+
 extern float rocket_launcher_sound_wave_speed SDATA(rocket_launcher_sound_wave_speed);
 extern float rocket_launcher_near_sound_start SDATA(rocket_launcher_near_sound_start);
 extern float rocket_launcher_near_sound_end SDATA(rocket_launcher_near_sound_end);

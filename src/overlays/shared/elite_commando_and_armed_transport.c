@@ -180,7 +180,7 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
     return moby;
 }
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern int Sound_PlayClassSound(int, int, int, int);
+
 extern void spawn_rocket_trail_spark(char *);
 
 extern float vec_length_xy(void *);
@@ -305,7 +305,7 @@ extern int Moby_PlaySound_update(int, int, void *) __asm__("func_0022ED80");
 extern float ApproachValue(float *, float, float);
 
 extern float FastVecDist_update(void *, void *) __asm__("func_001F9D10");
-extern int Sound_IsPlaying(void *, int);
+
 extern char hero_globals_base[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -1243,7 +1243,7 @@ void armed_transport_update(char *m) {
     ((Moby *)m)->pos.z = d->base_z + *(float *)&armed_transport_bob_height * FastSin(d->unk_18C);
     update_armed_transport_joint_animation(m);
 }
-extern int Sound_IsPlaying(void *, int);
+
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 extern char *MobyGetHitMessage(void *, int, int);
@@ -1399,7 +1399,6 @@ extern float grindrail_barrier_spin_speed_deg SDATA(grindrail_barrier_spin_speed
 extern float grindrail_barrier_pulse_speed SDATA(grindrail_barrier_pulse_speed);
 extern short grindrail_barrier_core_spin_speeds_deg;
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 extern void draw_grindrail_barrier_effect();

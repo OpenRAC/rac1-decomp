@@ -21,6 +21,8 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/audio/sound.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -1597,9 +1599,6 @@ extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char D_0013D5C8[];
 extern Rec2C novalis_attack_records_r[] __asm__("D_L01_0017C128");
 extern int r1_double_tap_timer SDATA(r1_double_tap_timer);
-extern int func_L00_00267BA8(int, int, int *);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern int func_001F9908(int *);
 

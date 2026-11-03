@@ -13,6 +13,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern int pad_held;
 extern Hero g_hero;
 
@@ -185,10 +186,8 @@ void update_hero_locomotion_state(void) {
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 
-extern int check_pad_press_separation(int, int, int, int);
 extern int HeroEnterMoveState(int, int);
 extern int HeroEnterMoveState_b(int, int) __asm__("func_L00_00222B80");
-extern int pad_pressed_within(int, int, int);
 
 // Tries the crouch-jump style moves in priority order and starts the first whose conditions hold. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_00229660.
 int hero_handle_jump_press(void) {

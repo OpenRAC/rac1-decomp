@@ -10,6 +10,7 @@
 #include "data/level_04.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/render/vuchain.h"
 
 extern float vec_distance_xy(void *, void *);
 
@@ -319,7 +320,6 @@ void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float
 
 extern int D_0015EE84 MACRO_ADDR;
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Eudora sky shells (rotating in level 4, static elsewhere) and restore GS test and Z. */
 void DrawEudoraSky(void) {

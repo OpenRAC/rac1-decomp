@@ -28,6 +28,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/ui/hud.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern MoveUsageTable usage_stats;
@@ -1547,21 +1548,13 @@ extern HeroSpeedBands aridia_hero_speed_bands;
 
 extern int HeroL02_TryKnockback(int);
 
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
 extern int HeroL02_SetMoveState(int a, int b);
 
 extern int func_001F9908(int *);
 
-extern int pad_pressed_within(int, int, int *);
-
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
 
 extern float vec_distance_xy(void *, void *);
-
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 

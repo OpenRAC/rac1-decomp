@@ -27,6 +27,9 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -334,7 +337,6 @@ void build_interpolated_dma_packet(Arg *arg) {
     l02_packet_r = (int *)(c + 4);
     g_gs_texture_allocation_cursor += 0x4000;
 }
-extern void vu1_add_vif_code(int);
 
 extern void AA_BlurPass(void);
 extern float textured_grid_saved_fog_near_distance MACRO_ADDR;
@@ -708,7 +710,6 @@ extern void draw_tresspasser_puzzle_ring_arc(int, u32, float, float, float, floa
 extern int GetEffectTex(int);
 extern void draw_tresspasser_puzzle_arrow(int, int, int, float, float);
 extern void draw_tresspasser_puzzle_radial_strip(void *, f32, f32, f32, s32);
-extern void VU1_addGSregister(int, u64);
 
 extern int tresspasser_third_ring_arc_second_boundary_radius_gp
     SDATA(tresspasser_third_ring_arc_second_boundary_radius_gp);
@@ -1922,9 +1923,7 @@ void prepare_background_ship_1_joint_billboards(char *moby) {
 }
 
 extern char *MobyGetHitMessage(void *, int, int);
-extern int STUB_printf();
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r_r(int, int, int) __asm__("func_0022ED80");
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern void spawn_background_ship_1_joint_sparks(char *m, void *arg1);

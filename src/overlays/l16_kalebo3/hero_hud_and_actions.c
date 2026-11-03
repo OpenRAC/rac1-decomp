@@ -30,6 +30,8 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -58,10 +60,6 @@ extern HeroItemDefView kalebo3_item_defs[];
 extern HeroAttackRecord kalebo3_attack_records[];
 extern HeroSpeedBands kalebo3_hero_speed_bands;
 
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
 extern int get_hero_idle_animation_index(int a);
 
 extern int Hero_TryMoveState(int, int);
@@ -70,15 +68,12 @@ extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
-extern int pad_pressed_within(int, int, int *);
-
 extern int truncate_float_to_s32(float);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
 extern void ClampVectorLength(void *a, float x);
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
@@ -2520,7 +2515,6 @@ void Hero_ChooseStateTransition(void) {
     }
 }
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the level 16 sky: shells at three rotation speeds, static shells in other levels. */
 void render_level16_sky_shells(void) {

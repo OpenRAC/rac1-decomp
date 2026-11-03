@@ -27,6 +27,10 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -465,7 +469,7 @@ extern void update_nanotech_ball_grounding_and_fall_r(void *) __asm__("func_L00_
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern void KillPart_r(void *) __asm__("func_L00_002688A8");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern int func_L00_0028EF68(int, int, void *, int);
+
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 
 /* Nanotech ball update: spawns, homes in on its target, hits or fizzles; kills itself when its owner goes. */
@@ -1336,9 +1340,6 @@ extern float frame_scale40 SDATA(D_0015EE60);
 extern char fire_tuning40[1] SDATA(D_L00_00161C00);
 /* Retail registers the copy at 0x238128, one of several identical delete callbacks. */
 
-extern void update_hud_counter_cap_and_visibility(void);
-extern void hud_draw_gauge_frame(void);
-extern int queue_animation_update(int, int, int, int, int, int, int);
 extern void suck_beam_queue_draw(int);
 extern void refresh_suck_cannon_slots(void);
 
@@ -2583,7 +2584,6 @@ extern char suck_beam_ring_vertices_base[];
 extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
-extern void VU1_addGSregister(int, long);
 
 typedef struct {
     float q[4][4];
@@ -3334,7 +3334,7 @@ extern char g_debug_camera_r3[] __asm__("D_L00_00166EC0");
 extern void func_L00_002E1660(Moby *);
 extern int Moby_PlaySound_r2(int, int, Moby *) __asm__("func_0022ED80");
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
-extern int func_L00_00267BA8(int, int, int);
+
 extern int func_L00_002E1790(Moby *);
 extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 

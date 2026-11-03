@@ -36,6 +36,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "game/system/stub.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -543,11 +544,6 @@ typedef struct {
 } Path388;
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-
-extern int STUB_printf();
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void Hud_UpdateCounter();
 
 extern int advance_moby_along_selected_path(void *, void *, int, int);
 extern int select_point_index_by_distance(void *, void *, float);
@@ -3540,7 +3536,6 @@ extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_lift_mount_transform(char *moby, float *p, float *q);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern int Sound_IsPlaying(void *, int);
 
 extern int HeroEnterMoveState(int, int);
 

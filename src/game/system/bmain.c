@@ -9,6 +9,9 @@
 #include "game/audio/sound.h"
 #include "asm_functions/executable.h"
 #include "game/render/draw.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -42,7 +45,6 @@ extern void sce_gs_sync_v(int);
 extern void wait_for_graphics_pipeline_idle(int, int);
 
 extern void sceGsSyncVCallback(void (*)(void));
-extern void Hud_sendTexture(int, int, int, int, int, int);
 
 /* Start level `level`: pick its two load parameters from the level
    table in disc_table (the alternate set while pal_mode is set), stop
@@ -158,21 +160,17 @@ extern void flush_cache_r(s32) __asm__("func_00118D80");
 
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
 extern void func_001FB530(void);
-extern void func_00201AF0(s32);
-
-extern void func_00234C98(s32, u64);
 
 extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
 extern void func_001FB8A8(void);
 extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
-extern void func_00234AC8(s32);
+
 extern s32 func_00209BB8(void);
 extern void UpdatePad_r(void) __asm__("func_00218908");
 extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
 extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
-extern void func_001E9730(char *, ...);
 
 extern void func_0012E2E8(void);
 extern s32 func_001EBB48(void);

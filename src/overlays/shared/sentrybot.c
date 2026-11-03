@@ -1539,7 +1539,6 @@ void draw_sentrybot_effect_quads(char *m) {
 extern char quartu_camera_pos_r[] __asm__("D_L15_00167440");
 
 extern unsigned char hero_vehicle_mode[];
-extern int Sound_PlayClassSound(int, int, void *, int);
 
 void spawn_rocket_trail_spark(char *moby);
 void spawn_rocket_detonation_glow(char *moby);
@@ -3438,7 +3437,6 @@ void prepare_sentrybot_alarm(unsigned char *moby) {
         }
     }
 }
-extern int Sound_IsPlaying(void *, int);
 
 extern void emit_sine_modulated_rgba_draw_packet(void);
 extern s32 g_current_level_index SDATA(g_current_level_index);

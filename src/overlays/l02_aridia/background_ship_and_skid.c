@@ -24,6 +24,8 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -75,10 +77,7 @@ struct ProjectileVars {
     s32 life; /* 0x10 */
 };
 
-extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
-
-extern int Npc_TryStartDialog(void *, void *);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -517,8 +516,6 @@ void SkidMcMarxAridiaUpdate(char *m) {
 extern char gHeroPos[];
 extern char *aridia_mobys MACRO_ADDR;
 
-extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
-extern void initialize_numeric_hud_timer_and_base_dimensions(void);
 extern void update_hud_counter_transition(void);
 extern void draw_hud_counter(void);
 

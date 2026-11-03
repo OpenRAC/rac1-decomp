@@ -27,6 +27,7 @@
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -656,7 +657,7 @@ extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void transform_vector_r2(void *, void *, void *) __asm__("func_001F9EE8");
-extern void func_00234C98(int, long);
+
 extern void font_queue_vu_state_r(void) __asm__("func_001F7868");
 
 /* Draws the moby's beam: orients the moby along its child's two joints, draws three quads and a ribbon of 196 points.
@@ -1801,7 +1802,6 @@ extern void update_attached_moby_transform_r(void *, void *) __asm__("func_L00_0
 extern void terminate_visibomb_missile_r(void *, void *) __asm__("func_L00_002B6E10");
 extern void spawn_moby_particle_and_glow_burst_r(void *, int) __asm__("func_L00_002B6FF0");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern int func_L00_0028F210(int, int);
 
 extern void func_L00_0025B040(void *, float);
 extern void BuildSphericalOffset_r3(void *, float, float, float) __asm__("func_00215C00");
@@ -2139,7 +2139,6 @@ typedef struct {
     u16 last;
     u32 flags;
 } Ring;
-extern s32 Sound_IsPlaying(Moby *, s32);
 
 extern void MobyBlendAnimation_r3(Moby *, s32, s32, s32) __asm__("func_00213DE0");
 extern s32 Moby_PlaySound_r2(s32, s32, Moby *) __asm__("func_0022ED80");
@@ -2671,7 +2670,6 @@ extern unsigned char g_hero_r5[] __asm__("D_0013F450");
 extern unsigned short pyrocitor_help_shown_count NOT_SDA;
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
 void release_point_light_slot(int);
-void Sound_StopSlot(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b8230. */
 void update_pyrocitor_usage_and_cleanup(unsigned char *m) {

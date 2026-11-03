@@ -12,6 +12,7 @@
 #include "overlays/shared/level_runtime_and_menus.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/system/stub.h"
 extern Hero g_hero;
 
 extern void hero_frame_update(void);
@@ -19,8 +20,6 @@ extern void hero_frame_update(void);
 extern void update_hero_ground_material_effects(void);
 
 extern void HeroL03_UpdateStateTransitions(void);
-
-extern void Profile_Mark(void *);
 
 extern void update_hero_blink_and_gold_weapon_tint(void);
 

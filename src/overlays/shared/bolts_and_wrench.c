@@ -29,6 +29,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/ui/hud.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -1197,7 +1198,6 @@ extern BoltSourceStats bolt_source_stats[][64];
 extern s32 current_moby_mission_complete MACRO_ADDR;
 extern void *level_mobys_end SDATA(level_mobys_end);
 
-extern void queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
 extern void rand_vec(void *, f32, f32);
 
 extern u8 *PartType53Spawn_r(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel,

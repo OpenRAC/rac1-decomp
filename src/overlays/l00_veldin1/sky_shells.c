@@ -14,8 +14,8 @@
 #include "enums/level.h"
 #include "game/render/draw.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
 
-extern void VU1_addGSregister(int, long);
 extern int D_0015EE84 MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
 

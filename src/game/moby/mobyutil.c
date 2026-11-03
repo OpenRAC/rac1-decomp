@@ -9,6 +9,7 @@
 #include "structs/anim.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/ui/hud.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -1182,7 +1183,7 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
 LINKER_REMNANT("asm/remnants/text", func_00215F20);
 
 extern int msg_string(int);
-extern void copy_text_to_shared_buffer(int);
+
 extern int help_message_keepalive MACRO_ADDR;
 extern int help_message_owner MACRO_ADDR;
 extern int help_message_id MACRO_ADDR;

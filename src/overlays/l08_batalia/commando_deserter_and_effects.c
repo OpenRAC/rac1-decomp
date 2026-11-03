@@ -33,6 +33,9 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -361,7 +364,7 @@ void update_moby_height_from_driver(char *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern s32 Sound_IsPlaying(struct Moby *, s32);
+
 extern s32 Moby_PlaySound_r2(s32, s32, struct Moby *) __asm__("func_0022ED80");
 
 typedef struct {
@@ -375,8 +378,6 @@ typedef struct {
 extern int batalia_game_mode MACRO_ADDR;
 extern char voice_pool[];
 extern u8 gSpecialItems[];
-
-extern void Sound_SetPitchBend(s32, s32);
 
 /* Swings the gate to its driver's progress, fading a creak in while it moves and out when it stops, and latches its
    flag once fully open.
@@ -437,7 +438,6 @@ void update_swing_gate_from_driver(struct Moby *moby) {
             Sound_StopSlot(vars->voice);
     }
 }
-extern void VU1_addGSregister(int, long);
 
 extern int GetEffectTex(int);
 extern void draw_scrolled_mesh_batch(int);
@@ -1101,7 +1101,7 @@ extern char D_L08_001FC510[];
 extern char D_L08_001FC540[];
 extern char D_L08_001FC590[];
 extern char D_L08_001FC5C0[];
-extern s32 func_001E9730();
+
 extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 extern void release_point_light_slot_r(int) __asm__("func_L00_0023F1D0");
 extern void draw_flickering_mesh_effect_r(void) __asm__("func_L08_002F7318");
@@ -1195,9 +1195,6 @@ void update_flickering_mesh_effect(struct Moby *m) {
 }
 
 extern void set_ground_height_band(void *);
-
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
 

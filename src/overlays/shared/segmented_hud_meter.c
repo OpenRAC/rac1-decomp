@@ -10,7 +10,6 @@ LINKER_REMNANT("asm/overlays", func_L06_0024A080);
 
 extern int truncate_float_to_s32(float);
 
-extern void draw_hud_rect_blended(int, int, int, int, long, int);
 extern int frame_size;
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;

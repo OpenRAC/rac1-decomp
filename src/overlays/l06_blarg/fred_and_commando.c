@@ -31,6 +31,8 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -888,10 +890,7 @@ extern void set_ground_height_band(void *);
 extern void set_moby_and_links_to_states_8_and_9(char *);
 extern void set_moby_and_links_to_states_4_and_5(char *);
 
-extern int DialogRequest_Init(void *, void *);
 extern int check_all_listed_frog_states_fe_fd_or_10(int);
-
-extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
 
@@ -2393,7 +2392,6 @@ void emit_red_button_particle_burst(int unused, void *obj) {
     }
 }
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void set_vec_to_origin_point(void *);
 
@@ -2605,7 +2603,6 @@ void test_moby_vector_stream_collision_lines(char *m) {
 }
 
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern void blarg_draw_strand_strip(int *, float *);
 extern float vector_stream_matrix_scale SDATA(vector_stream_matrix_scale);

@@ -22,6 +22,7 @@
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -588,8 +589,6 @@ extern f32 g_frame_time MACRO_ADDR;
 extern s32 fast_dec_timer(s32 *);
 
 extern void restore_hero_from_vehicle_mode(void);
-
-extern s32 pad_pressed_within(s32, s32, s32);
 
 extern void enter_hero_vehicle_mode_and_set_moby(s32, s32, struct Moby *);
 

@@ -28,6 +28,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -392,7 +393,6 @@ INCLUDE_ASM("asm/overlays", func_L06_002EB348);
 extern float toxic_gas_vent_near_d50_value SDATA(toxic_gas_vent_near_d50_value);
 extern float toxic_gas_vent_near_anim_time SDATA(toxic_gas_vent_near_anim_time);
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 extern void emit_toxic_gas_vent_sparks(char *);
@@ -1383,7 +1383,6 @@ typedef u32 u128_F8200 __attribute__((mode(TI), aligned(16)));
 
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern unsigned int FastTweenColor_r(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
 extern void blarg_draw_strand_strip(int *, float *);

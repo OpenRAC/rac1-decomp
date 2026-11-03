@@ -22,6 +22,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -153,7 +155,6 @@ extern char *kerwan_mobys_p __asm__("D_L03_00160058") MACRO_ADDR;
 extern char *D_L03_00160064 MACRO_ADDR;
 extern int D_L03_0015F6B0 MACRO_ADDR;
 extern char spawner_revive_failed_fmt[];
-extern int STUB_printf();
 
 extern float *func_L00_0025D390(void *);
 
@@ -1641,7 +1642,6 @@ extern void FindNearestTargetMoby(void *, void *, float);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
-extern int Sound_IsPlaying(void *, int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1890,7 +1890,7 @@ void fred_1_update(Moby *m) {
 extern void func_L01_002FC890(char *);
 extern f32 FastVecDist_r2(void *, void *) __asm__("func_001F9D10");
 extern int is_point_inside_clip_volume_r2(void *arg0, int arg1) __asm__("func_00215570");
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern f32 vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);

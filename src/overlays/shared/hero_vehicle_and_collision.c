@@ -23,6 +23,10 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern char g_hero[];
 extern char item_usage[];
 extern unsigned int pad_held;
@@ -2930,10 +2934,7 @@ extern unsigned char item_available[];
 extern unsigned int pad_held;
 extern int hero_control_mode_11_flag[];
 extern short g_frame_time_r2 __asm__("D_0015EE6C");
-extern void queue_animation_update(int, int, void *, void *, void *, void *, int);
-extern void hud_init_particles(void);
-extern void hud_update_particles(void);
-extern void draw_hud_stars(void);
+
 extern int coll_line_r2(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern int HeroEnterMoveState(int, int);
 extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
@@ -3148,8 +3149,6 @@ extern unsigned char item_available_r[] __asm__("D_0013D5C8");
 extern Rec2C attack_records_r[] __asm__("D_L00_0017BD28");
 extern int hero_repeat_press_window_frames SDATA(hero_repeat_press_window_frames);
 extern int pad_pressed_within_r2(int, int, int *) __asm__("func_L00_00267BA8");
-
-extern int Sound_IsPlaying(void *, int);
 
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 
@@ -3493,9 +3492,7 @@ int process_hero_equipped_item_input(void) {
     return g_hero_h228770.state_timer < start;
 }
 
-extern int pad_pressed_within(int, void *, void *);
 extern int get_hero_high_jump_input_window_frames(void);
-extern int check_pad_press_separation(int, void *, void *, int);
 
 /* Loads a record into A0 (type 0x40). If the flags at pad_globals_base + 0x2600
    have 0x2 or 0x8 set, saves it back and signals state 0xB; otherwise

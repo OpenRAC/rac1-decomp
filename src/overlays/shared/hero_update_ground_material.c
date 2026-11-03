@@ -27,6 +27,9 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -55,7 +58,6 @@ int get_hero_idle_animation_index(int a) {
     r = novalis_item_defs - (-(n * 0x4C));
     return *(int *)(r + 0x24);
 }
-extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
 void request_hero_voice_if_enabled(int a0, int a1, int a2) {
@@ -204,8 +206,6 @@ extern void hero_frame_update(void);
 extern void update_hero_ground_material_effects(void);
 extern void update_hero_ledge_probe(void);
 extern void HeroL01_UpdateStateTransitions(void);
-
-extern void Profile_Mark(void *);
 
 extern void update_hero_blink_and_gold_weapon_tint(void);
 
@@ -1488,8 +1488,6 @@ extern u8 item_available[];
 extern s32 fast_dec_timer(s32 *);
 
 extern void exit_hero_vehicle_mode_and_restore_moby(void);
-
-extern s32 pad_pressed_within(s32, s32, s32);
 
 extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
 

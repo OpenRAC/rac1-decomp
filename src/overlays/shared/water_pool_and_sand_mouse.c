@@ -30,6 +30,8 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "game/audio/sound.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -633,7 +635,6 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern float vec_distance_xy(void *, void *);
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -855,7 +856,7 @@ typedef int OvlQuad __attribute__((mode(TI)));
 extern s32 truncate_float_to_s32(f32);
 void spawn_collision_particle_bursts(void);
 extern int fast_dec_timer(void *);
-extern int noop_callback_l(void *);
+
 extern int coll_sphere_mobys(float, void *, int, int, void *);
 extern void PostHitMessage_v(float, void *, void *, int, void *, void *) __asm__("func_L00_0025AC00");
 
@@ -953,7 +954,6 @@ extern char *camera_points MACRO_ADDR;
 extern unsigned char saved_mission_state[][16];
 extern float bolt_crank_pull_spring_vel SDATA(bolt_crank_pull_spring_vel);
 
-extern int pad_pressed_within(int, int, int);
 extern int Hero_SetMoveState(int, int);
 
 extern void set_camera_rotation(void *);
@@ -1287,8 +1287,7 @@ extern s32 gold_weapon_case_items[];
 extern u8 gold_weapon_purchased[];
 extern ItemPrice novalis_item_price_table[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern s32 DialogRequest_Init(struct Moby *, SaleVars *);
-extern s32 Npc_TryStartDialog(struct Moby *, SaleVars *);
+
 extern void initialize_vendor_screen(struct Moby *, s32, ItemPrice *);
 extern s32 memcard_Save(s32, s32);
 struct Moby;
@@ -1729,7 +1728,6 @@ extern float sand_mouse_fade_particle_random_float_range_end_gp
 extern int sand_mouse_fade_particle_color_alpha_gp SDATA(sand_mouse_fade_particle_color_alpha_gp);
 extern float sand_mouse_fade_particle_time_squared_coefficient_gp
     SDATA(sand_mouse_fade_particle_time_squared_coefficient_gp);
-extern int STUB_printf();
 
 extern void MoveCtl_Init(char *p);
 extern void rig_probe_setup(void *, int, int *, float *, float *, int *);

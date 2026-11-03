@@ -31,6 +31,8 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -137,7 +139,6 @@ typedef struct L14BoltVars {
     s32 solid; /* 0x24 */
 } L14BoltVars;
 
-extern void VU1_addGSregister(int, long);
 extern void draw_ribbon_effect_path(void *, void *, int, int, int);
 extern float frame_scale MACRO_ADDR;
 
@@ -400,11 +401,9 @@ extern s32 path_lift_leave_time MACRO_ADDR;
 extern f32 path_lift_hero_pull_speed SDATA(path_lift_hero_pull_speed);
 extern float g_frame_time MACRO_ADDR;
 
-extern void STUB_printf(const char *, short);
+extern void STUB_printf_v(const char *, short) __asm__("func_001E9730");
 
 extern void gunship_follow_path(void *);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -454,7 +453,7 @@ void PathLiftUpdate(struct Moby *m) {
         d->h206 = 0;
         AttachManipulator(m, 0, d->manip);
         if (d->rider == -1) {
-            STUB_printf(path_lift_no_rider_msg, m->save_id);
+            STUB_printf_v(path_lift_no_rider_msg, m->save_id);
             DeleteMoby(m);
             return;
         }
@@ -817,7 +816,6 @@ extern int wind_spark_color SDATA(wind_spark_color);
 
 extern float wind_spark_quad_corners[4][4];
 extern unsigned long GetEffectTex_r(s32) __asm__("func_001F4868");
-extern void VU1_addGSregister(s32, s64);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -901,7 +899,7 @@ extern char looping_path_empty_path_msg[];
 extern f32 looping_path_moby_speed SDATA(looping_path_moby_speed);
 extern f32 looping_path_moby_pulse_speed SDATA(looping_path_moby_pulse_speed);
 extern f32 g_frame_time MACRO_ADDR;
-extern void STUB_printf(const char *, short);
+extern void STUB_printf_v(const char *, short) __asm__("func_001E9730");
 
 extern int Spline_AdvanceByDistance_r(void *, float *, int *, float *, int, float) __asm__("func_L00_0025E860");
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -928,13 +926,13 @@ void update_looping_path_moby(struct Moby *m) {
     switch (m->state) {
         case 0:
             if (d->path == -1) {
-                STUB_printf(looping_path_no_path_msg, m->save_id);
+                STUB_printf_v(looping_path_no_path_msg, m->save_id);
                 DeleteMoby(m);
                 return;
             }
             path = oltanis_paths_r[d->path];
             if (path->count == 0) {
-                STUB_printf(looping_path_empty_path_msg, m->save_id);
+                STUB_printf_v(looping_path_empty_path_msg, m->save_id);
                 DeleteMoby(m);
                 return;
             }
@@ -1667,7 +1665,7 @@ extern int is_point_inside_clip_volume_r2(void *, int) __asm__("func_00215570");
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern int func_L00_0028F210(int, int);
+
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int advance_elevator_along_path_r(char *) __asm__("func_L14_002F05D8");
@@ -2148,7 +2146,6 @@ typedef struct Data_2F19C0 {
     int vol[3];
 } Data_2F19C0;
 
-extern void set_moby_dialogue_record_value(void *, int);
 extern void initialize_taxi_stop_from_position(char *);
 extern void prepare_taxi_route(char *);
 extern void request_taxi_stop_prompt(char *);
@@ -2160,7 +2157,6 @@ extern void SamplePathAt_r(int *, int, void *, float *, int, float) __asm__("fun
 extern void SamplePathAt_r2(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
 extern void lerp_vector(void *, void *, void *, float);
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -2572,9 +2568,6 @@ void request_taxi_stop_prompt(char *moby) {
 }
 
 extern void set_ground_height_band(void *);
-extern int DialogRequest_Init(void *, void *);
-
-extern int Npc_TryStartDialog(void *, void *);
 
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
 extern void mark_elevator_collected(void *);

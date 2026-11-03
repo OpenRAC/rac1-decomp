@@ -26,6 +26,8 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -215,8 +217,6 @@ extern float g_frame_time MACRO_ADDR;
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern float vec_distance_xy(void *, void *);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -566,7 +566,7 @@ extern u8 *GetFlaggedPvarWord(struct Moby *);
 extern void set_ground_height_band(void *);
 
 extern void lerp_vector(void *, void *, void *, float);
-extern void Profile_Mark(void *, float);
+extern void Profile_Mark_v(void *, float) __asm__("func_001E9768");
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
 
@@ -740,8 +740,8 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
             if (hit) {
                 lerp_vector(v, &d->glow_pos, &d->beam_origin, 0.5f);
                 qcopy(w, &d->glow_pos);
-                Profile_Mark(w, d->glow_size * 0.8f);
-                Profile_Mark(v, d->glow_size * 0.48f);
+                Profile_Mark_v(w, d->glow_size * 0.8f);
+                Profile_Mark_v(v, d->glow_size * 0.48f);
                 if (coll_sphere_mobys(d->glow_size * 0.48f, v, 0, 0, 0) ||
                     coll_sphere_mobys(d->glow_size * 0.9f, w, 0, 0, 0)) {
                     struct Moby *t = oltanis_coll_hit.target;
@@ -1092,7 +1092,6 @@ extern char interceptor_ring_uvs[];
 extern void draw_blarg_heavy_interceptor_camera_facing_glow_r(struct Moby *m) __asm__("func_L14_002AF2E8");
 
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
-extern void VU1_addGSregister(s32, s64);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002ada18. */
 void draw_blarg_heavy_interceptor_light_ring(char *moby) {
@@ -1184,7 +1183,6 @@ extern int interceptor_beam_a_fade SDATA(interceptor_beam_a_fade);
 extern float interceptor_quad_corners_r[4][4] __asm__("D_L14_001D8900");
 
 extern unsigned long GetEffectTex(s32);
-extern void VU1_addGSregister(s32, s64);
 
 extern float vec_length_xy(void *);
 extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
@@ -1282,7 +1280,6 @@ void draw_blarg_heavy_interceptor_spinning_beam(char *moby) {
 }
 
 u64 GetEffectTex(s32);
-extern void VU1_addGSregister(int, long);
 
 extern void draw_world_quad(void *, void *, int);
 extern char interceptor_quad_corners[];
@@ -1370,7 +1367,6 @@ extern float oltanis_glow_quad_corners[4][4];
 extern float oltanis_glow_camera_margin SDATA(oltanis_glow_camera_margin);
 extern u32 oltanis_glow_idle_color SDATA(oltanis_glow_idle_color);
 u64 GetEffectTex(s32);
-extern void VU1_addGSregister(int, long);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -2236,7 +2232,6 @@ extern void ease_minibomber_position_and_heading(char *moby, float *target, floa
                                                  float f, float g);
 extern void update_minibomber_oscillation(char *moby);
 extern void emit_minibomber_exhaust_puffs(char *m);
-extern int STUB_printf();
 
 extern void initialize_minibomber_path_segment_lengths(char *moby);
 extern void hide_minibomber_and_release_voice(char *moby);
@@ -2903,7 +2898,7 @@ extern float flying_debris_gravity SDATA(flying_debris_gravity);
 extern float flying_debris_drag SDATA(flying_debris_drag);
 extern float flying_debris_min_speed SDATA(flying_debris_min_speed);
 extern char oltanis_lights[];
-extern int Sound_PlayClassSound();
+
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 extern void remove_flying_debris(char *);
 /* Flying debris update: drift with drag, spin, smoke, glow with a point light; remove on timeout. */
@@ -3853,7 +3848,7 @@ void update_platform_tilt_basis(char *moby) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern void initialize_ribbon_effect_state(char *);
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
+
 extern void register_hero_hit_in_clip_volume(char *);
 
 extern void animate_ribbon_effect_paths(char *);

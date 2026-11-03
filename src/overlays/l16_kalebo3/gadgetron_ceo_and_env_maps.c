@@ -26,6 +26,8 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -63,8 +65,6 @@ struct RepositionCycleVars {
     s32 timer; /* 0x0C */
 };
 
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
 extern void set_ground_height_band(void *);
 
 extern void restore_gadgetron_ceo_non_challenge_environment(char *);
@@ -416,7 +416,6 @@ void update_two_region_trigger_latch(char *moby) {
         }
     }
 }
-extern int Sound_IsPlaying(void *, int);
 
 extern void initialize_path_walker_group(unsigned char *);
 extern void emit_path_walker_particle(unsigned char *, void *);
@@ -1079,7 +1078,6 @@ extern int envmap_a_color_bufs SDATA(envmap_a_color_bufs);
 extern char envmap_a_bounding_spheres[][16];
 extern char envmap_a_uvs[];
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 /* Sets up the draw state, then draws the three entries of the level's table. */
 void env_map_a_draw(void) {

@@ -993,7 +993,6 @@ typedef struct {
 extern int marker_half_size MACRO_ADDR;
 
 extern char D_0019A4E8[];
-extern void draw_hud_rect_blended(int, int, int, int, long, int);
 
 /* Draw the level's map markers inside the given screen rectangle, scaled by map zoom. */
 void draw_map_markers(int left, int top, int right, int bottom) {

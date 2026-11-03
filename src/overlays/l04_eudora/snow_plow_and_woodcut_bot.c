@@ -22,6 +22,9 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -228,7 +231,7 @@ typedef struct {
 extern VehicleCamera eudora_camera;
 
 extern s32 truncate_float_to_s32(float);
-extern s32 STUB_printf();
+
 extern void gunship_follow_path(VehicleMoby *);
 
 extern void MobySpringTurn(void *, void *, float, float, float, float);
@@ -1672,7 +1675,7 @@ typedef struct {
     unsigned short id;
     char pad5[0x4c];
 } CollectMoby2BB8;
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
+
 extern float riser_rise_speed(char *);
 extern int fast_dec_timer_i(int *arg0) __asm__("func_001F9908");
 
@@ -1859,10 +1862,6 @@ void update_suck_cannon_particles(char *m) {
         FastVecAdd(d, d, e);
     }
 }
-
-extern int DialogRequest_Init(void *, void *);
-
-extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
 extern char eudora_lieutenant_respawn_point[];

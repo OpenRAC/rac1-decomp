@@ -27,6 +27,8 @@
 #include "game/render/draw.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -108,7 +110,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char hoven_camera_pos[];
 extern char hoven_ripple_patches[];
-extern int STUB_printf();
 
 extern void RescaleFloatTable(float s);
 
@@ -1604,9 +1605,7 @@ void HovenPlatformUpdate(Moby *moby) {
     update_entity_matrix(d->f60, delta, oldRot, (*(float (*)[4]) & moby->rot));
 }
 
-extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
-extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
 

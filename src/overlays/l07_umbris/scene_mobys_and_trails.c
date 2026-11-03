@@ -15,6 +15,7 @@
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -300,7 +301,7 @@ extern float func_001F9D48(void *, void *);
 extern int func_00120778_31E6B0(float) __asm__("func_00120778");
 extern char *func_L00_002C6608(void *, int, int, int);
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern void func_001E9730(char *, ...);
+
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern char D_L07_00211DE0[];
 extern char D_L07_00211E20[];

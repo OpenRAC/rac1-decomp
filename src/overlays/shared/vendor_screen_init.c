@@ -14,6 +14,7 @@
 #include "overlays/shared/level_gameplay_loading.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/render/vuchain.h"
 extern char cd_read_state[];
 extern Hero g_hero;
 
@@ -38,8 +39,6 @@ extern char novalis_vendor_screen_anchor_offset;
 extern void snd_FlushSoundCommands(void);
 
 extern void Hero_SetMoveState(int, int);
-
-extern void calculate_dma_transfer_address(void);
 
 extern int sce_gs_sync_v(int);
 

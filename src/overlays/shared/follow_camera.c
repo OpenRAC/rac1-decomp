@@ -23,6 +23,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
 extern char g_hero[];
 extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
@@ -226,7 +228,6 @@ extern s32 g_hero_pending_item_2[];
 extern u8 item_available[];
 
 extern void initialize_moby_particle_effect(void *);
-extern void STUB_printf();
 
 extern void emit_moby_color_cycling_particles_r(void *) __asm__("func_L00_002E1C38");
 extern f32 vec_distance_xy(void *, void *);
@@ -702,7 +703,7 @@ typedef struct {
 extern float beam_texture_scroll_f[] __asm__("D_L00_00161D48") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern Pane beam_strand_points[];
-extern void VU1_addGSregister(int, long);
+
 extern void draw_beam_endpoint_quads_with_glow(int, int);
 extern void draw_beam_strand_with_glow(int, int, void *, int, int, int);
 
@@ -4157,7 +4158,7 @@ void follow_camera_orbit(int arg) {
     }
     FastVecAdd(m + 0x30, t7, &p130->unk_10);
 }
-extern void Profile_Mark(void *, float);
+extern void Profile_Mark_v(void *, float) __asm__("func_001E9768");
 extern char *camera_collision_grid MACRO_ADDR;
 
 // Walk the 64x64 grid of entries and call the update for each type-5 element.
@@ -4175,7 +4176,7 @@ void run_type5_grid_record_noop_callbacks(int a) {
                 char *it = e + 0x10 + k * 0x30;
                 if (*(int *)(it + 0x10) == 5) {
                     char *b = (char *)level_spheres + (*(int *)(it + 0x14) << 7);
-                    Profile_Mark(b + 0x30, FastVecLength(b));
+                    Profile_Mark_v(b + 0x30, FastVecLength(b));
                 }
             }
         }

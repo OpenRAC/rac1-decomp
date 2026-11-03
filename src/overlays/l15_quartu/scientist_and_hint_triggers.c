@@ -24,13 +24,12 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
 extern void initialize_moby_grounding(char *);
-extern int DialogRequest_Init(void *, void *);
-
-extern int Npc_TryStartDialog(void *, void *);
 
 extern int fast_dec_timer(void *);
 
@@ -640,7 +639,6 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
 }
 
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;

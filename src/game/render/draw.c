@@ -19,6 +19,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
+#include "game/ui/hud.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -1540,7 +1541,6 @@ void ResetDrawGlobals(void) {
     local_surface_region_enabled = 0;
 }
 
-extern void VU1_addGSregister(int, long);
 extern char reset_gs_regs_fixed[];
 
 /* ResetGsRegisters(void) */
@@ -1619,14 +1619,14 @@ extern void BuildViewMatrices(void);
 
 extern void Transition_DrawSky(void);
 extern void DrawTfrag(void);
-extern void append_dma_tag(int);
+
 extern void DrawTies_2(void);
 extern void DrawTies_1(void);
-extern void vu1_gs_regs_alt(void);
+
 extern void SetupGifPaging(int);
 extern void dispatch_callback_list_2(void);
 extern void DoGifPaging(void);
-extern void VU1_gsRegsNormal(void);
+
 extern void DrawShrubs(void);
 extern void draw_fogged_fullscreen_sprite(char *);
 extern void draw_debug_font(void);
@@ -1641,14 +1641,12 @@ extern void append_billboard_batch(void);
 extern void render_queued_rotated_sprites(void);
 extern void AA_BlurPass(void);
 extern void DebugProfiler_Hook(void);
-extern void update_hud(void);
+
 extern void draw_help(void);
 extern void draw_letterbox_bars(void);
 extern void draw_subtitles(void);
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern void draw_screen_effect(void);
-extern void VU0_loadMicroProgram(void *);
-extern void VU1_syncChain(int mask);
 
 extern void PatchTfragGifs(void);
 extern void register_entity_render_resources(void);
@@ -3140,7 +3138,6 @@ int FontPrintCenterLarge(int a, int b, int c, int d, int e) {
     return p;
 }
 
-extern void VU1_setScissor(int, int, int, int);
 struct FontWindow {
     short y_min, y_max, x_min, x_max, x_anchor, y_start;
     short out_w, out_h, line_h;
@@ -3363,8 +3360,6 @@ extern short font_depth_bias; /* SDA, gp -0x78B8 */
 extern unsigned short font_vu_program_tag NOT_SDA;
 extern char font_vu_program[];
 extern char camera_position[];
-
-extern void vu1_gs_regs_font(void);
 
 /* Build the VU1 setup packet: load microprogram 7 if another is
    resident, then a DIRECT/UNPACK chain with the two camera matrices

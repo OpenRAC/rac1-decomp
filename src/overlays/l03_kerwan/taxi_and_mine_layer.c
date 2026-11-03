@@ -28,6 +28,9 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -808,7 +811,7 @@ extern s32 D_0015EE84_D4560 SDATA(D_0015EE84);
 extern L03LevelState kerwan_checkpoint_level_state;
 extern u32 pad0_pressed;
 extern s32 D_L03_0015F674_D4560 SDATA(D_L03_0015F674);
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern void PartType41Spawn(void *, struct Moby *, s32, u32, s32, s32, s32, f32);
 
 extern void request_hero_target_pose_v(void *, float, int) __asm__("func_L00_00234768");
@@ -966,8 +969,6 @@ extern float kerwan_rail_taxi_turn_roll_factor SDATA(kerwan_rail_taxi_turn_roll_
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern float SteerAngleWithVelocity(float *, float, float *, float, float, float);
-extern int Sound_IsPlaying(void *, int);
-extern int Sound_PlayClassSound(int, int, int, int);
 
 typedef struct RailFlyerVars {
     u8 pad_00[0x60];
@@ -1339,8 +1340,7 @@ extern LevelState_hg kerwan_current_level_state;
 extern u8 kerwan_mission_group_state[];
 extern char *kerwan_camera_points SDATA(kerwan_camera_points);
 extern void record_moby_context_bytes(void *, int, struct Moby *, int, void *);
-extern int DialogRequest_Init(void *, unsigned char *);
-extern int Npc_TryStartDialog(struct Moby *, struct TalkState_hg *);
+
 extern void initialize_moby_grounding(struct Moby *);
 
 extern void memcard_Save(int, int);
@@ -1653,7 +1653,7 @@ struct RailSpawnerMoby {
     u16 uid; /* 0xA8 */
 };
 extern char kerwan_path_mover_no_path_msg[];
-extern void STUB_printf(char *, int);
+
 extern int fast_dec_timer_r4(s32 *) __asm__("func_001F9908");
 extern int Sound_IsPlaying_r(struct RailSpawnerMoby *, int) __asm__("func_L00_0028EB98");
 extern int Sound_PlayClassSound_r2(int, int, struct RailSpawnerMoby *, int) __asm__("func_L00_0028EF68");
@@ -1924,8 +1924,6 @@ void big_al_update(struct Moby *m) {
  * camera, 3 emits a random puff (spawn_effect_particle_with_target_scalar) around it. */
 typedef unsigned int u128_DD158 __attribute__((mode(TI), aligned(16)));
 
-extern int DialogRequest_Init(void *, unsigned char *);
-
 extern int PlayBankSound(int, int, int);
 
 extern unsigned char menu_item_enabled_115[];
@@ -2076,10 +2074,6 @@ int IsStateAndPvarFlagSet(unsigned char *moby, char *data) {
     }
     return 0;
 }
-extern int queue_animation_update(int, int, int, int, int, int, int);
-extern void hud_keep_visible(int, int);
-
-extern void DefaultVtbl_DeleteMoby(void);
 
 struct UpdateRailLiftHelpAndHudVars {
     u8 pad_00[0xA4];
@@ -2922,7 +2916,7 @@ none:
     return 0;
 }
 extern void update_smoothed_hero_relative_camera_position(void *);
-extern void Profile_Mark(void *);
+
 extern void rebuild_camera_orientation_axes(void *);
 
 /* Updates the hero-relative camera position, then rebuilds the camera axes. */

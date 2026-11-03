@@ -29,6 +29,10 @@
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -696,10 +700,6 @@ void update_hero_glow_and_extra_manipulators(void) {
 }
 extern unsigned char gHaveMorphORay[] NOT_SDA;
 extern unsigned char hero_globals_base[] NOT_SDA;
-extern void reset_numeric_hud_element_32x32_base(void);
-extern void update_hud_panel_visibility(void);
-extern void draw_hud_bolt_exclamation_panel(void);
-extern int queue_animation_update(int, int, int, int, int, int, int);
 
 /* Update of the nearby-item HUD alert. */
 void update_hero_bolt_exclamation_hud(void) {
@@ -726,7 +726,6 @@ void update_hero_bolt_exclamation_hud(void) {
         }
     }
 }
-extern int request_grouped_voice(int, int, int, int, int);
 
 extern void spawn_texture_indexed_rotated_particle(float *, float, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -1339,7 +1338,6 @@ extern void check_hero_item_reward_conditions(void);
 extern void update_hero_bolt_exclamation_hud(void);
 extern void dispatch_hero_animation_timed_events(void);
 extern void scan_hero_input_sequences(void);
-extern void Profile_Mark(void *);
 
 extern void update_hero_color_and_item_tint(void);
 extern void update_hero_moby_probed_height_bounds(void);

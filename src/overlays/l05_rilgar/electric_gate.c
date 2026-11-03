@@ -26,6 +26,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -539,7 +540,6 @@ typedef struct {
     int sound;
     Lid_0030FCC0 *lid;
 } Data_0030FCC0;
-extern int Sound_IsPlaying(void *, int);
 
 extern void update_drain_cover_tilt(char *obj, float a, float b);
 extern void emit_drain_cover_particles(char *obj, float a, float b);
@@ -1701,10 +1701,7 @@ extern const char race_girl_dialogue_name[];
 extern HGVec rilgar_race_camera_vectors[];
 extern unsigned char gCheats[];
 
-extern int get_dialogue_entry();
-extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(char *);
-extern int Npc_TryStartDialog(void *, void *);
 
 extern void MusicRequestTrack();
 
@@ -1983,9 +1980,8 @@ void update_hoverboard_girl(Moby *moby) {
 #undef update_hoverboard_girl_boobs_animation_r
 #undef func_0022EE28_x
 extern void attach_big_head_cheat_manipulator(char *);
-extern int DialogRequest_Init(void *, void *);
+
 extern void initialize_moby_grounding(char *);
-extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
 
@@ -2359,7 +2355,7 @@ void television_update(unsigned char *moby) {
             break;
     }
 }
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern void PickNearestTargetSlot(char *);
 extern void select_taxi_route(char *);
 extern void request_moby_variant_help_message(char *);

@@ -23,6 +23,8 @@
 #include "asm_functions/executable.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
 extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -655,11 +657,8 @@ extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char D_0013D5C8[];
 extern Rec2C D_L05_0017C188[];
 extern int gadget_double_tap_timer SDATA(gadget_double_tap_timer);
-extern int pad_pressed_within(int, int, int *);
 
 extern int truncate_float_to_s32(float);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern int Hero_TryMoveStateL05_r(int, int) __asm__("func_L05_0024D680");
 extern int func_001F9908(int *);

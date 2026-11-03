@@ -18,6 +18,7 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char usage_stats[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -25,9 +26,6 @@ extern char help_records[];
 
 extern int cinematic_mode MACRO_ADDR;
 extern char help_stats_base[];
-
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
 
 typedef struct {
     char pad0[0x20];

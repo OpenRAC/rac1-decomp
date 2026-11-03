@@ -17,6 +17,9 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/sound_playback.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -1323,7 +1326,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern u8 saved_mission_state[];
 extern SwarmPath *batalia_path_table[];
 extern struct Moby *batalia_mobys_r2 __asm__("D_L08_00160058") MACRO_ADDR;
-extern s32 Sound_IsPlaying(struct Moby *, s32);
 
 extern s32 truncate_float_to_s32(f32);
 
@@ -1898,7 +1900,7 @@ extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int
 extern void initialize_bolt_counter_hud_r(void) __asm__("func_L00_0023A658");
 extern void update_bolt_counter_hud_animation_and_visibility_r(void) __asm__("func_L00_0023A690");
 extern void draw_bolt_counter_hud_panel_r(void) __asm__("func_L00_0023A788");
-extern int queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
+
 extern void multiply_matrix3x3(void *, void *, void *);
 extern int coll_sphere(float, void *, int, void *);
 
@@ -2454,7 +2456,6 @@ typedef int u128 __attribute__((mode(TI)));
 
 extern int truncate_float_to_s32(float);
 
-extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
 extern char batalia_screen_projection_base[];

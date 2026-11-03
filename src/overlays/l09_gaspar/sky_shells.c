@@ -7,6 +7,7 @@
 #include "overlays/shared/sky_particles.h"
 #include "asm_functions/level_01.h"
 #include "enums/level.h"
+#include "game/render/vuchain.h"
 
 LINKER_REMNANT("asm/overlays", func_L09_0021E3E8);
 typedef struct Strip_21E410 {
@@ -160,7 +161,6 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
 
 extern int D_0015EE84 MACRO_ADDR;
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Gaspar sky: rotating shells in level 9, static shells otherwise, then GS setup. */
 void Sky_DrawLevel09(void) {

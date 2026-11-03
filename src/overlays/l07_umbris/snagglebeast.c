@@ -27,6 +27,8 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -672,7 +674,6 @@ extern int truncate_float_to_s32(float);
 extern void suck_beam_queue_draw(int);
 
 extern void AddDrawCallback_v(void (*)(), void *) __asm__("func_001F49B0");
-extern int queue_animation_update(int, int, int, int, int, int, int);
 
 extern void suck_reset(void *);
 extern int func_001160D8(void);
@@ -693,7 +694,7 @@ extern void update_snagglebeast_chase_speed(void *, void *, float, float, float)
 
 extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 extern void RerollEffectCounter(void *, short *);
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern void SetDeathBits(void *, int, int);
 
 extern float update_snagglebeast_rope(void *, void *);
@@ -711,8 +712,6 @@ extern void update_timed_point_light_color(char *);
 
 extern void draw_collision_clipped_moby_beam();
 extern void draw_and_probe_snagglebeast_rope_attack();
-
-extern void Hud_UpdateCounter();
 
 extern char debris_far_point[];
 extern float frame_scale MACRO_ADDR;
@@ -1870,7 +1869,7 @@ void snagglebeast_update(unsigned char *m) {
 extern s32 depth_buffer_address MACRO_ADDR;
 typedef float RopeVec[4] __attribute__((aligned(16)));
 extern u64 GetEffectTex(int);
-extern void VU1_addGSregister(int, u64);
+
 extern void draw_world_quad(void *, int, int);
 extern float scroll_phase SDATA(scroll_phase);
 extern float row_start_phase SDATA(row_start_phase);

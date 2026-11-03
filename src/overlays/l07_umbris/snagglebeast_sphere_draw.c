@@ -13,6 +13,7 @@
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
 
 /* Snagglebeast sphere effect: only the draw state is read here. */
 struct SnaggleSphereVars {
@@ -20,7 +21,6 @@ struct SnaggleSphereVars {
     u8 brightness;                  /* 0x1C6 */
 };
 
-extern void VU1_addGSregister(int, u64);
 extern u64 GetEffectTex(int);
 
 extern int truncate_float_to_s32(float);

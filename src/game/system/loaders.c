@@ -12,6 +12,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/ui/hud.h"
 
 /*
  * loaders.cpp in the original source; text 0x202AA8-0x205520.
@@ -369,10 +370,6 @@ extern HudArena hud_state_arena __asm__("D_0019A4E8");
 
 extern char *Hud_HeapAlloc_d(int, int, char *, int) __asm__("func_001FFAB8");
 extern void LoadCompressedHudBank(int idx, int size);
-
-extern void Hud_SendResidentBank(int, void *, int);
-
-extern void LinkHudBank(int bank, int addr);
 
 extern int level_resource_buffers[];
 extern int hud_bank_sizes[];

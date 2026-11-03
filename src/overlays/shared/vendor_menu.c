@@ -28,6 +28,8 @@
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -244,12 +246,6 @@ extern void music_Pause(s32);
 extern int snd_FlushSoundCommands(void);
 extern void build_vendor_menu_rows(s32);
 
-extern s32 queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
-
-extern void initialize_numeric_hud_timer_and_base_dimensions(void);
-extern void Hud_UpdateCounter(void);
-extern void draw_weapon_ammo_hud_panel(void);
-
 extern s32 HeroEnterMoveState(s32, s32);
 
 extern void set_camera_position(void *);
@@ -380,7 +376,6 @@ void open_vendor_menu(VendorMoby_pv *m) {
     vendor_auxiliary_moby_active = 0;
     vendor_auxiliary_moby_load_pending = 0;
 }
-extern void Hud_SetBarValueById(int, int);
 
 extern int HeroEnterMoveState(int, int);
 
@@ -473,8 +468,7 @@ typedef struct {
 extern C_298840 cutscene_state;
 
 extern s32 gFadeLvl MACRO_ADDR;
-void VU1_syncChain(s32);
-void calculate_dma_transfer_address(void);
+
 typedef struct {
     s32 item;
     s32 selected;
@@ -1230,11 +1224,8 @@ extern f32 render_view_tan_half_fov NOT_SDA;
 extern void reset_frame_counters();
 extern void update_game_frame_and_idle_counters();
 
-extern void Profile_Mark();
-
 extern void start_vendor_exit_cutscene();
 extern void close_vendor_menu();
-extern void update_hud_elements();
 
 extern void draw_vendor_inset_quads();
 extern void set_camera_position();
@@ -1247,9 +1238,9 @@ extern void update_resident_dialogue_animation_state();
 
 extern s32 msg_string();
 extern void set_scrolling_status_message();
-extern s32 queue_animation_update();
+
 extern void update_vendor_purchase();
-extern void calculate_dma_transfer_address();
+
 extern void initialize_vendor_selected_item_mobys();
 
 extern void restore_hero_after_vendor_exit_cutscene();
@@ -1258,9 +1249,6 @@ extern void sceVu0RotMatrixX();
 extern void sceVu0RotMatrixY();
 extern void sceVu0RotMatrixZ();
 
-extern void initialize_numeric_hud_timer_and_base_dimensions();
-extern void Hud_UpdateCounter();
-extern void draw_weapon_ammo_hud_panel();
 #define vendor_menu_r (*(VMenuD *)&D_L00_001CA7C0)
 #define pad_state D_0013CA40
 #define upd_d D_L00_0016C158

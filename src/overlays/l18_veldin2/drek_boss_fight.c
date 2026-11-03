@@ -308,8 +308,6 @@ void mark_block_entries_within_transform_xy_bounds(int a, int b) {
 extern float g_frame_time MACRO_ADDR;
 extern void draw_glow_moby_layered_quads(struct Moby *);
 
-extern int Sound_IsPlaying(void *, int);
-
 extern float ApproachValue(float *p, float target, float maxstep);
 
 /* Glow moby update: queues its quad draw, loops its sound, fades out once its linked moby opens. */
@@ -2587,10 +2585,7 @@ extern void SetTableEntryFlagIfKind18(char *moby);
 
 extern void Cam_SetDistanceGoal(float x, float y, int flag);
 
-extern int queue_animation_update(int, int, int, int, int, int, int);
 extern float ApproachWithVelocity_p(float *, float, float *, float, float, float) __asm__("func_00214D88");
-
-extern void Hud_UpdateCounter();
 
 extern char *veldin2_camera_descriptors MACRO_ADDR;
 extern int veldin2_camera_trigger_used[];

@@ -16,6 +16,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/sound_playback.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -797,7 +799,7 @@ extern s32 space_commando_beam_outer_color_b SDATA(space_commando_beam_outer_col
 extern s32 space_commando_beam_inner_color_a SDATA(space_commando_beam_inner_color_a);
 extern s32 space_commando_beam_inner_color_b SDATA(space_commando_beam_inner_color_b);
 extern f32 space_commando_beam_uvs[4][2];
-extern void VU1_addGSregister(s32, s64);
+
 extern u64 GetEffectTex(s32);
 
 extern void vec_scale_to_length(void *, void *, f32);
@@ -1188,8 +1190,6 @@ void draw_bot_door_lock_glow(char *o) {
     pk.uv[7] = 1.0f;
     draw_world_quad(&pk, 0, 1);
 }
-
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 
 /* state transitions of a moby depending on its id at 0xA6 */
 void activate_bot_door_lock_target(unsigned char *a, unsigned char *m) {

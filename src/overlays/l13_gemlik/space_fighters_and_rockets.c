@@ -28,6 +28,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -1984,7 +1985,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int linked_state_flags[];
 
 extern char *spawn_scaled_owned_moby(char *, void *, float);
-extern int Sound_IsPlaying(void *, int);
+
 #define Moby_PlaySound_s ((int (*)(int, int, int))Moby_PlaySound_r)
 extern int set_voice_position(int, const void *);
 
@@ -2578,7 +2579,7 @@ extern void get_next_moby_in_group(char **, char *, int, int);
 extern void set_moby_color(void *, int, int, int);
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 extern void set_moby_list_state(int, int);
-extern void STUB_printf(char *, short, short, int);
+
 extern char linked_switch_group_opened_debug_format[];
 extern char linked_switch_group_hit_timeout_debug_format[];
 extern char linked_switch_group_open_timeout_debug_format[];

@@ -34,6 +34,9 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -151,9 +154,6 @@ extern char level_profile_mark_after_parts[];
 extern char level_profile_mark_after_camera[];
 extern char level_profile_mark_after_sound[];
 
-extern void hud_keep_visible(int, int);
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
 extern void prepare_level_transition_with_help_cleanup(void);
 extern void count_expired_mobys(void);
 
@@ -167,7 +167,6 @@ extern void update_debug_camera(void);
 extern void update_hero_from_debug_camera(void);
 extern void UpdateAllPointLights(void);
 
-extern int func_L00_0023B610(int);
 extern void Help_Update(void);
 
 /* per-frame update of the in-level game: pause and cutscene triggers, then the subsystem updates. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297f78. */
@@ -430,7 +429,6 @@ void StartCutscene(int arg) {
         sce_gs_sync_v(0);
     }
 }
-extern void calculate_dma_transfer_address(void);
 
 extern void reset_frame_counters(void);
 
@@ -723,7 +721,7 @@ extern u8 level_profile_mark_after_hero_r[] __asm__("D_L00_001610C8");
 extern u8 level_profile_mark_after_parts_r[] __asm__("D_L00_001610D8");
 extern u8 level_profile_mark_after_camera_r[] __asm__("D_L00_001610E8");
 extern u8 level_profile_mark_after_sound_r[] __asm__("D_L00_001610F8");
-extern void Profile_Mark(void *, s32);
+extern void Profile_Mark_v(void *, s32) __asm__("func_001E9768");
 void finish_cutscene(void);
 int func_L00_0029A158_9A300(void) __asm__("func_L00_0029A158");
 
@@ -785,15 +783,15 @@ void update_cutscene_playback(void) {
         update_visible_resident_objects();
         enqueue_voice_request();
     }
-    Profile_Mark(level_profile_mark_after_mobys_r, 3);
+    Profile_Mark_v(level_profile_mark_after_mobys_r, 3);
     if ((g_debug_menu_r.update_flags & 1) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
         coordinate_hero_frame_update();
     }
-    Profile_Mark(level_profile_mark_after_hero_r, 7);
+    Profile_Mark_v(level_profile_mark_after_hero_r, 7);
     if ((g_debug_menu_r.update_flags & 4) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
         UpdateParts();
     }
-    Profile_Mark(level_profile_mark_after_parts_r, 5);
+    Profile_Mark_v(level_profile_mark_after_parts_r, 5);
     cs = &cutscene_state_r;
     fade = gFadeLvl_r - 0.34f;
     cs->f34++;
@@ -853,9 +851,9 @@ void update_cutscene_playback(void) {
             }
         }
     }
-    Profile_Mark(level_profile_mark_after_camera_r, 8);
+    Profile_Mark_v(level_profile_mark_after_camera_r, 8);
     sound_update();
-    Profile_Mark(level_profile_mark_after_sound_r, 6);
+    Profile_Mark_v(level_profile_mark_after_sound_r, 6);
     UpdateAllPointLights();
     update_resident_packed_direction();
     if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
@@ -927,7 +925,7 @@ void queue_movie_with_game_language(int i) {
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *, void *);
 extern int wait_for_graphics_pipeline_idle(int, unsigned short);
-extern int STUB_printf(char *, int);
+
 extern void raise_kernel_trap(void);
 typedef struct {
     int sector;
@@ -1123,7 +1121,6 @@ void start_slideshow(void) {
                                 disc_table.normal[((short *)slideshow)[1]].b);
     }
 }
-extern void VU1_syncChain(int);
 
 /* Ends the slideshow: syncs VU1, fades to black, stops the audio stream and leaves cinematic mode. */
 void end_slideshow(void) {

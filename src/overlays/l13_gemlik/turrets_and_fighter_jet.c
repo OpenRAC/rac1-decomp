@@ -31,6 +31,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -113,8 +114,6 @@ struct FighterJetHudVars {
     u8 pad_F8[0xC];
     s32 tex_index; /* 0x104 */
 };
-
-extern int STUB_printf();
 
 extern void set_moby_list_state(int list, int state);
 extern unsigned char hero_globals_base[];
@@ -289,7 +288,6 @@ extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern int Sound_IsPlaying(void *, int);
 
 extern int HeroEnterMoveState(int, int);
 

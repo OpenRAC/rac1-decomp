@@ -31,6 +31,8 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -328,7 +330,7 @@ void update_ship_lock_on_target(int a, char *moby) {
         }
     }
 }
-extern void VU1_addGSregister(int, long);
+
 extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int icon, long color);
 extern void update_ship_lock_on_target(int a, char *moby);
@@ -941,10 +943,7 @@ extern void update_player_ship_flight(void *, void *);
 extern int count_listed_blarg_ships_in_state_5(int);
 extern char *activate_listed_blarg_ship(int idx);
 
-extern int STUB_printf();
-
 extern void emit_type_74_particles_from_moby_joints(void *, void *);
-extern int Sound_IsPlaying(void *, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,

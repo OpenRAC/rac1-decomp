@@ -9,6 +9,7 @@
 #include "game/ui/hud.h"
 #include "game/moby/mobyutil.h"
 #include "structs/pad.h"
+#include "game/render/vuchain.h"
 
 /*
  * help.cpp in the original source; text 0x1FDF10-0x1FF668.
@@ -98,11 +99,6 @@ extern s32 map_label_text_y_offset SDATA(map_label_text_y_offset);
 
 extern f32 vec_length_xy(f32 *);
 extern void *msg_string(s32);
-
-extern void draw_hud_sprite_uv(s32, s32, s32, s32, s32, s32, s32, s32);
-extern void draw_hud_rect(s32, s32, s32, s32, u64, s32);
-extern void draw_hud_rect_blended(s32, s32, s32, s32, u64, s32);
-extern void VU1_addGSregister(s32, u64);
 
 /* Map state of a level: 3 when visited, 2 when available, else 0. */
 static inline s32 map_availability_FDF78(s32 level_index) {

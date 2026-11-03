@@ -25,6 +25,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -572,8 +573,6 @@ extern u8 gHaveBoltGrabber NOT_SDA;
 extern s32 fast_dec_timer(s32 *);
 
 extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
-
-extern s32 pad_pressed_within(s32, s32, s32);
 
 /* Per-frame hero upkeep: tick the hero timers, spawn the respawn marker, track sinking, and set the camera follow
    target. Clone of FUN_L00_002215c8 without the case-1 camera tuning.

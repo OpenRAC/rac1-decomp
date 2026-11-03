@@ -7,6 +7,7 @@
 #include "game/moby/mobyutil.h"
 #include "game/ui/hud.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
@@ -17,8 +18,6 @@
 typedef struct {
     char b[0x13];
 } Cfg13;
-
-extern int STUB_printf();
 
 extern unsigned char gSpecialItems[];
 
@@ -381,14 +380,10 @@ extern u8 D_0013D5C8[];
 extern u8 items_acquired[];
 extern u8 gSpecialItems[];
 
-extern void noop_callback_n(s32);
-
-extern void noop_callback_o(s32);
 extern void *msg_string(s32);
 
 extern char *find_substring(char *, char *);
 extern s32 sprintf(char *, const char *, ...);
-extern void copy_text_to_shared_buffer(void *);
 
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2);
 

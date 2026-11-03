@@ -15,6 +15,7 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/system/stub.h"
 
 /*
  * camera.cpp in the original source; text 0x1EC038-0x1EDFF8.
@@ -25,8 +26,6 @@
 /* The camera block and the debug free camera (include/structs/camera.h). */
 extern CameraSystem gCamera;
 extern DebugFreeCam occl_cam_state;
-
-extern int noop_callback_l(void *arg0);
 
 /* Same signature as the declaration further down this file; duplicate
    identical declarations are legal and avoid a signature clash. */

@@ -6,6 +6,7 @@
 #include "core/gs/def_draw_env.h"
 #include "data/executable.h"
 #include "structs/gs.h"
+#include "game/render/vuchain.h"
 
 /*
  * framebuf.cpp in the original source; text 0x1FAA28-0x1FBC80.
@@ -398,9 +399,6 @@ void draw_centered_capture_background(int w, int h) {
     }
     g_render_packet_cursor = g_render_packet_cursor + (n * 4 + 20);
 }
-
-extern void vu1_add_vif_code(int);
-extern void VU1_addGSregister(int, long);
 
 /* Draws an alpha-blended sprite through a GIF packet appended to
    g_render_packet_cursor (a DMA/VIF header, TEST_1 0x33003, then PRIM 0x106 with

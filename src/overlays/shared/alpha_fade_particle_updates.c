@@ -17,6 +17,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern char gHeroPos[];
 extern Hero g_hero;
 extern char g_hero_body_center[];
@@ -1773,7 +1774,6 @@ void update_gravity_ground_culled_particle(struct PartBase *o) {
     FastVecAdd(vel, &tmp, vel);
     vel->f[3] = h + particle_clearance;
 }
-extern int DefaultVtbl_DeleteMoby(float, int, int);
 
 /* Update a particle following a parent moby with a scaled offset. */
 void update_damped_moby_relative_color_size_tween_particle(struct PartBase *m) {

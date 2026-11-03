@@ -33,6 +33,8 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -799,8 +801,6 @@ void attach_cutscene_big_head_manipulator(char *a) {
 }
 extern void attach_cutscene_big_head_manipulator(char *);
 extern void set_ground_height_band(void *);
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
 
 extern void unlock_planet(int);
 
@@ -2730,7 +2730,7 @@ extern void set_hero_animation_v(f32, int, int) __asm__("func_L00_00232C10");
 extern void add_random_offset_to_vector_xyz(void *, f32);
 extern int func_001160D8(void);
 extern void *PartType53Spawn(void *, int, f32, f32, int, int, int, void *, f32);
-extern int STUB_printf();
+
 extern Moby *sandmouse_grab_moby;
 extern int g_current_level_index MACRO_ADDR;
 extern char *novalis_camera_moby;

@@ -22,6 +22,7 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -131,7 +132,7 @@ extern float animframe_3DF8(void *) __asm__("func_0020D830");
 
 extern int func_00215B18(void *, float);
 extern void shoot_3DF8(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
-extern int func_L00_0028EB98(void *, int);
+
 extern int func_L00_002DDEA0(void *, void *);
 extern void explode_3DF8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -1204,7 +1205,7 @@ extern void helper302618(void *) __asm__("func_L08_00303998");
 extern void sound302618(float, void *, int, void *) __asm__("func_L00_00264B40");
 extern void wake302618(void *) __asm__("func_L00_0025B178");
 extern int hero_anim302618(int) __asm__("func_002140B0");
-extern void func_001E9730(char *, int);
+
 extern void func_L01_0026E8E0(void *);
 extern int func_L01_0028C2D8(void *, void *, float);
 extern void func_L00_0025A060(void *, void *, void *, void *);
@@ -2261,8 +2262,6 @@ void set_level_state_flag_88(void) {
     batalia_player_camera_current[0x88] = 1;
 }
 extern float batalia_wind_level SDATA(batalia_wind_level);
-
-extern int Sound_SetPitchBend(int, int);
 
 /* Wind ambience: probes 20 points around the hero; the more of them are below the camera, the louder the loop. */
 void update_ground_height_modulated_voice(char *m) {

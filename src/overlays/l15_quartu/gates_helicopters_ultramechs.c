@@ -28,6 +28,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -536,8 +538,6 @@ extern Colors quartu_debris_effect_colors;
 extern void vec_scale_to_length_r(float, void *, void *) __asm__("func_L00_001FF4B0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
-extern int DefaultVtbl_DeleteMoby(float, int, int);
-
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
 
@@ -695,8 +695,6 @@ extern unsigned char gemlik_available[];
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
-
-extern int DefaultVtbl_DeleteMoby(float, int, int);
 
 extern void SetDeathBits(void *, int, int);
 
@@ -1952,12 +1950,10 @@ extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm_
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
 
-extern void Profile_Mark(void *, void *);
+extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 extern int mine_fall(void *, void *);
 extern float jump_speed_4318(void *a, void *b, void *out, float speed, float g);
 extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
@@ -2327,7 +2323,7 @@ void ultramech_unlimited_update(UMoby *m) {
                     coll_sphere_mobys(&v60, 9, m, &v10, 2.5f);
                     coll_line(&v50, &v60, 0, m, &v10);
                     sweep_hit_segment(&v50, &v60, &v50, &d->v1A0, m, &v10, 5);
-                    Profile_Mark(&v50, &v60);
+                    Profile_Mark_v(&v50, &v60);
                     qcopy(&d->v1A0, &v60);
                 }
             }
@@ -2896,7 +2892,6 @@ void update_poison_vessel_spawner(Moby *moby) {
     }
 }
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern int quartu_frame_count MACRO_ADDR;
 extern short quartu_ripple_strip_counts;

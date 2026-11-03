@@ -21,6 +21,9 @@
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -229,7 +232,7 @@ void resolve_level_asset_block_pointers(char *p) {
 
 extern int truncate_float_to_s32(float);
 extern int func_00120778(float);
-extern int STUB_printf();
+
 extern char moby_class_size_format[];
 
 struct SortEnt {
@@ -454,15 +457,12 @@ typedef struct {
 
 extern void Load_r(void *, int, int) __asm__("func_002176C8");
 
-extern void VU0_loadMicroProgram(void *);
-extern int STUB_printf();
 extern void copy_memory_by_alignment_v(void *, void *, int) __asm__("func_L00_001FF040");
 
 extern void scale_vector(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 
-extern void resolve_lookup_record(short *);
 extern int find_or_assign_bolt_source_slot(int, int);
 
 extern void store_current_level_table_value(int, int);
@@ -472,8 +472,6 @@ extern void initialize_moby_state_record(char *);
 extern void Level_ResetGameplayGlobals(void);
 
 extern void setup_level_cameras(void);
-
-extern void update_moby_proximity_interaction();
 
 extern Lvl173F00_422D8 lvl_resource_buffers;
 extern int pal_mode MACRO_ADDR;
@@ -1883,7 +1881,7 @@ extern u8 mission_state[] MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 extern UpdD244 active_scene_trigger;
 
-extern void Profile_Mark(void *, s32);
+extern void Profile_Mark_v(void *, s32) __asm__("func_001E9768");
 
 extern void copy_memory_by_alignment_v(void *, void *, s32) __asm__("func_L00_001FF040");
 
@@ -2031,7 +2029,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         }
         for (i = 0, q2 = (char *)h + h->v[9]; i < h->v[8]; i++, q2 += 0x20)
             register_object_render_class(base + *(s32 *)q2, (char *)h + h->v[0x11], q2 + 0x10, *(s32 *)(q2 + 4));
-        Profile_Mark((char *)h + h->v[9], h->v[8]);
+        Profile_Mark_v((char *)h + h->v[9], h->v[8]);
         for (i = 0, q2 = (char *)h + h->v[0xB]; i < h->v[0xA]; i++, q2 += 0x30)
             register_shrub_render_class(base + *(s32 *)q2, (char *)h + h->v[0x13], q2 + 0x10, q2 + 0x20,
                                         *(s32 *)(q2 + 4));

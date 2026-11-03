@@ -2,6 +2,7 @@
 #include "structs/misc.h"
 #include "core/mpeg/demux.h"
 #include "game/movie/movie.h"
+#include "game/system/stub.h"
 
 /* Retail-disassembly reconstruction of decoder buffer operations. */
 extern int sce_mpeg_create(void *, unsigned char *, int);
@@ -184,7 +185,6 @@ extern int sce_mpeg_is_end(void *);
 
 extern void ErrMessage(char *);
 
-extern void STUB_printf(char *, ...);
 extern void setImageTag(void *, void *, int, int);
 /* sceMpegGetPicture(VideoDec *) */
 int sceMpegGetPicture(VideoDec *dec) {

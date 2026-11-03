@@ -116,7 +116,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         }
         for (i = 0, q2 = (char *)h + h->v[9]; i < h->v[8]; i++, q2 += 0x20)
             register_object_render_class(base + *(s32 *)q2, (char *)h + h->v[0x11], q2 + 0x10, *(s32 *)(q2 + 4));
-        Profile_Mark((char *)h + h->v[9], h->v[8]);
+        Profile_Mark_v((char *)h + h->v[9], h->v[8]);
         for (i = 0, q2 = (char *)h + h->v[0xB]; i < h->v[0xA]; i++, q2 += 0x30)
             register_shrub_render_class(base + *(s32 *)q2, (char *)h + h->v[0x13], q2 + 0x10, q2 + 0x20,
                                         *(s32 *)(q2 + 4));

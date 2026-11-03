@@ -25,6 +25,9 @@
 #include "asm_functions/executable.h"
 #include "game/render/draw.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -548,7 +551,6 @@ void func_L00_002D19E8_r(u8 *a) {
 }
 /* break_crate (CrateBreakFx) -- src/overlays/shared/vendor_002D1168.c. EXACT 2026-10-19 (fg). */
 
-extern int Sound_PlayClassSound(int, int, void *, int);
 extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 extern int is_moby_in_class_range_500_to_540(void *);
 
@@ -1557,9 +1559,9 @@ extern void matrix_from_basis_rows_r2(void *, void *) __asm__("func_001FA4A0");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 
 extern void quat_nlerp_r(void *, void *, void *, f32) __asm__("func_001FA5C8");
-extern s32 func_L00_0028EB98(struct Moby *, s32);
+
 extern s32 voice_2D4398(s32, s32, void *) __asm__("func_0022ED80");
-extern void func_L00_0028F210(s32, s32);
+
 extern s32 trunc_2D4398(f32) __asm__("func_001FA898");
 extern f32 rand_2D4398(f32, f32) __asm__("func_002140F8");
 extern void rotate_2D4398(void *, void *, void *) __asm__("func_001F9EC0");
@@ -2992,7 +2994,7 @@ extern void update_infobot_particle_effect(char *);
 extern s32 RotateWithMoby(struct Moby *, struct Moby *, void *, void *, void *, void *);
 
 extern void queue_planet_unlock_message(s32);
-extern void set_moby_dialogue_record_value(struct Moby *, s32);
+
 extern void memcard_Save(s32, s32);
 extern void DeleteMoby(void);
 
@@ -3599,8 +3601,6 @@ extern float smoke_particle_quad_uvs[];
 extern float smoke_box_vertex_positions[][4];
 extern float smoke_box_uv_v_column[];
 extern float smoke_box_uv_u_column[];
-
-extern void VU1_addGSregister(s32, s64);
 
 void draw_smoke_fire_spawner(P *spawner) {
     Vec4 position, up;

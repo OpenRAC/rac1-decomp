@@ -23,6 +23,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -941,8 +942,6 @@ void agnogg_ship_front_update(Moby *moby) {
 }
 typedef int u128_2FCC80 __attribute__((mode(TI)));
 
-extern int Sound_IsPlaying(void *, int);
-
 extern int g_current_level_index SDATA(g_current_level_index);
 extern unsigned char help_stats_base[] NOT_SDA;
 extern unsigned char hero_globals_base_u[] __asm__("D_0013E633") NOT_SDA;
@@ -1307,12 +1306,12 @@ void green_mushroom_update(char *m) {
     }
 }
 
-extern void DefaultVtbl_DeleteMoby();
+extern void DefaultVtbl_DeleteMoby_v() __asm__("func_L00_00237B70");
 extern void update_and_draw_scrolling_overlay_layers();
 extern char novalis_four_scroll_layers[];
 /* The moby comes in $a0 and goes on to the delete, untouched. */
 void draw_four_scroll_layers(void *moby) {
-    DefaultVtbl_DeleteMoby(moby);
+    DefaultVtbl_DeleteMoby_v(moby);
     update_and_draw_scrolling_overlay_layers(4, novalis_four_scroll_layers);
 }
 typedef u32 u128_FFF30 __attribute__((mode(TI), aligned(16)));
@@ -1802,7 +1801,7 @@ void mushroom_underside_update(void *arg) {
 }
 extern char novalis_pulse_scroll_layers[];
 extern int novalis_frame_count MACRO_ADDR;
-extern void DefaultVtbl_DeleteMoby(void *);
+extern void DefaultVtbl_DeleteMoby_v(void *) __asm__("func_L00_00237B70");
 extern void update_and_draw_scrolling_overlay_layers(int, void *);
 
 /* draw callback: pulses three colour entries from a sine of the frame counter */
@@ -1810,7 +1809,7 @@ void draw_level01_scroll_layers(void *moby) {
     float *p;
     float v;
     int i;
-    DefaultVtbl_DeleteMoby(moby);
+    DefaultVtbl_DeleteMoby_v(moby);
     update_and_draw_scrolling_overlay_layers(3, novalis_pulse_scroll_layers);
     v = FastSin((IntToFloat(novalis_frame_count & 0x3F) - 32.0f) * 0.09817477f) * 0.5f + 0.5f;
     p = (float *)(novalis_pulse_scroll_layers + 0x11C);
@@ -2381,7 +2380,6 @@ void generate_level01_environment_map_uvs(int vertex_count, char *normals, char 
     }
 }
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern void generate_level01_environment_map_uvs(int n, char *pts, char *nrm, int unused, float *out);
 

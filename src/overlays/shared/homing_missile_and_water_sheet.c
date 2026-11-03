@@ -25,6 +25,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
 extern Hero g_hero;
 extern int g_screen_extent[];
 extern char help_records[];
@@ -171,7 +172,7 @@ extern char *pokitaru_mobys MACRO_ADDR;
 extern char pokitaru_coll_hit_normal[];
 extern int truncate_float_to_s32(float);
 
-extern void Profile_Mark(void *, void *);
+extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 
 extern void initialize_hit_descriptor(float, void *, struct Moby *, int);
 extern int coll_line(void *, void *, int, void *, void *);
@@ -234,7 +235,7 @@ void update_homing_missile(struct Moby *moby) {
             }
             moby->rot.y = FastAddRots(moby->rot.y, pitch_off);
             BuildSphericalOffset(vars, speed, moby->rot.z, -moby->rot.y);
-            Profile_Mark(&moby->pos, &vars->target->pos);
+            Profile_Mark_v(&moby->pos, &vars->target->pos);
         } else {
             vars->target = 0;
         }
@@ -514,7 +515,6 @@ typedef struct {
     float f228, f22C;
 } Fog;
 
-extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 
 extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");

@@ -22,8 +22,6 @@
 
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
-extern void draw_hud_rect_blended(int, int, int, int, long, long);
-
 extern void truncate_float_to_s32(float);
 
 /* The NTSC decomp's pending C for the same instructions (a draft it has not matched

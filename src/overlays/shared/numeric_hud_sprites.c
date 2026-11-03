@@ -8,6 +8,7 @@
 #include "enums/level.h"
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -19,7 +20,6 @@ typedef struct {
     s32 unk7C;
 } HudElemX;
 
-extern void initialize_numeric_hud_values_and_dimensions(void *);
 extern s32 trick_combo_recent3 MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/00262ae8.c, FUN_L05_00262ae8. */
@@ -183,10 +183,6 @@ extern int sprintf_r(char *, const char *, ...) __asm__("func_00116248");
 
 extern int FontPrintCenterLarge_x(int, int, u64, int, int) __asm__("func_001F6FD8");
 extern char *msg_string_r(int) __asm__("func_001FE540");
-extern void draw_framed_text(int, int, int, int);
-extern int hud_screen_position(void *rec, int *x, int *y);
-
-extern void draw_cropped_hud_sprite(int, int, int, int, int, int);
 
 extern char rilgar_fmt_number[];
 extern char rilgar_fmt_count_and_word[];

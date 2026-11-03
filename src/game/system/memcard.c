@@ -9,6 +9,7 @@
 #include "game/ui/menu.h"
 #include "data/executable.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
 
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
@@ -92,7 +93,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_RestoreData(void *src, int i, int *table);
-extern int STUB_printf();
+
 extern char memcard_restore_size_mismatch_msg[];
 
 /* The counterpart of memcard_MakeWholeSave below: both descriptor sizes are
@@ -1373,7 +1374,7 @@ extern int sce_mc_init(void);
    be edited; an unprototyped declaration satisfies all call sites
    with identical codegen. (Only varargs *definitions* need stdarg.h;
    calling one is fine.) */
-extern int STUB_printf();
+
 extern char memcard_error_message[];
 
 /* memcard_Init */

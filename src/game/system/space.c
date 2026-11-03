@@ -24,6 +24,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/system/stub.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -42,8 +43,6 @@ extern int render_sequence NOT_SDA;
 extern int current_vu_chain MACRO_ADDR;
 
 extern short g_current_level_index;
-
-extern int STUB_printf();
 
 extern int g_hero_moby NOT_SDA;
 
@@ -587,8 +586,6 @@ extern f32 sky_shell_base_rot_z_by_mode[] NOT_SDA;
 extern f32 cam_mode_min_fov[] NOT_SDA;
 extern u8 level_available[20] NOT_SDA;
 
-extern void noop_callback_i(void);
-extern void noop_callback_h(void);
 extern void snd_play_sound_vol_pan_pmpb(s32, s32, s32, s32, s32, s32, s32, void *);
 
 extern void refresh_moby_spatial_bounds(void *);
@@ -806,7 +803,6 @@ extern struct LevelRenderState_305A0 level_render_state_r2 __asm__("D_0013E130")
 extern s32 game_frame_counter MACRO_ADDR;
 extern s32 D_0015F704_305A0 SDATA(D_0015F704);
 extern s32 render_sequence_time[];
-extern void append_dma_tag(u32);
 
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 
@@ -819,7 +815,7 @@ extern void build_resident_indexed_texture_warp_meshes(s32);
 extern void draw_resident_textured_quad();
 extern void draw_resident_textured_banner(s32);
 extern void render_environment_mapped_object_r(s32) __asm__("func_00233AB8");
-extern void VU1_syncChain(s32);
+
 extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
 extern struct LevelDisplayState g_screen_extent_r __asm__("D_0013E600");
 
@@ -2339,7 +2335,6 @@ extern void Menu_RunStateHandler(void);
 extern void append_scrolling_textured_quad_r(s32, s32, s32, s32, u64, u64, f32, f32, f32, f32) __asm__("func_00232A00");
 extern void prepare_loading_slide_textures(s32, s32, s32, u64 *, u64 *, u64 *);
 
-extern void VU1_syncChain(s32);
 extern void VU1_addGSregister_r2(s32, u64) __asm__("func_00234C98");
 extern void sce_gs_sync_v(s32);
 
@@ -2493,7 +2488,6 @@ extern void append_palette_transfer_packet(void);
 extern void update_resident_gameplay_state(void);
 extern void tick_space_transition(void);
 extern int service_level_archive_load(void);
-extern void VU1_syncChain(int);
 
 /* DoSpaceTransition: plays the level-to-level transition (dialogue screens, loading loop) and waits for the load. Adapted from Lombyte's project (GPL-3.0) for PAL: src/gameplay/state/do_space_transition.c, do_space_transition. */
 void DoSpaceTransition(void) {

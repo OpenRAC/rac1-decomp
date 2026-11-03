@@ -1357,7 +1357,7 @@ extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm_
 
 extern int fast_dec_timer(int *);
 extern void select_nearest_gadgebot_interaction_target(void *);
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
+
 extern char *spawn_source_attached_fading_effect_particle(float, char *, int, int, int);
 extern int mine_fall(void *, void *);
 
@@ -3143,7 +3143,6 @@ void update_hero_trigger_volume_monitor(char *m) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_energy_sphere_destruction_particles(char *m);
 
-extern int Sound_IsPlaying(void *, int);
 extern short blarg_energy_sphere_spin_x_deg, blarg_energy_sphere_spin_y_deg, blarg_energy_sphere_spin_z_deg,
     blarg_energy_sphere_scale_factor;
 

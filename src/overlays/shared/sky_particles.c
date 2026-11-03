@@ -7,6 +7,7 @@
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/render/vuchain.h"
 
 typedef struct {
     unsigned char b0, b1, b2, b3;
@@ -165,8 +166,6 @@ void update_sky_shells_animated(void) {
         SkyDrawShell(i);
     }
 }
-
-extern void VU1_addGSregister(int, long);
 
 typedef struct {
     u8 type;
@@ -329,8 +328,6 @@ extern char *sky_data MACRO_ADDR;
 
 void SkyDrawShell();
 extern int level_frame_counter MACRO_ADDR;
-
-void VU1_addGSregister(int, long);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_00289bd8. */
 void draw_sky_shells_with_particles_and_modulo_50000_rotation(void) {
@@ -533,8 +530,6 @@ void sky_particles_update(void);
 
 void SkyDrawShell();
 
-void VU1_addGSregister(int, long);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a208. */
 void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void) {
     float v[4] __attribute__((aligned(16)));
@@ -659,7 +654,7 @@ extern char *sky_data MACRO_ADDR;
 extern void SkyDrawShell(int);
 extern void sky_particles_init(int, int);
 extern void sky_particles_update(void);
-extern void VU1_addGSregister(int, long);
+
 /* Draws sky shells 0 and 1, updates and draws the sky particles, then draws shell 2. */
 void draw_three_sky_shells_with_particles(void) {
     set_identity_matrix(sky_shell_matrix);

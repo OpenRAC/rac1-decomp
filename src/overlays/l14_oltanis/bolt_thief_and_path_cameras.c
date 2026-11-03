@@ -28,6 +28,8 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -334,8 +336,6 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void InitKnockback(void *, void *, int, int, int, float);
 extern void SetDeathBits(void *, int, int);
 
-extern int STUB_printf();
-
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 
 extern int update_bolt_thief_path_movement(char *);
@@ -549,10 +549,6 @@ int update_bolt_thief_path_movement(char *moby) {
     }
     return r;
 }
-
-extern int DialogRequest_Init(void *, void *);
-
-extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
 extern float vec_distance_xy(void *, void *);
@@ -1243,7 +1239,7 @@ extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern int func_L00_0028EF68(int i, int a1, Moby *v, int k);
+
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern float interpolate_angle_r(float, float, float) __asm__("func_L00_0025C7A8");
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");

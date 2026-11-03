@@ -222,7 +222,7 @@ void PartType04Spawn(void *a, void *b, int c, int d, int n, int s1, int s2, int 
     }
 }
 
-extern int DefaultVtbl_DeleteMoby(int, int, float);
+extern int DefaultVtbl_DeleteMoby_v(int, int, float) __asm__("func_L00_00237B70");
 
 extern float frame_scale MACRO_ADDR;
 
@@ -234,7 +234,7 @@ void update_damped_effect_particle(struct PartBase *particle) {
     FastVecAdd(&particle->pos, &particle->pos, &s->vel);
     particle->spin++;
     particle->color =
-        DefaultVtbl_DeleteMoby(s->color_end, s->color_start, (float)particle->timer / IntToFloat(s->lifetime));
+        DefaultVtbl_DeleteMoby_v(s->color_end, s->color_start, (float)particle->timer / IntToFloat(s->lifetime));
     if (FastDecTimer(&particle->timer))
         KillPart(particle);
 }
@@ -1482,8 +1482,8 @@ void update_shrinking_effect_particle_with_secondary_spawns(struct PartBase *par
     } else {
         particle_position = &particle->pos;
         particle->size = IntToFloat(particle->timer) * s->base_scale / IntToFloat(s->max_life);
-        particle->color =
-            DefaultVtbl_DeleteMoby(s->color_end, s->color_start, IntToFloat(particle->timer) / IntToFloat(s->max_life));
+        particle->color = DefaultVtbl_DeleteMoby_v(s->color_end, s->color_start,
+                                                   IntToFloat(particle->timer) / IntToFloat(s->max_life));
         FastVecAdd(particle_position, particle_position, &s->vel);
         s->vel.f[2] -= g_frame_scale_sq * 0.001f;
         qcopy(&updated_position_copy, particle_position);
@@ -2621,7 +2621,7 @@ void update_flag_controlled_pulsing_effect_particle(struct PartBase *m) {
         return;
     }
     if (angle_sine > particle_data->lim) {
-        m->color = ((int (*)(float, int, int))DefaultVtbl_DeleteMoby)(
+        m->color = ((int (*)(float, int, int))DefaultVtbl_DeleteMoby_v)(
             (angle_sine - particle_data->lim) / (1.0f - particle_data->lim), 0, particle_data->arg);
     } else {
         m->color = 0;

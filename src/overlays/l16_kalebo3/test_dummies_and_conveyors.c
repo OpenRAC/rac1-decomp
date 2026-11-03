@@ -29,6 +29,8 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -402,7 +404,7 @@ extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 
 extern void SamplePathAt(int *, int, void *, float *, int, float);
-extern int Sound_IsPlaying(void *, int);
+
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 
 extern float vec_distance_xy(void *, void *);
@@ -2808,9 +2810,6 @@ int get_target_reposition_status(Moby *m) {
 }
 INCLUDE_ASM("asm/overlays", func_L16_002E22DC);
 
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
-
 extern int memcard_Save(int, int);
 
 extern int truncate_float_to_s32(float);
@@ -3070,8 +3069,6 @@ extern char crate_platform_no_path_msg[], crate_platform_empty_path_msg[], crate
     crate_platform_empty_other_path_msg[], crate_platform_no_trigger_msg[];
 extern short kalebo3_path_spring_stiffness, kalebo3_path_spring_damping;
 
-extern int STUB_printf();
-
 extern void InitKnockback(void *, void *, int, int, int, float);
 extern void func_L00_002592B0(char *, float, float *, float, float, float);
 
@@ -3280,7 +3277,7 @@ int advance_bolt_thief_path(char *moby) {
     }
     return r;
 }
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern void SelectNearestTargetSlot(void *);
 extern void prepare_taxi_departure_path(char *);
 extern void request_moby_help_message(char *);

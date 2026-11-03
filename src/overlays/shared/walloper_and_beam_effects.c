@@ -21,6 +21,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
+#include "game/render/vuchain.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -661,7 +662,7 @@ void draw_beam_and_arc_effects(char *m) {
 extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
-extern void VU1_addGSregister(int, long);
+
 extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
 extern int beam_and_arc_first_pass_base_vertex_color_gp SDATA(beam_and_arc_first_pass_base_vertex_color_gp);
 extern int beam_and_arc_second_pass_texture_index_gp SDATA(beam_and_arc_second_pass_texture_index_gp);

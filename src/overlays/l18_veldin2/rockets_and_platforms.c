@@ -1280,7 +1280,6 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
             break;
     }
 }
-extern int Sound_IsPlaying(void *, int);
 
 /* Activates a moby and starts an effect on it if none is playing. */
 void request_thruster_pack_lock_red_wait(unsigned char *arg, int value) {
@@ -1682,7 +1681,7 @@ void spawn_floating_platform_sparks(char *moby) {
     }
 }
 extern void jet_animate(unsigned char *m, float s);
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
+
 extern void process_expanding_ring_collisions(char *moby);
 extern void draw_expanding_projectile_ring(void *);
 extern int ring_projectile_glow_color_a SDATA(ring_projectile_glow_color_a);

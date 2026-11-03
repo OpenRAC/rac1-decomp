@@ -211,8 +211,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
 
-extern int Sound_IsPlaying(void *, int);
-
 extern int fast_dec_timer(int *);
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
@@ -225,7 +223,7 @@ extern int MoveKeepingOverGround_v(void *, void *, void *, float, float, float, 
                                    int) __asm__("func_L00_002594C8");
 
 extern void spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
-extern int DefaultVtbl_DeleteMoby(int, int, float);
+extern int DefaultVtbl_DeleteMoby_v(int, int, float) __asm__("func_L00_00237B70");
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
@@ -797,10 +795,10 @@ void mine_update(M910 *m) {
                                 (0x16 << 24) | (cb << 16) | (cg << 8) | cr, (cb << 16) | (cg << 8) | cr, 1);
                         }
                         for (l = 0; l < 20; l++) {
-                            int c1 = DefaultVtbl_DeleteMoby(0x7F000000, (0x7F << 24) | (cb << 16) | (cg << 8) | cr,
-                                                            random_float_between(0.25f, 1.0f));
-                            int c2 = DefaultVtbl_DeleteMoby(0, ((cb / 2) << 16) | ((cg / 2) << 8) | (cr / 2),
-                                                            random_float_between(0.5f, 1.0f));
+                            int c1 = DefaultVtbl_DeleteMoby_v(0x7F000000, (0x7F << 24) | (cb << 16) | (cg << 8) | cr,
+                                                              random_float_between(0.25f, 1.0f));
+                            int c2 = DefaultVtbl_DeleteMoby_v(0, ((cb / 2) << 16) | ((cg / 2) << 8) | (cr / 2),
+                                                              random_float_between(0.5f, 1.0f));
                             float sz;
                             int life;
 
@@ -884,9 +882,9 @@ void mine_update(M910 *m) {
                                     break;
                                 }
                                 case 3: {
-                                    int c1 = DefaultVtbl_DeleteMoby(0x7F000000, 0x7F182030,
-                                                                    random_float_between(0.25f, 1.0f));
-                                    int c2 = DefaultVtbl_DeleteMoby(0, 0x5F5F5F, random_float_between(0.5f, 1.0f));
+                                    int c1 = DefaultVtbl_DeleteMoby_v(0x7F000000, 0x7F182030,
+                                                                      random_float_between(0.25f, 1.0f));
+                                    int c2 = DefaultVtbl_DeleteMoby_v(0, 0x5F5F5F, random_float_between(0.5f, 1.0f));
                                     float sz;
                                     int life;
 
@@ -1515,8 +1513,6 @@ extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, in
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
-
 /* Update of moby class 121, a thrown bomb: it flies and spins, bounces once on the ground, explodes on a hit or when
    its timer runs out, then its blast ring grows for 15 frames. */
 void bomb_update(M_2aedd0 *m) {
@@ -1908,10 +1904,10 @@ void bomb_update(M_2aedd0 *m) {
                                 (0x16 << 24) | (cb << 16) | (cg << 8) | cr, (cb << 16) | (cg << 8) | cr, 1);
                         }
                         for (j = 0; j < 20; j++) {
-                            int c0 = DefaultVtbl_DeleteMoby(0x7F << 24, (0x7F << 24) | (cb << 16) | (cg << 8) | cr,
-                                                            random_float_between(0.25f, 1.0f));
-                            int c1 = DefaultVtbl_DeleteMoby(0, ((cb / 2) << 16) | ((cg / 2) << 8) | (cr / 2),
-                                                            random_float_between(0.5f, 1.0f));
+                            int c0 = DefaultVtbl_DeleteMoby_v(0x7F << 24, (0x7F << 24) | (cb << 16) | (cg << 8) | cr,
+                                                              random_float_between(0.25f, 1.0f));
+                            int c1 = DefaultVtbl_DeleteMoby_v(0, ((cb / 2) << 16) | ((cg / 2) << 8) | (cr / 2),
+                                                              random_float_between(0.5f, 1.0f));
                             float sz;
                             int life;
 

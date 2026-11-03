@@ -9,6 +9,7 @@
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
+#include "game/system/stub.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -17,8 +18,6 @@
  */
 
 extern char voice_pool[];
-
-extern int STUB_printf();
 
 /* A moby instance: 0x100 bytes, in one array from moby_instance_end to
    moby_instance_perm_end. state 0xFE is a free slot and 0xFF marks the free tail
@@ -637,9 +636,6 @@ void StashMobyClassDists(void) {
 void RestoreMobyClassDists(void) {
     FastMemCopy((void *)0x70003A00, moby_backup_buffer, 0x380);
 }
-
-extern void VU0_loadMicroProgram(void *);
-extern void VU1_addGSregister(int, long);
 
 extern unsigned short moby_vu1_data_qwc NOT_SDA;
 

@@ -29,6 +29,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -351,8 +352,6 @@ typedef union {
     float m[4][4];
     Pair pair;
 } Buf;
-
-extern int STUB_printf();
 
 extern void SetDeathBits(void *, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
@@ -832,8 +831,7 @@ extern float gaspar_coll_hit_point_z;
 extern V6_2EC188 asteroid_impact_start_colors;
 extern V6_2EC188 asteroid_impact_end_colors;
 extern int coll_line(void *, void *, int, int, int);
-extern int Sound_PlayClassSound(int, int, int, int);
-extern int Sound_SetPitchBend(int, int);
+
 extern char *spawn_radially_scattered_moby(void *, void *, void *, float, float);
 
 extern int rand_range(int, int);
@@ -1866,8 +1864,6 @@ extern int g_current_level_index MACRO_ADDR;
 extern void HeroEnterMoveState(int, int);
 
 extern float vec_distance_xy(void *, void *);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 

@@ -34,6 +34,9 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -221,8 +224,6 @@ void trigger_pokitaru_paired_rotation(char *moby) {
     }
 }
 extern void func_L05_003188A8(char *);
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
 
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern void clear_active_help_record_r(void) __asm__("func_L00_00203FB8");
@@ -574,7 +575,6 @@ extern void BossL11_SetPartFlag_r(void *) __asm__("func_L11_0030BC10");
 extern void trigger_pokitaru_paired_rotation_r(void *) __asm__("func_L11_002CCB50");
 extern int try_update_resort_owner_path_target_r(void *, void *) __asm__("func_L11_002D3500");
 
-extern void set_moby_dialogue_record_value(void *, int);
 extern int is_moby_in_state_five_r(void *) __asm__("func_L11_0030BC00");
 
 extern Cuboid *path_points_14b0_r __asm__("D_L11_0016016C") MACRO_ADDR;
@@ -1695,7 +1695,7 @@ extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
-extern int func_L00_0028EB98(void *, int);
+
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern float ApproachValue_r2(float *, float, float) __asm__("func_00214D28");
@@ -2723,7 +2723,6 @@ extern int pokitaru_water_tint2_r MACRO_ADDR;
 extern int pokitaru_water_tint2_g MACRO_ADDR;
 extern int pokitaru_water_tint2_b MACRO_ADDR;
 extern float pokitaru_camera_pos_z;
-extern void STUB_printf(char *);
 
 extern void RescaleFloatTable(float);
 extern void RipplePatch_ToFixedPoint(void *, void *);

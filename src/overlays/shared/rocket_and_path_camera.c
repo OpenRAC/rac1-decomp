@@ -18,6 +18,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
+#include "overlays/shared/sound_playback.h"
 extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
@@ -141,8 +142,6 @@ extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00
 
 extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage_v(float, int, void *, int, void *, void *) __asm__("func_L00_0025AC00");
-
-extern void Sound_PlayClassSound(int, int, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
 void rocket_819_update(Moby *m) {
@@ -656,7 +655,7 @@ extern float orxon_player_camera_matrix[];
 extern void HeroEnterMoveState(int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 
-extern void Profile_Mark(void *, void *);
+extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 
 /* Camera 19 update: advances the blend state and aims the camera each frame. */
 void Camera19_Update(char *moby) {
@@ -828,8 +827,8 @@ void Camera19_Update(char *moby) {
             ia = 0;
             ib = 0.0f;
             Spline_AdvanceByDistance(h, v2, &ia, &ib, d, 0);
-            ((void (*)(void *, float))Profile_Mark)(v2, 0.2f);
-            Profile_Mark(h + 0x10, h + (*(int *)h << 4));
+            ((void (*)(void *, float))Profile_Mark_v)(v2, 0.2f);
+            Profile_Mark_v(h + 0x10, h + (*(int *)h << 4));
             FastVecSub(v1, v2, (moby + 0x30));
         }
         FastVecScale(v2, &((struct Hero *)g_hero)->gravity_dir, -1.0f);

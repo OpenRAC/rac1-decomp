@@ -16,13 +16,14 @@
 #include "enums/level.h"
 #include "game/moby/mobyutil.h"
 #include "game/math/fastfunc.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/sound_playback.h"
 extern char cd_read_state[];
 extern char *level_render_state;
 
 extern int ship_level_entry_active SDATA(ship_level_entry_active);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char level_render_state_a[] __asm__("D_0013E130") NOT_SDA;
-extern void update_moby_proximity_interaction(void);
 
 /* Start the moby's camera-follow state: stash it in the global record, point its update at
    update_moby_proximity_interaction. */
@@ -108,7 +109,6 @@ typedef struct {
     short x5a;
 } S_171b;
 
-extern void calculate_dma_transfer_address(void);
 extern int HeroEnterMoveState(int, int);
 
 extern void load_chunks_with_optional_fade(int, int);
@@ -282,7 +282,7 @@ extern int lvl_vu_chain_buffer_size_r __asm__("D_L00_0016128C") MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern u8 level_available_base NOT_SDA;
 extern u8 menu_item_enabled_92[];
-void calculate_dma_transfer_address(void);
+
 void initialize_level_transition_with_audio(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028eed0. */

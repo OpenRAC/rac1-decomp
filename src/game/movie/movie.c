@@ -5,6 +5,7 @@
 #include "game/movie/movie.h"
 #include "game/system/pad.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
 
 extern int decoder_buffer_address MACRO_ADDR;
 extern int movie_play_step MACRO_ADDR;
@@ -285,7 +286,7 @@ void termAll(void) {
     sce_cd_sync_s(0);
     *(volatile unsigned int *)0x1000E000 &= ~2u;
 }
-extern void STUB_printf(char *, ...);
+
 extern char movie_error_message[];
 
 /* ErrMessage -- passes the message to STUB_printf with the string at

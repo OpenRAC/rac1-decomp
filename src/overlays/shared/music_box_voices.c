@@ -42,7 +42,6 @@ extern int func_001F9908(int *arg0);
 extern int play_voice_r(int, int, void *, int) __asm__("func_L00_0028F0B0");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int func_L00_0028F210(int, int);
 
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char camera_pos_r[] __asm__("D_L01_001672C0");

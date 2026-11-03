@@ -32,6 +32,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -1002,8 +1004,6 @@ void update_fleet_bobbing_moby(char *m) {
     }
 }
 
-extern int Sound_IsPlaying(void *, int);
-
 extern char *fleet_mobys MACRO_ADDR;
 extern int fleet_game_mode MACRO_ADDR;
 
@@ -1732,7 +1732,7 @@ skip:
         }
     }
 }
-extern void VU1_addGSregister(int, long);
+
 extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void update_fighter_jet_target_lock(int a, char *p);
 extern void draw_four_quarter_turn_effect_quads_f(float, float, float, float, unsigned char, unsigned char,
@@ -2321,8 +2321,6 @@ extern int try_set_help_message(int, int);
 extern float ApproachValue(float *, float, float);
 extern void jet_animate(unsigned char *, float);
 extern void MusicRequestTrack(int, int);
-
-extern int STUB_printf();
 
 extern void emit_type_74_particles_from_moby_joints(void *, void *);
 extern char fleet_player_camera[];

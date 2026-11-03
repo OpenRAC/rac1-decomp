@@ -14,6 +14,8 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
 extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
@@ -32,8 +34,6 @@ typedef struct {
     Vec4 points[1];
 } SegmentPath;
 extern SegmentPath *level_paths[];
-
-extern void STUB_printf();
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1379,11 +1379,7 @@ extern int timed_hud_frames_left MACRO_ADDR;
 extern int timed_hud_visible MACRO_ADDR;
 extern short D_L00_00161F04;
 extern short D_L00_00161F08;
-extern int queue_animation_update(int, int, void *, void *, void *, int, int);
-extern void draw_uniform_size_hud_stars(void);
-extern void DefaultVtbl_DeleteMoby(void);
 
-extern void hud_keep_visible(int, int);
 /* Per-frame update for the countdown timed_hud_frames_left. */
 void update_timed_hud_visibility(void) {
     if (timed_hud_frames_left != 0) {

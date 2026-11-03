@@ -20,6 +20,9 @@
 #include "game/render/draw.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -127,7 +130,6 @@ extern void SetDeathBits(void *, int, int);
 void process_plasmabot_hit_reaction(char *m);
 void update_plasmabot_target(char *moby);
 void update_plasmabot_target_range(struct Moby *m);
-extern void STUB_printf(char *, ...);
 
 void initialize_plasmabot_path_state(char *moby);
 extern int truncate_float_to_s32(float);
@@ -1179,7 +1181,6 @@ extern float plasmabot_glow_camera_pull SDATA(plasmabot_glow_camera_pull);
 extern float plasmabot_glow_camera_margin SDATA(plasmabot_glow_camera_margin);
 extern u32 plasmabot_glow_color SDATA(plasmabot_glow_color);
 u64 GetEffectTex(s32);
-extern void VU1_addGSregister(int, long);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1471,7 +1472,6 @@ extern void spawn_explosion_r(struct Moby *, void *, void *, f32, f32, s32, s32,
                               s32, s32, s32) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
-extern int Sound_PlayClassSound(int, int, struct Moby *, int);
 typedef struct {
     u8 pad0[0x10];
     void *points;

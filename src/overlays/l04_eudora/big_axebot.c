@@ -23,6 +23,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -2247,7 +2248,7 @@ struct Shot5BD0 {
 };
 
 extern int truncate_float_to_s32(float);
-extern int STUB_printf();
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
@@ -2984,7 +2985,7 @@ typedef struct {
     f32 rate; /* 0x30 */
 } LeverVars;
 extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
-extern int Sound_IsPlaying(void *, int);
+
 extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 extern struct Moby *eudora_mobys_r2 __asm__("D_L04_00160058") MACRO_ADDR;
 extern u8 voice_pool[];

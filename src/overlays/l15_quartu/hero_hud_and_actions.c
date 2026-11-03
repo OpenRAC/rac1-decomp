@@ -31,6 +31,8 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
 
 typedef struct {
     char p0[0x160];
@@ -67,17 +69,11 @@ extern HeroSpeedBands quartu_hero_speed_bands;
 
 extern int process_hero_incoming_hit(int);
 
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
 extern int HeroQuartu_TrySetMoveState(int, int);
 
 extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
-
-extern int pad_pressed_within(int, int, int *);
 
 extern int truncate_float_to_s32(float);
 
@@ -85,7 +81,6 @@ extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
 extern void ClampVectorLength(void *a, float x);
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
@@ -2185,7 +2180,6 @@ void HeroL15_UpdateStateTransitions(void) {
     }
 }
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Quartu sky shells and sets the GS test and depth registers. */
 void Sky_DrawLevel15(void) {

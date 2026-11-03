@@ -21,6 +21,8 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -166,7 +168,7 @@ extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
-extern int func_001FFB38(int, int, void *, void *, void *, void *, int);
+
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void initialize_bolt_pickup_r(void *moby) __asm__("func_L08_002B9438");
@@ -996,10 +998,6 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 
 extern float vec_distance_xy(void *, void *);
-
-extern int Sound_IsPlaying(void *, int);
-
-extern void Sound_SetPitchBend(int, int);
 
 typedef struct {
     u8 pad0[0x40];
@@ -2312,7 +2310,6 @@ extern int coll_line(void *, void *, int, void *, int);
 extern int fast_dec_timer(void *);
 
 extern void vec_scale_to_length_r3(float, void *, void *) __asm__("func_L00_001FF4B0");
-extern int DefaultVtbl_DeleteMoby(float, int, int);
 
 extern void Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern float g_frame_time_r3 __asm__("D_0015EE6C") MACRO_ADDR;

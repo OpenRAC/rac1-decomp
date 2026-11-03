@@ -28,6 +28,8 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "game/audio/sound.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -146,15 +148,13 @@ extern char player_camera[];
 
 extern void update_mission_list(void);
 
-extern void VU1_syncChain(int);
 extern int sce_gs_sync_v(int);
 extern void initialize_menu_stream_buffers(int);
 
 extern void initialize_render_archive_transfer(void);
-extern void apply_group_entry_adjustment(int);
-extern void decompress_and_relocate_selected_groups(int);
+
 extern void transfer_draw_buffer_chunks(int, int, int);
-extern void select_moby_context(int);
+
 extern Moby_277208 *create_menu_preview_moby(int);
 
 extern void quad_moby_update(void);
@@ -358,14 +358,8 @@ extern struct HEnt *menu_preview_mobys[];
 extern MobyClass *moby_class_headers[] NOT_SDA;
 extern unsigned char texture_group_header[];
 extern int coll_hit_result[];
-extern void VU1_syncChain(int);
 
-extern void Hud_SendResidentBank(int, int, int);
-extern void apply_group_entry_adjustment(int);
 extern struct HEnt *delete_moby(struct HEnt *);
-
-extern int hud_keep_visible(int, int);
-extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
 
 /* PageMenuClose: closes the pause menu. */
 void close_pause_menu(void) {
@@ -559,10 +553,6 @@ extern int cinematic_mode MACRO_ADDR;
 extern float render_view_tan_half_fov;
 extern unsigned char level_transition_target_fmt[];
 
-extern void calculate_dma_transfer_address(void);
-extern void select_moby_context(int);
-
-extern int STUB_printf();
 extern void prepare_target_level_transition(int);
 
 extern void PlayMovieEntryIfIdle(int);
@@ -784,14 +774,9 @@ typedef int u128 __attribute__((mode(TI)));
 extern void append_gif_transfer_packet(void);
 extern void append_draw_buffer_upload_packets(int a, int b, int n);
 
-extern void VU1_addGSregister(int, long);
-
 extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
-extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
 extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6);
-
-extern void VU1_syncChain(int);
 
 extern void draw_menu_flashing_panel(int);
 
@@ -1261,7 +1246,6 @@ void process_unlock_code_input(void) {
 }
 extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 
-extern void Profile_Mark(void *);
 extern char player_camera[];
 
 /* sets up a pause-menu helper moby in front of the camera */

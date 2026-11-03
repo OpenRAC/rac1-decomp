@@ -26,6 +26,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -51,10 +53,6 @@ extern HeroItemDefView pokitaru_item_defs[];
 extern HeroAttackRecord pokitaru_attack_records[];
 extern HeroSpeedBands pokitaru_hero_speed_bands;
 
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
 extern int get_hero_idle_animation_index(int a);
 
 extern int Hero_TrySetMoveStateL11(int, int);
@@ -63,15 +61,12 @@ extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
-extern int pad_pressed_within(int, int, int *);
-
 extern int truncate_float_to_s32(float);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
 extern void ClampVectorLength(void *a, float x);
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
@@ -1912,7 +1907,6 @@ void HeroL11_UpdateStateTransitions(void) {
     }
 }
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Pokitaru sky shells and sets the GS test and depth registers. */
 void Sky_RenderLimited(void) {

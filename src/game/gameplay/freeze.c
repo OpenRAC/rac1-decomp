@@ -17,6 +17,8 @@
 #include "game/system/space.h"
 #include "enums/level.h"
 #include "game/math/fastfunc.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
 
 /*
  * freeze.cpp in the original source; text 0x1FBC80-0x1FDF10.
@@ -196,11 +198,7 @@ extern char g_screen_extent[];
 
 extern s32 truncate_float_to_s32(f32);
 
-extern s32 GetIconFrame(s32, s32);
-
-extern void HudSprite(s32, s32, s32, s32, s32, s32);
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
-extern void VU1_addGSregister(s32, s64);
 
 extern s32 sprintf(char *, const char *, ...);
 
@@ -675,10 +673,7 @@ extern char g_controller_state[];
 extern char D_00141150[];
 
 extern void memcard_Save(int, int);
-extern void Profile_Mark(void);
-extern void noop_callback_k(void *, void *, int, int);
-
-extern void Hud_SetBarValueById(int, int);
+extern void Profile_Mark_v(void) __asm__("func_001E9768");
 
 extern void Music_QueueTrack(int, int);
 
@@ -756,7 +751,7 @@ void update_mode_freeze(void) {
                 m[0x31] = 0;
                 *(int *)(m + 0x94) = 0;
                 *(unsigned short *)(m + 0x34) |= 1;
-                Profile_Mark();
+                Profile_Mark_v();
                 noop_callback_k(((struct Hero *)h1)->saved_pos_rot, h1 + 0x1D10, 0, 1);
                 g_game_mode = 0;
             } else if (p1 & 0x40) {

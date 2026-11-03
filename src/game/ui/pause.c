@@ -31,6 +31,8 @@
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
 #include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -215,7 +217,6 @@ extern struct O2_19E90 *panel_slots_r[] __asm__("D_001D6120");
 extern u8 D_001602C0 MACRO_ADDR;
 extern u8 D_001602D0 MACRO_ADDR;
 
-extern void func_00234AC8(s32);
 extern s32 func_00122598(s32);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern struct O2_19E90 *create_menu_preview_moby_r() __asm__("func_00226720");
@@ -358,7 +359,6 @@ extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
 
 extern s32 Moby_PlaySound_r(s32, s32, struct Ent *) __asm__("func_0022ED80");
 extern void mode_freeze_init_r(s32, MenuPage *, s32) __asm__("func_001FBC80");
-extern void func_002348B8(void);
 
 extern void MobySetAnimation_r2(struct Ent *, s32, s32) __asm__("func_00213D28");
 extern void close_menu_system_r(void) __asm__("func_0021A0B0");
@@ -497,7 +497,7 @@ extern s64 capture_texture_tex0 MACRO_ADDR;
 extern void *resident_object_pool MACRO_ADDR;
 extern short panel_clear_color;
 extern s32 panel_slot_enabled[];
-extern void VU1_addGSregister();
+
 extern void draw_hud_rect_blended();
 
 extern void project_graphics_bounds(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
@@ -947,7 +947,6 @@ extern short menu_label_text_inset;
 extern int menu_label_marquee_gap SDATA(menu_label_marquee_gap);
 extern int pal_mode MACRO_ADDR;
 extern char *current_menu_page NOT_SDA;
-extern void VU1_addGSregister(int, int);
 
 extern void find_help_entry(int, int, void *);
 extern int sprintf(char *, const char *, ...);
@@ -3278,7 +3277,7 @@ extern s32 active_decode_buffer MACRO_ADDR;
 extern u8 resident_class_slot_by_id[];
 extern struct PreviewClassResource *moby_class_resources_r[] __asm__("D_001B3580");
 extern void update_item_preview_transform();
-extern void noop_callback_q(s32, s32);
+
 extern void noop_callback_r_r(struct Moby *, s32) __asm__("func_001E97F8");
 
 extern struct Moby *create_menu_preview_moby_r2(s32) __asm__("func_00226720");
@@ -3904,7 +3903,6 @@ int draw_selected_item_ammo(char *arg0) {
     return 2;
 }
 
-extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
 
 /* Draws the map screen overlay with the needed GS registers set. Returns 8. */
@@ -6928,7 +6926,7 @@ extern char class_pose_manipulator[];
 extern char first_attachment_manipulator[];
 extern char second_attachment_manipulator[];
 extern char level_init_cleared_block[];
-extern void noop_callback_e(void *);
+
 extern void gadget_moby_update_noop(void);
 extern void update_menu_preview_animation_pose(void *);
 
@@ -7107,7 +7105,7 @@ extern HandGadgetManipulator first_attachment_manipulator_r __asm__("D_001D61A0"
 extern HandGadgetManipulator second_attachment_manipulator_r __asm__("D_001D61E0");
 extern float ammo_preview_offsets[];
 extern s32 ammo_preview_velocities_r[] __asm__("D_001D6238");
-extern void noop_callback_r(Moby *, s32);
+
 extern void AttachManipulator_r(s32, s32, HandGadgetManipulator *) __asm__("func_0020D960");
 extern void DetachManipulator_r(s32, HandGadgetManipulator *) __asm__("func_0020D9D8");
 
@@ -7368,8 +7366,6 @@ void attachment_update_callback(void) {
 }
 
 extern char item_info_table_a[] __asm__("D_001864D0");
-
-extern void noop_callback_s(void *, void *, int, int, int);
 
 /* The pause-screen mobys these updates drive. */
 typedef struct {

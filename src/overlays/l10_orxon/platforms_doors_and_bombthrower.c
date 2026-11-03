@@ -27,6 +27,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -143,8 +144,6 @@ struct PathSparkEffectVars {
     s32 timer; /* 0x14 */
     f32 unk_18; /* 0x18 */
 };
-
-extern int STUB_printf();
 
 extern int fast_dec_timer(int *);
 
@@ -740,9 +739,6 @@ void gate_update(Moby *m) {
     }
 }
 extern int fast_dec_timer(int *arg0);
-
-extern int Sound_IsPlaying(void *, int);
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 
 // Update for a swirling effect moby: spawns particles along an axis and manages a sound slot.
 void update_timed_effect_emitter(unsigned char *moby) {

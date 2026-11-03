@@ -12,8 +12,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
-
-extern void VU1_addGSregister(int, long);
+#include "game/render/vuchain.h"
 
 extern int GetEffectTex(int);
 

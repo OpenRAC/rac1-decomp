@@ -28,6 +28,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/sound_playback.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -595,7 +596,7 @@ extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern void advance_scenery_ship_along_path_r(char *moby, int *path) __asm__("func_L05_002D8AD8");
-extern int func_L00_0028EB98(void *, int);
+
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 extern void FastVecAdd_r(float *, float *, float *) __asm__("func_001F9BD8");

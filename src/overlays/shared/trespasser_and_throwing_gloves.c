@@ -25,6 +25,8 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -192,7 +194,6 @@ extern int coll_hit_result[];
 extern M44 *g_coll_hit_moby;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern char *MobyGetHitMessage(void *, int, int);
-extern void STUB_printf(char *);
 
 extern int fast_dec_timer(int *);
 extern void RotateWithMoby(void *, void *, void *, void *, void *, void *);
@@ -2159,8 +2160,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern float ApproachValue(void *, float, float);
 extern int truncate_float_to_s32(float);
 
-extern int Sound_PlayClassSound(int, int, int, int);
-
 typedef struct {
     int amount;
     char pad4[2];
@@ -2379,7 +2378,6 @@ void devestator_ammo_update(Moby *m) {
 }
 LINKER_REMNANT("asm/overlays", func_L00_002C6F40);
 
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 typedef struct {
     char pad[0x34];
     short a;

@@ -38,7 +38,7 @@ void flush_debug_text_queue(void) {
     (debug_text_queue_count) = 0;
     (debug_text_queue_cursor) = debug_text_queue_buffer;
 }
-extern void VU1_addGSregister(int, long);
+
 extern int *dma_packet_cursor MACRO_ADDR;
 extern long debug_font_pif_header MACRO_ADDR;
 extern int debug_font_glyph_uvs[];
@@ -1422,7 +1422,7 @@ void draw_framebuffer_with_timed_text(void) {
 }
 extern int rendered_frame_count MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
-extern void VU1_syncChain(int);
+
 extern int sce_gs_sync_v(int);
 
 extern void transfer_draw_buffer_chunks(void *, int, int);

@@ -20,6 +20,8 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -1646,10 +1648,6 @@ void try_reposition_hero_on_nearby_ground(void) {
     qcopy(&hero_base->motion.pos, &candidate_ground_position);
 }
 extern char health_hud_bank_data[];
-extern void initialize_hud_element_with_counters(void);
-extern void update_health_hud_animation_and_visibility(void);
-extern void draw_health_hud_panel(void);
-extern int func_001FFB38(int, int, void *, void *, void *, void *, int);
 
 /* Registers HUD bank 1 (queue_animation_update, id 0x7535) with the three level
    callbacks and the data at health_hud_bank_data. queue_animation_update is declared with

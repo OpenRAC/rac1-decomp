@@ -10,6 +10,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/system/stub.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
@@ -105,7 +106,7 @@ typedef struct {
 } LegRig_p;
 extern char invalid_animation_message[];
 extern char rig_size_message[];
-extern void STUB_printf();
+
 extern void raise_kernel_trap(void);
 extern float animation_start(int, int);
 extern float animation_end(int, int);

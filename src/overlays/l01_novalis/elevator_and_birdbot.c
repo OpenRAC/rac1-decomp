@@ -28,6 +28,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -601,7 +602,6 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 
-extern int STUB_printf();
 extern void MoveCtl_Init(char *p);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -2244,7 +2244,6 @@ struct VoicePoolWindow {
     struct Voice voice;
 };
 extern u8 voice_pool[];
-extern int Sound_IsPlaying(void *moby, int handle);
 
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
 
@@ -2516,19 +2515,19 @@ void stationary_ship_update(Moby *m) {
         MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
     }
 }
-extern void DefaultVtbl_DeleteMoby(void *);
+extern void DefaultVtbl_DeleteMoby_v(void *) __asm__("func_L00_00237B70");
 extern void update_and_draw_scrolling_overlay_layers(int, void *);
 extern char novalis_scroll_layers[];
 
 /* The moby comes in $a0 and goes on to the delete, untouched. */
 void update_and_draw_level01_scrolling_layers(void *moby) {
-    DefaultVtbl_DeleteMoby(moby);
+    DefaultVtbl_DeleteMoby_v(moby);
     update_and_draw_scrolling_overlay_layers(8, novalis_scroll_layers);
 }
 extern char novalis_bounded_scroll_layers[];
 /* Draw the two bounded Novalis scroll layers after the default moby handler. */
 void draw_two_scroll_layers(void *moby) {
-    DefaultVtbl_DeleteMoby(moby);
+    DefaultVtbl_DeleteMoby_v(moby);
     update_and_draw_scrolling_overlay_layers(2, novalis_bounded_scroll_layers);
 }
 typedef struct {
