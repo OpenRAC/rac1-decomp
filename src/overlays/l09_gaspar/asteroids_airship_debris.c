@@ -39,6 +39,7 @@
 #include "overlays/shared/spawner_and_chase_enemies.h"
 #include "overlays/l09_gaspar/sky_shells.h"
 #include "overlays/l09_gaspar/shuttle_and_breakables.h"
+#include "overlays/shared/pivot_reorientation.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -1671,8 +1672,7 @@ typedef struct {
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
 extern float SpringAngle_r(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
-extern void reorient_position_about_pivot_r(void *a0, void *a1, void *a2, void *a3,
-                                            void *a4) __asm__("func_L07_00289960");
+
 extern void update_moby_vertical_oscillation_r(float, float, void *, float *, float *) __asm__("func_L00_00263B78");
 extern void update_moby_rotation_oscillation_r(void *, float *, float *, float, float,
                                                float) __asm__("func_L00_00263BF8");
@@ -1744,7 +1744,7 @@ void platform_664_update(Moby *moby) {
         if (low < z0 && (*(Vec4A *)&moby->pos).z <= low) {
             Moby_PlaySound_r2(1, 0, moby);
         }
-        reorient_position_about_pivot_r(hero_globals_base_r + 0xE9D, &out, &(*(Vec4A *)&moby->pos), &ang, &data->ang);
+        reorient_position_about_pivot(hero_globals_base_r + 0xE9D, &out, &(*(Vec4A *)&moby->pos), &ang, &data->ang);
         FastVecSub(hero_globals_base_r + 0xE9D + 0x70, &out, hero_globals_base_r + 0xE9D);
         ((Hero *)(hero_globals_base_r + 0xE1D))->motion.platform_delta.f[2] =
             ((Hero *)(hero_globals_base_r + 0xE1D))->motion.platform_delta.f[2] + ((*(Vec4A *)&moby->pos).z - pos.z);
@@ -2955,8 +2955,7 @@ extern int fast_dec_timer_r4(int *) __asm__("func_001F9908");
 extern int Moby_PlaySound_r4(int, int, char *) __asm__("func_0022ED80");
 
 extern float SpringAngle_r2(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
-extern void reorient_position_about_pivot_r2(void *a0, void *a1, void *a2, void *a3,
-                                             void *a4) __asm__("func_L07_00289960");
+
 extern void update_moby_vertical_oscillation_r2(float, float, char *, float *, float *) __asm__("func_L00_00263B78");
 extern void update_moby_rotation_oscillation_r2(void *, char *, char *, float, float,
                                                 float) __asm__("func_L00_00263BF8");
@@ -3072,7 +3071,7 @@ void update_floating_ship_piece(char *moby) {
                 if (f24 < f25 && f2 <= f24) {
                     Moby_PlaySound_r4(1, 0, moby);
                 }
-                reorient_position_about_pivot_r2(hero_globals_base_r + 0xE9D, v5, moby + 0x10, v3, &data->rot);
+                reorient_position_about_pivot(hero_globals_base_r + 0xE9D, v5, moby + 0x10, v3, &data->rot);
                 FastVecSub(hero_globals_base_r + 0xE9D + 0x70, v5, hero_globals_base_r + 0xE9D);
                 ((Hero *)(hero_globals_base_r + 0xE1D))->motion.platform_delta.f[2] =
                     ((Hero *)(hero_globals_base_r + 0xE1D))->motion.platform_delta.f[2] +

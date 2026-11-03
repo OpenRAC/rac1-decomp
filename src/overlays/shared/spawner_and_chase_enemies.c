@@ -24,6 +24,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -652,7 +653,6 @@ extern int rand_2E39E0(void) __asm__("func_001160D8");
 extern void animate_2E39E0(Moby *, int, int, int) __asm__("func_00213DE0");
 
 extern void MobySpringTurn_v(Moby *, float, void *, float, float, float) __asm__("func_L00_002592B0");
-extern void project_2E39E0(Moby *, char *, void *, void *) __asm__("func_L01_0028C3A8");
 
 extern int knock_update_2E39E0(Moby *, void *) __asm__("func_L00_0025D6F0");
 
@@ -847,7 +847,7 @@ void update_ground_melee_enemy(Moby *m) {
             steep = FastAbsF(m->pos.z - query.z);
             steep /= fast_distance_2E39E0(&m->pos, &query);
             if (d->path != -1)
-                project_2E39E0(m, gaspar_paths_r2[d->path], &query, &goal);
+                select_list_point_toward_target(m, gaspar_paths_r2[d->path], &query, &goal);
             else
                 qcopy(&goal, &query);
             MobySpringTurn_v(m, fast_atan2(goal.x - m->pos.x, goal.y - m->pos.y) + d->side, d->turn, 0.05f, 0.3f, 0.2f);
@@ -905,7 +905,7 @@ void update_ground_melee_enemy(Moby *m) {
         case 5: {
             int flags;
             if (d->path != -1)
-                project_2E39E0(m, gaspar_paths_r2[d->path], &d->home, &goal);
+                select_list_point_toward_target(m, gaspar_paths_r2[d->path], &d->home, &goal);
             else
                 qcopy(&goal, &d->home);
             MobySpringTurn_v(m, fast_atan2(goal.x - m->pos.x, goal.y - m->pos.y), d->turn, 0.02f, 0.3f, 0.1f);
@@ -986,7 +986,7 @@ void update_ground_melee_enemy(Moby *m) {
             steep = FastAbsF(m->pos.z - query.z);
             steep /= fast_distance_2E39E0(&m->pos, &query);
             if (d->path != -1)
-                project_2E39E0(m, gaspar_paths_r2[d->path], &d->home, &goal);
+                select_list_point_toward_target(m, gaspar_paths_r2[d->path], &d->home, &goal);
             else
                 qcopy(&goal, &d->home);
             MobySpringTurn_v(m, fast_atan2(goal.x - m->pos.x, goal.y - m->pos.y), d->turn, 0.05f, 0.3f, 0.2f);

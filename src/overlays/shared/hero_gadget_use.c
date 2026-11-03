@@ -654,8 +654,6 @@ extern int gadget_double_tap_timer SDATA(gadget_double_tap_timer);
 
 extern int truncate_float_to_s32(float);
 
-extern int Hero_TryMoveStateL05_r(int, int) __asm__("func_L05_0024D680");
-
 typedef struct {
     char p0[0xD8];
     unsigned short hD8;
@@ -724,13 +722,13 @@ int process_hero_primary_item_input(void) {
                         launch_hero_wrench();
                         break;
                     }
-                    Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_CROUCH_SWING, 1);
                     break;
                 }
                 if (g_hero_h2523C8.unk308 == 1) {
-                    Hero_TryMoveStateL05_r(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
                 } else {
-                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_WRENCH_COMBO, 1);
                 }
                 break;
             }
@@ -756,13 +754,13 @@ int process_hero_primary_item_input(void) {
                     if ((g_hero_h2523C8.past_jump_apex == 0 && g_hero_h2523C8.ground_distance > 0.1f) ||
                         (g_hero_h2523C8.past_jump_apex != 0 && g_hero_h2523C8.ground_distance > 0.57f) ||
                         (g_hero_h2523C8.state.current == HERO_STATE_LAND && g_hero_h2523C8.ground_distance > 0.57f)) {
-                        Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_SLAM, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_WRENCH_SLAM, 1);
                         break;
                     }
                     if (g_hero_h2523C8.on_slip_ground != 0) {
                         break;
                     }
-                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_WRENCH_COMBO, 1);
                     break;
                 }
             }
@@ -778,7 +776,7 @@ int process_hero_primary_item_input(void) {
                         if (g_hero_h2523C8.anim_frame >= (float)rec->f10 &&
                             (g_controller_state.held & (PAD_R2 | PAD_R1)) &&
                             pad_pressed_within(mask, scale_ticks(0xF), 0)) {
-                            Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
+                            Hero_TryMoveStateL05(HERO_STATE_CROUCH_SWING, 1);
                             break;
                         }
                     }
@@ -803,13 +801,13 @@ int process_hero_primary_item_input(void) {
                     break;
                 }
                 if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
-                    Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_CROUCH_SWING, 1);
                     break;
                 }
                 if (g_hero_h2523C8.unk308 == 1) {
-                    Hero_TryMoveStateL05_r(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
                 } else {
-                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_WRENCH_COMBO, 1);
                 }
             }
             break;
@@ -839,12 +837,12 @@ int process_hero_primary_item_input(void) {
                         }
                         if (g_hero_h2523C8.swing_target_in_sight != 0 && g_hero_h2523C8.grapple_lockout_timer == 0 &&
                             g_hero_h2523C8.state.current != HERO_STATE_GRAPPLE_SWING_ENTRY) {
-                            Hero_TryMoveStateL05_r(HERO_STATE_GRAPPLE_SWING_ENTRY, 1);
+                            Hero_TryMoveStateL05(HERO_STATE_GRAPPLE_SWING_ENTRY, 1);
                             break;
                         }
                     }
                     if (g_hero_h2523C8.grapple_target_in_sight != 0 && g_hero_h2523C8.grapple_lockout_timer == 0) {
-                        Hero_TryMoveStateL05_r(HERO_STATE_GRAPPLE_TARGET_ENTRY, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_GRAPPLE_TARGET_ENTRY, 1);
                     }
                 }
             }
@@ -941,7 +939,7 @@ int process_hero_primary_item_input(void) {
                             g_hero_h2523C8.state.current == HERO_STATE_STOP ||
                             (g_hero_h2523C8.state.control_mode == HERO_MODE_RUN &&
                              g_hero_h2523C8.stick_magnitude < 0.7f)) {
-                            Hero_TryMoveStateL05_r(HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL, 1);
+                            Hero_TryMoveStateL05(HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL, 1);
                         } else {
                             start_equipped_item_animation();
                         }
@@ -962,7 +960,7 @@ int process_hero_primary_item_input(void) {
 
                     if (pad_pressed_within(mask, t <= n ? t : n, &out2)) {
                         if (((Moby *)g_hero_h2523C8.items[0].moby) != 0) {
-                            Hero_TryMoveStateL05_r(HERO_STATE_HELD_ITEM_ATTACK, 1);
+                            Hero_TryMoveStateL05(HERO_STATE_HELD_ITEM_ATTACK, 1);
                             if (((Moby *)g_hero_h2523C8.items[0].moby) != 0) {
                                 Moby_PlaySound(0, 0, (int)((Moby *)g_hero_h2523C8.items[0].moby));
                             }
@@ -1073,7 +1071,7 @@ int process_hero_primary_item_input(void) {
                       g_hero_h2523C8.state.control_mode == HERO_MODE_JUMP) &&
                      g_hero_h2523C8.grounded_frames != 0)) {
                     if ((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1)) {
-                        Hero_TryMoveStateL05_r(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
                     }
                 }
             }
@@ -1464,7 +1462,6 @@ extern int hoverboard_race_finished SDATA(hoverboard_race_finished);
 
 extern void compute_hero_hoverboard_respawn_transform_r(void *, void *) __asm__("func_L05_00254B38");
 
-extern int select_point_index_by_distance_r(void *, void *, float) __asm__("func_L01_0028C2D8");
 extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
 
 /* Hoverboard race tick: advances the hero's and the opponents' path nodes and laps, handles wrong-way and fall resets,
@@ -1566,7 +1563,7 @@ void update_hero_hoverboard_race_progress(void) {
                 g_hero.board_air_yaw = v1[2];
                 Hero_ResetToPosition(v0, v1, 0x6B, 1);
                 if (((Path *)g_hero.race_path) != 0) {
-                    int r = select_point_index_by_distance_r(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
+                    int r = select_point_index_by_distance(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
                     if (r < g_hero.race_path_node) {
                         g_hero.race_path_node = r;

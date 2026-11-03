@@ -32,7 +32,7 @@ void libc_exit(int code) {
     func_0012DA28(code);
 }
 
-extern int _fwalk_i(struct _reent_nl *, int (*)(FILE_nl *)) __asm__("func_00114438");
+extern int _fwalk(struct _reent_nl *, int (*)(FILE_nl *));
 
 /* fflush, newlib's text: a NULL fp flushes every FILE through _fwalk
    (_fwalk); CHECK_INIT keeps its `do { } while (0)`. */
@@ -41,7 +41,7 @@ int libc_fflush(FILE_nl *fp) {
     register int n, t;
 
     if (fp == 0)
-        return _fwalk_i(_impure_ptr_r, libc_fflush);
+        return _fwalk(_impure_ptr_r, libc_fflush);
 
     do {
         if ((fp)->_data == 0)

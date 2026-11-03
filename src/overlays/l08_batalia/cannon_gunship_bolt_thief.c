@@ -472,8 +472,6 @@ extern float D_L08_00161B8C_2E16A0 SDATA(D_L08_00161B8C);
 extern float D_L08_00161B90_2E16A0 SDATA(D_L08_00161B90);
 extern int tick52(short *) __asm__("func_001F9938");
 
-extern int hero_state52(int, int) __asm__("func_L08_00231228");
-
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -537,7 +535,7 @@ void update_batalia_cannon(Moby *moby) {
         if (((pad_globals_base.pressed & 0x10) || (g_hero.ship_flags & 1)) &&
             visited52[g_current_level_index_r][moby->mission] == 0xFF) {
             g_hero.ship_flags = 0;
-            hero_state52(0, 1);
+            Hero_TryMoveStateL08(0, 1);
             moby->command = 2;
             moby->rot.y = 0.0f;
             euler_rotation_basis(&moby->rot_row0, &moby->rot);
@@ -576,7 +574,7 @@ void update_batalia_cannon(Moby *moby) {
         if (vec_distance_xy_r(position, &g_hero.moby->pos) < 1.0f && g_hero.motion.pos.f[2] - moby->pos.z < 7.0f &&
             data->exit_timer == 0 && data->health > 0) {
             moby->command = 1;
-            hero_state52(50, 1);
+            Hero_TryMoveStateL08(50, 1);
         }
     }
     switch (moby->state) {

@@ -38,6 +38,7 @@
 #include "overlays/shared/tracked_moby_show.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/pause_menu.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -702,8 +703,6 @@ extern char novalis_saved_moby_bytes_r[] __asm__("D_L01_001BADB0");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void apply_cutscene_big_head_cheat_r(void) __asm__("func_L01_002FC058");
 
-extern void deactivate_recorded_moby_r(void) __asm__("func_L00_0028FC68");
-
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 /* Agnogg ship update (moby classes 730, 731, 790 on level 01): state machine on moby->state. */
@@ -751,7 +750,7 @@ void agnogg_ship_front_update(Moby *moby) {
                         pp[0xF] = 1;
                     }
                 }
-                deactivate_recorded_moby_r();
+                deactivate_recorded_moby();
                 if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos,
                                                 data->f10) != 0) {
                     moby->flags = moby->flags & 0xFFBE;

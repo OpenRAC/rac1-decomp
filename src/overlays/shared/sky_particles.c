@@ -809,7 +809,7 @@ extern short D_L00_00160580;
 extern q_28b1a0 D_L00_001605E0 MACRO_ADDR;
 
 void func_001F9C48_28b1a0(void *, void *, float) __asm__("func_001F9C48");
-void func_0022C9A8_28b1a0(int) __asm__("func_0022C9A8");
+
 /* Per-entry update of a table of up to five entries (a switch on the index): each entry gets its own tilt, scale and turn speed, and its matrix is rebuilt every frame. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_0028b1a0. */
 void SkyShellsEntryUpdate(void) {
     float v[4] __attribute__((aligned(16)));
@@ -861,6 +861,6 @@ void SkyShellsEntryUpdate(void) {
             func_001F9C48_28b1a0(M + 0x20, M + 0x20, k);
             qcopy(M + 0x30, &sky_shell_origin);
         }
-        func_0022C9A8_28b1a0(i);
+        SkyDrawShell(i);
     }
 }

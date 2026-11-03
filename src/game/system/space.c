@@ -38,6 +38,7 @@
 #include "core/gs/dma_and_sync_v.h"
 #include "game/movie/movie.h"
 #include "core/storage/wad.h"
+#include "game/render/lights.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -1117,8 +1118,6 @@ extern void resident_call_001F9C08(void *, void *, void *, f32) __asm__("func_00
 
 extern f32 resident_call_001F9D48(void *, void *, void *) __asm__("func_001F9D48");
 
-extern void resident_call_00202260(void) __asm__("func_00202260");
-
 extern ResidentRenderObject *resident_call_0020D348(s32) __asm__("func_0020D348");
 extern void resident_call_0020D678(ResidentRenderObject *) __asm__("func_0020D678");
 extern void resident_call_0020D6D0(ResidentRenderObject *) __asm__("func_0020D6D0");
@@ -1457,7 +1456,7 @@ void update_resident_gameplay_state(void) {
                 }
             }
             sound_update();
-            resident_call_00202260();
+            UpdateAllPointLights();
             update_resident_packed_direction();
             noop_callback_h();
             break;
@@ -1684,7 +1683,7 @@ void update_resident_gameplay_state(void) {
             }
             resident_call_001EDE50();
             sound_update();
-            resident_call_00202260();
+            UpdateAllPointLights();
             update_resident_packed_direction();
             noop_callback_h();
             break;

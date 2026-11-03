@@ -4,6 +4,7 @@
 #include "core/libc/fvwrite_fwalk.h"
 #include "core/libc/findfp.h"
 #include "asm_functions/executable.h"
+#include "core/libc/write_wsetup.h"
 
 /*
  * core_text object 0x116FA0-0x1188C8. Boundaries are retail's linker fill
@@ -137,7 +138,7 @@ extern const char vfprintf_blanks_117118[] __asm__("D_001525E0");
 extern const char vfprintf_zeroes_117118[] __asm__("D_001525F0");
 extern char **localeconv(void) __asm__("func_001144F0");
 extern s32 _mbtowc_r(struct _reent *, s32 *, const char *, s32, s32 *) __asm__("func_00115098");
-extern s32 __swsetup(FILE *) __asm__("func_00118928");
+
 extern s32 __sbprintf(FILE *, const char *, char *) __asm__("func_00116FE8");
 extern s32 __sprint(FILE *, struct __suio *) __asm__("func_00116FA0");
 extern s32 isinf(f64) __asm__("func_00116168");
@@ -189,7 +190,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
     char buf[348];
     char ox[2];
     int state = 0;
-    if (((((fp)->_flags & 8) == 0 || (fp)->_bf._base == 0) && __swsetup(fp)))
+    if (((((fp)->_flags & 8) == 0 || (fp)->_bf._base == 0) && libc_swsetup(fp)))
         return ((-1));
     if ((fp->_flags & (2 | 8 | 16)) == (2 | 8) && fp->_file >= 0)
         return (__sbprintf(fp, fmt0, ap));

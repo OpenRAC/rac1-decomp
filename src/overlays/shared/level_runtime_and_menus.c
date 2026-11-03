@@ -83,7 +83,7 @@ extern float cpu_frame_load_r __asm__("D_L00_0015F6B4") MACRO_ADDR;
 extern int skip_frame_r __asm__("D_L00_0015F6BC") MACRO_ADDR;
 
 extern int STUB_printf_r() __asm__("func_001E9730");
-extern void init_stash_r(void) __asm__("func_00234018");
+
 extern void init_level_runtime_state_r(void) __asm__("func_L00_0023D9C0");
 extern int load_level_archive_resources_r(int, int) __asm__("func_L00_00244AE0");
 
@@ -145,7 +145,7 @@ void run_level_main_loop(void) {
             level_bss_start_r[i] = 0;
         }
     }
-    init_stash_r();
+    init_stash();
     cinematic_mode_frames_r = 0;
     cinematic_mode_r = 6;
     one = 1;

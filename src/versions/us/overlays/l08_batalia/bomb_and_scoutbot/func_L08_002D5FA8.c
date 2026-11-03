@@ -19,7 +19,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
     } else {
         c = 0;
     }
-    t = pick_2D5FA8(t, u, c, 0);
+    t = select_candidate_by_max_float_2c(t, u, c, 0);
     if (t != 0 && t->moby != 0) {
         short h = t->moby->oclass;
         if (h == 0x1A9 || h == 0x47)

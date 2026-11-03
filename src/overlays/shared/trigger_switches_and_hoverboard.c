@@ -28,6 +28,7 @@
 #include "overlays/l05_rilgar/hero_idle_and_items.h"
 #include "overlays/l05_rilgar/electric_gate.h"
 #include "asm_functions/level_05.h"
+#include "game/gameplay/camera.h"
 extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
@@ -1730,8 +1731,6 @@ extern float D_L05_00174378;
 extern float D_L05_00162268_32B1F8 SDATA(D_L05_00162268);
 extern void vec_scale_32B1F8(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern float spring_32B1F8(float, float, float *, float, float, float) __asm__("func_001EC120");
-
 extern int collide_32B1F8(float, void *, int, void *) __asm__("func_L00_001F10E0");
 
 extern void orbit_32B1F8(Camera_32B1F8 *) __asm__("func_L05_0032ADE8");
@@ -1780,9 +1779,9 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
         vec_scale_32B1F8(&tmp, &q->axis, e->height);
         FastVecAdd(&goal, &base, &tmp);
         FastVecAdd(&goal, &goal, &d->bias);
-        m->pos.x = spring_32B1F8(m->pos.x, goal.x, &d->vel[0], d->k10, d->k14, d->k18);
-        m->pos.y = spring_32B1F8(m->pos.y, goal.y, &d->vel[1], d->k10, d->k14, d->k18);
-        m->pos.z = spring_32B1F8(m->pos.z, goal.z, &d->vel[2], d->k10, d->k14, d->k18);
+        m->pos.x = Cam_InterpValues(m->pos.x, goal.x, &d->vel[0], d->k10, d->k14, d->k18);
+        m->pos.y = Cam_InterpValues(m->pos.y, goal.y, &d->vel[1], d->k10, d->k14, d->k18);
+        m->pos.z = Cam_InterpValues(m->pos.z, goal.z, &d->vel[2], d->k10, d->k14, d->k18);
         v = m->vel;
         probe.x = v[0];
         probe.y = v[1];
@@ -1793,17 +1792,17 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
         while (n < 6) {
             if (collide_32B1F8(0.5f, &probe, 18, 0) != 0) {
                 e->height =
-                    spring_32B1F8(e->height, rilgar_coll_resolved_pos_z - focus.z, &cur->vel, 0.05f, 0.2f, 0.0f);
+                    Cam_InterpValues(e->height, rilgar_coll_resolved_pos_z - focus.z, &cur->vel, 0.05f, 0.2f, 0.0f);
                 break;
             }
             n++;
             FastVecAdd(&probe, &probe, &step);
         }
         if (n == 6) {
-            d->bias.x = spring_32B1F8(d->bias.x, 0.0f, &d->bias_vel[0], 0.02f, 0.2f, 0.05f);
-            d->bias.y = spring_32B1F8(d->bias.y, 0.0f, &d->bias_vel[1], 0.02f, 0.2f, 0.05f);
-            d->bias.z = spring_32B1F8(d->bias.z, 0.0f, &d->bias_vel[2], 0.02f, 0.2f, 0.05f);
-            e->height = spring_32B1F8(e->height, d->spring_height, &cur->vel, 0.005f, 0.2f, 0.0f);
+            d->bias.x = Cam_InterpValues(d->bias.x, 0.0f, &d->bias_vel[0], 0.02f, 0.2f, 0.05f);
+            d->bias.y = Cam_InterpValues(d->bias.y, 0.0f, &d->bias_vel[1], 0.02f, 0.2f, 0.05f);
+            d->bias.z = Cam_InterpValues(d->bias.z, 0.0f, &d->bias_vel[2], 0.02f, 0.2f, 0.05f);
+            e->height = Cam_InterpValues(e->height, d->spring_height, &cur->vel, 0.005f, 0.2f, 0.0f);
         }
         if (((Hero *)g_hero)->air_frames.s != 0 && 2.0f < ((Hero *)g_hero)->ground_distance) {
             if (FastAbsF(e->dist - d->spring_dist2) < 0.015f)
@@ -1880,7 +1879,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     vec_scale_32B1F8(&m->up, &m->up, 1.0f);
     FastVecCross(&m->side, &m->up, &rel);
     if (fl == 0 || FastAbsF(dd) < 0.5f || (v = (float *)g_hero, ((Hero *)v)->trick_input != 0)) {
-        tr->blend = spring_32B1F8(tr->blend, 0.0f, tr->state, tr->k34, tr->k38, tr->k3C);
+        tr->blend = Cam_InterpValues(tr->blend, 0.0f, tr->state, tr->k34, tr->k38, tr->k3C);
     } else {
         float t;
         vec_scale_32B1F8(&probe, ((char *)((Hero *)v)->moby) + 0xC0, 1.0f);
@@ -1888,7 +1887,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
         vec_scale_32B1F8(&step, &m->side, t);
         FastVecSub(&probe, &probe, &step);
         t = FastVecDot(&probe, &m->up);
-        tr->blend = spring_32B1F8(tr->blend, t * D_L05_00162268_32B1F8, tr->state, tr->k34, tr->k38, tr->k3C);
+        tr->blend = Cam_InterpValues(tr->blend, t * D_L05_00162268_32B1F8, tr->state, tr->k34, tr->k38, tr->k3C);
     }
     if (0.00001f < FastAbsF(tr->blend)) {
         vec_scale_32B1F8(&probe, &m->up, tr->blend);

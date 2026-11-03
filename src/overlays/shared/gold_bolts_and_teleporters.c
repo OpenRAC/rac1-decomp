@@ -3281,7 +3281,7 @@ extern Path *novalis_paths_r3[] __asm__("D_L01_001B0C30");
 extern float novalis_camera_up_axis[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
-extern float Cam_InterpValues_v(float a, float b, float *p, float c, float d, float e) __asm__("func_001EC120");
+extern float Cam_InterpValues(float a, float b, float *p, float c, float d, float e);
 
 /* Update function of camera 3: follows a path beside the hero's and turns toward a look-at point on it.
    The four `= 0` initialisers in the mode 2 block are dead and leave no code: they make up for the insns
@@ -3324,9 +3324,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
         FastVecSub(v50, &path->nodes[seg + 1], &path->nodes[seg]);
         vec_scale_to_length(v40, v50, dist);
         FastVecAdd(v60, &path->nodes[seg], v40);
-        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v60[0], &d->vel[0], k, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v60[1], &d->vel[1], k, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v60[2], &d->vel[2], k, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues(cam->pos[0], v60[0], &d->vel[0], k, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues(cam->pos[1], v60[1], &d->vel[1], k, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues(cam->pos[2], v60[2], &d->vel[2], k, 0.175f, 0.0f);
     } else if (mode == 2) {
         Path *pathA = novalis_paths_r3[pi];
         Path *pathD = novalis_rails[p->f24].f10;
@@ -3397,9 +3397,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
         } else {
             d->f10 = d->f10 - 0.00015f;
         }
-        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v40[0], &d->vel[0], d->f10, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v40[1], &d->vel[1], d->f10, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v40[2], &d->vel[2], d->f10, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues(cam->pos[0], v40[0], &d->vel[0], d->f10, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues(cam->pos[1], v40[1], &d->vel[1], d->f10, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues(cam->pos[2], v40[2], &d->vel[2], d->f10, 0.175f, 0.0f);
     } else {
         Path *path = novalis_paths_r3[pi];
 
@@ -3423,9 +3423,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
             Spline_AdvanceByDistance((Path *)g_hero.rail_spline, v30, &hseg, &hfrac, p->f38, 1);
             find_nearest_path_point(path, v30, v0, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         }
-        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v0[1], &d->vel[1], k, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v0[2], &d->vel[2], k, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues(cam->pos[1], v0[1], &d->vel[1], k, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues(cam->pos[2], v0[2], &d->vel[2], k, 0.175f, 0.0f);
     }
     if (p->f24 < 0) {
         Path *path = novalis_paths_r3[p->f20];

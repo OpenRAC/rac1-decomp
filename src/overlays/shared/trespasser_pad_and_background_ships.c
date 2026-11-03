@@ -39,6 +39,7 @@
 #include "asm_functions/level_02.h"
 #include "overlays/shared/geometry_quad_packet.h"
 #include "overlays/shared/camera_update_callbacks.h"
+#include "overlays/shared/hero_update_ground_material.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -465,8 +466,6 @@ extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08"
 extern void AddDrawCallback_r(void (*)(void), Moby *) __asm__("func_001F49B0");
 extern void draw_tresspasser_puzzle_r(void) __asm__("func_L02_002DA820");
 
-extern void request_hero_idle_state_for_vehicle_mode_r(void) __asm__("func_L01_00240CE8");
-
 extern float trespasser_arrow_corners_r[4][4] __asm__("D_L02_001D3680");
 typedef struct {
     char pad0[0x454];
@@ -647,7 +646,7 @@ void tresspasser_pad_update(Moby *moby) {
                     g_hero.state.current != 0x72 || g_hero.items[0].item_id != 0x1A) {
                     moby->state = 1;
                     CameraScript2(1);
-                    request_hero_idle_state_for_vehicle_mode_r();
+                    request_hero_idle_state_for_vehicle_mode();
                     data->timer = scale_ticks(0x3C);
                 }
             }

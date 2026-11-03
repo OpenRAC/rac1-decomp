@@ -534,10 +534,9 @@ void draw_ship_hud(char *moby) {
         d->hp_bar = v;
     }
 }
-extern void project_world_point_to_screen_pixels_r(void *, void *, void *, int) __asm__("func_L11_003126D8");
+
 extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
 
-extern int spawn_class_3f1_moby_r(void *, void *, void *, float, float) __asm__("func_L11_00309C18");
 extern short D_L11_001620EC;
 extern short D_L11_001620F0;
 extern short ship_speed_scale_d __asm__("D_L11_00162120");
@@ -558,15 +557,15 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
         vec_scale_to_length_r(c, a, 2.2f);
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
         FastVecAdd(b, b, c);
-        spawn_class_3f1_moby_r(moby, a, b, 200.0f, -1.0f);
+        spawn_class_3f1_moby(moby, a, b, 200.0f, -1.0f);
         *(int *)(obj + 0x80) = *(int *)&ship_shot_cooldown_ticks;
         obj[0x61] ^= 1;
         Moby_PlaySound(3, 0, (int)moby);
     }
     vec_scale_to_length_r(a, a, 23.0f);
     FastVecAdd(d, a, moby + 0x10);
-    project_world_point_to_screen_pixels_r(d, &((struct ShipVars *)obj)->reticle_x,
-                                           &((struct ShipVars *)obj)->reticle_y, 0);
+    project_world_point_to_screen_pixels(d, &((struct ShipVars *)obj)->reticle_x, &((struct ShipVars *)obj)->reticle_y,
+                                         0);
 }
 
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");

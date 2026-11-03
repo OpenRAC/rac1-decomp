@@ -95,7 +95,7 @@ void update_hero_hoverboard_race_progress(void) {
                 g_hero.board_air_yaw = v1[2];
                 Hero_ResetToPosition(v0, v1, 0x6B, 1);
                 if (((Path *)g_hero.race_path) != 0) {
-                    int r = select_point_index_by_distance_r(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
+                    int r = select_point_index_by_distance(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
                     if (r < g_hero.race_path_node) {
                         g_hero.race_path_node = r;

@@ -317,7 +317,7 @@ void update_resident_gameplay_state(void) {
                 }
             }
             sound_update();
-            resident_call_00202260();
+            UpdateAllPointLights();
             update_resident_packed_direction();
             noop_callback_h();
             break;
@@ -544,7 +544,7 @@ void update_resident_gameplay_state(void) {
             }
             resident_call_001EDE50();
             sound_update();
-            resident_call_00202260();
+            UpdateAllPointLights();
             update_resident_packed_direction();
             noop_callback_h();
             break;

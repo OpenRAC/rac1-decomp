@@ -1840,7 +1840,7 @@ typedef struct {
     L13Vec_p matrix;
 } L13Hit_p;
 #define D_L13_00174140_p (*(L13Hit_p *)D_L13_001741C0)
-void update_attached_rocket_v(struct Moby *moby) __asm__("func_L13_00306EF0");
+extern void update_attached_rocket_v(struct Moby *moby) __asm__("func_L13_00306EF0");
 #define func_L13_00306EF0_r update_attached_rocket_v
 struct L1300306EF0RVars {
     u8 pad_00[0x10];

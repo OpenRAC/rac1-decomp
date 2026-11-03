@@ -15,13 +15,13 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
 
     if (g_hero.items[0].item_id == 0x15) {
         if (((D_2E52B0 *)g_hero.items[0].moby->pvars)->f10 == m) {
-            activate_waiting_moby_group_members_r(m);
+            activate_waiting_moby_group_members(m);
             if (m->state == 1)
                 m->state = 2;
         }
     }
     if (d->f38 != 0) {
-        activate_waiting_moby_group_members_r(m);
+        activate_waiting_moby_group_members(m);
         d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->f38 = 0;
     }
@@ -88,7 +88,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f20 -= B;
         if (d->f20 <= 0.0f)
             v21 = 1;
-        activate_waiting_moby_group_members_r(m);
+        activate_waiting_moby_group_members(m);
         d->f90 = truncate_float_to_s32_r(768.0f);
         d->f98 = 0.75f;
         d->f94 = 9;
@@ -155,7 +155,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             d->f1A0 = 0.0f;
         }
         if (g_hero.vehicle_mode == 1)
-            activate_waiting_moby_group_members_r(m);
+            activate_waiting_moby_group_members(m);
     } else {
         d->f1A0 = D_L10_00161EC0_2E52B0;
     }

@@ -34,6 +34,7 @@
 #include "overlays/l08_batalia/offset_effects.h"
 #include "callees.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/candidate_adjacency_masks.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -773,7 +774,7 @@ extern int bomber_tank_part4_destroyed_r __asm__("D_L08_0015F6A0") MACRO_ADDR;
 extern float batalia_zero_vec_r2[] __asm__("D_L08_0015F660") MACRO_ADDR;
 extern Path *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
 extern Hit_2D5FA8 *find_2D5FA8(Moby *, int, int) __asm__("func_L00_0025B478");
-extern Hit_2D5FA8 *pick_2D5FA8(Hit_2D5FA8 *, Hit_2D5FA8 *, Hit_2D5FA8 *, int) __asm__("func_L05_0028AA68");
+
 extern int damage_2D5FA8(Moby *, Hit_2D5FA8 *, float *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 
 extern void animate_2D5FA8(Moby *, int, int, int) __asm__("func_00213DE0");
@@ -820,7 +821,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
     } else {
         c = 0;
     }
-    t = pick_2D5FA8(t, u, c, 0);
+    t = select_candidate_by_max_float_2c(t, u, c, 0);
     if (t != 0 && t->moby != 0) {
         short h = t->moby->oclass;
         if (h == 0x1A9 || h == 0x47)

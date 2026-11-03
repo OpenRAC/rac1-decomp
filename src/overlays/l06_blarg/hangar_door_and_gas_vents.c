@@ -819,8 +819,6 @@ extern int Sound_IsPlaying_r(Moby *, int) __asm__("func_L00_0028EB98");
 
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 
-extern void enter_hero_idle_state_for_current_vehicle_mode_r(void) __asm__("func_L06_00239CD0");
-
 /* Level 6 drawbridge (class 1028): spawns its two rows of deck pieces, waits for the hero's switch, then
    lowers through three hinge stages (drawbridge_slide/0C/10) while the camera follows the path nodes. */
 void update_drawbridge(Moby *m) {
@@ -958,7 +956,7 @@ void update_drawbridge(Moby *m) {
             ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks(20));
             blarg_fade_level = 1.0f - FastAbsF(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
-                enter_hero_idle_state_for_current_vehicle_mode_r();
+                enter_hero_idle_state_for_current_vehicle_mode();
                 CameraScript2(3);
             } else if (1.0f <= s->f6C) {
                 m->state = 6;

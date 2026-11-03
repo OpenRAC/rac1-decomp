@@ -1593,7 +1593,6 @@ void request_hero_idle_state_for_vehicle_mode(void) {
             break;
     }
 }
-extern int hl_next(int, int) __asm__("func_L01_0023D688");
 
 extern int get_hero_idle_animation_index(int a);
 extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
@@ -1608,7 +1607,7 @@ void select_hero_locomotion_state(void) {
     ((struct Hero *)b)->unk2284 = 0;
     stick_target_v(0, 1.0f);
     if (pad_held & 0xA) {
-        hl_next(4, 0);
+        Hero_SetMoveState(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
         hero_queue_sequence(3, 0x12);
         return;
@@ -1616,10 +1615,10 @@ void select_hero_locomotion_state(void) {
     c = &g_hero;
     if (0.3f < c->stick_magnitude && c->move_lock_timer == 0) {
         if (c->on_ice_ground != 0 || c->wading != 0) {
-            hl_next(2, 1);
+            Hero_SetMoveState(2, 1);
             return;
         }
-        if (hl_next(2, 0)) {
+        if (Hero_SetMoveState(2, 0)) {
             c->state.step = 1;
             n = scale_ticks(8);
             if (scale_ticks(5) < c->rail_land_frames)
@@ -1632,14 +1631,14 @@ void select_hero_locomotion_state(void) {
     d = (char *)&g_hero;
     if ((*(float *)&g_frame_time * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) ||
         *(int *)(d + 0x2084) == 0x10) {
-        if (hl_next(3, 0)) {
+        if (Hero_SetMoveState(3, 0)) {
             set_hero_animation(5, 0, -1.0f);
             ClampVectorLength(hero_globals_base + 0xF6D, g_frame_time * 5.0f);
         }
         return;
     }
     if (scale_ticks(12) < *(int *)(d + 0x418) || (*(int *)(d + 0xA98) & 2)) {
-        if (hl_next(0, 0)) {
+        if (Hero_SetMoveState(0, 0)) {
             if (get_hero_idle_animation_index(0) == 0x54) {
                 n = get_hero_idle_animation_index(0);
                 set_hero_animation(n, 0, (float)scale_ticks(15));

@@ -31,6 +31,7 @@
 #include "game/gameplay/freeze.h"
 #include "game/system/memcard.h"
 #include "game/system/pad.h"
+#include "game/system/initonce.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -700,8 +701,6 @@ extern void queue_dma_transfer_r(s32) __asm__("func_001EB300");
 
 extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
 
-extern void InitMemSlots_r(void) __asm__("func_00201E10");
-
 extern void func_00217628(u8 *, s32, s32);
 extern unsigned int Load_r(s32, s32, s32) __asm__("func_002176C8");
 extern void func_00217748(s32);
@@ -738,7 +737,7 @@ void transition_load_wad(void) {
     intro_overlay_timer_r = 0;
     i = 0;
     calculate_dma_transfer_address();
-    InitMemSlots_r();
+    InitMemSlots();
     current_vu_chain = 0x100000;
     g_gs_texture_allocation_base_r = 0x2C0000;
     g_gs_texture_allocation_start_r = 0x2C0000;

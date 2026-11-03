@@ -1100,7 +1100,6 @@ void fred_update(Moby *moby) {
 extern void begin_red_button_rotation_r(char *) __asm__("func_L06_00305BF8");
 extern int get_red_button_sequence_status_r(char *) __asm__("func_L06_00305C38");
 extern void queue_moby_dialogue_line_r(char *, int) __asm__("func_L06_00303858");
-extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
 
 extern void set_moby_list_state_17_r(int) __asm__("func_L06_00301068");
 
@@ -1187,7 +1186,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 return;
             ((Moby *)m)->state = 3;
             d->path_index = 1;
-            MusicRequestTrack_r(6, 9);
+            MusicRequestTrack(6, 9);
             if (dialogue_playback_phase == 3)
                 Music_ContinueStreamIfReady();
             set_moby_list_state_17_r(d->list_d);
@@ -2111,7 +2110,6 @@ extern void ApproachWithVelocity_r(float *, float *, float, float, float, float)
 extern void Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern int try_set_help_message_r(int, int) __asm__("func_00215F80");
-extern int remove_help_message_for_selector_r(int) __asm__("func_L00_00265558");
 
 extern void emit_red_button_particle_burst_r(void *, void *) __asm__("func_L06_00305C58");
 
@@ -2162,7 +2160,7 @@ void red_button_update(Moby *m) {
                 nz = try_set_help_message_r(4, 0x1783) != 0;
                 if ((pad0_pressed & 0x10) && nz) {
                     Moby_PlaySound_r(2, 0, m);
-                    remove_help_message_for_selector_r(4);
+                    remove_help_message_for_selector(4);
                     m->state = 4;
                     d->timer = scale_ticks(0x1E);
                 }

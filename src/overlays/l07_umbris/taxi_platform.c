@@ -986,7 +986,6 @@ typedef struct {
 } BoltVars;
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern void spawn_projectile_expiry_particle_r(void *, void *) __asm__("func_L07_0029B070");
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
@@ -1017,7 +1016,7 @@ void update_linear_projectile(Moby *m) {
                 vec_scale_to_length(&dir, &dir, FastVecLength(&spark) * 0.1f);
                 FastVecAdd(&dir, &spark, &dir);
                 vec_scale_to_length(&dir, &dir, random_float_between(g_frame_time + g_frame_time, g_frame_time * 4.0f));
-                spawn_projectile_expiry_particle_r(&m->pos, &dir);
+                spawn_projectile_expiry_particle(&m->pos, &dir);
             }
         }
         DeleteMoby(m);
@@ -1207,7 +1206,7 @@ extern int water_grid_override_index SDATA(water_grid_override_index);
 extern unsigned short umbris_water_grid_override_value SDATA(umbris_water_grid_override_value);
 extern char gHaveHeliPack[];
 extern char discount_purchase_pricing[];
-extern void RipplePatchesInit_r(void *, int) __asm__("func_L01_002B8C00");
+
 extern void func_L01_002B90A8(float);
 
 extern void func_L01_002B9440(void *, int, float, float, float, float);
@@ -1243,7 +1242,7 @@ void WaterPlateUpdate(Moby *m) {
                 Cab *cab;
                 Dir *dir;
                 int (*p)[4];
-                RipplePatchesInit_r(umbris_water_grids_r, 0x24);
+                RipplePatchesInit(umbris_water_grids_r, 0x24);
                 RescaleFloatTable(1.0f);
                 cab = &umbris_water_ripple_params;
                 dir = &umbris_moby_lights;
