@@ -103,5 +103,13 @@ class SplitTest(unittest.TestCase):
             self.assertEqual(me.split_shared_statements(text), (text, 0))
 
 
+class OldStyleTest(unittest.TestCase):
+    def test_an_old_style_definition_is_found(self):
+        self.assertEqual(me.OLD_STYLE.findall("void f(p, q)\n    char *p;\n    int q;\n{\n}\n"), ["f"])
+
+    def test_a_prototype_is_not(self):
+        self.assertEqual(me.OLD_STYLE.findall("void f(int p)\n{\n    int q;\n}\nextern void g(p);\n"), [])
+
+
 if __name__ == "__main__":
     unittest.main()

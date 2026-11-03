@@ -38,6 +38,8 @@ WORKERS = 6
 INCLUDE_LINE = re.compile(r'^#include\s+"([^"]+)"', re.M)
 
 
+# `void f(p)\n    char *p;\n{`: a prototype in a header would change how this definition compiles.
+OLD_STYLE = re.compile(r"^(?!extern\b|typedef\b)[A-Za-z_][^;{}=\n]*?\b(\w+)\s*\(\s*\w+(?:\s*,\s*\w+)*\s*\)\s*\n\s*[A-Za-z_][^;{}()]*;", re.M)
 PLAIN = re.compile(r"^(?!extern\b|static\b|typedef\b|return\b|else\b|goto\b)[A-Za-z_][\w \t*]*[ \t*]\w+\s*\([^;{}]*\)\s*;", re.M)
 
 
@@ -144,6 +146,8 @@ class Sources:
         for rel, text in self.text.items():
             for name in mp.DEFINITION.findall(pe.COMMENT_OR_STRING.sub(pe.blank, text)):
                 self.defined[self.symbol(name)].add(rel)
+            for name in OLD_STYLE.findall(pe.COMMENT_OR_STRING.sub(pe.blank, text)):
+                self.blocked[self.symbol(name)] = f"old-style definition in {rel}"
             for start, _, statement in declarations(text):
                 if not is_file_scope(text, start):
                     continue
