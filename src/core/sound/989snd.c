@@ -6,6 +6,7 @@
 #include "core/kernel/kprintf.h"
 #include "asm_functions/executable.h"
 #include "core/cdvd/callbacks.h"
+#include "core/libc/printf_rand.h"
 
 /*
  * 989snd.c (0x12DB68-0x12F308): 989 Studios' sound library. The
@@ -210,7 +211,7 @@ int snd_FlushSoundCommands(void) {
 LINKER_REMNANT("asm/remnants/core_text", func_0012DFA0);
 
 extern int sound_command_client;
-extern int func_00116078(void *arg0);
+
 extern char snd_no_return_error_string[];
 
 extern short snd_current_buffer;

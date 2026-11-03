@@ -92,8 +92,7 @@ typedef struct {
 } TtyHandlerState;
 
 extern void kprintf(const char *, ...);
-extern int isceDeci2ExRecv_r(int, char *, unsigned short) __asm__("func_001197C0");
-extern int isceDeci2ExSend_r(int, char *, unsigned short) __asm__("func_001197F8");
+
 extern char tty_packet_too_large_msg[];
 extern char tty_receive_error_msg[];
 extern char tty_send_error_msg[];
@@ -113,7 +112,7 @@ void sceTtyHandler(int event, int param, TtyHandlerState *ti) {
                 {
                     int off = ti->rlen;
 
-                    n = isceDeci2ExRecv_r(ti->sock, ti->rbuf + off, param);
+                    n = isceDeci2ExRecv(ti->sock, ti->rbuf + off, param);
                 }
                 if (n < 0) {
                     kprintf(tty_receive_error_msg);
@@ -130,7 +129,7 @@ void sceTtyHandler(int event, int param, TtyHandlerState *ti) {
             }
             break;
         case 3: {
-            int w = isceDeci2ExSend_r(ti->sock, ti->wbuf, ti->wlen);
+            int w = isceDeci2ExSend(ti->sock, ti->wbuf, ti->wlen);
 
             if (w < 0) {
                 kprintf(tty_send_error_msg, w);

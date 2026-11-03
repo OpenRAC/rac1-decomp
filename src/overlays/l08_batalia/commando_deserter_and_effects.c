@@ -125,8 +125,6 @@ extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
-extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
-
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 
 /* Swarm leader: cruises or circles along its waypoint path with its parts in tow, fires at its target, and in
@@ -191,7 +189,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             }
             FastVecSub(&step, &point, &moby->pos);
             if (FastVecLength(&step) > D_L08_00161DC4_2EAF48 * g_frame_time_r) {
-                vec_scale_to_length_r(&step, &step, D_L08_00161DC4_2EAF48 * g_frame_time_r);
+                vec_scale_to_length(&step, &step, D_L08_00161DC4_2EAF48 * g_frame_time_r);
             }
             FastVecAdd(&moby->pos, &moby->pos, &step);
             process_linked_moby_part_hits(moby);
@@ -209,7 +207,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             } else if (yaw <= 0.0f && yaw > -0.34f) {
                 yaw = -0.34f;
             }
-            vec_scale_to_length_r(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
+            vec_scale_to_length(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
             shot = spawn_rocket_435_projectile(&muzzle, target, &velocity, pitch, yaw);
             shot->scale = shot->pclass->scale / 5.0f;
             target_vars = (SwarmTargetVars *)target->pvars;
@@ -239,7 +237,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             }
             FastVecSub(&step, &point, &moby->pos);
             if (FastVecLength(&step) > D_L08_00161DC4_2EAF48 * g_frame_time_r) {
-                vec_scale_to_length_r(&step, &step, D_L08_00161DC4_2EAF48 * g_frame_time_r);
+                vec_scale_to_length(&step, &step, D_L08_00161DC4_2EAF48 * g_frame_time_r);
             }
             FastVecAdd(&moby->pos, &moby->pos, &step);
             update_commando_parts(moby);
@@ -250,7 +248,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             Moby_GetJointWorldPos(vars->parts[3].moby, 1, &muzzle);
             pitch = random_float_between(-0.5235988f, -0.2617994f);
             yaw = random_angle_radians();
-            vec_scale_to_length_r(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
+            vec_scale_to_length(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
             bolt = spawn_rocket_435_projectile(&muzzle, 0, &velocity, pitch, yaw);
             if (bolt != 0) {
                 bolt->rot.z = vars->parts[3].moby->rot.z;
@@ -275,7 +273,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                     Vec4 *drift = (Vec4 *)part->pvars;
                     SpawnExplosionFx(moby, &part->pos, -1, 3.0f, 13.0f);
                     FastVecSub(drift, &part->pos, &moby->pos);
-                    vec_scale_to_length_r(drift, drift, g_frame_time_r * 5.0f);
+                    vec_scale_to_length(drift, drift, g_frame_time_r * 5.0f);
                     part->state = 1;
                     vars->parts[i].moby = 0;
                 }
@@ -562,7 +560,6 @@ extern char gHeroPos[];
 extern f32 batalia_zero_vec[] MACRO_ADDR;
 extern s32 MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 
-extern f32 ApproachValue_v(void *, f32, f32) __asm__("func_00214D28");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 extern void Moby_PlaySound_r3(s32, s32, struct Moby *) __asm__("func_0022ED80");
 extern void MobySpringTurn_v(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
@@ -652,7 +649,7 @@ void update_path_following_moby_with_fade(struct Moby *moby) {
         case 3: {
             Vec4 timer;
             timer.f[0] = (f32)moby->alpha;
-            ApproachValue_v(&timer, 0.0f, 128.0f / (f32)scale_ticks(30));
+            ApproachValue(&timer, 0.0f, 128.0f / (f32)scale_ticks(30));
             moby->alpha = (u8)(s32)timer.f[0];
             if (moby->alpha == 0)
                 DeleteMoby_r2(moby);

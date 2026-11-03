@@ -877,8 +877,6 @@ extern LvState D_L11_001BBF40;
 extern LvState D_L11_001BB2E0;
 extern unsigned char D_L11_0015FD08[];
 
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 // Thruster pack lock update: a state machine (0 idle, 1 armed, 2 attacking) that aims the pack and counts the cooldown
 // timers.
 void thruster_pack_lock_update(Lock *moby) {
@@ -927,7 +925,7 @@ void thruster_pack_lock_update(Lock *moby) {
             if (moby->bB0 == 0xFF) {
                 return;
             }
-            if (!(vec_distance_xy_r(moby->pos, hero_globals_base_r + 0xE9D) < 4.0f)) {
+            if (!(vec_distance_xy(moby->pos, hero_globals_base_r + 0xE9D) < 4.0f)) {
                 return;
             }
             if (!((unsigned int)*(int *)(hero_globals_base_r + 0xE9D + 0x200C) < 2)) {
@@ -1460,10 +1458,6 @@ typedef struct {
 } Data_0031B8A8;
 extern Path_0031B8A8 *D_L11_001B11B0[];
 
-extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 
 /* Path follower: turns the moby to the blend of the headings of its current and next path segments, and eases its
@@ -1490,8 +1484,8 @@ void update_moby_path_transform(Moby *moby) {
     clear_u64_value(rot);
     a = fast_atan2(A[0] - B[0], A[1] - B[1]);
     b = fast_atan2(B[0] - C[0], B[1] - C[1]);
-    pitch = fast_atan2(vec_distance_xy_r2(A, B), B[2] - A[2]);
-    rot[1] = FastAddRots(FastSubRots(fast_atan2(vec_distance_xy_r2(B, C), C[2] - B[2]), pitch) * data->t, pitch);
+    pitch = fast_atan2(vec_distance_xy(A, B), B[2] - A[2]);
+    rot[1] = FastAddRots(FastSubRots(fast_atan2(vec_distance_xy(B, C), C[2] - B[2]), pitch) * data->t, pitch);
     rot[2] = FastAddRots(FastSubRots(b, a) * data->t, a);
     qcopy(&moby->rot, rot);
     if (data->flip > 0.0f) {
@@ -1500,16 +1494,16 @@ void update_moby_path_transform(Moby *moby) {
     }
     lerp_vector(E, A, B, data->t);
     euler_to_matrix(mtx, rot);
-    vec_scale_to_length_r(G, mtx[1], data->radius * FastSin(data->ang));
+    vec_scale_to_length(G, mtx[1], data->radius * FastSin(data->ang));
     FastVecAdd(E, E, G);
-    vec_scale_to_length_r(G, mtx[2], data->radius * FastCos(data->ang));
+    vec_scale_to_length(G, mtx[2], data->radius * FastCos(data->ang));
     FastVecAdd(E, E, G);
     vel = 0.0f;
     d = FastVecDist(&moby->pos, E);
     ApproachWithVelocity(&vel, &data->speed, d, g_frame_time_sq_r * 10.0f, g_frame_time_sq_r * 10.0f,
                          g_frame_time_e * 20.0f);
     FastVecSub(G, E, &moby->pos);
-    vec_scale_to_length_r(G, G, data->speed);
+    vec_scale_to_length(G, G, data->speed);
     FastVecAdd(&moby->pos, &moby->pos, G);
 }
 

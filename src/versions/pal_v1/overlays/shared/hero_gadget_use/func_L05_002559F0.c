@@ -37,7 +37,7 @@ int hero_pick_help_mode(void) {
         goto L_BAC;
     if (*(int *)(h + 0x1C) == 0)
         goto L_BAC;
-    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), vec_length_xy_r(h + 0x40))))
+    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), vec_length_xy(h + 0x40))))
         goto L_BAC;
     g->f8A4 = FastAddRots(fast_atan2(*(float *)(h + 0x40), *(float *)(h + 0x44)), 3.1415927f);
     if (!(FastDiffRots(fast_atan2(g->fE0[0], g->fE0[1]), g->f8A4) < 0.7853982f))
@@ -51,8 +51,8 @@ int hero_pick_help_mode(void) {
 
 L_BAC:
     if (((H_9F0 *)(&g_hero))->b257 != 0) {
-        f20 = vec_length_xy_r(((H_9F0 *)(&g_hero))->f100);
-        if (f20 < vec_length_xy_r(((H_9F0 *)(&g_hero))->fE0) * 0.25f) {
+        f20 = vec_length_xy(((H_9F0 *)(&g_hero))->f100);
+        if (f20 < vec_length_xy(((H_9F0 *)(&g_hero))->fE0) * 0.25f) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
         }
@@ -158,7 +158,7 @@ L_DEC:
             Flags_9F0 *fl = (Flags_9F0 *)gSkillPoints;
             if (fl->f7 == 0) {
                 fl->f7 = 1;
-                PlayBankSound_r(1, 0, 0);
+                PlayBankSound(1, 0, 0);
                 ShowBanner(0x53D6, -1);
             }
         }

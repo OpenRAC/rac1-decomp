@@ -7,6 +7,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "asm_functions/shared_levels.h"
+#include "core/libc/printf_rand.h"
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *umbris_part_type51_textures;
@@ -31,8 +32,6 @@ unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
     return p;
 }
 extern int truncate_float_to_s32(float);
-
-extern int func_001160D8(void);
 
 extern unsigned char *umbris_part_type61_textures;
 extern float frame_scale MACRO_ADDR;

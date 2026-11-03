@@ -6,6 +6,7 @@
 #include "core/libc/findfp.h"
 #include "core/libc/fstat_r.h"
 #include "core/libc/free_malloc_trim.h"
+#include "core/libc/printf_rand.h"
 
 /*
  * core_text object 0x114518-0x1154C0. Boundaries are retail's linker fill
@@ -120,8 +121,6 @@ extern unsigned long __malloc_top_pad; /* malloc_top_pad (unsigned long) */
 
 extern unsigned long __malloc_max_sbrked_mem; /* malloc_max_sbrked_mem */
 extern unsigned long __malloc_max_total_mem; /* malloc_max_total_mem */
-
-extern void *_sbrk_r(void *reent_ptr, unsigned int size); /* _sbrk_r */
 
 #define TOP (D_0012F888[2])
 #define INITIAL_TOP ((MallocChunk *)D_0012F888)

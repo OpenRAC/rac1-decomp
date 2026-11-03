@@ -1103,13 +1103,11 @@ extern void queue_moby_dialogue_line_r(char *, int) __asm__("func_L06_00303858")
 
 extern void set_moby_list_state_17_r(int) __asm__("func_L06_00301068");
 
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
 extern void HeroL06_TrySetMoveState_r(int, int) __asm__("func_L06_00235E08");
 extern void activate_listed_class_5e8_mobys_r(int) __asm__("func_L06_0030A680");
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
+
 extern int allocate_voice_for_group_entry_r(int, int, int) __asm__("func_0022EEB8");
 
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
@@ -1205,7 +1203,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 qcopy(vb, (char *)p + 0x10);
                 clear_u64_value(vc);
                 vc[2] = fast_atan2(vb[0] - va[0], vb[1] - va[1]);
-                r2 = vec_distance_xy_r(va, vb);
+                r2 = vec_distance_xy(va, vb);
                 vc[1] = -fast_atan2(r2, vb[2] - va[2]);
                 CameraScript(va, vc, 2, scale_ticks(0x12C), 0);
                 set_selected_object_float_triplets(*(float *)&D_L06_00162128_302FE8, *(float *)&D_L06_0016212C_302FE8,
@@ -1244,7 +1242,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             qcopy(va, (char *)blarg_paths_r[d->path_id] + 0x10 + (x << 4));
             clear_u64_value(vc);
             vc[2] = fast_atan2(va[0] - vb[0], va[1] - vb[1]);
-            r = vec_distance_xy_r(vb, va);
+            r = vec_distance_xy(vb, va);
             vc[1] = -fast_atan2(r, va[2] - vb[2]);
             set_camera_position(vb);
             set_camera_rotation(vc);
@@ -1265,7 +1263,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                         Music_ContinueStreamIfReady();
                 }
             }
-            if (fast_dec_timer_r(&d->spark_timer) != 0) {
+            if (fast_dec_timer(&d->spark_timer) != 0) {
                 allocate_voice_for_group_entry_r(0, 0, (int)g_hero.moby);
                 d->spark_timer = truncate_float_to_s32_r2(multiply_global_factor(random_float_between(480.0f, 600.0f)));
                 ((Snd *)referencePosition_r)->f160 = 0.4f;
@@ -1279,7 +1277,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             }
             if (level_game_mode_q_r != 0)
                 return;
-            if (fast_dec_timer_r(&d->timer) == 0)
+            if (fast_dec_timer(&d->timer) == 0)
                 return;
             ((Moby *)m)->state = 5;
             d->ramp_delay = scale_ticks(0xF);
@@ -1294,7 +1292,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 linked_sequence_exit_ramp_progress = 0.0f;
                 return;
             }
-            if (fast_dec_timer_r(&d->ramp_delay) == 0)
+            if (fast_dec_timer(&d->ramp_delay) == 0)
                 return;
             ApproachValue_r(&d->ramp, 1.0f, g_frame_time_r * 6.0f);
             linked_sequence_exit_ramp_progress = d->ramp;
@@ -2108,12 +2106,8 @@ extern float D_L06_00162240_3054D8 SDATA(D_L06_00162240);
 
 extern void ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern void Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-extern int try_set_help_message_r(int, int) __asm__("func_00215F80");
 
 extern void emit_red_button_particle_burst_r(void *, void *) __asm__("func_L06_00305C58");
-
-extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 
 /* Red button (moby Red Button) update on level 06: turns its two levers, waits for the hero to press it, then
  * runs the cutscene camera along the cutscene records and fires the listed events as the camera passes them. */
@@ -2156,8 +2150,8 @@ void red_button_update(Moby *m) {
             break;
         }
         case 3:
-            if (vec_distance_xy_r2(&g_hero.motion.pos, &*(V_3054D8 *)&m->pos) < 3.7f) {
-                nz = try_set_help_message_r(4, 0x1783) != 0;
+            if (vec_distance_xy(&g_hero.motion.pos, &*(V_3054D8 *)&m->pos) < 3.7f) {
+                nz = try_set_help_message(4, 0x1783) != 0;
                 if ((pad0_pressed & 0x10) && nz) {
                     Moby_PlaySound_r(2, 0, m);
                     remove_help_message_for_selector(4);
@@ -2167,7 +2161,7 @@ void red_button_update(Moby *m) {
             }
             break;
         case 4:
-            if (fast_dec_timer_r2(&d->timer)) {
+            if (fast_dec_timer(&d->timer)) {
                 qcopy_nc(&v0, &blarg_scene_points_r2[d->cut].a);
                 qcopy(&v10, &blarg_scene_points_r2[d->cut].b);
                 m->state = 5;
@@ -2679,16 +2673,10 @@ typedef struct Data_30A0A8 {
     int f28;
 } Data_30A0A8;
 
-extern int FastBSphereCheck_r(void *, float) __asm__("func_L00_00200290");
-
-extern int fast_dec_timer_r3(void *) __asm__("func_001F9908");
-
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern void PartType02Spawn_r(void *, void *, void *, int, int, int, int, int, int) __asm__("func_00219780");
-extern void rand_vec_r(void *, float, float) __asm__("func_L00_00258DB0");
+
 extern float D_L06_00162380_30A0A8 SDATA(D_L06_00162380);
 extern float D_L06_00162384_30A0A8 SDATA(D_L06_00162384);
 extern float D_L06_00162388_30A0A8 SDATA(D_L06_00162388);
@@ -2736,7 +2724,7 @@ void SparkEmitterUpdate(Moby *m) {
 
     qcopy(&v1, &*(Vec4A *)&m->pos);
     v1.w = 3.0f;
-    if (FastBSphereCheck_r(&v1, 64.0f) == -1) {
+    if (FastBSphereCheck(&v1, 64.0f) == -1) {
         return;
     }
     switch (m->state) {
@@ -2751,7 +2739,7 @@ void SparkEmitterUpdate(Moby *m) {
             }
             break;
         case 2:
-            if (fast_dec_timer_r3(&d->f28)) {
+            if (fast_dec_timer(&d->f28)) {
                 SpawnExplosionFx(m, &*(Vec4A *)&m->pos, -1, 0.333f, 13.0f);
                 if (d->f0 != 0) {
                     m->state = 4;
@@ -2763,7 +2751,7 @@ void SparkEmitterUpdate(Moby *m) {
         case 4: {
             int n = 1;
             int k;
-            if (fast_dec_timer_r3(&d->f24)) {
+            if (fast_dec_timer(&d->f24)) {
                 n = 5;
                 d->f24 = truncate_float_to_s32_r3(multiply_global_factor(random_float_between(60.0f, 120.0f)));
             }
@@ -2773,17 +2761,17 @@ void SparkEmitterUpdate(Moby *m) {
             for (k = 0; k < n; k++) {
                 int c19, c18, c17, c16, c2;
                 float z;
-                vec_scale_to_length_r(&v2, &*(Vec4A *)&m->rot_row0,
-                                      D_L06_00162380_30A0A8 *
-                                          (random_float_between(-D_L06_0016238C_30A0A8, D_L06_0016238C_30A0A8) + 1.0f) *
-                                          g_frame_time_r);
+                vec_scale_to_length(&v2, &*(Vec4A *)&m->rot_row0,
+                                    D_L06_00162380_30A0A8 *
+                                        (random_float_between(-D_L06_0016238C_30A0A8, D_L06_0016238C_30A0A8) + 1.0f) *
+                                        g_frame_time_r);
                 z = D_L06_00162384_30A0A8 *
                     (random_float_between(-D_L06_0016238C_30A0A8, D_L06_0016238C_30A0A8) + 1.0f) * g_frame_time_r;
                 clear_u64_value(&v3);
                 v3.z = z;
-                vec_scale_to_length_r(&v4, &*(Vec4A *)&m->rot_row1,
-                                      random_float_between(-D_L06_00162388_30A0A8, D_L06_00162388_30A0A8) *
-                                          g_frame_time_r);
+                vec_scale_to_length(&v4, &*(Vec4A *)&m->rot_row1,
+                                    random_float_between(-D_L06_00162388_30A0A8, D_L06_00162388_30A0A8) *
+                                        g_frame_time_r);
                 FastVecAdd(&v3, &v3, &v4);
                 v2.w = random_float_between(D_L06_001623A0_30A0A8, D_L06_001623A4_30A0A8);
                 v3.w = random_float_between(D_L06_001623A8_30A0A8, D_L06_001623AC_30A0A8);
@@ -2802,7 +2790,7 @@ void SparkEmitterUpdate(Moby *m) {
             break;
         }
         case 3:
-            if (fast_dec_timer_r3(&d->f20)) {
+            if (fast_dec_timer(&d->f20)) {
                 int cnt;
                 int k;
                 d->f20 = truncate_float_to_s32_r3(multiply_global_factor(
@@ -2810,14 +2798,14 @@ void SparkEmitterUpdate(Moby *m) {
                 cnt = random_integer_below(7) ? 1 : random_integer_below(5) + 5;
                 for (k = 0; k < cnt; k++) {
                     int c19, c18, c17, c16, c2;
-                    rand_vec_r(&v4, 0.0f, D_L06_001623D0_30A0A8 * g_frame_time_r);
-                    vec_scale_to_length_r(
+                    rand_vec(&v4, 0.0f, D_L06_001623D0_30A0A8 * g_frame_time_r);
+                    vec_scale_to_length(
                         &v2, &*(Vec4A *)&m->rot_row0,
                         D_L06_001623C0_30A0A8 *
                             (random_float_between(-D_L06_001623CC_30A0A8, D_L06_001623CC_30A0A8) + 1.0f) *
                             g_frame_time_r);
                     FastVecAdd(&v2, &v2, &v4);
-                    vec_scale_to_length_r(
+                    vec_scale_to_length(
                         &v3, &v2,
                         D_L06_001623C4_30A0A8 *
                             (random_float_between(-D_L06_001623CC_30A0A8, D_L06_001623CC_30A0A8) + 1.0f) *

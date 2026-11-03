@@ -896,8 +896,6 @@ extern V2d8e48 D_L15_00167440 __asm__("D_L15_00167440") NOT_SDA;
 extern V2d8e48 D_L15_001D39C0[] __asm__("D_L15_001D39C0") NOT_SDA;
 extern UV2d8e48 D_L15_001D3A00[] __asm__("D_L15_001D3A00") NOT_SDA;
 
-extern void vscl_2d8e48(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern void vmul_2d8e48(float, void *, void *) __asm__("func_001F9C30");
 
 /* Draw callback: builds a camera-facing matrix from the moby's position and draws two quads, each with a jittered scale. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d6810.c, FUN_L15_002d8e48. */
@@ -915,13 +913,13 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
     FastVecSub(&mat[3], &quartu_camera_pos, pos);
-    vscl_2d8e48(&mat[3], &mat[3], 0.3f);
+    vec_scale_to_length(&mat[3], &mat[3], 0.3f);
     FastVecAdd(&mat[3], &mat[3], pos);
     mat[3].f[3] = 1.0f;
     FastVecSub(&mat[0], &quartu_camera_pos, &mat[3]);
-    vscl_2d8e48(&mat[0], &mat[0], 1.0f);
+    vec_scale_to_length(&mat[0], &mat[0], 1.0f);
     FastVecCross(&mat[1], &mat[0], hero_gravity_dir_r);
-    vscl_2d8e48(&mat[1], &mat[1], -1.0f);
+    vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     c = *(unsigned int *)&electric_water_glow_core_color;
     quad.color[3] = c;

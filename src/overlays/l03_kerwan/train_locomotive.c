@@ -35,6 +35,8 @@
 #include "overlays/l03_kerwan/taxi_and_mine_layer.h"
 #include "overlays/l03_kerwan/rotate_point_about_axis.h"
 #include "callees.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -746,8 +748,6 @@ typedef struct {
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern float ApproachValue_r(float *p, float target, float maxstep) __asm__("func_00214D28");
 
 extern void update_entity_matrix_r2(char *, void *, void *, void *) __asm__("func_L00_002617B0");
@@ -823,7 +823,7 @@ void moving_platform_small_update(Moby *moby) {
                 s = d->length - s;
             FastVecSub(v3, &p->path->pts[p->path->count - 1], p->path->pts);
             *(Q_295DB0 *)v2 = *(Q_295DB0 *)v3;
-            vec_scale_to_length_r(v2, v2, s);
+            vec_scale_to_length(v2, v2, s);
             FastVecAdd(v3, p->path->pts, v2);
             *(Q_295DB0 *)&moby->pos = *(Q_295DB0 *)v3;
             if (d->ticks < scale_ticks(240))
@@ -1170,7 +1170,6 @@ extern unsigned char gSkillPoints_r[] __asm__("D_0013D510");
 extern float kerwan_zero_vec[] MACRO_ADDR;
 extern void *kerwan_red_ship_update_slot MACRO_ADDR;
 
-extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
 extern void allocate_voice_for_group_entry_r(int, int, void *) __asm__("func_0022EEB8");
 
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
@@ -1294,7 +1293,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         }
         if (((Moby *)moby)->oclass == MOBY_CLASS_BLIMP && gSkillPoints_r[4] == 0) {
             gSkillPoints_r[4] = 1;
-            PlayBankSound_r(1, 0, 0);
+            PlayBankSound(1, 0, 0);
             ShowBanner(0x53DB, -1);
         }
         allocate_voice_for_group_entry_r(0, 0, moby);
@@ -1586,7 +1585,7 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 struct AnimSeq;
 int func_L03_002C8068_C6F80(struct Moby *moby) __asm__("func_L03_002C8068");
 typedef int OvlQuad_C6F80 __attribute__((mode(TI)));
-extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
+
 extern int find_nearest_path_point_r2(void *, void *, void *, int *, float *, int, float, float,
                                       float) __asm__("func_L00_0025EFC0");
 
@@ -1655,14 +1654,10 @@ typedef struct {
 extern short kerwan_mobys_r2 __asm__("D_L03_00160058");
 extern char kerwan_moby573_spawn_d0_record;
 
-extern int func_001160D8(void);
-
 extern int ClassifyTargetInCone_r(char *m, char *p, char *pos, char *v) __asm__("func_L00_0025A060");
 
 extern int FindNearestTargetMoby_r(char *, char *, float) __asm__("func_L00_00260D30");
 extern int is_point_inside_clip_volume_cf(int id);
-
-extern void SetDeathBits(void *, int, int);
 
 extern void Manipulator_ApplyScale_v(void *, int, void *, float) __asm__("func_L00_00264B40");
 
@@ -1694,7 +1689,7 @@ void robot_dog_573_update(Moby *moby) {
     FindNearestTargetMoby_r((char *)moby, (char *)&tgt, data->f230);
     Manipulator_ApplyScale_v(moby, 0, data->m280, 2.1f);
     update_robot_dog_hit_reaction_r((struct Moby *)moby);
-    fast_dec_timer_r2(&data->i244);
+    fast_dec_timer(&data->i244);
     switch (moby->state) {
         case 0:
             moby->flags |= 0x1000;
@@ -1790,7 +1785,7 @@ void robot_dog_573_update(Moby *moby) {
             dir[1] = 2.0f * FastSin(moby->rot.z);
             dir[2] = 0.0f;
             move_w(moby, &data->i180, dir, push, 1.0f);
-            if (fast_dec_timer_r2(&data->i23C)) {
+            if (fast_dec_timer(&data->i23C)) {
                 data->i23C = scale_ticks((int)random_float_between(30.0f, 90.0f));
             }
             d = vec_distance_xy(&moby->pos, &tgt);
@@ -3065,7 +3060,7 @@ void update_kerwan_path_enemy(Moby *m) {
 typedef int OvlQuad_2CA970 __attribute__((mode(TI)));
 
 extern Hero D_0013F450;
-extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
+
 extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
 extern void InitKnockback_r(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 extern void RerollEffectCounter_r(void *, short *) __asm__("func_L00_0025E4B0");
@@ -3176,8 +3171,6 @@ extern f32 D_L03_00161968_2CA970 SDATA(D_L03_00161968);
 
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 
-extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
-
 void func_L03_002CA970_r(Moby *m) __asm__("func_L03_002CA970");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/00292578.c, FUN_L03_002c95a8. */
@@ -3202,7 +3195,7 @@ void func_L03_002CA970_r(Moby *m) {
     } else {
         d->f270 = d->f26C + 5.0f;
     }
-    hit = (struct HitMessage *)MobyGetHitMessage_r(m, 0x330000, 0);
+    hit = (struct HitMessage *)MobyGetHitMessage(m, 0x330000, 0);
     result = ComputeHitResponse_r(m, hit, &d->f20, 0, &kind, &damage, 0, 4);
     if (hit != 0 && kind != 1 && m->state != 0xD) {
         other = hit->source;
@@ -3323,7 +3316,7 @@ void func_L03_002CA970_r(Moby *m) {
         RerollEffectCounter_r(m, (short *)((char *)d + 0x60));
     }
     m->hit_slot = 0xFF;
-    StepColorFade_r(m, (char *)d + 0x60);
+    StepColorFade(m, (char *)d + 0x60);
 }
 
 extern int find_nearest_path_point_r3(void *, void *, void *, int *, float *, int, float, float,

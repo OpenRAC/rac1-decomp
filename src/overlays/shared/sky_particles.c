@@ -9,6 +9,7 @@
 #include "asm_functions/executable.h"
 #include "game/render/vuchain.h"
 #include "game/render/skyfunc.h"
+#include "core/libc/printf_rand.h"
 
 typedef struct {
     unsigned char b0, b1, b2, b3;
@@ -28,7 +29,6 @@ typedef struct {
     E *list;
 } Sky;
 extern Sky *D_sky __asm__("D_L00_001605DC") MACRO_ADDR;
-extern int func_001160D8(void);
 
 /* Fills the sky particle list: entries from a up are dim specks, the first a are coloured sparks with random direction and speed. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_00288ec0. */
 void sky_particles_init(int a, int b) {
@@ -92,8 +92,6 @@ typedef struct {
     E_289108 *list;
 } G_289108;
 extern G_289108 *sky_data_g __asm__("D_L00_001605DC") MACRO_ADDR;
-
-extern int func_001160D8(void);
 
 /* Steps each shrub sparkle entry: type 0 spins and scales a direction, type 1 randomises a colour. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_00289108. */
 void sky_particles_update(void) {
@@ -381,8 +379,6 @@ extern short sky_star_colors;
 extern short sky_pair_particle_colors;
 extern u8 sky_shell_matrix_r[] __asm__("D_L00_001BDB70");
 extern u8 sky_pair_particle_positions[];
-
-extern s32 func_001160D8(void);
 
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
@@ -808,8 +804,6 @@ extern unsigned char sky_shell_matrix_r2[] __asm__("D_L00_001BDB70") NOT_SDA;
 extern short D_L00_00160580;
 extern q_28b1a0 D_L00_001605E0 MACRO_ADDR;
 
-void func_001F9C48_28b1a0(void *, void *, float) __asm__("func_001F9C48");
-
 /* Per-entry update of a table of up to five entries (a switch on the index): each entry gets its own tilt, scale and turn speed, and its matrix is rebuilt every frame. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_0028b1a0. */
 void SkyShellsEntryUpdate(void) {
     float v[4] __attribute__((aligned(16)));
@@ -856,9 +850,9 @@ void SkyShellsEntryUpdate(void) {
             M = sky_shell_matrix_r2;
             v[2] = (float)((int)(*p + i * 2000.0f) % 10000) * 0.00062831853f - 3.1415927f;
             fast_euler_to_matrix(M, v);
-            func_001F9C48_28b1a0(M, M, k);
-            func_001F9C48_28b1a0(M + 0x10, M + 0x10, k);
-            func_001F9C48_28b1a0(M + 0x20, M + 0x20, k);
+            scale_vector(M, M, k);
+            scale_vector(M + 0x10, M + 0x10, k);
+            scale_vector(M + 0x20, M + 0x20, k);
             qcopy(M + 0x30, &sky_shell_origin);
         }
         SkyDrawShell(i);

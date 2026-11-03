@@ -37,6 +37,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -333,7 +334,6 @@ extern char oltanis_bolt_thief_empty_other_path_msg[];
 extern char oltanis_bolt_thief_no_trigger_msg[];
 
 extern void InitKnockback_v(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
-extern void SetDeathBits(void *, int, int);
 
 extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
@@ -1044,7 +1044,6 @@ extern f32 D_L14_001622C0_06BE0 SDATA(D_L14_001622C0);
 extern void initialize_morphoray_private_state_r(void *) __asm__("func_L14_00306EC0");
 
 extern void update_morphoray_particles_r(struct Moby *) __asm__("func_L14_00306FA0");
-extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 
@@ -1077,7 +1076,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
             update_morphoray_particles_r(moby);
             if (oltanis_frame_count_r % 10 != 0)
                 return;
-            if (!(vec_distance_xy_r(&o->pos, g_hero_r.motion.pos.f) < 1.0f))
+            if (!(vec_distance_xy(&o->pos, g_hero_r.motion.pos.f) < 1.0f))
                 return;
             if (!(FastAbsF(o->pos.z - g_hero_r.motion.pos.f[2]) < 2.0f))
                 return;
@@ -1512,8 +1511,6 @@ extern void initialize_flying_car_path_r(void *) __asm__("func_L14_00308998");
 
 extern int update_flying_car_path_motion_r(void *) __asm__("func_L14_00308AA8");
 
-extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void seed_linked_record_for_flying_car_r(void *) __asm__("func_L14_00314A40");
 extern Path *oltanis_paths_r[] __asm__("D_L14_001B0F30");
@@ -1623,7 +1620,7 @@ void update_flying_car(Moby *m) {
                         seed_linked_record_for_flying_car_r(m);
                         d->fCC = scale_ticks(0x1E);
                     } else {
-                        fast_dec_timer_r2(&d->fCC);
+                        fast_dec_timer(&d->fCC);
                         if (d->fCC != 0) {
                             ((Part_308368 *)((void *)o->pvars))->f20 = 2.0f;
                         } else {
@@ -2279,8 +2276,6 @@ extern float oltanis_key_cam_path_distances_r[][1000] __asm__("D_L14_001F6FC0");
 extern float oltanis_path_camera_keys_r[] __asm__("D_L14_001F67C8");
 extern float D_L14_00162578_16E60 SDATA(D_L14_00162578);
 
-extern void normalize_16E60(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 /* Start a path-key camera: sum its three paths' lengths, aim it at the hero, set key durations. */
 void initialize_path_key_camera(struct UpdateCam *cam) {
     float ang[4];
@@ -2353,9 +2348,9 @@ void initialize_path_key_camera(struct UpdateCam *cam) {
     FastVecSub(dir, &g_hero.motion, &cam->pos);
     FastVecScale(up, &g_hero.gravity_dir, -1.5f);
     FastVecAdd(dir, dir, up);
-    normalize_16E60(&cam->m0, dir, 1.0f);
+    vec_scale_to_length(&cam->m0, dir, 1.0f);
     FastVecCross(&cam->m1, &cam->m0, up);
-    normalize_16E60(&cam->m1, &cam->m1, 1.0f);
+    vec_scale_to_length(&cam->m1, &cam->m1, 1.0f);
     FastVecCross(&cam->m2, &cam->m1, &cam->m0);
     /* give every key without a duration (+0x44) the default 10000 */
     r = (int *)&oltanis_path_camera_keys_r[0x11];

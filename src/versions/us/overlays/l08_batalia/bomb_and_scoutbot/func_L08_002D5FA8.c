@@ -88,7 +88,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                             unsigned char *flags = gSkillPoints;
                             if (flags[0xD] == 0) {
                                 flags[0xD] = one;
-                                sound_2D5FA8(1, 0, 0);
+                                PlayBankSound(1, 0, 0);
                                 ShowBanner(0x53D6, -1);
                             }
                         }
@@ -96,7 +96,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                 }
                 qcopy(vec, &m->pos);
                 vec[2] += 1.0f;
-                explode_2D5FA8(m, 0, -1);
+                SetDeathBits(m, 0, -1);
                 event_2D5FA8(2, 0, m);
                 burst_2D5FA8(m, d->f40, vec, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
                 spawn_2D5FA8(m, 0x6FE, (float *)&m->pos, (float *)&m->rot, 0, 0, 0.0f, batalia_zero_vec_r2,

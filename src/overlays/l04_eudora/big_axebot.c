@@ -29,6 +29,8 @@
 #include "overlays/l04_eudora/polygon_edge_collision.h"
 #include "overlays/l04_eudora/snow_plow_and_woodcut_bot.h"
 #include "asm_functions/level_04.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -334,8 +336,6 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
     }
 }
 
-extern int func_001160D8(void);
-
 // Per-frame update: counts down a timer, firing a effect call at start and end.
 void update_moby_random_interval_animation(char *m) {
     int *animation_countdown;
@@ -525,8 +525,6 @@ typedef struct {
 extern void set_big_axebot_and_axe_animation_speed(char *, float);
 
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
-
-extern void SetDeathBits(void *, int, int);
 
 extern void *libc_memset(void *, int, unsigned int);
 
@@ -1205,9 +1203,6 @@ void func_L04_002C2F00_r(struct Moby *m) {
     Sound_SetPitchBend_r2(v->voice, truncate_float_to_s32_r(v->pitch));
 }
 
-extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                  float, int, int, int, int) __asm__("func_L00_0025F4A8");
-
 typedef struct {
     u8 pad_000[0x238];
     s32 engine_voice_index;
@@ -1246,8 +1241,8 @@ void spawn_circular_saw_destruction_effects(char *moby) {
     data->engine_voice_index = invalid_voice_index;
     SetDeathBits(moby, 0, -1);
     Moby_GetJointWorldPos(moby, 5, explosion_position);
-    func_L00_0025F4A8_alt(moby, vec, explosion_position, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f,
-                          1, 1, invalid_voice_index, 0);
+    spawn_explosion(moby, vec, explosion_position, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1,
+                    invalid_voice_index, 0);
     Moby_PlaySound(1, 0, moby);
 }
 
@@ -1511,8 +1506,6 @@ typedef struct {
     int f18;
 } G_35F0;
 
-extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-
 extern int coll_sphere_mobys_v(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
 extern float compute_circular_saw_flock_steering(void *, void *, float);
@@ -1579,7 +1572,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         float ang;
 
         dmg = 0.0f;
-        hit = MobyGetHitMessage_r(moby, 0x210000, 0);
+        hit = MobyGetHitMessage(moby, 0x210000, 0);
         r = ComputeHitResponse(moby, hit, &data->hp, 0, &tmp, &dmg, 0, 4);
         if (hit != 0 && moby->state != 0 && data->f14D == 0) {
             if (hit->att != 0) {

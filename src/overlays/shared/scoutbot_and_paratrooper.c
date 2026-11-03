@@ -29,6 +29,8 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/type_49_particle.h"
 #include "overlays/shared/span_particle.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -122,8 +124,6 @@ extern int randomf_3DF8(float) __asm__("func_001FA898");
 
 extern void MobySpringTurn_v(void *, float, float *, float, float, float) __asm__("func_L00_002592B0");
 
-extern float fast_distance_3DF8(void *, void *) __asm__("func_001F9D48");
-
 extern void shoot_3DF8(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
 extern void explode_3DF8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -214,7 +214,7 @@ void scoutbot_update(Moby *moby) {
                 d->v40[0] += FastCos(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += FastSin(moby->rot.z) * (dt_3DF8 * 12.0f);
             }
-            if (fast_distance_3DF8(&moby->pos, d->v1F0) < 0.5f) {
+            if (vec_distance_xy(&moby->pos, d->v1F0) < 0.5f) {
                 if (moby->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, 3);
                 }
@@ -230,10 +230,10 @@ void scoutbot_update(Moby *moby) {
                 d->v40[0] += FastCos(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += FastSin(moby->rot.z) * (dt_3DF8 * 12.0f);
             }
-            if (fast_distance_3DF8(&moby->pos, &d->f218->pos) < 3.0f && FastAbsF(d->f218->pos.z - moby->pos.z) < 2.0f) {
+            if (vec_distance_xy(&moby->pos, &d->f218->pos) < 3.0f && FastAbsF(d->f218->pos.z - moby->pos.z) < 2.0f) {
                 d->h214 = Moby_PlaySound(0, 0, moby);
                 moby->state = 6;
-            } else if (fast_distance_3DF8(tgt, d->v1C0) > 15.0f || FastAbsF(d->v1C0[2] - tgt[2]) > 4.0f) {
+            } else if (vec_distance_xy(tgt, d->v1C0) > 15.0f || FastAbsF(d->v1C0[2] - tgt[2]) > 4.0f) {
                 d->f200 = 4.0f;
                 d->f208 = 0.5f;
                 if (moby->prev_seq != 2) {
@@ -253,7 +253,7 @@ void scoutbot_update(Moby *moby) {
                 d->v40[0] += FastCos(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += FastSin(moby->rot.z) * (dt_3DF8 * 12.0f);
             }
-            if (fast_distance_3DF8(&moby->pos, d->v1C0) < 1.0f && FastAbsF(d->v1C0[2] - moby->pos.z) >= 3.9f) {
+            if (vec_distance_xy(&moby->pos, d->v1C0) < 1.0f && FastAbsF(d->v1C0[2] - moby->pos.z) >= 3.9f) {
                 if (moby->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, 3);
                 }
@@ -281,7 +281,7 @@ void scoutbot_update(Moby *moby) {
                 AddDrawCallback(glow_3DF8, moby);
             }
             if (IsFrameWithinWindow(moby, 14.0f)) {
-                if (fast_distance_3DF8(&d->f1B0->pos, &moby->pos) < 3.0f &&
+                if (vec_distance_xy(&d->f1B0->pos, &moby->pos) < 3.0f &&
                     FastAbsF(d->f218->pos.z - moby->pos.z) < 1.0f) {
                     v30[0] = FastCos(moby->rot.z) * 0.2f;
                     v30[1] = FastSin(moby->rot.z) * 0.2f;
@@ -344,7 +344,6 @@ void scoutbot_update(Moby *moby) {
 extern char hero_globals_base[];
 extern char *batalia_path_table[];
 
-extern void SetDeathBits(void *, int, int);
 extern int FindNearestEligibleMoby_f(char *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 
 /* Takes hits (dying at 0 health), then follows the moby's path and gives up on it when too far off. */
@@ -1163,27 +1162,17 @@ extern float height302618 SDATA(D_L08_00162260);
 extern float shove302618 SDATA(D_L08_00162244);
 extern float shove_rate302618 SDATA(D_L08_00162248);
 extern float batalia_zero_vec[4] MACRO_ADDR;
-extern int random302618(void) __asm__("func_001160D8");
 
 extern int randomf302618(float) __asm__("func_001FA898");
-extern int timer302618(void *) __asm__("func_001F9908");
-
-extern float fast_distance302618(void *, void *) __asm__("func_001F9D48");
 
 extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 
 extern void helper302618(void *) __asm__("func_L08_00303998");
 extern void sound302618(float, void *, int, void *) __asm__("func_L00_00264B40");
-extern void wake302618(void *) __asm__("func_L00_0025B178");
 
 extern int ray302618(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
 extern char *projectile302618(void *, void *, void *, void *, int, int) __asm__("func_L08_00308650");
-extern void vec_limit302618(void *, float) __asm__("func_L00_002607A8");
-
-extern void vec_scale302618(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern void explode302618(void *, int, int) __asm__("func_L00_002584A8");
 
 typedef struct Paratrooper302618 {
     char pad0[0x20];
@@ -1269,7 +1258,7 @@ void blarg_paratrooper_update(char *m) {
         return;
     sound302618(2.5f, m, 6, (char *)d + 0x170);
     if ((*(unsigned char *)((char *)(m) + 0x31)) != 0 && FastVecDist(m + 0x10, batalia_hero_pos) < 29.0f) {
-        wake302618(m);
+        set_ground_height_band(m);
         (*(unsigned char *)((char *)(m) + 0x7F)) = 23;
     }
     if (batalia_game_mode == 2)
@@ -1283,7 +1272,7 @@ void blarg_paratrooper_update(char *m) {
     if (hero->state.current == HERO_STATE_DYING && hero->state_timer < scale_ticks(30) &&
         (*(unsigned char *)((char *)(m) + 0x20)) != 8 && (*(unsigned char *)((char *)(m) + 0x20)) != 10 &&
         (*(unsigned char *)((char *)(m) + 0x20)) != 4 && (*(unsigned char *)((char *)(m) + 0x20)) != 11 &&
-        fast_distance302618(m + 0x10, hero->motion.pos.f) < 25.0f && !random_integer_below(49)) {
+        vec_distance_xy(m + 0x10, hero->motion.pos.f) < 25.0f && !random_integer_below(49)) {
         if ((*(unsigned char *)((char *)(m) + 0x53)) != 14)
             MobyBlendAnimation(m, 14, 0, scale_ticks(11));
         (*(unsigned char *)((char *)(m) + 0x20)) = 8;
@@ -1321,13 +1310,13 @@ void blarg_paratrooper_update(char *m) {
             d->f114 = g_frame_time * 8.726646f;
             d->fF8 = 0.34906584f;
             d->fFC = 0.2f;
-            if (random302618() & 1)
+            if (func_001160D8() & 1)
                 (*(unsigned short *)((char *)(m) + 0x34)) |= 0x8000;
             qcopy(m + 0x10, batalia_path_table[d->f1D4] + 0x10);
             if (path) {
                 int index;
                 short direction;
-                d->f20C = 2 * (random302618() & 1) - 1;
+                d->f20C = 2 * (func_001160D8() & 1) - 1;
                 index = select_point_index_by_distance(m + 0x10, path, 0.0f) + d->f20C;
                 direction = d->f20C;
                 d->f1F4 = index;
@@ -1336,7 +1325,7 @@ void blarg_paratrooper_update(char *m) {
                     d->f1F4 = index + 2 * d->f20C;
                 }
                 if ((*(unsigned char *)((char *)(m) + 0x53)) != 2)
-                    MobyBlendAnimation(m, 2, 0, random302618() % 4 + 7);
+                    MobyBlendAnimation(m, 2, 0, func_001160D8() % 4 + 7);
                 (*(unsigned char *)((char *)(m) + 0x20)) = 1;
             } else
                 (*(unsigned char *)((char *)(m) + 0x20)) = 3;
@@ -1344,7 +1333,7 @@ void blarg_paratrooper_update(char *m) {
             break;
         }
         case 1:
-            if (fast_distance302618(m + 0x10, path + 0x10 + d->f1F4 * 16) < d->fE0) {
+            if (vec_distance_xy(m + 0x10, path + 0x10 + d->f1F4 * 16) < d->fE0) {
                 short direction = d->f20C;
                 int index = d->f1F4 + direction;
                 d->f1F4 = index;
@@ -1355,7 +1344,7 @@ void blarg_paratrooper_update(char *m) {
                 }
             }
             ClassifyTargetInCone(m, (char *)d + 0xD0, path + 0x10 + d->f1F4 * 16, pos);
-            if (target && d->f164 != 2 && timer302618((char *)d + 0x1F0)) {
+            if (target && d->f164 != 2 && fast_dec_timer((char *)d + 0x1F0)) {
                 d->f1F4 = select_point_index_by_distance(m + 0x10, batalia_path_table[d->f1D4], 0.0f);
                 (*(unsigned char *)((char *)(m) + 0x20)) = 2;
             }
@@ -1363,14 +1352,14 @@ void blarg_paratrooper_update(char *m) {
         case 2: {
             float distance;
             d->f1F4 = select_point_index_by_distance(m + 0x10, batalia_path_table[d->f1D4], 0.0f);
-            distance = fast_distance302618(m + 0x10, batalia_path_table[d->f1D4] + 0x10 + d->f1F4 * 16);
+            distance = vec_distance_xy(m + 0x10, batalia_path_table[d->f1D4] + 0x10 + d->f1F4 * 16);
             if (distance < 1.0f || distance < d->fE0) {
                 d->fE0 = 0.0f;
                 (*(unsigned char *)((char *)(m) + 0x20)) = 3;
             } else {
                 ClassifyTargetInCone(m, (char *)d + 0xD0, batalia_path_table[d->f1D4] + 0x10 + d->f1F4 * 16, pos);
                 if ((*(unsigned char *)((char *)(m) + 0x53)) != 2)
-                    MobyBlendAnimation(m, 2, 0, random302618() % 4 + 7);
+                    MobyBlendAnimation(m, 2, 0, func_001160D8() % 4 + 7);
             }
             break;
         }
@@ -1384,10 +1373,10 @@ void blarg_paratrooper_update(char *m) {
                                      g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
             if ((*(unsigned char *)((char *)(m) + 0x70)) & 2) {
                 int oldanim = (*(unsigned char *)((char *)(m) + 0x53));
-                if (oldanim != (random302618() & 1)) {
-                    int newanim = random302618() & 1;
+                if (oldanim != (func_001160D8() & 1)) {
+                    int newanim = func_001160D8() & 1;
                     int ticks = scale_ticks(7);
-                    MobyBlendAnimation(m, newanim, 0, ticks + random302618() % 7);
+                    MobyBlendAnimation(m, newanim, 0, ticks + func_001160D8() % 7);
                 }
             }
             if (hops302618 < d->f1DA) {
@@ -1398,7 +1387,7 @@ void blarg_paratrooper_update(char *m) {
                 }
                 (*(unsigned char *)((char *)(m) + 0x20)) = 9;
             } else if (target) {
-                if (d->f164 != 2 && timer302618((char *)d + 0x1F0)) {
+                if (d->f164 != 2 && fast_dec_timer((char *)d + 0x1F0)) {
                     qcopy((char *)d + 0x1C0, m + 0x10);
                     d->f1F4 = (d->f1F4 + 1) & 1;
                     (*(unsigned char *)((char *)(m) + 0x20)) = 4;
@@ -1408,7 +1397,7 @@ void blarg_paratrooper_update(char *m) {
                             MobyBlendAnimation(m, 18, 0, scale_ticks(5));
                     } else if ((*(unsigned char *)((char *)(m) + 0x53)) != 16)
                         MobyBlendAnimation(m, 16, 0, scale_ticks(5));
-                } else if (target && fast_distance302618(m + 0x10, target + 0x10) < melee302618) {
+                } else if (target && vec_distance_xy(m + 0x10, target + 0x10) < melee302618) {
                     (*(unsigned char *)((char *)(m) + 0x20)) = 7;
                     if ((*(unsigned char *)((char *)(m) + 0x53)) != 13)
                         MobyBlendAnimation(m, 13, 0, scale_ticks(10));
@@ -1446,10 +1435,10 @@ void blarg_paratrooper_update(char *m) {
                 if (hops302618 < d->f1DA) {
                     d->f1DA = 0;
                     if ((*(unsigned char *)((char *)(m) + 0x53)) != 10) {
-                        MobyBlendAnimation(m, 10, 2, random302618() % 4 + 5);
+                        MobyBlendAnimation(m, 10, 2, func_001160D8() % 4 + 5);
                     }
                     (*(unsigned char *)((char *)(m) + 0x20)) = 9;
-                } else if (fast_distance302618(m + 0x10, target + 0x10) < melee302618) {
+                } else if (vec_distance_xy(m + 0x10, target + 0x10) < melee302618) {
                     goto melee_state;
                 } else if (batalia_coll_hit_moby != target) {
                     (*(unsigned char *)((char *)(m) + 0x20)) = 3;
@@ -1467,13 +1456,13 @@ void blarg_paratrooper_update(char *m) {
             break;
         }
         case 5:
-            if (fast_distance302618(m + 0x10, target + 0x10) < melee302618) {
+            if (vec_distance_xy(m + 0x10, target + 0x10) < melee302618) {
                 (*(unsigned char *)((char *)(m) + 0x20)) = 7;
                 d->f1EC = 0;
                 if ((*(unsigned char *)((char *)(m) + 0x53)) == 13)
                     break;
                 goto animate_melee;
-            } else if (timer302618((char *)d + 0x1EC)) {
+            } else if (fast_dec_timer((char *)d + 0x1EC)) {
                 d->f1EC = scale_ticks(delay302618 + randomf302618(delay_random302618 * 1.3f + batalia_frame_cpu_load));
                 d->f1E8 += accel302618;
                 if ((batalia_draw_frame_load < 0.8f && batalia_frame_cpu_load < 0.8f) ||
@@ -1516,7 +1505,7 @@ void blarg_paratrooper_update(char *m) {
             frame = MobyGetFrameValue(m);
             if (frame > 12.0f && frame < 23.0f && (*(float *)((char *)(m) + 0x54)) == 0.0f) {
                 FastVecSub(pos, batalia_path_table[d->f1D4] + 0x10, m + 0x10);
-                vec_limit302618(pos, g_frame_time * 24.0f);
+                ClampVectorLength(pos, g_frame_time * 24.0f);
                 move_4318(m, pos, shove302618, shove_rate302618, 0.0f, 0);
             } else if ((*(unsigned char *)((char *)(m) + 0x70)) & 2) {
                 d->f1F0 = randomf302618(multiply_global_factor(random_float_between(45.0f, 90.0f)));
@@ -1539,7 +1528,7 @@ void blarg_paratrooper_update(char *m) {
                 Moby_GetJointWorldPos(m, 4, pos);
                 FastVecSub(dir, pos, m + 0x10);
                 dir[2] = 0.0f;
-                vec_scale302618(dir, dir, 1.0f);
+                vec_scale_to_length(dir, dir, 1.0f);
                 dir[2] = 1.0f;
                 pos[2] -= 0.25f;
                 InitDirectionalHitQuery(hit, m, 1, 1.0f, dir);
@@ -1560,12 +1549,12 @@ void blarg_paratrooper_update(char *m) {
         case 10: {
             int flags = mine_fall(m, (char *)d + 0x70);
             if (flags & 0x40) {
-                if (fast_distance302618(m + 0x10, target + 0x10) < melee302618) {
+                if (vec_distance_xy(m + 0x10, target + 0x10) < melee302618) {
                 melee_state:
                     (*(unsigned char *)((char *)(m) + 0x20)) = 7;
                     if ((*(unsigned char *)((char *)(m) + 0x53)) != 13) {
                     animate_melee:
-                        MobyBlendAnimation(m, 13, 0, random302618() % 4 + 8);
+                        MobyBlendAnimation(m, 13, 0, func_001160D8() % 4 + 8);
                     }
                 } else {
                     d->f1E8 = 1.0f;
@@ -1587,7 +1576,7 @@ void blarg_paratrooper_update(char *m) {
                 char *rotation;
                 clear_u64_value(pos);
                 color = batalia_zero_vec;
-                explode302618(m, 0, -1);
+                SetDeathBits(m, 0, -1);
                 SpawnExplosionFx(m, m + 0x10, 0, 0.5f, 13.0f);
                 rotation = m + 0x40;
                 SpawnBreakFragment(m, 0x69C, m + 0x10, rotation, 0, 0, 0.0f, color, color, color);
@@ -1831,8 +1820,6 @@ char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4,
 }
 extern char batalia_coll_hit[];
 
-extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
-
 /* Fire bolt: flies along its velocity with a smoke trail (while the level is not underwater), damaging what it hits. */
 void update_fire_bolt(char *m) {
     struct FireBoltVars *d = (struct FireBoltVars *)((Moby *)m)->pvars;
@@ -1867,7 +1854,7 @@ void update_fire_bolt(char *m) {
                     m[0x20] = 2;
                 }
             }
-            if (fast_dec_timer_i(&d->life) != 0)
+            if (fast_dec_timer(&d->life) != 0)
                 m[0x20] = 2;
             break;
         case 2:
@@ -1945,8 +1932,6 @@ extern void *D_L08_001623E8_3091B0 SDATA(D_L08_001623E8);
 extern float D_L08_001623EC_3091B0 SDATA(D_L08_001623EC);
 extern float D_L08_001602E0_3091B0 SDATA(D_L08_001602E0);
 extern void randomize_ground_particle_scatter_parameters_r(int) __asm__("func_L08_00309050");
-
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 
 extern void spawn_span_particle_r(void *, void *, float, void *) __asm__("func_L08_00273A80");
 
@@ -2032,7 +2017,7 @@ void scatter_ground_particles(Moby *m) {
                     w = w * random_float_between(0.0f, D_L08_001623D8_3091B0);
                     pt.y += w;
                     FastVecSub(po, &pt, batalia_hero_pos);
-                    d = vec_length_xy_r(po);
+                    d = vec_length_xy(po);
                     if (d <= 8.0f) {
                         w = -spread;
                         par.x = ground_particle_scatter_spawn_vector_x_bias_r[0] + random_float_between(w, spread);

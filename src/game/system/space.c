@@ -39,6 +39,8 @@
 #include "game/movie/movie.h"
 #include "core/storage/wad.h"
 #include "game/render/lights.h"
+#include "core/libc/printf_rand.h"
+#include "game/gameplay/camera.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -55,8 +57,6 @@ extern int current_vu_chain MACRO_ADDR;
 extern short g_current_level_index;
 
 extern int g_hero_moby NOT_SDA;
-
-extern int func_001160D8(void);
 
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
@@ -1096,25 +1096,9 @@ extern void resident_call_001254A0(void *, void *, f32) __asm__("func_001254A0")
 extern void resident_call_00125548(void *, void *, f32) __asm__("func_00125548");
 extern void resident_call_001253F8(void *, void *, f32) __asm__("func_001253F8");
 
-extern void resident_call_001E9770(void *, void *, s32, s32, s32) __asm__("func_001E9770");
-extern void resident_call_001E9778(void *) __asm__("func_001E9778");
-extern void resident_call_001E9780(void *) __asm__("func_001E9780");
-extern void resident_call_001E9788(void) __asm__("func_001E9788");
 extern void resident_call_001E9790(ResidentRenderObject *) __asm__("func_001E9790");
-extern void resident_call_001E9798(ResidentRenderObject *) __asm__("func_001E9798");
-extern void resident_call_001E97A0(void) __asm__("func_001E97A0");
-
-extern void resident_call_001E97B8(void) __asm__("func_001E97B8");
-
-extern void resident_call_001E97D0(ResidentRenderObject *, ResidentRenderObject *) __asm__("func_001E97D0");
-extern void resident_call_001EDE50(void) __asm__("func_001EDE50");
 
 extern void resident_call_001F49B0(void *, ResidentRenderObject *) __asm__("func_001F49B0");
-extern void resident_call_001F4B68(void *, ResidentRenderObject *) __asm__("func_001F4B68");
-
-extern f32 resident_call_001F98B0(f32) __asm__("func_001F98B0");
-
-extern void resident_call_001F9C08(void *, void *, void *, f32) __asm__("func_001F9C08");
 
 extern f32 resident_call_001F9D48(void *, void *, void *) __asm__("func_001F9D48");
 
@@ -1128,7 +1112,7 @@ extern void resident_call_00214550(ResidentRenderObject *) __asm__("func_0021455
 extern f32 resident_call_00214D88(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
 extern void resident_call_00215CA8(ScriptedPath *, s32, void *, void *, s32, f32) __asm__("func_00215CA8");
 extern void resident_call_00216960(void) __asm__("func_00216960");
-extern void resident_call_00217748(s32) __asm__("func_00217748");
+extern void update_audio_stream_until_idle(s32);
 
 extern void resident_call_0022FDC0(void) __asm__("func_0022FDC0");
 extern void resident_call_002308C8(ResidentRenderObject *, f32) __asm__("func_002308C8");
@@ -1169,7 +1153,7 @@ void update_resident_gameplay_state(void) {
             noop_callback_i();
             update_visible_resident_objects();
             enqueue_voice_request();
-            resident_call_001E97A0();
+            noop_callback_g();
             UpdateParts();
             resident_data_0015F53C -= 0.125f;
             resident_data_0018CC20.frame++;
@@ -1248,9 +1232,9 @@ void update_resident_gameplay_state(void) {
                 music_Unpause();
                 resident_data_0015F6FC[0] = 1;
                 resident_data_001414F5[0] = 0;
-                resident_call_001E97B8();
+                noop_callback_j();
                 if (resident_data_0013E130.unk2C != 0) {
-                    resident_call_001E9788();
+                    noop_callback_d();
                     return;
                 }
                 noop_callback_k(&resident_data_0013E130.unk60, &resident_data_0013E130.unk70, 0, 1);
@@ -1343,7 +1327,7 @@ void update_resident_gameplay_state(void) {
                     resident_call_00214550(object);
                 }
                 if (object->class_id == 10) {
-                    resident_call_001E9798(object);
+                    noop_callback_f(object);
                 }
                 if (object->class_id == 0) {
                     resident_call_001E9790(object);
@@ -1358,11 +1342,11 @@ void update_resident_gameplay_state(void) {
                                 resident_data_0013E130.attachment->unk73 = 0x18;
                             }
                         }
-                        resident_call_001E97D0(object, resident_data_0013E130.attachment);
+                        noop_callback_m(object, resident_data_0013E130.attachment);
                     }
                 }
                 if ((u16)object->class_id - 0x213U < 3) {
-                    resident_call_001F4B68(resident_call_00233AB8, object);
+                    enqueue_callback_list_4(resident_call_00233AB8, object);
                     resident_call_001F49B0(resident_call_0022F258, object);
                     if (resident_data_0013E130.state == 0) {
                         if (resident_data_0018CC20.time < scale_game_frame_count(360)) {
@@ -1378,7 +1362,7 @@ void update_resident_gameplay_state(void) {
                             }
                         } else if (resident_data_0018CC20.time < scale_game_frame_count(0x1F8)) {
                             s32 color_intensity =
-                                (s32)(((f32)resident_data_0018CC20.time - resident_call_001F98B0(360.0f)) *
+                                (s32)(((f32)resident_data_0018CC20.time - multiply_global_scale(360.0f)) *
                                       (resident_data_0015EE60 * 1.25f));
                             if (color_intensity >= 256) {
                                 color_intensity = 255;
@@ -1390,7 +1374,7 @@ void update_resident_gameplay_state(void) {
                             }
                             if (scale_game_frame_count(0x1A4) < resident_data_0018CC20.time) {
                                 resident_data_0013E130.player->unkBC =
-                                    (s32)(((f32)resident_data_0018CC20.time - resident_call_001F98B0(420.0f)) *
+                                    (s32)(((f32)resident_data_0018CC20.time - multiply_global_scale(420.0f)) *
                                           (resident_data_0015EE60 * 1.2f));
                                 resident_data_0013E130.player->unkB2 = 0;
                                 resident_call_001F49B0(resident_effect_entry + 8, resident_data_0013E130.player);
@@ -1430,12 +1414,12 @@ void update_resident_gameplay_state(void) {
                         s32 color_intensity;
                         if (resident_data_0018CC20.time < scale_game_frame_count(300)) {
                             resident_data_0013E130.player->unkBC =
-                                (s32)((resident_call_001F98B0(300.0f) - (f32)resident_data_0018CC20.time) *
+                                (s32)((multiply_global_scale(300.0f) - (f32)resident_data_0018CC20.time) *
                                       (resident_data_0015EE60 * 1.5f));
                             resident_data_0013E130.player->unkB2 = 0;
                             resident_call_001F49B0(resident_effect_entry + 8, resident_data_0013E130.player);
                         }
-                        color_intensity = (s32)((resident_call_001F98B0(360.0f) - (f32)resident_data_0018CC20.time) *
+                        color_intensity = (s32)((multiply_global_scale(360.0f) - (f32)resident_data_0018CC20.time) *
                                                 (resident_data_0015EE60 * 1.25f));
                         if (object->class_id == 0x215) {
                             object->color = (color_intensity << 8) | (color_intensity << 16);
@@ -1465,11 +1449,11 @@ void update_resident_gameplay_state(void) {
             noop_callback_i();
             update_visible_resident_objects();
             enqueue_voice_request();
-            resident_call_001E97A0();
+            noop_callback_g();
             UpdateParts();
             if (resident_data_0013E130.timer == 0) {
                 music_Pause(0);
-                resident_call_00217748(0);
+                update_audio_stream_until_idle(0);
                 resident_data_001517D0.unk1C = resident_data_0013E130.content_variant + 0x9C4F;
                 FadeToBlack(scale_game_frame_count(12));
                 while ((s16)resident_data_001517D0.unk5A != 3) {
@@ -1499,7 +1483,7 @@ void update_resident_gameplay_state(void) {
                     resident_data_0013E130.companion_b->lifetime_stamp =
                         resident_data_0013F450.reference_object->lifetime_stamp;
                 }
-                resident_call_001E9770(&resident_data_00187040.position, &resident_data_00187040.unk150, 1, 0, 0);
+                noop_callback_a(&resident_data_00187040.position, &resident_data_00187040.unk150, 1, 0, 0);
                 resident_data_0013E130.blend = 0.0f;
                 resident_data_0013E130.interpolation_velocity = 0.0f;
                 if (resident_data_0013E130.path >= 0) {
@@ -1551,10 +1535,10 @@ void update_resident_gameplay_state(void) {
                 camera_blend_step = resident_data_0015EE70 * 0.666f;
                 resident_call_00214D88(&resident_data_0013E130.blend, &resident_data_0013E130.interpolation_velocity,
                                        1.0f, camera_blend_step, camera_blend_step, resident_data_0015EE6C * 0.5f);
-                resident_call_001F9C08(
-                    &scratch_vectors[0], &resident_data_00160134[resident_data_0013E130.source_camera_index].position,
-                    &resident_data_00160134[resident_data_0013E130.destination_camera_index].position,
-                    resident_data_0013E130.blend);
+                lerp_vector(&scratch_vectors[0],
+                            &resident_data_00160134[resident_data_0013E130.source_camera_index].position,
+                            &resident_data_00160134[resident_data_0013E130.destination_camera_index].position,
+                            resident_data_0013E130.blend);
                 clear_u64_value(&scratch_vectors[1]);
                 scratch_vectors[1].components[1] =
                     FastSubRots(resident_data_00160134[resident_data_0013E130.destination_camera_index].rotY,
@@ -1570,8 +1554,8 @@ void update_resident_gameplay_state(void) {
                 scratch_vectors[1].components[2] =
                     FastAddRots(resident_data_00160134[resident_data_0013E130.source_camera_index].rotZ,
                                 scratch_vectors[1].components[2]);
-                resident_call_001E9778(&scratch_vectors[0]);
-                resident_call_001E9780(&scratch_vectors[1]);
+                noop_callback_b(&scratch_vectors[0]);
+                noop_callback_c(&scratch_vectors[1]);
             }
             if (resident_data_0013E130.path >= 0) {
                 if (resident_data_0013E130.timer < scale_game_frame_count(150)) {
@@ -1582,8 +1566,8 @@ void update_resident_gameplay_state(void) {
                         blend = 1.0f;
                     }
                     resident_data_0013E130.player->blend = blend;
-                    resident_call_001F9C08(&resident_data_0013E130.player->position, &resident_data_0013E130.startPos,
-                                           &resident_data_0013E130.pathPos, blend);
+                    lerp_vector(&resident_data_0013E130.player->position, &resident_data_0013E130.startPos,
+                                &resident_data_0013E130.pathPos, blend);
                     resident_data_0013E130.player->rotation.components[0] = 0.0f;
                     resident_data_0013E130.player->rotation.components[1] = FastAddRots(
                         resident_data_0013E130.startRot.components[1],
@@ -1681,7 +1665,7 @@ void update_resident_gameplay_state(void) {
                            &resident_data_0013E130.player->position);
                 resident_call_0020ED48(resident_data_0013E130.companion_b);
             }
-            resident_call_001EDE50();
+            update_camera();
             sound_update();
             UpdateAllPointLights();
             update_resident_packed_direction();

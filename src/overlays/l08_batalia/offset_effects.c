@@ -6,6 +6,7 @@
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
 #include "asm_functions/shared_levels.h"
+#include "core/libc/printf_rand.h"
 
 extern int func_001FA898(float);
 
@@ -40,7 +41,7 @@ unsigned char *spawn_moby_offset_effect(char *a) {
     }
     return m;
 }
-extern int func_001160D8(void);
+
 extern unsigned char *batalia_part_type43_textures;
 
 /* Spawns a coloured effect at pos with the given vector, size and lifetime. */

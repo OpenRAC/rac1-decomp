@@ -35,6 +35,8 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/l13_gemlik/scene_controller.h"
 #include "overlays/l13_gemlik/voice_position.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -164,9 +166,6 @@ typedef struct Tex {
     unsigned char *p5C;
 } Tex;
 
-extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
-
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char hero_globals_base[];
@@ -190,7 +189,7 @@ void update_level_13_homing_rocket(Moby *m) {
     m->scale += (((Cls *)m->pclass)->scale - m->scale) * 0.1f;
     hit = (Hit_2C27B0 *)MobyGetHitMessage(m, 0xA30000, 0);
     if (hit != 0 && hit->owner != 0 && hit->owner->oclass != MOBY_CLASS_ORANGE_RADAR_CONTACT) {
-        spawn_explosion_alt(m, d, 0, 0.0f, 0.0f, 5, 2, 7, 0.0f, 0.0f, 0.0f, 1.0f, 1, 0.0f, 0, 1, -1, 0);
+        spawn_explosion(m, d, 0, 0.0f, 0.0f, 5, 2, 7, 0.0f, 0.0f, 0.0f, 1.0f, 1, 0.0f, 0, 1, -1, 0);
         DeleteMoby(m);
         return;
     }
@@ -287,7 +286,7 @@ void update_level_13_homing_rocket(Moby *m) {
              o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_396 &&
              o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_399 &&
              o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_400)) {
-            spawn_explosion_alt(m, d, 0, 5.0f, 10.0f, 0x14, 5, 0x10, 7.0f, 4.0f, 1.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(m, d, 0, 5.0f, 10.0f, 0x14, 5, 0x10, 7.0f, 4.0f, 1.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
             DeleteMoby(m);
             return;
         }
@@ -307,7 +306,7 @@ void update_level_13_homing_rocket(Moby *m) {
              o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_396 &&
              o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_399 &&
              o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_400)) {
-            spawn_explosion_alt(m, d, 0, 5.0f, 10.0f, 0x14, 5, 0x10, 7.0f, 4.0f, 1.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
+            spawn_explosion(m, d, 0, 5.0f, 10.0f, 0x14, 5, 0x10, 7.0f, 4.0f, 1.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
             DeleteMoby(m);
             return;
         }
@@ -347,13 +346,9 @@ unsigned char *spawn_mine_83_projectile(char *owner, char *pos, char *vec) {
     return moby;
 }
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern int coll_sphere_r(void *, float, int, void *) __asm__("func_L00_001F10E0");
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
+
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
@@ -405,7 +400,7 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
                 factor = 1.0f;
             factor = factor * (g_frame_time_r * 1.5f);
             FastVecSub(&steering_and_collision_vector, &hero->ship_moby->pos, &moby->pos);
-            vec_scale_to_length_r(&steering_and_collision_vector, &steering_and_collision_vector, factor);
+            vec_scale_to_length(&steering_and_collision_vector, &steering_and_collision_vector, factor);
             FastVecAdd(&moby_data->velocity, &moby_data->velocity, &steering_and_collision_vector);
         }
     }
@@ -416,7 +411,7 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
         FastVecScale(&moby_data->velocity, &moby_data->velocity, 0.945f);
     } else {
         FastVecSub(&steering_and_collision_vector, &moby->pos, &moby_data->target->pos);
-        vec_scale_to_length_r(&steering_and_collision_vector, &steering_and_collision_vector, g_frame_time_r * 20.0f);
+        vec_scale_to_length(&steering_and_collision_vector, &steering_and_collision_vector, g_frame_time_r * 20.0f);
         FastVecAdd(&moby->pos, &moby->pos, &moby_data->velocity);
     }
 
@@ -455,11 +450,11 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
         if (flags != 0) {
             if (moby->visible != 0) {
                 if ((flags & 0x2000) != 0) {
-                    spawn_explosion_r(moby, &moby_data->velocity, 0, 0.0f, 0.0f, 5, 2, 7, 0.0f, 0.0f, 0.0f, 1.0f, 3,
-                                      0.0f, 1, 1, -1, 0);
+                    spawn_explosion(moby, &moby_data->velocity, 0, 0.0f, 0.0f, 5, 2, 7, 0.0f, 0.0f, 0.0f, 1.0f, 3, 0.0f,
+                                    1, 1, -1, 0);
                 } else {
-                    spawn_explosion_r(moby, &moby_data->velocity, 0, 4.0f, 16.0f, 0x14, 5, 0x10, 7.0f, 4.0f, 1.0f, 1.0f,
-                                      0, 15.0f, 1, 1, -1, 0);
+                    spawn_explosion(moby, &moby_data->velocity, 0, 4.0f, 16.0f, 0x14, 5, 0x10, 7.0f, 4.0f, 1.0f, 1.0f,
+                                    0, 15.0f, 1, 1, -1, 0);
                 }
             }
             DeleteMoby(moby);
@@ -467,7 +462,7 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
         }
     }
 
-    if (fast_dec_timer_r(&moby_data->timer) != 0) {
+    if (fast_dec_timer(&moby_data->timer) != 0) {
         if (moby->visible == 0) {
             DeleteMoby(moby);
         }
@@ -761,13 +756,8 @@ typedef int u128x_2C3FB8 __attribute__((mode(TI)));
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 extern char *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
-extern int ComputeHitResponse_r(void *, void *, void *, int, void *, void *, int, int) __asm__("func_L00_0025B4D0");
 
-extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(void *m, short *p) __asm__("func_L00_0025E4B0");
-extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
-
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern int gemlik_frame_count_r __asm__("D_L13_0015F6B0") MACRO_ADDR;
@@ -872,7 +862,7 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
     m->scale = m->pclass->scale * D_L13_00161520_2C3FB8;
     damage_amount = 0.0f;
     hit_record = MobyGetHitMessage_r2(m, 0x330000, 0);
-    hit_reaction_code = ComputeHitResponse_r(m, hit_record, &moby_data->hp, 0, &flag, &damage_amount, 0, 4);
+    hit_reaction_code = ComputeHitResponse(m, hit_record, &moby_data->hp, 0, &flag, &damage_amount, 0, 4);
     if (hit_record != 0) {
         char *hit_moby = *(char **)(hit_record + 0x20);
         if (hit_moby != 0 && *(short *)(hit_moby + 0xA6) == 0x4D1) {
@@ -904,7 +894,7 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
                 break;
             case HIT_REACTION_LETHAL:
             case HIT_REACTION_REMOVE:
-                SetDeathBits_r(m, 0, -1);
+                SetDeathBits(m, 0, -1);
                 m->state = 8;
                 moby_data->hit_timer = 0xF0;
                 break;
@@ -916,7 +906,7 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
         RerollEffectCounter_r(m, moby_data->anim);
     }
     m->hit_slot = 0xFF;
-    StepColorFade_r(m, moby_data->anim);
+    StepColorFade(m, moby_data->anim);
     if (m->state == 4) {
         moby_data->search_range = 50.0f;
     } else {
@@ -929,7 +919,7 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
                                     target_selection_point_table + 0x10, *(int *)target_selection_point_table);
     }
     if (target_selection_status != 2) {
-        if (moby_data->search_range < vec_distance_xy_r(&m->pos, &moby_data->target) ||
+        if (moby_data->search_range < vec_distance_xy(&m->pos, &moby_data->target) ||
             8.0f < FastAbsF(m->pos.z - moby_data->target.f[2])) {
             moby_data->unkB4 = 2;
         } else if (m->state != 5 && coll_line_r(&m->pos, &g_hero.motion.body_center, 2, m, 0) != 0) {
@@ -1286,8 +1276,6 @@ extern int Moby_PlaySound_s(int, int, int) __asm__("func_0022ED80");
 extern int update_blarg_space_fighter_path_following_r(void *, void *, int) __asm__("func_L13_002C5248");
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
 
-extern int func_001160D8(void);
-
 extern char blarg_space_fighter_no_path_format[];
 extern float optional_glow_suppression_level MACRO_ADDR;
 extern float blarg_space_fighter_fire_suppression_level MACRO_ADDR;
@@ -1489,7 +1477,7 @@ void update_blarg_space_fighter(Moby *moby) {
                 d->fD4 = -1;
             }
             FastVecSub(v30, gemlik_camera_pos, &moby->pos);
-            spawn_explosion_alt(moby, v30, 0, 0.0f, 0.0f, 5, 3, 10, 4.0f, 3.0f, 9.0f, 1.1f, -1, 20.0f, 0, 1, -1, 0);
+            spawn_explosion(moby, v30, 0, 0.0f, 0.0f, 5, 3, 10, 4.0f, 3.0f, 9.0f, 1.1f, -1, 20.0f, 0, 1, -1, 0);
             vec_scale_to_length(v30, v30, 4.0f);
             FastVecSub(v40, &moby->pos, v30);
             FastVecScale(v30, &d->vel, 0.5f);
@@ -1825,10 +1813,6 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
 typedef int Q_2cff90 __attribute__((mode(TI)));
 extern char forcefield_tower_damage_debug_format[];
 extern char forcefield_tower_hit_debug_format[];
-extern void SetDeathBits(void *, int, int);
-
-extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Enemy hit reaction (debug build prints the hits): loses health from attacks landing from above; at zero it
  * bursts into debris and dies. */
@@ -1909,8 +1893,7 @@ void process_forcefield_tower_damage(char *m, char *d, float *hp) {
                     d[0x67] = 0x78;
                     RerollEffectCounter(m, (short *)(d + 0x60));
                     Moby_GetJointWorldPos(m, 0, v);
-                    spawn_explosion_alt(m, u, v, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 0.0f, 1.0f, 1, 20.0f, 1, 1, -1,
-                                        0);
+                    spawn_explosion(m, u, v, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 0.0f, 1.0f, 1, 20.0f, 1, 1, -1, 0);
                     if (mob->kind != 1)
                         MobyBlendAnimation(m, 1, 0, 0);
                     if (*(int *)(d + 0x70) != -1) {
@@ -2073,8 +2056,6 @@ void forcefield_tower_update(char *moby) {
 #undef Moby_PlaySound_s
 #undef func_L00_0026AA10_C4748
 #undef spawn_explosion_s
-
-extern int func_001160D8(void);
 
 // spawns a spinning Asteroid moby with randomized angular rates
 char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f) {
@@ -2253,7 +2234,7 @@ typedef struct {
 #define random_float_p func_002140F8
 
 #define random_angle_p func_00214158
-extern s32 func_001160D8(void);
+
 #define rand_p func_001160D8
 
 #define normalize_p func_L00_001FF4B0
@@ -3310,14 +3291,12 @@ typedef struct {
 extern char g_hero_r[] __asm__("D_0013F450");
 
 extern Hit_2EAE80 *MobyGetHitMessage_r3(void *, int, int) __asm__("func_L00_0025B478");
-extern int ComputeHitResponse_r2(void *, void *, void *, int, void *, void *, int, int) __asm__("func_L00_0025B4D0");
+
 extern void begin_starfighter_death_sequence_r(void *, void *, void *, void *) __asm__("func_L13_002EAC18");
 
-extern void RerollEffectCounter_r2(void *, void *) __asm__("func_L00_0025E4B0");
 extern void Moby_PlaySound_r4(int, int, void *) __asm__("func_0022ED80");
 extern void detach_moby_joint_attachment_r(void *, void *, int) __asm__("func_L13_002EAAB8");
 
-extern void StepColorFade_r2(void *, void *) __asm__("func_L00_0025E590");
 extern int queue_starfighter_voice_line_r(void *, void *, int, int) __asm__("func_L13_002E9B30");
 
 /* Per-frame update of a breakable vehicle part (level 13): probes the first attached object and then the
@@ -3350,7 +3329,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
         lo = hi + step * 0.3f;
         if (d->first != 0) {
             r = MobyGetHitMessage_r3(d->first, 0x230000, 0);
-            ComputeHitResponse_r2(m, r, dd, 0, &hit, 0, 0, 4);
+            ComputeHitResponse(m, r, dd, 0, &hit, 0, 0, 4);
             if (r != 0 && r->target != 0 &&
                 (r->target->oclass == MOBY_CLASS_ORANGE_RADAR_CONTACT ||
                  r->target->oclass == MOBY_CLASS_YELLOW_RADAR_CONTACT ||
@@ -3372,7 +3351,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                     d->b67 = 0xFA;
                     mode = 1;
                     d->sub.h6 = scale_ticks(0);
-                    RerollEffectCounter_r2(m, d->q60);
+                    RerollEffectCounter(m, d->q60);
                     d->first->hit_slot = 0xFF;
                 }
                 if (m->state == 7) {
@@ -3432,7 +3411,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                 continue;
             }
             r = MobyGetHitMessage_r3(d->list[i], 0x230000, 0);
-            ComputeHitResponse_r2(m, r, dd, 0, &hit, 0, 0, 4);
+            ComputeHitResponse(m, r, dd, 0, &hit, 0, 0, 4);
             if (r != 0 && r->target != 0 &&
                 (r->target->oclass == MOBY_CLASS_ORANGE_RADAR_CONTACT ||
                  r->target->oclass == MOBY_CLASS_YELLOW_RADAR_CONTACT ||
@@ -3465,7 +3444,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                 d->b67 = 0xFA;
                 mode = 1;
                 d->sub.h6 = scale_ticks(0);
-                RerollEffectCounter_r2(m, d->q60);
+                RerollEffectCounter(m, d->q60);
                 d->list[i]->hit_slot = 0xFF;
             }
             if (m->state == 7) {
@@ -3555,7 +3534,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
             }
         }
     }
-    StepColorFade_r2(m, d->q60);
+    StepColorFade(m, d->q60);
 }
 
 /* Steers a moby toward the hero: scales by distance and orients it with the hero's angles. */
@@ -3598,7 +3577,7 @@ float calculate_hero_aim_angles(float *pos, float *pitch, float *yaw, float lead
         *pitch = p;
     return y;
 }
-extern int func_001160D8_EB978(void) __asm__("func_001160D8");
+
 extern void Moby_GetJointWorldPos_r3(char *, int, float *) __asm__("func_L00_00250800");
 extern unsigned char *spawn_level_13_homing_rocket_r(char *, char *, char *, char *, float, int,
                                                      float) __asm__("func_L13_002C2638");
@@ -3619,7 +3598,7 @@ unsigned char *fire_starfighter_homing_rocket(struct Moby *firing_moby, unsigned
     unsigned char *spawned_rocket_moby;
     struct Hero *hero_state;
     muzzle_joint_index = (starfighter_data[0xFC] & 1) ? 0x12 : 0x10;
-    if (firing_moby->command != 6 || (func_001160D8_EB978() & 1)) {
+    if (firing_moby->command != 6 || (func_001160D8() & 1)) {
         starfighter_data[0xFC] ^= 1;
     }
     Moby_GetJointWorldPos_r3(firing_moby, muzzle_joint_index, muzzle_position);

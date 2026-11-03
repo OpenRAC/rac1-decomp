@@ -6,5 +6,6 @@
 #include "common.h"
 
 extern int _close_r(void *, int);
+extern void *func_001126D8(void *, double, int, int, void *, void *, void *);
 
 #endif /* CORE_LIBC_CLOSE_DTOA_H */

@@ -37,6 +37,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/rocket_and_path_camera.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -213,7 +214,6 @@ typedef int Q_296dc0 __attribute__((mode(TI)));
 extern float g_frame_time_x __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
-extern float random_angle_radians(void);
 extern float randf_sym(float lo, float hi);
 
 extern int rand_range(int, int);
@@ -332,9 +332,6 @@ extern int orxon_cinematic_mode_r __asm__("D_L10_0015F6A8") MACRO_ADDR;
 extern int dialogue_message_duration_r __asm__("D_L10_0015F720") MACRO_ADDR;
 extern char *orxon_mobys_r __asm__("D_L10_00160058") MACRO_ADDR;
 
-extern float dist_00299818(void *, void *) __asm__("func_001F9D48");
-
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
 extern void grant_inventory_item(int, int);
 
 /* Spinning pickup: waits until the hero is close and level with it, then plays the scene, saves and goes away.
@@ -355,7 +352,7 @@ void magnetboots_update(Moby *m) {
             break;
         case 1:
             emit_moby_sprite_particles(m);
-            if (dist_00299818(&m->pos, g_hero_r + 0x80) < 5.0f) {
+            if (vec_distance_xy(&m->pos, g_hero_r + 0x80) < 5.0f) {
                 struct Hero *h = (struct Hero *)g_hero_r;
                 if (FastAbsF(m->pos.z - h->motion.pos.f[2]) < 2.0f && h->health.hp != 0) {
                     m->flags |= 0x41;
@@ -366,7 +363,7 @@ void magnetboots_update(Moby *m) {
             break;
         case 2:
             if (orxon_cinematic_mode_r != 2) {
-                ShowBanner_r(0x271B, -1);
+                ShowBanner(0x271B, -1);
                 dialogue_message_duration_r = 0xB4;
                 grant_inventory_item(0x1C, 1);
                 if (d->unk_04 != -1) {
@@ -393,7 +390,6 @@ extern int orxon_cinematic_mode MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern char *orxon_scene_points MACRO_ADDR;
 extern int orxon_relocation_reset_flag SDATA(orxon_relocation_reset_flag);
-extern int try_set_help_message(int, int);
 
 // Level 10 update for moby class 22: links two Ent records, sets table bits, calls the spawn helpers.
 void update_hero_relocation_trigger(char *m) {
@@ -540,7 +536,7 @@ extern float g_frame_time MACRO_ADDR;
 #define func_001F9FA8_2BFBB8 ((float (*)(float))func_001F9FA8)
 
 #define func_L00_001FF240_2BFBB8 ((void (*)(void *, void *, void *))func_L00_001FF240)
-extern void vec_scale_to_length(void *, void *, float);
+
 #define func_L00_001FF4B0_2BFBB8 ((void (*)(void *, void *, float))func_L00_001FF4B0)
 
 #define func_L00_00272F00_2BFBB8 func_L00_00272F00
@@ -796,7 +792,6 @@ typedef struct {
 } HitBox_2CAD18;
 
 extern struct Moby *nearby_mobys_r[] __asm__("D_L10_00178400");
-extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
 
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void *func_00115248(void *, const void *, u32);
@@ -821,7 +816,7 @@ void spawn_linked_hitbox_contact_effects(struct Moby *moby, HitBox_2CAD18 *box) 
     if (box->flags & 0x100) {
         return;
     }
-    euler_rotation_basis_r(mat, &moby->rot);
+    euler_rotation_basis(mat, &moby->rot);
     if (box->width > box->depth) {
         radius = box->width * 0.5f;
     } else {
@@ -1020,9 +1015,6 @@ void MobySetPosZ(char *a, float f) {
 
 typedef int OvlQuad __attribute__((mode(TI)));
 void approach_moby_height(struct Moby *a, float t);
-extern int coll_line(void *, void *, int, int, int);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 
@@ -1145,11 +1137,6 @@ char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
     return (char *)moby;
 }
 
-extern int coll_line(void *, void *, int, int, int);
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ProbeGroundHeight(void *, int, float);
-
 // Orxon moby step: pulls the moby toward its target and returns a state code 0..3
 // (resolve_bouncing_projectile_collision).
 int resolve_bouncing_projectile_collision(Moby *m, char *c, float *a2) {
@@ -1239,18 +1226,14 @@ int resolve_bouncing_projectile_collision(Moby *m, char *c, float *a2) {
     }
     return 0;
 }
-extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
+extern char *MobyGetHitMessage(void *, int, int);
 extern int resolve_bouncing_projectile_collision_r(char *, char *, float *) __asm__("func_L10_002D9530");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern char nearby_mobys_r2[] __asm__("D_L10_00178400");
 extern float D_L10_00161C6C_2D9988 SDATA(D_L10_00161C6C);
 
-extern float fast_atan2(float, float);
-extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
+extern void HeadingFromVector(void *, float *, void *, void *);
 
-extern void set_moby_color(void *, int, int, int);
-extern void vec_set_length_xy(void *, void *, float);
-extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern void func_L00_00260108(void *, void *, int, float, float);
 
@@ -1311,7 +1294,7 @@ void bomb_938_update(char *m) {
         case 0:
             FastVecAdd(m + 0x10, m + 0x10, &data->unk_00);
             data->unk_08 = data->unk_08 - g_frame_time_sq_r * 9.8f;
-            r16 = MobyGetHitMessage_r(m, 0x830000, 0);
+            r16 = MobyGetHitMessage(m, 0x830000, 0);
             if (r16 != 0 && *(char **)(r16 + 0x20) != 0 &&
                 *(short *)(*(char **)(r16 + 0x20) + 0xA6) != ((Moby *)m)->oclass) {
                 float t;
@@ -1320,7 +1303,7 @@ void bomb_938_update(char *m) {
                                      ((Moby *)m)->pos.y - g_hero.motion.pos.f[1]);
                     *(u128_2D9988 *)v10 = ((Obj *)r16)->q10;
                     s58 = s54 = g_frame_time_x * 10.0f;
-                    HeadingFromVector_r(v10, &s50, &s54, &s58);
+                    HeadingFromVector(v10, &s50, &s54, &s58);
                     data->unk_00 = FastCos(s50) * s54;
                     data->unk_04 = FastSin(s50) * s54;
                     data->unk_08 = 0.0f;
@@ -1348,7 +1331,7 @@ void bomb_938_update(char *m) {
                 ((Moby *)m)->state = 3;
                 break;
             }
-            r16 = MobyGetHitMessage_r(m, 0x830000, 0);
+            r16 = MobyGetHitMessage(m, 0x830000, 0);
             if (r16 != 0 && *(char **)(r16 + 0x20) != 0 &&
                 *(short *)(*(char **)(r16 + 0x20) + 0xA6) != ((Moby *)m)->oclass) {
                 float t;
@@ -1357,7 +1340,7 @@ void bomb_938_update(char *m) {
                                      ((Moby *)m)->pos.y - g_hero.motion.pos.f[1]);
                     *(u128_2D9988 *)v10 = ((Obj *)r16)->q10;
                     s70 = s6c = g_frame_time_x * 10.0f;
-                    HeadingFromVector_r(v10, &s68, &s6c, &s70);
+                    HeadingFromVector(v10, &s68, &s6c, &s70);
                     data->unk_00 = FastCos(s68) * s6c;
                     data->unk_04 = FastSin(s68) * s6c;
                     data->unk_08 = 0.0f;
@@ -1397,7 +1380,7 @@ void bomb_938_update(char *m) {
             }
             break;
         case 3:
-            rA = coll_sphere_mobys_r2(1.5f, m + 0x10, 0x10, m, 0);
+            rA = coll_sphere_mobys(1.5f, m + 0x10, 0x10, m, 0);
             *(u128_2D9988 *)v10 = *(u128_2D9988 *)(m + 0x10);
             SendRadialMessageToMobys(m, v10, nearby_mobys_r2, rA, 0, 0x810001, 2, 1, 1.0f, 1.0f, 1.0f);
             SpawnExplosionFx(m, m + 0x10, 0, 0.5f, 13.0f);
@@ -1410,8 +1393,6 @@ void bomb_938_update(char *m) {
         DeleteMoby(m);
     }
 }
-
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern int bombthrower_grass_fire_ticks_min SDATA(bombthrower_grass_fire_ticks_min);
 extern int bombthrower_grass_fire_ticks_max SDATA(bombthrower_grass_fire_ticks_max);
@@ -1451,8 +1432,6 @@ extern char path_spark_no_path_fmt[];
 extern char orxon_point_light_slots[];
 extern int STUB_printf_r(void *, int) __asm__("func_001E9730");
 
-extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
-
 extern void PathSampleAtDistance_f(float, float, void *, int *, float *, void *) __asm__("func_L00_002633D8");
 
 extern int Sound_PlayClassSound_v(int, int, void *, int) __asm__("func_L00_0028EF68");
@@ -1485,7 +1464,7 @@ void update_path_spark_emitter(char *m) {
                 }
             }
             d->hero_idx = -1;
-            if (fast_dec_timer_v(&d->unk_08) != 0) {
+            if (fast_dec_timer(&d->unk_08) != 0) {
                 m[0x20] = 1;
                 d->period = 0;
             }
@@ -1626,9 +1605,6 @@ void lab_door_update(unsigned char *m) {
             break;
     }
 }
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern char nearby_mobys[];
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -1789,8 +1765,6 @@ extern char data_processor_strand_order[];
 extern void render_data_processor_linked_effect(unsigned char *);
 extern float data_processor_fade_seconds SDATA(data_processor_fade_seconds);
 
-extern int FastBSphereCheck(void *, float);
-
 typedef struct DataProcessorVars {
     f32 half_width; /* 0x00 */
     s32 count; /* 0x04: order bytes copied into order[] */
@@ -1928,7 +1902,7 @@ extern short data_processor_color_end;
 
 #define func_001F4868_DBA50 func_001F4868
 #define func_001F9BD8_DBA50 ((void (*)(void *, void *, void *))func_001F9BD8)
-extern void draw_world_quad(void *, void *, s32);
+
 #define func_L00_001FD1D8_DBA50 func_L00_001FD1D8
 
 /* Per-frame draw of a ribbon/trail effect moby. */
@@ -2058,8 +2032,6 @@ void render_data_processor_linked_effect(u8 *moby) {
     } while (group < 4);
 }
 
-extern int f_timer_DE018(void *) __asm__("func_001F9908");
-
 extern void func_L00_00258DB0(void *, float, float);
 
 extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
@@ -2116,7 +2088,7 @@ void update_jitter_strand_grid_moby(unsigned char *moby) {
                 vars->phase -= 1.0f;
             for (group = 0; group < 4; group++) {
                 for (item = 0; item < 10; item++) {
-                    if (f_timer_DE018(&vars->timers[group][item])) {
+                    if (fast_dec_timer(&vars->timers[group][item])) {
                         for (row = 0; row < 20; row++) {
                             clear_u64_value(&vars->pos[group][row][item]);
                             vars->pos[group][row][item].f[1] =
@@ -2158,7 +2130,6 @@ typedef struct {
 extern unsigned char *CreateMoby_r(int) __asm__("func_0020D348");
 extern void set_moby_color_r2(unsigned char *, int, int, int) __asm__("func_L00_00251328");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float random_float_between(float, float);
 
 unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, float z) __asm__("func_L10_002DE630");
 
@@ -2193,7 +2164,6 @@ typedef int Effect128 __attribute__((mode(TI)));
 
 extern s32 truncate_float_to_s32(f32);
 
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern float frame_scale MACRO_ADDR;
 
@@ -2342,26 +2312,18 @@ extern void func_L00_0025B178(void *);
 
 extern float ApproachWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_00214D88");
 
-extern float fast_atan2(float, float);
 extern float func_L00_0025CE58(float *, float, float *, float, float, float);
 
 extern void func_L00_002607A8(void *, float);
 extern int func_L00_00259B08(void *, void *, float, int, float, int);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern void activate_waiting_moby_group_members_r(void *) __asm__("func_L10_002E14F8");
 extern float func_L00_0025CC58(float *, int, float, float);
 extern void func_L00_002592B0(void *, float, float *, float, float, float);
 
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-extern float random_float_between(float, float);
-extern float random_angle_radians(void);
-
-extern int func_L00_001F10E0(float, void *, int, void *);
 extern int func_L00_0025D6F0(void *, void *);
-extern void func_L00_002584A8(void *, int, int);
+
 extern void func_L00_00260460(void *, void *, int, float, float);
 extern V_2E0630 orxon_camera_pos_r __asm__("D_L10_001672C0");
 extern Path *orxon_paths_r[] __asm__("D_L10_001B0C30");
@@ -2505,7 +2467,7 @@ void screamer_update(Moby *m) {
             }
             d->v120.z = t;
             move_moby_with_collision_integer_radius(m, &d->v120, 0.5f, 0x200, 0.0f, 0);
-            if (vec_distance_xy_r(&m->pos, &d->v130) < 2.0f)
+            if (vec_distance_xy(&m->pos, &d->v130) < 2.0f)
                 m->state = 7;
             break;
         }
@@ -2513,7 +2475,7 @@ void screamer_update(Moby *m) {
             float r;
             float a;
             float zero;
-            if (!fast_dec_timer_r(&d->f19C))
+            if (!fast_dec_timer(&d->f19C))
                 break;
             zero = 0.0f;
             d->f19C = scale_ticks(0x78);
@@ -2892,7 +2854,7 @@ void Moby1199Update(Moby *m) {
             }
             if (d->f104 == 2)
                 break;
-            if (!(3.0f < vec_distance_xy_r(&m->pos, &P->pos)))
+            if (!(3.0f < vec_distance_xy(&m->pos, &P->pos)))
                 break;
             if (fast_subtract_rotations_cf(&m->command) == 0)
                 break;
@@ -2905,7 +2867,7 @@ void Moby1199Update(Moby *m) {
         }
         case 4:
             m->anim_speed = 4.0f;
-            if (d->f104 != 2 && 3.0f < vec_distance_xy_r(&m->pos, &P->pos) &&
+            if (d->f104 != 2 && 3.0f < vec_distance_xy(&m->pos, &P->pos) &&
                 fast_subtract_rotations_cf(&m->command) != 0) {
                 if (m->group != 0xFF)
                     set_moby_group_command_frames((unsigned char *)m);
@@ -2914,7 +2876,7 @@ void Moby1199Update(Moby *m) {
                     MobyBlendAnimation(m, 1, 0, scale_ticks(10));
                 break;
             }
-            if (fast_dec_timer_r(&d->f198) == 0)
+            if (fast_dec_timer(&d->f198) == 0)
                 break;
             {
                 float r = random_float_between(4.0f, 6.0f);
@@ -2962,7 +2924,7 @@ void Moby1199Update(Moby *m) {
             move_moby_with_collision_integer_radius(m, &d->v120, 0.5f, 0x200, 0.0f, 0);
             step_angle_toward_target(&m->rot.y, 0, -fast_atan2(vec_length_xy(&d->v120), d->v120.z),
                                      g_frame_time_x * 6.2831855f);
-            if (vec_distance_xy_r(&m->pos, &P->pos) < class1199_attack_range) {
+            if (vec_distance_xy(&m->pos, &P->pos) < class1199_attack_range) {
                 if (FastAbsF(m->pos.z - g_hero.motion.pos.f[2]) < 2.0f) {
                     Moby_PlaySound_r(0, 0, m);
                     m->state = 8;
@@ -2982,8 +2944,7 @@ void Moby1199Update(Moby *m) {
         case 8:
             MobySpringTurn(m, fast_atan2(P->pos.x - m->pos.x, P->pos.y - m->pos.y), &d->f170, 0.02f, 0.3f,
                            g_frame_time_x * 6.2831855f);
-            step_angle_toward_target(&m->rot.y, 0,
-                                     -fast_atan2(vec_distance_xy_r(&m->pos, &d->vE0), d->vE0.z - m->pos.z),
+            step_angle_toward_target(&m->rot.y, 0, -fast_atan2(vec_distance_xy(&m->pos, &d->vE0), d->vE0.z - m->pos.z),
                                      g_frame_time_x * 12.566371f);
             if (IsFrameWithinWindow_v((char *)m, 20.0f)) {
                 float one = 1.0f;
@@ -3025,7 +2986,7 @@ void Moby1199Update(Moby *m) {
             }
             d->v120.z = t;
             move_moby_with_collision_integer_radius(m, &d->v120, 0.5f, 0x200, 0.0f, 0);
-            if (vec_distance_xy_r(&m->pos, &d->v130) < 2.0f)
+            if (vec_distance_xy(&m->pos, &d->v130) < 2.0f)
                 m->state = 3;
             break;
         }
@@ -3037,7 +2998,7 @@ void Moby1199Update(Moby *m) {
             d->v120.x = FastCos(m->rot.z) * (g_frame_time_x * 4.0f);
             d->v120.y = FastSin(m->rot.z) * (g_frame_time_x * 4.0f);
             d->v120.z = 0.0f;
-            if (fast_dec_timer_r(&d->f1A4)) {
+            if (fast_dec_timer(&d->f1A4)) {
                 d->f1A0 = random_float_between(0.0f, class1199_height_jitter_max);
                 d->f1A4 = truncate_float_to_s32_r2(multiply_global_factor(class1199_height_jitter_seconds * 60.0f) *
                                                    random_float_between(0.75f, 1.25f));
@@ -3154,7 +3115,7 @@ void Moby1199Update(Moby *m) {
             }
             d->v120.z = t;
             add_vectors(v, &m->pos, &d->v120);
-            if (vec_distance_xy_r(&m->pos, &d->v130) < 2.0f) {
+            if (vec_distance_xy(&m->pos, &d->v130) < 2.0f) {
                 m->state = 9;
                 m->command = scale_ticks(0x78);
                 d->f1A0 = random_float_between(0.0f, class1199_height_jitter_max);
@@ -3241,25 +3202,22 @@ typedef struct Path_2E2B80 {
     float pts[4];
 } Path_2E2B80;
 
-extern float random_float_between(float, float);
-
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 extern Hit_2E2B80 *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
-extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
+extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern float fast_atan2(float, float);
-extern void HeadingFromVector_r2(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
-extern void InitKnockback_r(void *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
-extern void RerollEffectCounter_r(void *m, void *p) __asm__("func_L00_0025E4B0");
-extern void spawn_randomized_bolt_drop_r(void *, int, int, int, int) __asm__("func_L00_00261B00");
-extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
+
+extern void HeadingFromVector(void *, float *, void *, void *);
+extern void InitKnockback(void *, void *, float, int, int, int);
+extern void RerollEffectCounter(void *m, void *p);
+
+extern void StepColorFade(void *, void *);
 extern int FindNearestTargetMoby_r(void *, void *, float) __asm__("func_L00_00260D30");
 
-extern int FindNearestEligibleMoby_r(float, void *, void *, int, int, void *, int) __asm__("func_L00_00260FB0");
-extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
+extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
+
 extern int g_hero_moby_r __asm__("D_001414D0");
 extern Anim_2E2B80 *orxon_scene_points_r2 __asm__("D_L10_0016016C") MACRO_ADDR;
 extern Path_2E2B80 *orxon_paths_r2[] __asm__("D_L10_001B0C30");
@@ -3282,7 +3240,7 @@ void update_class_1199_hit_reactions_and_targeting(Moby *moby) {
     fast_dec_timer_r2(&data->f184);
     if (moby->state != 13) {
         r = MobyGetHitMessage_r2(moby, 0x330000, 0);
-        ComputeHitResponse_r(moby, r, &data->f20, 5, &st, 0, 0, 4);
+        ComputeHitResponse(moby, r, &data->f20, 5, &st, 0, 0, 4);
         if (r != 0 && r->moby->oclass != moby->oclass) {
             if (data->f20 <= r->f2C) {
                 data->f20 = 0.0f;
@@ -3303,21 +3261,21 @@ void update_class_1199_hit_reactions_and_targeting(Moby *moby) {
                     ang = fast_atan2(moby->pos.x - r->x, moby->pos.y - r->y);
                 }
                 *(u128 *)v = *(u128 *)r->f10;
-                HeadingFromVector_r2(v, &ang, &data->f78, &data->f7C);
-                InitKnockback_r(moby, data->f60, ang, 4, 1, 0);
+                HeadingFromVector(v, &ang, &data->f78, &data->f7C);
+                InitKnockback(moby, data->f60, ang, 4, 1, 0);
                 data->f117 = 0x78;
-                RerollEffectCounter_r(moby, data->f110);
-                spawn_randomized_bolt_drop_r(moby, 1, 3, 0, -1);
+                RerollEffectCounter(moby, data->f110);
+                spawn_randomized_bolt_drop(moby, 1, 3, 0, -1);
             } else {
                 data->f20 = data->f20 - r->f2C;
                 data->f117 = 0xFA;
                 data->f26 = scale_ticks(60);
-                RerollEffectCounter_r(moby, data->f110);
+                RerollEffectCounter(moby, data->f110);
             }
         }
         moby->hit_slot = 0xFF;
     }
-    StepColorFade_r(moby, data->f110);
+    StepColorFade(moby, data->f110);
     if (data->f174 == 2) {
         data->f180 = 42.0f;
     } else if (data->f184 != 0) {
@@ -3339,16 +3297,16 @@ void update_class_1199_hit_reactions_and_targeting(Moby *moby) {
             }
         }
     } else if (moby->state == 1 && data->f18C >= 0) {
-        r19 = FindNearestEligibleMoby_r(data->f180, moby, data->fC0, 0, 0, orxon_paths_r2[data->f18C]->pts,
-                                        orxon_paths_r2[data->f18C]->count);
+        r19 = FindNearestEligibleMoby(data->f180, moby, data->fC0, 0, 0, orxon_paths_r2[data->f18C]->pts,
+                                      orxon_paths_r2[data->f18C]->count);
     } else if (moby->state != 1 && data->f17C >= 0) {
-        r19 = FindNearestEligibleMoby_r(data->f180, moby, data->fC0, 0, 0, orxon_paths_r2[data->f17C]->pts,
-                                        orxon_paths_r2[data->f17C]->count);
+        r19 = FindNearestEligibleMoby(data->f180, moby, data->fC0, 0, 0, orxon_paths_r2[data->f17C]->pts,
+                                      orxon_paths_r2[data->f17C]->count);
     } else {
         r19 = FindNearestTargetMoby_r(moby, data->fC0, data->f180);
     }
     if (r19 != 2) {
-        if (data->f180 < vec_distance_xy_r2(data->f130, data->fC0)) {
+        if (data->f180 < vec_distance_xy(data->f130, data->fC0)) {
             data->f104 = 2;
         } else if (moby->visible == 0) {
             data->f104 = 2;

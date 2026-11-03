@@ -1071,7 +1071,7 @@ typedef struct {
 } MpegDecoder;
 
 extern s32 _Error_lf(MpegDecoder *, u8 *, s32) __asm__("func_0012C468");
-extern s32 _dispRefImage_lf(MpegDecoder *, void *, s32) __asm__("func_00129E30");
+extern s32 _dispRefImage(MpegDecoder *, void *, s32);
 extern s32 _dispRefImageField_lf(MpegDecoder *, void *, void *, s32) __asm__("func_00129F40");
 extern u8 mpeg_second_field_missing_msg_lf[] __asm__("D_00153BB8");
 
@@ -1083,7 +1083,7 @@ void mpeg_last_frame(void *arg0) {
         _Error_lf(decoder, mpeg_second_field_missing_msg_lf, count);
     } else {
         if (decoder->picture_structure == 3) {
-            _dispRefImage_lf(decoder, decoder->ref_images[1], count - 1);
+            _dispRefImage(decoder, decoder->ref_images[1], count - 1);
         } else {
             _dispRefImageField_lf(decoder, decoder->ref_images[5], decoder->ref_images[9], count - 1);
         }

@@ -15,6 +15,7 @@ extern void advance_timed_camera_control(void);
 extern void apply_camera_shake(CameraShake *, int);
 extern void restore_camera_vectors(void);
 extern void save_camera_vectors(void);
+extern void update_camera(void);
 extern void update_camera_blend(Camera *);
 extern void update_camera_tracking_state(void);
 extern void update_camera_underwater_flag(void);

@@ -19,6 +19,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char usage_stats[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -507,8 +508,6 @@ void veldin_robot_enemy_update(Moby *moby) {
     }
     update_veldin_robot_effects((char *)moby);
 }
-
-extern void SetDeathBits(void *, int, int);
 
 extern int FindNearestTargetMoby_v(void *, float, void *) __asm__("func_L00_00260D30");
 extern float veldin1_robot_target_range SDATA(veldin1_robot_target_range);

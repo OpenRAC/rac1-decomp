@@ -3012,7 +3012,6 @@ extern s32 probe_hero_forward_collision_r(s32, f32, f32) __asm__("func_L00_0020A
 
 extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 /* Hero ledge-grab check: predicts a position with gravity, probes for a ledge and tests angle and dot thresholds before setting the grab state. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_0020b5b8. */
 void probe_hero_airborne_wall_contact(void) {
     Vec4 v, w, z;
@@ -3092,7 +3091,7 @@ void probe_hero_airborne_wall_contact(void) {
     } else {
         s = 0.72f;
     }
-    f = vec_distance_xy_r(pz - 0x20, &v);
+    f = vec_distance_xy(pz - 0x20, &v);
     if (s < f) {
         return;
     }
@@ -3320,8 +3319,6 @@ extern char D_0013F450_20C568[] __asm__("D_0013F450");
 extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
 extern float g_frame_time_r3 __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern int coll_line_r2(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-
 extern Obj *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 
 /* the ledge probe of the hero: looks for an edge ahead to grab, and where it finds one stores the grab point and
@@ -3398,7 +3395,7 @@ void check_ledge_grab(void) {
         v10[2] += up + 0.15f;
         qcopy(v20, v0);
         v20[2] += top;
-        if (coll_line_r2(v10, v20, 4, (int)((Hero *)D_0013F450_20C568)->moby, 0)) {
+        if (coll_line(v10, v20, 4, (int)((Hero *)D_0013F450_20C568)->moby, 0)) {
             hit = CollType();
             if (hit != 9 && hit != 12 && hit != 0) {
                 if (fast_atan2(((Hit_20C568 *)coll_hit_result_r)->v40[2],
@@ -3430,7 +3427,7 @@ void check_ledge_grab(void) {
     v20[2] += 0.05f;
     qcopy_nc(v30, ((Hero *)D_0013F450_20C568)->motion.pos.f);
     v30[2] = v20[2];
-    if (coll_line_r2(v30, v20, 4, (int)((Hero *)D_0013F450_20C568)->moby, 0))
+    if (coll_line(v30, v20, 4, (int)((Hero *)D_0013F450_20C568)->moby, 0))
         return;
     qcopy(v40, ((Hit_20C568 *)coll_hit_result_r)->v20);
     v40[2] += 0.6f;
@@ -3456,7 +3453,7 @@ void check_ledge_grab(void) {
         v60[1] += FastSin(ang) * len;
         v60[2] += down * (1.0f - (float)j / 5.0f);
         v50[2] = v60[2];
-        if (coll_line_r2(v50, v60, 2, 0, 0)) {
+        if (coll_line(v50, v60, 2, 0, 0)) {
             edge = 1;
             ((Hero *)D_0013F450_20C568)->ledge_normal_yaw =
                 fast_atan2(((Hit_20C568 *)coll_hit_result_r)->v40[0], ((Hit_20C568 *)coll_hit_result_r)->v40[1]);
@@ -3480,7 +3477,7 @@ void check_ledge_grab(void) {
             qcopy(v50, v60);
             v60[2] += 0.5f;
             v50[2] -= 0.5f;
-            if (!coll_line_r2(v60, v50, 4, (int)((Hero *)D_0013F450_20C568)->moby, 0)) {
+            if (!coll_line(v60, v50, 4, (int)((Hero *)D_0013F450_20C568)->moby, 0)) {
                 qcopy(v70, v60);
                 d = step * 0.5f;
                 d = -d;

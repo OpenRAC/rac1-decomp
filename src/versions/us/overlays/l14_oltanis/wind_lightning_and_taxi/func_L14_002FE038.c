@@ -8,19 +8,19 @@ void update_enemy_fighter_921(Moby *m) {
         (oltanis_collected_flags_base_r3.collected[(short)(id = m->save_id)] != 0 ||
          (*(int *)(level_moby_killed_r3 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) &
              1)) {
-        mark_moby_and_linked_moby_for_removal_r((Moby *)(oltanis_mobys_r + (d->f8C << 8)));
+        mark_moby_and_linked_moby_for_removal((Moby *)(oltanis_mobys_r + (d->f8C << 8)));
         DeleteMoby(m);
         return;
     }
     {
-        void *r = MobyGetHitMessage_r2(m, 0x800000, 0);
+        void *r = MobyGetHitMessage(m, 0x800000, 0);
         m->hit_slot = 0xFF;
         if (r != 0 && d->f8C == -1 && m->state != 3) {
             if (g_current_level_index_m == LEVEL_OLTANIS) {
                 fighter_skill_hit_count_r2 = fighter_skill_hit_count_r2 + 1;
                 if (fighter_skill_hit_count_r2 >= 3 && ((Skill_2FE038 *)gSkillPoints_r)->f18 == 0) {
                     ((Skill_2FE038 *)gSkillPoints_r)->f18 = 1;
-                    PlayBankSound_r2(1, 0, 0);
+                    PlayBankSound(1, 0, 0);
                     ShowBanner(0x53D6, -1);
                 }
             }
@@ -82,7 +82,7 @@ void update_enemy_fighter_921(Moby *m) {
                         qcopy(vt, (*(Vec_2FE038 *)&seat->pos));
                         vt[2] = vt[2] + 4.0f;
                         pitch = FastDiffRots(((Cam *)oltanis_player_camera_r)->f154,
-                                             -fast_atan2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
+                                             -fast_atan2(vec_distance_xy(((Cam *)oltanis_player_camera_r)->pos, vt),
                                                          vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
                         yaw = FastDiffRots(
                             ((Cam *)oltanis_player_camera_r)->f158,

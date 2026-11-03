@@ -370,7 +370,6 @@ typedef struct {
 extern SrcHdr *level_root_src __asm__("D_0015EF4C") MACRO_ADDR;
 extern HudArena hud_state_arena __asm__("D_0019A4E8");
 
-extern char *Hud_HeapAlloc_d(int, int, char *, int) __asm__("func_001FFAB8");
 extern void LoadCompressedHudBank(int idx, int size);
 
 extern int level_resource_buffers[];
@@ -413,7 +412,7 @@ void LoadHudBanks(void) {
     fname = hud_bank_alloc_file;
     d941c0 = level_resource_buffers;
     size24 = ALIGN64(base->bank[0].size);
-    header = (HudHdr *)Hud_HeapAlloc_d(size24, 0, fname, 0x23B);
+    header = (HudHdr *)Hud_HeapAlloc(size24, 0, fname, 0x23B);
     FastMemCopy(header, (void *)(base->bank[0].off + (int)base), size24);
 
     hud_state_arena.header = header;
@@ -433,7 +432,7 @@ void LoadHudBanks(void) {
 
     size58 = hud_state_arena.header->unk58;
     if (size58 != 0) {
-        bank58 = Hud_HeapAlloc_d(size58, 0, fname, 0x262);
+        bank58 = Hud_HeapAlloc(size58, 0, fname, 0x262);
         LoadCompressedHudBank(1, (int)bank58);
         flush_cache(0);
         LinkHudBank(1, (int)bank58);

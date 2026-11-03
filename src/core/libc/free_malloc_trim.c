@@ -2,6 +2,7 @@
 #include "structs/misc.h"
 #include "data/executable.h"
 #include "core/newlib_types.h"
+#include "core/libc/printf_rand.h"
 
 /*
  * core_text object 0x113B70-0x114000. Boundaries are retail's linker fill
@@ -227,7 +228,6 @@ extern MallocState __malloc_av_;
 
 extern void __malloc_lock(void *); /* MALLOC_LOCK (__malloc_lock, empty) */
 extern void __malloc_unlock(void *); /* MALLOC_UNLOCK (__malloc_unlock, empty) */
-extern void *_sbrk_r(void *reent_ptr, int size); /* _sbrk_r */
 
 #define TOP (D_0012F888.av2[0])
 

@@ -37,6 +37,7 @@
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
 #include "overlays/l05_rilgar/electric_gate.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -452,7 +453,6 @@ state_three: {
         ((void (*)(char *, int, int, int))MobyBlendAnimation)(moby, 1, 0, ((int (*)(int))scale_ticks)(10));
 }
 }
-extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float rilgar_water_surface_z_m __asm__("D_L05_001613A8") MACRO_ADDR;
@@ -470,7 +470,7 @@ void spawn_sharkigator_surface_effects(char *moby) {
     char *b;
     char *d;
     float t;
-    if (fast_dec_timer_v(&data->splash_timer) != 0) {
+    if (fast_dec_timer(&data->splash_timer) != 0) {
         i = 0;
         a = moby + 0xD0;
         b = moby + 0x10;
@@ -895,8 +895,6 @@ extern void spawn_amoeboid_particles(unsigned char *moby);
 
 extern int truncate_float_to_s32(float);
 
-extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
-
 /* Grazing critter: wanders between random points of its path, turning toward the next one; wakes up when the hero is
    far. */
 void amoeboid_update(unsigned char *m) {
@@ -933,7 +931,7 @@ void amoeboid_update(unsigned char *m) {
             dir[1] = FastSin(((Moby *)m)->rot.z);
             dir[2] = 0.0f;
             move_w(m, &d->move_ctl, dir, &d->move_out, 1.0f);
-            if (fast_dec_timer_v(&d->wander_timer) != 0 ||
+            if (fast_dec_timer(&d->wander_timer) != 0 ||
                 vec_distance_xy(&((struct Moby *)m)->pos, rilgar_paths_r[d->path] + (d->path_point * 16 + 0x10)) <
                     1.0f) {
                 int r = random_integer_below(*(int *)rilgar_paths_r[d->path]);
@@ -1550,15 +1548,11 @@ extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_00
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(void *, short *) __asm__("func_L00_0025E4B0");
 extern void StepColorFade_r(void *, short *) __asm__("func_L00_0025E590");
 
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 extern Moby *find_nearest_extermibot_group_target_r(void *, int) __asm__("func_L05_003053D8");
 
-extern void EaseManipulatorOffsets_r(void *, void *, int, float, float) __asm__("func_L00_00263950");
 extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
 extern Path *rilgar_paths_r2[] __asm__("D_L05_001B0CB0");
 extern float D_L05_00161B58_3047E8 SDATA(D_L05_00161B58);
@@ -1663,9 +1657,9 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
                 d->b67 = 0xF0;
                 if (r->who != 0 && *(struct Moby **)&r->who->pclass != 0 &&
                     *(short *)((u8 *)((struct Moby *)r->who->pclass) + 0x46) == 5) {
-                    SetDeathBits_r(m, 0x800, -1);
+                    SetDeathBits(m, 0x800, -1);
                 } else {
-                    SetDeathBits_r(m, 0, -1);
+                    SetDeathBits(m, 0, -1);
                 }
                 break;
         }
@@ -1685,15 +1679,15 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
     }
     if (FindNearestEligibleMoby(d->f2A0, m, d->f120, 0, 0, rilgar_paths_r2[d->f2CC]->pts,
                                 rilgar_paths_r2[d->f2CC]->n) != 2) {
-        if (d->f2A0 < vec_distance_xy_r(d->f270, d->f120) || 3.0f < FastAbsF(m->pos.z - d->f128)) {
+        if (d->f2A0 < vec_distance_xy(d->f270, d->f120) || 3.0f < FastAbsF(m->pos.z - d->f128)) {
             d->f164 = 2;
         }
     }
     if (d->f2C8 >= 0) {
         Moby *t = find_nearest_extermibot_group_target_r(m, d->f2C8);
         if (t != 0) {
-            if (d->f164 == 2 || vec_distance_xy_r(((float *)&m->pos), ((float *)&t->pos)) <
-                                    vec_distance_xy_r(((float *)&m->pos), ((float *)&d->target->pos))) {
+            if (d->f164 == 2 || vec_distance_xy(((float *)&m->pos), ((float *)&t->pos)) <
+                                    vec_distance_xy(((float *)&m->pos), ((float *)&d->target->pos))) {
                 d->target = t;
                 d->f164 = 1;
             }
@@ -1729,8 +1723,8 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
             d->f258 = yaw * 0.3f;
         }
     }
-    EaseManipulatorOffsets_r(m, d->f170, 1, g_frame_scale_sq_r * 0.04f, g_frame_scale_sq_r * 0.3f);
-    EaseManipulatorOffsets_r(m, d->f1F0, 2, g_frame_scale_sq_r * 0.04f, g_frame_scale_sq_r * 0.3f);
+    EaseManipulatorOffsets(m, d->f170, 1, g_frame_scale_sq_r * 0.04f, g_frame_scale_sq_r * 0.3f);
+    EaseManipulatorOffsets(m, d->f1F0, 2, g_frame_scale_sq_r * 0.04f, g_frame_scale_sq_r * 0.3f);
 }
 typedef struct {
     u8 pad0[0xD0];
@@ -2251,9 +2245,6 @@ typedef struct {
 } AnimSeq_065D0;
 
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void SetDeathBits(void *, int, int);
-
-extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 
 extern int extermitank_death_ticks SDATA(extermitank_death_ticks);
 extern float extermitank_tread_speed_ref SDATA(extermitank_tread_speed_ref);
@@ -2359,7 +2350,7 @@ mark_children:
         if (FastDiffRots(((Moby *)moby)->rot.z, angle) > 1.5707964f)
             data->path_dir *= -1;
     }
-    if (fast_dec_timer_r2(&data->alert_timer) != 0)
+    if (fast_dec_timer(&data->alert_timer) != 0)
         data->sight_range = 20.0f;
     else
         data->sight_range = 14.0f;
@@ -3282,7 +3273,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             }
             break;
         case 8:
-            if (fast_dec_timer_v(&d->f18) != 0) {
+            if (fast_dec_timer(&d->f18) != 0) {
                 if (rilgar_flood_stage < 5) {
                     rilgar_flood_stage++;
                     d->f18 = scale_ticks(rilgar_flood_stage_ticks[rilgar_flood_stage]);

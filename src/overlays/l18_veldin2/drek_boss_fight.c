@@ -2293,8 +2293,6 @@ extern f32 D_L18_001623EC_2F7F00 SDATA(D_L18_001623EC);
 extern f32 D_L18_00162400_2F7F00 SDATA(D_L18_00162400);
 extern f32 D_L18_00162404_2F7F00 SDATA(D_L18_00162404);
 
-extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 extern int advance_drek_boss_planar_position_toward_target_r(char *, float, void *) __asm__("func_L18_002F7CD8");
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 
@@ -2335,7 +2333,7 @@ void func_L18_002F7F00_r(Moby *moby) {
         goal.f[2] = 0.0f;
     }
     FastVecAdd(&goal, &goal, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center);
-    if (vec_distance_xy_r(&v->pos, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center) >
+    if (vec_distance_xy(&v->pos, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center) >
         D_L18_00162404_2F7F00 + 1.0f) {
         speed = 10.0f;
     } else if (((Hero *)g_hero_r)->state.control_mode != HERO_MODE_GRIND) {
@@ -2354,7 +2352,7 @@ void func_L18_002F7F00_r(Moby *moby) {
             fast = 10.0f;
             far *= 1.5f;
         }
-        dist = vec_distance_xy_r(&moby->pos, gHeroPos);
+        dist = vec_distance_xy(&moby->pos, gHeroPos);
         if (far < dist)
             dist = far;
         else if (dist < near)

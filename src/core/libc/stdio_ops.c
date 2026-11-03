@@ -4,6 +4,8 @@
 #include "core/libc/stdio_ops.h"
 #include "core/libc/lseek_malloc.h"
 #include "core/libc/close_dtoa.h"
+#include "core/libc/printf_rand.h"
+#include "core/libc/write_wsetup.h"
 
 /*
  * core_text object 0x1162B8-0x116CC0: the C library's stdio internals
@@ -31,11 +33,10 @@ extern int __sclose(void *arg0);
    since its own `r == -1` would become an unsupported 64-bit compare) and
    the call site goes through a declaration that spells the return type the
    way retail's header did. Emits a plain `jal reentrant_read`. */
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
 
 int __sread(void *arg0, void *arg1, void *arg2) {
     Node1E4 *s = (Node1E4 *)arg0;
-    int r = func_00116108_wide((int *)s->owner, (void *)(int)s->handle, arg1, arg2);
+    int r = reentrant_read((int *)s->owner, (void *)(int)s->handle, arg1, arg2);
     if (r >= 0) {
         s->pos += r;
     } else {
@@ -48,7 +49,6 @@ int __sread(void *arg0, void *arg1, void *arg2) {
    above -- see that note. Here the narrowing lands on the return value
    itself: retail's trailing dsll32/dsra32 pair is _write_r's 64-bit
    result being handed back through this function's int return type. */
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
 
 int __swrite(void *arg0, void *arg1, void *arg2) {
     char *s = (char *)arg0;
@@ -56,7 +56,7 @@ int __swrite(void *arg0, void *arg1, void *arg2) {
         _lseek_r(*(int **)(s + 0x54), (void *)(int)*(short *)(s + 0xE), (void *)0, (void *)2);
     }
     *(unsigned short *)(s + 0xC) &= 0xEFFF;
-    return func_001188C8_wide(*(int **)(s + 0x54), (void *)(int)*(short *)(s + 0xE), arg1, arg2);
+    return _write_r(*(int **)(s + 0x54), (void *)(int)*(short *)(s + 0xE), arg1, arg2);
 }
 
 /* Third of the family. This one keeps the 64-bit type all the way out --

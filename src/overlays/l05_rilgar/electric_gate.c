@@ -440,7 +440,6 @@ void update_fog_zone(Moby *m) {
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int rilgar_level_cuboids_r __asm__("D_L05_001601AC") MACRO_ADDR;
-extern void scale_30F9D0(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern int voice_30F9D0(int, int, void *) __asm__("func_0022ED80");
 extern float advance_30F9D0(float, float, float, float, float *, float *) __asm__("func_00214D88");
@@ -465,7 +464,7 @@ void update_triggered_moby_slide_and_lowering(Moby *moby) {
             e0 = (char *)(rilgar_level_cuboids_r + (data->cuboid << 7));
             qcopy(&moby->pos, e0 + 0x30);
             moby->rot.z = *(float *)(e0 + 0x78);
-            scale_30F9D0(v, e0 + 0x10, data->distance);
+            vec_scale_to_length(v, e0 + 0x10, data->distance);
             if (data->reversed != 0) {
                 FastVecScale(v, v, -1.0f);
                 moby->flags |= 0x8000;
@@ -485,7 +484,7 @@ void update_triggered_moby_slide_and_lowering(Moby *moby) {
             e = (char *)(rilgar_level_cuboids_r + (data->cuboid << 7));
             reach = data->distance * 3.0f;
             pos = 0.0f;
-            scale_30F9D0(v, e + 0x10, reach);
+            vec_scale_to_length(v, e + 0x10, reach);
             if (data->reversed != 0) {
                 FastVecScale(v, v, -1.0f);
             }
@@ -495,7 +494,7 @@ void update_triggered_moby_slide_and_lowering(Moby *moby) {
             speed = FastVecLength(&data->velocity);
             advance_30F9D0(len, g_frame_time_sq_r * 20.0f, g_frame_time_sq_r * 30.0f, g_frame_time_r * 10.0f, &pos,
                            &speed);
-            scale_30F9D0(&data->velocity, v, speed);
+            vec_scale_to_length(&data->velocity, v, speed);
             FastVecAdd(&moby->pos, &moby->pos, &data->velocity);
             if (FastVecLength(v) < 0.01f) {
                 moby->state = 3;
@@ -980,7 +979,6 @@ extern char voice_pool_r[] __asm__("D_0013E650");
 extern char rilgar_camera_pos_r[] __asm__("D_L05_001672C0");
 
 extern int Moby_PlaySound_r() __asm__("func_0022ED80");
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 struct EmitterVars {
     s32 unk0;
@@ -1051,14 +1049,14 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                     o->oclass == 0x357) {
                     if (o != m && (o->state != state || FastVecDist(&m->pos, rilgar_camera_pos_r) <
                                                             FastVecDist(&o->pos, rilgar_camera_pos_r))) {
-                        vec_scale_to_length_r(v, &m->rot_row0, 2.5f);
+                        vec_scale_to_length(v, &m->rot_row0, 2.5f);
                         FastVecAdd(&((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->position, v, &m->pos);
                         ((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->owner = m;
                     }
                 } else {
                     *d->voice = Moby_PlaySound_r(0, 0xD, m);
                     if (*d->voice >= 0) {
-                        vec_scale_to_length_r(v, &m->rot_row0, 2.5f);
+                        vec_scale_to_length(v, &m->rot_row0, 2.5f);
                         FastVecAdd(&((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->position, v, &m->pos);
                     }
                 }
@@ -1077,7 +1075,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                     lim = (*(float *)&D_L05_00161F70_165B8);
                 }
                 qcopy(v, &m->pos);
-                vec_scale_to_length_r(
+                vec_scale_to_length(
                     u, &m->rot_row1,
                     random_float_between(-(*(float *)&D_L05_00161F74_165B8), (*(float *)&D_L05_00161F74_165B8)));
                 FastVecAdd(v, v, u);
@@ -1090,7 +1088,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                 if (a < c) {
                     a = c;
                 }
-                vec_scale_to_length_r(w, &m->rot_row0, a * g_frame_time_r);
+                vec_scale_to_length(w, &m->rot_row0, a * g_frame_time_r);
                 if (big) {
                     scale = (*(float *)&D_L05_00161F60_165B8);
                     kind = (*(int *)&D_L05_00161F58_165B8);

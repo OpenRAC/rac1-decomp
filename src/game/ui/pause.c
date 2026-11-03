@@ -1640,7 +1640,7 @@ extern PadState controller_state_C840 __asm__("D_0013CA40");
 extern u8 item_available_C840[] __asm__("D_0013D5C8");
 extern MenuItemInfo_C840 menu_item_info_C840[] __asm__("D_001864D0");
 extern Hero hero_C840 __asm__("D_0013F450");
-extern s32 item_count_C840(s32) __asm__("func_001E97E8");
+
 extern s32 play_menu_sound_C840() __asm__("func_0022ED80");
 
 /* Adapted from Lombyte's project (GPL-3.0): src/ui/menus/update_menu_grid_selection.c, update_menu_grid_selection. */
@@ -1793,8 +1793,8 @@ s32 update_menu_grid_selection(MenuScreen *grid) {
             if (menu_system_C840.equipped[slot] == entry->id && slot != 0 && slot != 3) {
                 menu_system_C840.equipped[slot] = 0;
             } else if (entry->id == 0x18) {
-                if (item_count_C840(0x18) != 0 && menu_system_C840.state == 3) {
-                    next_columns = item_count_C840(0x18);
+                if (noop_callback_p(0x18) != 0 && menu_system_C840.state == 3) {
+                    next_columns = noop_callback_p(0x18);
                     hero_C840.unk1FF5 = 1;
                     total = hero_C840.ammo_capacity + next_columns;
                     if (total > 6) {
@@ -2523,7 +2523,6 @@ typedef struct {
 extern void font_print_right_r(s32, s32, u64, void *, s32) __asm__("func_001F6CF8");
 extern void FontPrintLarge_r(s32, s32, u64, void *, s32) __asm__("func_001F68E8");
 
-extern void func_00201190_1DE08(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32) __asm__("func_00201190");
 extern void draw_hud_rect_blended_r(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 
 /* Draws the sound options page: the sound and music volume rows, each a right-aligned label
@@ -2552,8 +2551,8 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
     draw_hud_rect_blended_r(border_left, row_height - 8, menu->width - 0x3F, row_height + 8, 0x80696969, 0);
     draw_hud_rect_blended_r(slider_left, row_height - 6, menu->width - 0x41, row_height + 6, 0x80383838, 0);
     slider_length = (menu->width - slider_padding) * sound_volume_r / 1024;
-    func_00201190_1DE08(GetIconFrame(0xE99E, 8), slider_left << 4, (row_height - 6) << 4,
-                        (center_x + 8 + slider_length) << 4, (row_height + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
+    draw_hud_sprite_rect(GetIconFrame(0xE99E, 8), slider_left << 4, (row_height - 6) << 4,
+                         (center_x + 8 + slider_length) << 4, (row_height + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
 
     second_row = row_height + row_height;
     font_print_right_r(label_right, second_row - 8, menu->selected_option == 1 ? 0x8020FFFF : 0x80FFA888,
@@ -2561,8 +2560,8 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
     draw_hud_rect_blended_r(border_left, second_row - 8, menu->width - 0x3F, second_row + 8, 0x80696969, 0);
     draw_hud_rect_blended_r(slider_left, second_row - 6, menu->width - 0x41, second_row + 6, 0x80383838, 0);
     slider_length = (menu->width - slider_padding) * music_volume_r / 1024;
-    func_00201190_1DE08(GetIconFrame(0xE99E, 9), slider_left << 4, (second_row - 6) << 4,
-                        (center_x + 8 + slider_length) << 4, (second_row + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
+    draw_hud_sprite_rect(GetIconFrame(0xE99E, 9), slider_left << 4, (second_row - 6) << 4,
+                         (center_x + 8 + slider_length) << 4, (second_row + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
 
     second_row += row_height;
     font_print_right_r(label_right, second_row - 8, menu->selected_option == 2 ? 0x8020FFFF : 0x80FFA888,
@@ -2618,7 +2617,7 @@ extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 
 extern int menu_system_help_text_buffer;
 extern int disc_table[];
-extern int start_audio_stream_read_3(int, int, int) __asm__("func_00217628");
+extern int start_audio_stream_read(int, int, int);
 
 /* Enter hook for the help text screen: resets the stream buffers, marks the
    bindings above the buffer limit as taken and starts the help audio stream
@@ -2638,7 +2637,7 @@ int enter_menu_help_text(MenuScreen *arg0) {
     }
     arg0->data.raw.load_state = 0;
     if (cd_read_state[4] == 0) {
-        if (start_audio_stream_read_3(menu_system_help_text_buffer, disc_table[0x1528 / 4], disc_table[0x152C / 4]) !=
+        if (start_audio_stream_read(menu_system_help_text_buffer, disc_table[0x1528 / 4], disc_table[0x152C / 4]) !=
             0) {
             arg0->data.raw.load_state = 1;
         } else {
@@ -2694,8 +2693,8 @@ int update_menu_help_text_load(MenuScreen *arg0) {
     switch (arg0->data.raw.load_state) {
         case 0:
             if (cd_read_state[4] == 0) {
-                if (start_audio_stream_read_3(menu_system_help_text_buffer, disc_table[0x1528 / 4],
-                                              disc_table[0x152C / 4]) != 0) {
+                if (start_audio_stream_read(menu_system_help_text_buffer, disc_table[0x1528 / 4],
+                                            disc_table[0x152C / 4]) != 0) {
                     arg0->data.raw.load_state = 1;
                 } else {
                     arg0->data.raw.load_state = 3;
@@ -4112,7 +4111,7 @@ struct ClutImage {
 
 extern MemoryCardState memory_card_state_r2 __asm__("D_0013D390");
 
-extern s64 register_8bit_texture_r2(s32, s32, u8 *, u8 *, s32, s32) __asm__("func_00205660");
+extern s64 register_8bit_texture(s32, s32, u8 *, u8 *, s32, s32);
 
 extern void fast_decompress_r2(u8 *, s32) __asm__("func_0020C468");
 extern s32 start_audio_stream_read_r2(u8 *, s32, s32) __asm__("func_00217628");
@@ -4220,8 +4219,8 @@ s32 update_menu_stream_image(MenuScreen *stream) {
             p420 = b->pixels;
             x = log2dim(b->width);
             y = log2dim(b->height);
-            level_map_selection_r2.tex0 = register_8bit_texture_r2(
-                x, y, p20, p420, level_map_selection_r2.tex_clut_vram, level_map_selection_r2.tex0_vram);
+            level_map_selection_r2.tex0 = register_8bit_texture(x, y, p20, p420, level_map_selection_r2.tex_clut_vram,
+                                                                level_map_selection_r2.tex0_vram);
             flush_pending_texture_uploads();
             stream->data.stream.state = 2;
             break;
@@ -4733,8 +4732,8 @@ int advance_audio_stream_state(MenuScreen *arg0) {
     switch (arg0->data.stream.state) {
         case 0:
             if (arg0->data.stream.buffer[0] != 0 && cd_read_state[4] == 0) {
-                if (start_audio_stream_read_3(arg0->data.stream.buffer[0], disc_table_t.unk2C8[g_game_language].sector,
-                                              disc_table_t.unk2C8[g_game_language].size) != 0) {
+                if (start_audio_stream_read(arg0->data.stream.buffer[0], disc_table_t.unk2C8[g_game_language].sector,
+                                            disc_table_t.unk2C8[g_game_language].size) != 0) {
                     arg0->data.stream.state += 1;
                 } else {
                     arg0->data.stream.state = -1;
@@ -4748,8 +4747,8 @@ int advance_audio_stream_state(MenuScreen *arg0) {
             break;
         case 2:
             if (arg0->data.stream.buffer[1] != 0 && cd_read_state[4] == 0) {
-                if (start_audio_stream_read_3(arg0->data.stream.buffer[1], disc_table_t.unk2F8[g_game_language].sector,
-                                              disc_table_t.unk2F8[g_game_language].size) != 0) {
+                if (start_audio_stream_read(arg0->data.stream.buffer[1], disc_table_t.unk2F8[g_game_language].sector,
+                                            disc_table_t.unk2F8[g_game_language].size) != 0) {
                     arg0->data.stream.state += 1;
                 } else {
                     arg0->data.stream.state = -1;

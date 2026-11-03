@@ -4,8 +4,7 @@
 #include "include_asm.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyutil.h"
-
-extern int func_001160D8(void);
+#include "core/libc/printf_rand.h"
 
 /* Scale by 1 - r*r for a random r in [0, 1), so small results are rarer. */
 float scale_by_one_minus_random_squared(float scale) {

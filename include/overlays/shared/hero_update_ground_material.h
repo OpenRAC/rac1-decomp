@@ -10,6 +10,7 @@ extern int HeroL01_TryTakeHit(int);
 extern void air_accel(float);
 extern void clip_hero_horizontal_velocity(int);
 extern void enter_hero_vehicle_mode_and_set_moby(int, int, int);
+extern void exit_hero_vehicle_mode_and_restore_moby(void);
 extern int get_hero_idle_animation_index(int);
 extern void hero_frame_update(void);
 extern void hero_speed_from_table(void);

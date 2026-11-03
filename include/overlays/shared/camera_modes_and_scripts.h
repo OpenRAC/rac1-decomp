@@ -7,6 +7,7 @@
 
 extern void CameraScript(void *, void *, int, int, int);
 extern void CameraScript2(int);
+extern int initialize_mode6_orbit_camera(void *);
 extern void select_camera_mode_by_hero_alignment_and_distance(int);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);

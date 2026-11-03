@@ -35,7 +35,7 @@ void gold_bolt_update(Moby *moby) {
             if (!random_integer_below(D_L01_00161FE0_00309078)) {
                 spawn_gold_bolt_particles_r(moby);
             }
-            if (!(dist_00309078(&moby->pos, &hero_00309078.motion.pos) < 3.0f)) {
+            if (!(vec_distance_xy(&moby->pos, &hero_00309078.motion.pos) < 3.0f)) {
                 return;
             }
             if (!(FastAbsF(moby->pos.z - hero_00309078.motion.pos.f[2]) < 2.0f)) {
@@ -64,7 +64,7 @@ void gold_bolt_update(Moby *moby) {
             look.z = FastAddRots(vars->home.w, 3.1415927f);
             FadeToBlack(scale_ticks(10));
             if (hero_00309078.vehicle_mode == 3) {
-                exit_hero_vehicle_mode_and_restore_moby_r();
+                exit_hero_vehicle_mode_and_restore_moby();
             }
             Hero_ResetToPosition(&at, &look, 0x72, 0);
             voice_00309078(0, 0, moby);

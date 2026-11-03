@@ -973,7 +973,7 @@ extern s32 intro_overlay_alpha_r __asm__("D_0015F050") MACRO_ADDR;
 extern s32 language_intro_overlay_alpha_r __asm__("D_0015F054") MACRO_ADDR;
 extern s32 g_game_mode_r __asm__("D_0015F6E8") MACRO_ADDR;
 extern s32 pad0_pressed_r[] __asm__("D_0013CBE4");
-extern void initialize_transfer_command_r(void) __asm__("func_00219E60");
+
 extern void noop_callback_e_r(RenderSequenceActor *) __asm__("func_001E9790");
 
 extern void Transition_UpdateMovieCamera_r(void) __asm__("func_001EB338");
@@ -981,11 +981,8 @@ extern void Transition_UpdateMovieCamera_r(void) __asm__("func_001EB338");
 extern void FastVecAdd_r(Vec4A *, Vec4A *, Vec4A *) __asm__("func_001F9BD8");
 extern void FastVecScale_r(Vec4A *, Vec4A *, f32) __asm__("func_001F9C30");
 
-extern void update_mode_freeze_r(void) __asm__("func_001FD3E8");
-
 extern void update_moby_animation_state_r(RenderSequenceActor *) __asm__("func_0020D6D0");
 extern void refresh_moby_spatial_bounds_r(RenderSequenceActor *) __asm__("func_0020ED48");
-extern void update_menu_system_r(void) __asm__("func_0021A1A0");
 
 /* One frame of the space-flight sequence between levels: steps the sequence clock and its
    scene chunks, the movie camera, each actor's animation frame and interpolated position,
@@ -1049,7 +1046,7 @@ void update_gameplay_frame(void) {
                 0x60;
         }
         if (pad0_pressed_r[0] & 0x840) {
-            initialize_transfer_command_r();
+            initialize_transfer_command();
         }
         sound_update();
     } else if (g_game_mode_r == 3) {
@@ -1060,10 +1057,10 @@ void update_gameplay_frame(void) {
         if ((language_intro_overlay_alpha_r -= 0x10) < 0) {
             language_intro_overlay_alpha_r = 0;
         }
-        update_menu_system_r();
+        update_menu_system();
         sound_update();
     } else if (g_game_mode_r == 4) {
-        update_mode_freeze_r();
+        update_mode_freeze();
         sound_update();
     }
 }
@@ -1253,7 +1250,7 @@ extern volatile s32 tex_base_BB48 __asm__("D_0015EF8C") MACRO_ADDR;
 extern s32 D_0015F538 MACRO_ADDR;
 
 extern void transition_load_wad_BB48(void) __asm__("func_001EABE8");
-extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
+extern s32 Load(u8 *dst, s32 sector, s32 size);
 
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
 
@@ -1292,24 +1289,24 @@ void transition_do_transition(void) {
     hdr = (WadHeader_BB48 *)p;
     p = (u8 *)hdr + 0x60;
     level_root = hdr;
-    first_size = load_BB48(p, ((DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->sector,
-                           ((DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->size);
+    first_size = Load(p, ((DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->sector,
+                      ((DiscFile_BB48 *)((DiscFile_BB48 *)&tbl->wad_chunks[1]))->size);
     hdr->chunk[1].size = first_size;
     hdr->chunk[1].off = p - (u8 *)hdr;
     p += ((u32)first_size + 0xF) & alignment_mask;
-    hdr->chunk[2].size = load_BB48(p, tbl->wad_chunks[2].sector, tbl->wad_chunks[2].size);
+    hdr->chunk[2].size = Load(p, tbl->wad_chunks[2].sector, tbl->wad_chunks[2].size);
     hdr->chunk[2].off = p - (u8 *)hdr;
     p += ((u32)hdr->chunk[2].size + 0xF) & alignment_mask;
-    hdr->chunk[3].size = load_BB48(p, tbl->wad_chunks[3].sector, tbl->wad_chunks[3].size);
+    hdr->chunk[3].size = Load(p, tbl->wad_chunks[3].sector, tbl->wad_chunks[3].size);
     hdr->chunk[3].off = p - (u8 *)hdr;
     p += ((u32)hdr->chunk[3].size + 0xF) & alignment_mask;
-    hdr->chunk[4].size = load_BB48(p, tbl->wad_chunks[4].sector, tbl->wad_chunks[4].size);
+    hdr->chunk[4].size = Load(p, tbl->wad_chunks[4].sector, tbl->wad_chunks[4].size);
     hdr->chunk[4].off = p - (u8 *)hdr;
     p += ((u32)hdr->chunk[4].size + 0xF) & alignment_mask;
-    hdr->chunk[5].size = load_BB48(p, tbl->wad_chunks[5].sector, tbl->wad_chunks[5].size);
+    hdr->chunk[5].size = Load(p, tbl->wad_chunks[5].sector, tbl->wad_chunks[5].size);
     hdr->chunk[5].off = p - (u8 *)hdr;
     p += ((u32)hdr->chunk[5].size + 0xF) & alignment_mask;
-    hdr->chunk[0].size = load_BB48(p, tbl->wad_chunks[0].sector, tbl->wad_chunks[0].size);
+    hdr->chunk[0].size = Load(p, tbl->wad_chunks[0].sector, tbl->wad_chunks[0].size);
     hdr->chunk[0].off = p - (u8 *)hdr;
     Hud_HeapReset();
     initialize_sif_rpc();

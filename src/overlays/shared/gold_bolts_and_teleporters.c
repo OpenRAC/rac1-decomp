@@ -43,6 +43,7 @@
 #include "overlays/l01_novalis/hero_idle_and_items.h"
 #include "overlays/shared/moby_context_table.h"
 #include "overlays/shared/visibomb_and_pyrocitor.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -134,11 +135,6 @@ extern f32 g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern short D_0015EE70_F7700 SDATA(D_0015EE70);
 
-extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern f32 vec_length_xy_r(void *) __asm__("func_001F9CE8");
-
-extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
-
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern s32 find_nearest_path_point(void *, void *, void *, s32 *, f32 *, s32, f32, f32, f32);
 extern s32 Spline_AdvanceByDistance_r(void *, void *, s32 *, f32 *, s32, f32) __asm__("func_L00_0025E860");
@@ -188,7 +184,7 @@ void update_rail_hero_motion(struct Moby *m) {
     for (k = 0; k < d->count; k++) {
         path = novalis_paths_r[d->paths[k]];
         find_nearest_path_point(path, &g_hero_r.motion.pos, &pt, &seg, &t, 0, 999.0f, 5.0f, 0.0f);
-        dist = vec_distance_xy_r(&g_hero_r.motion.pos, &pt);
+        dist = vec_distance_xy(&g_hero_r.motion.pos, &pt);
         if (dist < best) {
             best_path = path;
             qcopy(&best_pt, &pt);
@@ -221,7 +217,7 @@ void update_rail_hero_motion(struct Moby *m) {
     }
     if (end == 0) {
         FastVecSub(&dir, &pt, &best_pt);
-        g_hero_r.rail_ride_pitch = fast_atan2(vec_length_xy_r(&dir), dir.f[2]);
+        g_hero_r.rail_ride_pitch = fast_atan2(vec_length_xy(&dir), dir.f[2]);
         g_hero_r.rail_yaw = fast_atan2(dir.f[0], dir.f[1]);
         dir.i[2] = 0;
         if (g_hero_r.unk9DC < d->speed) {
@@ -230,12 +226,12 @@ void update_rail_hero_motion(struct Moby *m) {
             ApproachValue_r(&g_hero_r.unk9DC, d->speed, (*(f32 *)&D_0015EE70_F7700) * 6.0f);
         }
         if (0.001f < FastVecLength(&dir)) {
-            vec_scale_to_length_r(&g_hero_r.motion.platform_delta, &dir, g_hero_r.unk9DC);
+            vec_scale_to_length(&g_hero_r.motion.platform_delta, &dir, g_hero_r.unk9DC);
         }
         FastVecSub(&pull, &best_pt, &g_hero_r.motion.pos);
         rate = g_frame_time_r * 5.0f;
         pull.f[2] = 0.0f;
-        drag = -vec_length_xy_r(&pull);
+        drag = -vec_length_xy(&pull);
         Spring(&drag, 0.0f, &g_hero_r.rail_pull_step, g_frame_scale_sq_r * 0.008f, g_frame_scale_sq_r * 0.3f, rate);
         {
             f32 len = FastVecLength(&pull);
@@ -243,7 +239,7 @@ void update_rail_hero_motion(struct Moby *m) {
                 g_hero_r.rail_pull_step = len;
             }
             if (g_hero_r.rail_pull_step < len) {
-                vec_scale_to_length_r(&pull, &pull, g_hero_r.rail_pull_step);
+                vec_scale_to_length(&pull, &pull, g_hero_r.rail_pull_step);
             }
         }
         FastVecAdd(&g_hero_r.motion.platform_delta, &g_hero_r.motion.platform_delta, &pull);
@@ -484,8 +480,6 @@ extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern struct Moby *CreateMoby_r(s32) __asm__("func_0020D348");
 extern void copy_hero_moby_field_38(struct Moby *);
 
-extern s32 func_001160D8_F9908(void) __asm__("func_001160D8");
-
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
 
@@ -517,7 +511,7 @@ struct Moby *spawn_debris_moby(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a
         qcopy(&m->pos, pp);
         qcopy(&pv->vel, vp);
         r = random_float_between(g_frame_time_r * 1.5707964f, g_frame_time_r * 6.2831855f);
-        if (func_001160D8_F9908() & 1) {
+        if (func_001160D8() & 1) {
             s = -r * spin;
         } else {
             s = r * spin;
@@ -671,8 +665,6 @@ extern int g_current_level_index_c __asm__("D_0015EE84") MACRO_ADDR;
 extern char help_stats_base_c[] __asm__("D_0014171B");
 extern int STUB_printf_c(void *, int, int) __asm__("func_001E9730");
 
-extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
-
 /* Cutscene trigger: unless already seen, starts its camera sequence when the hero enters the volume (or it is
  * triggered), then ends it after its timer and re-arms. */
 void update_cutscene_trigger(Moby *m) {
@@ -737,7 +729,7 @@ void update_cutscene_trigger(Moby *m) {
             break;
         }
         case 2:
-            if (fast_dec_timer_c(&d->duration) != 0 || m->command != 1) {
+            if (fast_dec_timer(&d->duration) != 0 || m->command != 1) {
                 if (d->scripted != 0) {
                     CameraScript2(2);
                 } else {
@@ -931,12 +923,12 @@ void the_plumber_update(char *m) {
             if (FastVecLength(hero_position + 0x80) > 0.01f)
                 plumber_vars->moving_timer = scale_ticks(120);
             else
-                fast_dec_timer_c(&plumber_vars->moving_timer);
+                fast_dec_timer(&plumber_vars->moving_timer);
         } else if (plumber_vars->moving_timer != 0) {
             plumber_vars->moving_timer = 0;
             qcopy(&plumber_vars->target, hero_F7700.motion.body_center.f);
         }
-        if (fast_dec_timer_c(&plumber_vars->target_timer)) {
+        if (fast_dec_timer(&plumber_vars->target_timer)) {
             float heading;
             plumber_vars->target_timer =
                 truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 300.0f)));
@@ -1215,7 +1207,6 @@ extern f32 D_L01_00161FB8_00309078 SDATA(D_L01_00161FB8);
 extern f32 D_L01_00161FBC_00309078 SDATA(D_L01_00161FBC);
 extern s32 D_L01_00161FE0_00309078 SDATA(D_L01_00161FE0);
 
-extern void exit_hero_vehicle_mode_and_restore_moby_r(void) __asm__("func_L01_00231A68");
 extern int voice_00309078(int, int, void *) __asm__("func_0022ED80");
 extern void set_seq_00309078(Moby *, s32, s32, s32) __asm__("func_00213DE0");
 extern void set_hero_animation_r(f32, s32, s32) __asm__("func_L00_00232C10");
@@ -1225,7 +1216,6 @@ extern void update_gold_bolt_glow_rings_r(Moby *) __asm__("func_L01_00309928");
 extern void update_gold_bolt_visuals_r(Moby *) __asm__("func_L01_00309758");
 extern void update_gold_bolt_pickup_camera_r(Moby *) __asm__("func_L01_00309BB8");
 extern void spawn_gold_bolt_particles_r(Moby *) __asm__("func_L01_00309DC8");
-extern f32 dist_00309078(void *, void *) __asm__("func_001F9D48");
 
 extern int countdown_00309078(int *) __asm__("func_001F9908");
 
@@ -1271,7 +1261,7 @@ void gold_bolt_update(Moby *moby) {
             if (!random_integer_below(D_L01_00161FE0_00309078)) {
                 spawn_gold_bolt_particles_r(moby);
             }
-            if (!(dist_00309078(&moby->pos, &hero_00309078.motion.pos) < 3.0f)) {
+            if (!(vec_distance_xy(&moby->pos, &hero_00309078.motion.pos) < 3.0f)) {
                 return;
             }
             if (!(FastAbsF(moby->pos.z - hero_00309078.motion.pos.f[2]) < 2.0f)) {
@@ -1300,7 +1290,7 @@ void gold_bolt_update(Moby *moby) {
             look.z = FastAddRots(vars->home.w, 3.1415927f);
             FadeToBlack(scale_ticks(10));
             if (hero_00309078.vehicle_mode == 3) {
-                exit_hero_vehicle_mode_and_restore_moby_r();
+                exit_hero_vehicle_mode_and_restore_moby();
             }
             Hero_ResetToPosition(&at, &look, 0x72, 0);
             voice_00309078(0, 0, moby);
@@ -2439,8 +2429,6 @@ void try_fire_sandmouse_projectile(char *moby, char *state) {
     }
 }
 
-extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-
 struct HoverVars {
     Vec4 goal; /* 0x00: point it flies back to */
     Vec4 vel; /* 0x10 */
@@ -2486,11 +2474,11 @@ void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars *p) {
 
     FastVecSub(&v, p, &m->pos);
     if (m->state == 6) {
-        d = vec_distance_xy_r2(&m->pos, &p->unk30);
+        d = vec_distance_xy(&m->pos, &p->unk30);
     } else {
-        d = vec_distance_xy_r2(&m->pos, &g_hero_r.motion.pos);
+        d = vec_distance_xy(&m->pos, &g_hero_r.motion.pos);
     }
-    vec_distance_xy_r2(&m->pos, p);
+    vec_distance_xy(&m->pos, p);
     switch (m->command) {
         case 0:
             ang = fast_atan2(p->goal.f[0] - m->pos.x, p->goal.f[1] - m->pos.y);
@@ -2647,7 +2635,6 @@ extern void jet_animate(void *, f32);
 extern void set_hero_animation_v(f32, int, int) __asm__("func_L00_00232C10");
 
 extern void add_random_offset_to_vector_xyz(void *, f32);
-extern int func_001160D8(void);
 
 extern Moby *sandmouse_grab_moby;
 extern int g_current_level_index MACRO_ADDR;

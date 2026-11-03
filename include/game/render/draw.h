@@ -40,6 +40,7 @@ extern void configure_graphics_render_target_and_projection(int, int, int, float
 extern void dispatch_callback_list_1(void);
 extern void draw_outlined_rect(int, int, int, int, int);
 extern void emit_rgba_draw_packet(int, int, int, int);
+extern void enqueue_callback_list_4(void *, void *);
 extern void font_print_right(int, int, int, void *, int);
 extern void font_print_right_large(int, int, unsigned long, void *, int);
 extern void font_print_right_small(int, int, long, void *, int);

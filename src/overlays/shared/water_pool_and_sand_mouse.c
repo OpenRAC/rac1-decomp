@@ -41,6 +41,8 @@
 #include "overlays/shared/moby_context_table.h"
 #include "overlays/shared/rig_probe_setup.h"
 #include "overlays/shared/vendor_screen_init.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -1515,7 +1517,6 @@ extern float hover_target_yaw_spring_strength_degrees_gp SDATA(hover_target_yaw_
 extern float hover_target_yaw_damping_degrees_gp SDATA(hover_target_yaw_damping_degrees_gp);
 extern float hover_target_yaw_turn_rate_limit_degrees_gp SDATA(hover_target_yaw_turn_rate_limit_degrees_gp);
 extern float hover_ground_animation_height_threshold_gp SDATA(hover_ground_animation_height_threshold_gp);
-extern int func_001160D8(void);
 
 extern void MobySpringTurn_v(void *, float, void *, float, float, float) __asm__("func_L00_002592B0");
 
@@ -1702,7 +1703,6 @@ extern int sand_mouse_fade_particle_color_alpha_gp SDATA(sand_mouse_fade_particl
 extern float sand_mouse_fade_particle_time_squared_coefficient_gp
     SDATA(sand_mouse_fade_particle_time_squared_coefficient_gp);
 
-extern int func_001160D8(void);
 extern void MobySpringTurn_r(void *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 
@@ -2069,7 +2069,6 @@ extern int follow_path_v(int *, int, int, float, void *, void *, void *) __asm__
 
 extern void PostHitMessage_r(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
-extern void SetDeathBits(void *, int, int);
 extern int IsFrameWithinWindow_v(float, void *) __asm__("func_00215B18");
 
 extern int truncate_float_to_s32(float);
@@ -2803,7 +2802,6 @@ extern s32 D_L01_00161ABC_0B48 SDATA(D_L01_00161ABC);
 extern s32 D_L01_00161AC0_0B48 SDATA(D_L01_00161AC0);
 extern s32 D_L01_00161AC4_0B48 SDATA(D_L01_00161AC4);
 extern f32 D_L01_00161AC8_0B48 SDATA(D_L01_00161AC8);
-extern void add_random_offset_to_vector_xyz_r(void *, f32) __asm__("func_L00_00260958");
 
 extern int FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
 
@@ -2826,7 +2824,7 @@ void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
         origin_copy = origin;
         do {
             qcopy_nc(dest, source);
-            add_random_offset_to_vector_xyz_r(dest, D_L01_00161A84_0B48 * data->size);
+            add_random_offset_to_vector_xyz(dest, D_L01_00161A84_0B48 * data->size);
             pos[2] += 1.0f;
             angle = random_angle_radians();
             radius = random_float_between(D_L01_00161A90_0B48, D_L01_00161A94_0B48);
@@ -2847,8 +2845,8 @@ void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
                 scale = random_float_between(0.5f, 1.5f);
                 origin[3] = scale * D_L01_00161AA4_0B48;
                 velocity[3] = scale * D_L01_00161AA8_0B48;
-                add_random_offset_to_vector_xyz_r(pos, D_L01_00161A88_0B48);
-                add_random_offset_to_vector_xyz_r(velocity, D_L01_00161A8C_0B48 * g_frame_time_r);
+                add_random_offset_to_vector_xyz(pos, D_L01_00161A88_0B48);
+                add_random_offset_to_vector_xyz(velocity, D_L01_00161A8C_0B48 * g_frame_time_r);
                 lower = FastTweenColor_r(random_float_between(0.0f, 1.0f), D_L01_00161AAC_0B48, D_L01_00161AB4_0B48);
                 upper = FastTweenColor_r(random_float_between(0.0f, 1.0f), D_L01_00161AB0_0B48, D_L01_00161AB8_0B48);
                 first = scale_ticks(D_L01_00161ABC_0B48);
@@ -3098,8 +3096,6 @@ extern u8 D_0014C010[];
 extern s32 *novalis_paths_r[] __asm__("D_L01_001B0C30");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 
-extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002f2eb8. */
 void update_nearest_area_moby_selection(struct Moby *m) {
     AreaVars *v = (AreaVars *)m->pvars;
@@ -3155,7 +3151,7 @@ void update_nearest_area_moby_selection(struct Moby *m) {
         return;
     }
 in_range:
-    d = vec_distance_xy_r(&m->pos, &target);
+    d = vec_distance_xy(&m->pos, &target);
     if (d < g_hero_r.detector_target_dist) {
         g_hero_r.metal_detector_target = m;
         g_hero_r.detector_target_dist = d;

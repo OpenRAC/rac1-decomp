@@ -50,7 +50,7 @@ void update_enemy_fighter(struct Moby *moby) {
             advance_enemy_fighter_along_flight_path_r(moby);
             break;
         case 2:
-            if (fast_dec_timer_r(&data->timer)) {
+            if (fast_dec_timer(&data->timer)) {
                 path = oltanis_paths_r3[data->path];
                 moby->flags &= 0xffbe;
                 moby->collision = moby->pclass->collision;

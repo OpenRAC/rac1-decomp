@@ -37,6 +37,8 @@
 #include "game/render/partupd.h"
 #include "overlays/l02_aridia/hero_idle_and_item_input.h"
 #include "overlays/l02_aridia/background_ship_and_skid.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -229,8 +231,6 @@ void emit_sand_shark_dust_burst(void *moby) {
 
 extern void handle_sand_shark_damage_and_targeting(unsigned char *moby);
 
-extern int func_001160D8(void);
-
 extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 
@@ -241,8 +241,6 @@ extern void begin_sand_shark_return_home_if_outside_path(unsigned char *moby);
 extern void emit_sand_shark_radial_particles(void *pos, int n);
 
 extern int CarriedMobyUpdate(void *, void *);
-
-extern void SetDeathBits(void *, int, int);
 
 extern int select_group_sand_shark_nest_moby(void *argp);
 
@@ -1323,7 +1321,6 @@ void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
 }
 
 extern void handle_level02_bot_damage_and_retargeting(void *);
-extern int func_001160D8(void);
 
 /* The angle before the pointer: argument moves follow the parameter order, and retail loads $f12 before $a1 in state
    11. */
@@ -1332,7 +1329,6 @@ extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, floa
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 
-extern void SetDeathBits(void *, int, int);
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 /* The scale before the three vectors, as the other level files declare it. */
@@ -3290,8 +3286,6 @@ extern short D_L02_00161D58_2E1B58 SDATA(D_L02_00161D58);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
 
 typedef struct {
@@ -3352,7 +3346,7 @@ void rocks_update(unsigned char *moby) {
         *(u128 *)A = *(u128 *)B;
         FastVecAdd(A, A, &((struct Moby *)moby)->pos);
         k = random_float_between(1.5f, 3.5f) * g_frame_time_r;
-        vec_scale_to_length_r(C, C, k);
+        vec_scale_to_length(C, C, k);
         s = random_float_between(1.5f, 3.5f) * 210000.0f;
         r = scale_ticks(rand_range(120, 240));
         spawn_effect_particle_with_target_scalar(A, C, *(int *)&D_L02_00161D54_2E1B58, *(int *)&D_L02_00161D58_2E1B58,
@@ -3379,7 +3373,7 @@ void rocks_update(unsigned char *moby) {
         *(u128 *)B = *(u128 *)D;
         FastVecAdd(B, B, &((struct Moby *)moby)->pos);
         k = random_float_between(1.0f, 5.0f) * g_frame_time_r;
-        vec_scale_to_length_r(A, A, k);
+        vec_scale_to_length(A, A, k);
         pc = (unsigned int *)C + random_integer_below(3);
         s = random_float_between(0.05f, 0.15f);
         n = rand_range(60, 180);

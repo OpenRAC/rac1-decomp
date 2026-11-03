@@ -42,6 +42,8 @@
 #include "overlays/l17_fleet/trail_particles.h"
 #include "overlays/l17_fleet/moby_class_flag_update.h"
 #include "game/ui/help.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -677,8 +679,6 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
 }
 typedef int u128_2D8CC8 __attribute__((mode(TI)));
 
-extern int func_001160D8(void);
-
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle_v(float *pos, char *vel, int color,
                                                                        unsigned char life, unsigned char b, int mode,
                                                                        float scale) __asm__("func_L00_00273F80");
@@ -912,9 +912,6 @@ void draw_fleet_scrolling_radial_quads(char *moby) {
     }
 }
 
-extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
-
 extern float fleet_bobber_height SDATA(fleet_bobber_height);
 extern float fleet_bobber_rate_deg SDATA(fleet_bobber_rate_deg);
 extern char *fleet_coll_hit_moby;
@@ -937,7 +934,7 @@ void update_fleet_bobbing_moby(char *m) {
     r = (struct HitMessage *)MobyGetHitMessage(m, 0x230000, 0);
     ComputeHitResponse(m, r, &data->health, 0, &out, 0, 0, 4);
     if (out >= 2 && r != 0 && *(short *)(r->source + 0xA6) != 0x343) {
-        spawn_explosion_alt(m, v, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 1, 7.0f, 0, 1, -1, 0);
+        spawn_explosion(m, v, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 1, 7.0f, 0, 1, -1, 0);
         DeleteMoby(m);
         return;
     }
@@ -957,7 +954,7 @@ void update_fleet_bobbing_moby(char *m) {
             if (*(char **)&g->coll_hit_moby == m || *(char **)&g->unk240 == m ||
                 coll_sphere_mobys(1.0f, pos, 0x10, m, w)) {
                 if (fleet_coll_hit_moby != 0 && *(short *)(fleet_coll_hit_moby + 0xA6) != 0x343) {
-                    spawn_explosion_alt(m, v, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 1, 7.0f, 0, 1, -1, 0);
+                    spawn_explosion(m, v, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 1, 7.0f, 0, 1, -1, 0);
                     ((Moby *)m)->pos.z = ((Moby *)m)->pos.z + 1.0f;
                     yy = resolve_camera_surface_height((float *)(m + 0x10), q);
                     ((Moby *)m)->pos.z = ((Moby *)m)->pos.z - 1.0f;
@@ -2254,16 +2251,16 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
                         vec_reflect(vel, dir, p + 0x40);
                         vec_scale_to_length(vel, vel, g_frame_time + g_frame_time);
                         vec_scale_to_length(up, p + 0x40, 1.0f);
-                        spawn_explosion_alt(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 1.0f, -1,
-                                            50.0f, 1, 1, -1, 0);
+                        spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 1.0f, -1, 50.0f, 1,
+                                        1, -1, 0);
                         m->state = 7;
                     }
                     o->iDC = fleet_jet_wall_hit_cooldown;
                 }
             } else {
                 *(int *)&g_hero.ship_hp = 0;
-                spawn_explosion_alt(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 1.0f, -1, 50.0f, 1, 1,
-                                    -1, 0);
+                spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 1.0f, -1, 50.0f, 1, 1, -1,
+                                0);
                 o->s62 = fleet_jet_crash_time;
                 m->state = 7;
                 m->flags |= 0x41;
@@ -3109,7 +3106,6 @@ typedef struct {
     int c2BC;
 } Vars1382;
 
-extern void SetDeathBits(void *, int, int);
 extern short class1382_move_params;
 
 /* UpdateMoby for Robot Dog: hides or shows the moby by its clip volumes, then runs its state machine. */

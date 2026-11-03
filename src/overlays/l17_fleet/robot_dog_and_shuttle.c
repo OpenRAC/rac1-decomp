@@ -36,6 +36,7 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "asm_functions/level_08.h"
 #include "overlays/l17_fleet/hero_idle_and_items.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -1705,7 +1706,6 @@ char *try_activate_blarg_ship_from_list(int list) {
     } while (*s++ >= 0);
     return 0;
 }
-extern void SetDeathBits(void *, int, int);
 
 /* UpdateMoby 1873: wait for a target, then play two effects and delete itself. */
 void Moby1873Update(unsigned char *m) {

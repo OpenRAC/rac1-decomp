@@ -45,6 +45,8 @@
 #include "game/render/partupd.h"
 #include "overlays/l13_gemlik/space_fighters_and_rockets.h"
 #include "overlays/l13_gemlik/scene_controller.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -154,8 +156,6 @@ extern char gemlik_reference_axis_r[] __asm__("D_L13_00160700") MACRO_ADDR;
 
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, void *) __asm__("func_L00_00250800");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l13/gameplay/entities/002ea8c8.c, FUN_L13_002ea8c8. */
@@ -204,17 +204,17 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
         step = 1.0f;
     else
         step = scale;
-    vec_scale_to_length_r(direction, direction, step);
+    vec_scale_to_length(direction, direction, step);
     qcopy(position, start);
     distance = zero;
-    vec_scale_to_length_r(offset, direction, IntToFloat(gemlik_frame_count % 20) / 20.0f);
+    vec_scale_to_length(offset, direction, IntToFloat(gemlik_frame_count % 20) / 20.0f);
     FastVecSub(position, position, offset);
     while (distance < length) {
         width = (distance * 0.0f) / (length + length) + 0.5f;
         FastVecCross(side, direction, gemlik_reference_axis_r);
-        vec_scale_to_length_r(side, side, width);
+        vec_scale_to_length(side, side, width);
         FastVecCross(up, direction, side);
-        vec_scale_to_length_r(up, up, width);
+        vec_scale_to_length(up, up, width);
         FastVecSub(edge, position, up);
         FastVecSub(&quad.positions[0], edge, side);
         FastVecAdd(&quad.positions[1], edge, side);
@@ -2004,15 +2004,12 @@ bounds:
 #undef D_L13_0015F580_p
 #undef D_L13_00174140_p
 #undef func_L13_00306EF0_r
-extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                  float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Spawns a damaging explosion at the attached rocket's position. */
 void spawn_attached_rocket_explosion(char *moby) {
     char vector[16];
     clear_u64_value(vector);
-    func_L00_0025F4A8_alt(moby, vector, moby + 0x10, 2.0f, 1.0f, 12, 4, 18, 4.0f, 3.0f, 1.0f, 2.0f, 0, 20.0f, 1, 1, -1,
-                          0);
+    spawn_explosion(moby, vector, moby + 0x10, 2.0f, 1.0f, 12, 4, 18, 4.0f, 3.0f, 1.0f, 2.0f, 0, 20.0f, 1, 1, -1, 0);
 }
 
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
@@ -2356,12 +2353,9 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
     }
 }
 
-extern void SetDeathBits(void *, int, int);
-
 extern void spawn_poison_vessel_destruction_effects(void *, void *);
 
 /* KEPT: the calls disagree on where the float goes: the argument order changes the moves. */
-extern int coll_sphere_mobys_v(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 extern char poison_vessel_hit_fmt[];
 extern char sphere_hits_ed158[];
@@ -2486,7 +2480,7 @@ void poison_vessel_1261_update(char *moby) {
             span = IntToFloat(scale_ticks(poison_vessel_blast_ticks));
             radius = interpolate_scalar_linear(poison_vessel_blast_radius_start, poison_vessel_blast_radius_end,
                                                elapsed / span);
-            hits = coll_sphere_mobys_v(radius, pos, 0x10, m, 0);
+            hits = coll_sphere_mobys(radius, pos, 0x10, m, 0);
             SendRadialMessageToMobys(m, pos, sphere_hits_ed158, hits, 0, 0x830001, 2, 1, poison_vessel_blast_damage,
                                      one, one);
             g = (float)vars->timer;
@@ -2563,7 +2557,6 @@ extern void update_blarg_space_commando_damage_targeting_and_ground_motion(struc
 
 extern void SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 
-extern int func_001160D8(void);
 extern void resolve_point_path_segment_xy_clearance_v(int, void *, void *, float) __asm__("func_L00_00262DF0");
 
 extern void initialize_gemlik_trail_v(char *m) __asm__("func_L13_0030A828");
@@ -3108,9 +3101,6 @@ extern float D_L13_00161F0C_30A9B0 SDATA(D_L13_00161F0C);
 extern char gemlik_coll_hit_result_r[] __asm__("D_L13_001741C0");
 extern char func_L06_00300AB0[];
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-
-extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
@@ -3140,7 +3130,7 @@ void update_gemlik_trail(Moby *m) {
     int flags = 0x10001;
 
     A = truncate_float_to_s32_r2(d->f1F0.w);
-    fast_dec_timer_r(&A);
+    fast_dec_timer(&A);
     d->f1F0.w = (float)A;
     if (A == 0) {
         return;
@@ -3156,11 +3146,11 @@ void update_gemlik_trail(Moby *m) {
     for (i = 0; i < 16; i++) {
         FastVecSub(&v0, &d->pt[i], &d->f1F0);
         v0.z = 0.0f;
-        vec_scale_to_length_r2(&v0, &v0, D_L13_00161F0C_30A9B0 * g_frame_time_r);
+        vec_scale_to_length(&v0, &v0, D_L13_00161F0C_30A9B0 * g_frame_time_r);
         FastVecAdd(&v0, &d->pt[i], &v0);
         FastVecSub(&u.s.r, &v0, &*(V4_30A9B0 *)&m->pos);
         dd = FastVecDot(&u.s.r, &d->f200);
-        vec_scale_to_length_r2(&u.s.v20, &d->f200, -dd + 0.35f);
+        vec_scale_to_length(&u.s.v20, &d->f200, -dd + 0.35f);
         FastVecAdd(&u.s.r, &u.s.r, &u.s.v20);
         f20 = u.s.v20.z;
         qcopy(&v30, &d->pt[i]);
@@ -3294,7 +3284,6 @@ extern int gemlik_pool_tile_count MACRO_ADDR;
 extern int gemlik_pool_override_tile SDATA(gemlik_pool_override_tile);
 extern unsigned short gemlik_pool_override_color;
 
-extern void pool_ripple(float, float, float, float, void *, int);
 extern void RippleDisturb_v(float, float, float, float, void *, int, int) __asm__("func_L00_002A5158");
 extern int check_scaled_vector_bsphere_v(float, void *) __asm__("func_L01_00276680");
 extern void render_level13_water_grids(void);

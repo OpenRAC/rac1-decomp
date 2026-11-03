@@ -786,13 +786,10 @@ extern LevelFx D_L02_001B2980_ED358 __asm__("D_L02_001B2980");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
-extern f32 vec_length_xy_r(void *) __asm__("func_001F9CE8");
 
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 
 extern void fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-
-extern void rand_vec_r(void *, f32, f32) __asm__("func_L00_00258DB0");
 
 /* Shard debris update: drifts along its velocity, sheds particle trails and expires when its timer runs out.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002ebf20. */
@@ -813,7 +810,7 @@ void update_shard_debris(struct Moby *m) {
     }
     FastVecAdd(&m->pos, &m->pos, &v->vel);
     ApproachValue_r(&v->vel.z, 0.0f, (*(f32 *)&D_L02_00161FE8_ED358) * g_frame_time_sq_r);
-    m->rot.y = 1.5707964f - fast_atan2(vec_length_xy_r(&v->vel), v->vel.z);
+    m->rot.y = 1.5707964f - fast_atan2(vec_length_xy(&v->vel), v->vel.z);
     qcopy(&p, &m->pos);
     FastVecScale(&half, &v->vel, 0.5f);
     FastVecScale(&back, &v->vel, -0.1f);
@@ -827,7 +824,7 @@ void update_shard_debris(struct Moby *m) {
             q[9] = truncate_float_to_s32_r(4.0f) - 0x80;
         }
         FastVecAdd(&p, &p, &half);
-        rand_vec_r(&jit, 0.5f, 1.5f);
+        rand_vec(&jit, 0.5f, 1.5f);
         FastVecAdd(&p, &p, &jit);
     }
     q = PartType44Spawn(&m->pos, &back, scale_ticks(6), shard_debris_head_color >> 24,
@@ -1166,12 +1163,7 @@ extern int D_L02_001621F0_2F0458 SDATA(D_L02_001621F0);
 extern int D_L02_001621F4_2F0458 SDATA(D_L02_001621F4);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-
-extern void rand_vec_r2(void *, float, float) __asm__("func_L00_00258DB0");
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 /* Level 02 moby update (class 1479): state 0 sets up, states 1 and 2 emit particle bursts from two parameter
  * blocks in sdata (a timed burst loop, then one burst), state 3 deletes the moby. */
@@ -1192,21 +1184,21 @@ void update_smoke_vent(Moby *m) {
             vec.w = 6.0f;
             if (FastBSphereCheck(&vec, 120.0f) == -1)
                 break;
-            if (fast_dec_timer_r2(&d->fC0)) {
+            if (fast_dec_timer(&d->fC0)) {
                 int cnt;
                 int i;
                 d->fC0 = truncate_float_to_s32_r2(multiply_global_factor(
                     random_float_between((float)D_L02_0016219C_2F0458, (float)D_L02_001621A0_2F0458)));
                 cnt = random_integer_below(7) ? 1 : random_integer_below(5) + 5;
                 for (i = 0; i < cnt; i++) {
-                    rand_vec_r2(&C, 0.0f, D_L02_00162168_2F0458 * g_frame_time_r);
-                    vec_scale_to_length_r(
+                    rand_vec(&C, 0.0f, D_L02_00162168_2F0458 * g_frame_time_r);
+                    vec_scale_to_length(
                         &A, &*(V_2F0458 *)&m->rot_row0,
                         D_L02_00162158_2F0458 *
                             (random_float_between(-D_L02_00162164_2F0458, D_L02_00162164_2F0458) + 1.0f) *
                             g_frame_time_r);
                     FastVecAdd(&A, &A, &C);
-                    vec_scale_to_length_r(
+                    vec_scale_to_length(
                         &B, &A,
                         D_L02_0016215C_2F0458 *
                             (random_float_between(-D_L02_00162164_2F0458, D_L02_00162164_2F0458) + 1.0f) *
@@ -1235,7 +1227,7 @@ void update_smoke_vent(Moby *m) {
                 float t;
                 {
                     float z = random_float_between(-D_L02_00162124_2F0458, D_L02_00162124_2F0458) + 1.0f;
-                    vec_scale_to_length_r(&A, &*(V_2F0458 *)&m->rot_row0, D_L02_00162118_2F0458 * z * g_frame_time_r);
+                    vec_scale_to_length(&A, &*(V_2F0458 *)&m->rot_row0, D_L02_00162118_2F0458 * z * g_frame_time_r);
                 }
                 {
                     float z = random_float_between(-D_L02_00162124_2F0458, D_L02_00162124_2F0458) + 1.0f;
@@ -1247,7 +1239,7 @@ void update_smoke_vent(Moby *m) {
                 B.z = t;
                 {
                     float z = random_float_between(-D_L02_00162120_2F0458, D_L02_00162120_2F0458);
-                    vec_scale_to_length_r(&C, &*(V_2F0458 *)&m->rot_row1, z * g_frame_time_r);
+                    vec_scale_to_length(&C, &*(V_2F0458 *)&m->rot_row1, z * g_frame_time_r);
                 }
                 FastVecAdd(&B, &B, &C);
                 A.w = random_float_between(D_L02_00162138_2F0458, D_L02_0016213C_2F0458);
@@ -1268,7 +1260,7 @@ void update_smoke_vent(Moby *m) {
             }
             break;
         case 2:
-            if (fast_dec_timer_r2(&d->fC4)) {
+            if (fast_dec_timer(&d->fC4)) {
                 if (d->fC8 < 0x15)
                     d->fC8 = 30;
                 else
@@ -1281,21 +1273,21 @@ void update_smoke_vent(Moby *m) {
                 if (random_integer_below(4))
                     break;
             }
-            if (fast_dec_timer_r2(&d->fC0)) {
+            if (fast_dec_timer(&d->fC0)) {
                 int cnt;
                 int i;
                 d->fC0 = truncate_float_to_s32_r2(multiply_global_factor(
                     random_float_between((float)D_L02_001621EC_2F0458, (float)D_L02_001621F0_2F0458)));
                 cnt = random_integer_below(7) ? 1 : random_integer_below(5) + 5;
                 for (i = 0; i < cnt; i++) {
-                    rand_vec_r2(&C, 0.0f, D_L02_001621B8_2F0458 * g_frame_time_r);
-                    vec_scale_to_length_r(
+                    rand_vec(&C, 0.0f, D_L02_001621B8_2F0458 * g_frame_time_r);
+                    vec_scale_to_length(
                         &A, &*(V_2F0458 *)&m->rot_row0,
                         D_L02_001621A8_2F0458 *
                             (random_float_between(-D_L02_001621B4_2F0458, D_L02_001621B4_2F0458) + 1.0f) *
                             g_frame_time_r);
                     FastVecAdd(&A, &A, &C);
-                    vec_scale_to_length_r(
+                    vec_scale_to_length(
                         &B, &A,
                         D_L02_001621AC_2F0458 *
                             (random_float_between(-D_L02_001621B4_2F0458, D_L02_001621B4_2F0458) + 1.0f) *
@@ -1322,7 +1314,7 @@ void update_smoke_vent(Moby *m) {
                 float t;
                 {
                     float z = random_float_between(-D_L02_001620E4_2F0458, D_L02_001620E4_2F0458) + 1.0f;
-                    vec_scale_to_length_r(&A, &*(V_2F0458 *)&m->rot_row0, D_L02_001620D8_2F0458 * z * g_frame_time_r);
+                    vec_scale_to_length(&A, &*(V_2F0458 *)&m->rot_row0, D_L02_001620D8_2F0458 * z * g_frame_time_r);
                 }
                 {
                     float z = random_float_between(-D_L02_001620E4_2F0458, D_L02_001620E4_2F0458) + 1.0f;
@@ -1334,7 +1326,7 @@ void update_smoke_vent(Moby *m) {
                 B.z = t;
                 {
                     float z = random_float_between(-D_L02_001620E0_2F0458, D_L02_001620E0_2F0458);
-                    vec_scale_to_length_r(&C, &*(V_2F0458 *)&m->rot_row1, z * g_frame_time_r);
+                    vec_scale_to_length(&C, &*(V_2F0458 *)&m->rot_row1, z * g_frame_time_r);
                 }
                 FastVecAdd(&B, &B, &C);
                 A.w = random_float_between(D_L02_001620F8_2F0458, D_L02_001620FC_2F0458);

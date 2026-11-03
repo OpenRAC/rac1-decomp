@@ -36,6 +36,7 @@
 #include "overlays/shared/space_commando_and_door_lock.h"
 #include "overlays/shared/radial_particle_burst.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern char level_moby_killed[];
 extern unsigned char saved_mission_state[];
 extern Hero g_hero;
@@ -415,8 +416,6 @@ extern void move_frog_with_collision_resolution(void *, void *, int, float, floa
 
 extern void InitKnockback_x(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 
-extern void SetDeathBits(void *, int, int);
-
 extern void collect_mobies_in_sphere_at_moby_point_v(void *, int, int, float, float, float, int, int,
                                                      int) __asm__("func_L00_0025AA20");
 extern int CarriedMobyUpdate(void *, void *);
@@ -767,7 +766,6 @@ extern int frog_glow_color_end_gp SDATA(frog_glow_color_end_gp);
 extern short level_mobys_q_r __asm__("D_L06_00160058");
 extern u8 hero_vehicle_mode[];
 
-extern void SetDeathBits(void *, int, int);
 extern void spawn_moby_directional_spark_bursts_r(struct Moby *, Vec4 *) __asm__("func_L06_002EB5C8");
 extern void destroy_frog_child_moby_r(struct Moby *) __asm__("func_L06_002EB360");
 extern void spawn_moby_death_effect_burst(char *);
@@ -2279,7 +2277,6 @@ typedef struct {
 
 extern int get_first_moby_in_group_r(int *, int, int, int) __asm__("func_L00_0025A208");
 extern int get_next_moby_in_group_r(int *, int, int, int) __asm__("func_L00_0025A2F0");
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern int blarg_moby_list_r[] __asm__("D_L06_001AC500");
 
@@ -2300,7 +2297,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                 ((Moby *)list)->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER ||
                 ((Moby *)list)->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                 ((Moby *)list)->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) {
-                if (!(best < vec_distance_xy_r(&moby->pos, &((Moby *)list)->pos)) &&
+                if (!(best < vec_distance_xy(&moby->pos, &((Moby *)list)->pos)) &&
                     !(0.2f < FastAbsF(moby->pos.z - ((Moby *)list)->pos.z)) &&
                     !(1.5f < FastAbsF(moby->pos.z - ((Moby *)list)->pos.z))) {
                     if ((((Moby *)list)->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER &&
@@ -2308,7 +2305,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                         ((Moby *)list)->state != 2) {
                         if (((Moby *)list)->oclass != MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                             *(int *)((void *)((Moby *)list)->pvars) != -1) {
-                            best = vec_distance_xy_r(&moby->pos, &((Moby *)list)->pos);
+                            best = vec_distance_xy(&moby->pos, &((Moby *)list)->pos);
                             d->target = (Moby *)list;
                         }
                     }
@@ -2323,7 +2320,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                 candidate->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER ||
                 candidate->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                 candidate->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) {
-                if (!(best < vec_distance_xy_r(&moby->pos, &candidate->pos)) &&
+                if (!(best < vec_distance_xy(&moby->pos, &candidate->pos)) &&
                     !(0.2f < FastAbsF(moby->pos.z - candidate->pos.z)) &&
                     !(1.5f < FastAbsF(moby->pos.z - candidate->pos.z))) {
                     if ((candidate->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER &&
@@ -2331,7 +2328,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                         candidate->state != 2) {
                         if (candidate->oclass != MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                             *(int *)((void *)candidate->pvars) != -1) {
-                            best = vec_distance_xy_r(&moby->pos, &candidate->pos);
+                            best = vec_distance_xy(&moby->pos, &candidate->pos);
                             d->target = candidate;
                         }
                     }

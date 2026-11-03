@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern int sceTtyInit(void);
 extern int sceTtyRead(int, int);
 extern int sceTtyWrite(int, int);
 

@@ -88,14 +88,14 @@ void draw_ship_hud(char *moby) {
             if (m > 1.0f)
                 m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
-            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k,
-                                               normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
+            draw_quarter_turn_textured_quads(IntToFloat(sp40), IntToFloat(sp44), k,
+                                             normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;
             if ((*(int *)(d + 0x8C) / scale_ticks(0x14)) & 1)
                 a = 0;
-            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), 1.0f, 0.0f, 0xFF, a, 0, 0x60);
+            draw_quarter_turn_textured_quads(IntToFloat(sp40), IntToFloat(sp44), 1.0f, 0.0f, 0xFF, a, 0, 0x60);
             *(int *)(d + 0xEC) = *(int *)(d + 0x88);
         }
     }
@@ -124,7 +124,7 @@ void draw_ship_hud(char *moby) {
             *(int *)(d + 0x11C) = 0;
         }
     }
-    fast_dec_timer_i(d + 0x120);
+    fast_dec_timer(d + 0x120);
     {
         unsigned char *g2 = g_hero;
         if ((g2[0x15F6] < 5 && ((HelpTab *)help_records)->r[0x57].count == 0) ||

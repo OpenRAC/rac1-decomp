@@ -21,8 +21,8 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
     draw_hud_rect_blended_r(border_left, row_height - 8, menu->width - 0x3F, row_height + 8, 0x80696969, 0);
     draw_hud_rect_blended_r(slider_left, row_height - 6, menu->width - 0x41, row_height + 6, 0x80383838, 0);
     slider_length = (menu->width - slider_padding) * sound_volume_r / 1024;
-    func_00201190_1DE08(GetIconFrame(0xE99E, 8), slider_left << 4, (row_height - 6) << 4,
-                        (center_x + 8 + slider_length) << 4, (row_height + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
+    draw_hud_sprite_rect(GetIconFrame(0xE99E, 8), slider_left << 4, (row_height - 6) << 4,
+                         (center_x + 8 + slider_length) << 4, (row_height + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
 
     second_row = row_height + row_height;
     font_print_right_r(label_right, second_row - 8, menu->selected_option == 1 ? 0x8020FFFF : 0x80FFA888,
@@ -30,8 +30,8 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
     draw_hud_rect_blended_r(border_left, second_row - 8, menu->width - 0x3F, second_row + 8, 0x80696969, 0);
     draw_hud_rect_blended_r(slider_left, second_row - 6, menu->width - 0x41, second_row + 6, 0x80383838, 0);
     slider_length = (menu->width - slider_padding) * music_volume_r / 1024;
-    func_00201190_1DE08(GetIconFrame(0xE99E, 9), slider_left << 4, (second_row - 6) << 4,
-                        (center_x + 8 + slider_length) << 4, (second_row + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
+    draw_hud_sprite_rect(GetIconFrame(0xE99E, 9), slider_left << 4, (second_row - 6) << 4,
+                         (center_x + 8 + slider_length) << 4, (second_row + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
 
     second_row += row_height;
     font_print_right_r(label_right, second_row - 8, menu->selected_option == 2 ? 0x8020FFFF : 0x80FFA888,

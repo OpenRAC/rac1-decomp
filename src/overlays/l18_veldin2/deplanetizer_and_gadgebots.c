@@ -21,6 +21,7 @@
 #include "overlays/shared/walloper_and_beam_effects.h"
 #include "asm_functions/level_18.h"
 #include "overlays/l18_veldin2/bone_glow_quads.h"
+#include "asm_functions/executable.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -123,20 +124,10 @@ extern float deplanetizer_joint_trail_base_size_gp SDATA(deplanetizer_joint_trai
 extern short deplanetizer_burst_local_spawn_offset_x_gp;
 extern float deplanetizer_burst_velocity_scale_gp SDATA(deplanetizer_burst_velocity_scale_gp);
 extern float deplanetizer_burst_particle_size_gp SDATA(deplanetizer_burst_particle_size_gp);
-extern int scale_ticks(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void clear_u64_value(void *);
-
-extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, float f1);
-extern void FastVecSub(void *, void *, void *);
-
-extern float vec_length_xy(void *);
-
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
 
 extern char *PartType23Spawn_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
 extern void draw_three_scaled_camera_facing_quads(void);
@@ -450,7 +441,7 @@ extern float deplanetizer_camera_quad_base_scale MACRO_ADDR;
 void draw_three_scaled_camera_facing_quads(void) {
     extern ML_9780 veldin2_cutscene_state;
     extern int scale_ticks(int);
-    extern unsigned long GetEffectTex(int);
+    extern unsigned long GetEffectTex_v(int) __asm__("func_001F4868");
     extern void VU1_addGSregister(int, long);
     extern void matrix_mul_vec3(void *, void *, void *);
     extern void FastVecAdd(void *, void *, void *);
@@ -484,7 +475,7 @@ void draw_three_scaled_camera_facing_quads(void) {
         deplanetizer_flare_cam_offset_z = tilt;
         deplanetizer_flare_cam_offset_w = 1.0f;
     }
-    pk.b = GetEffectTex(0xB);
+    pk.b = GetEffectTex_v(0xB);
     pk.c = 0x0000FF9000000260ULL;
     pk.d = 0x8000000048ULL;
     pk.a = 0;
@@ -536,13 +527,6 @@ void draw_three_scaled_camera_facing_quads(void) {
     }
     draw_world_quad(&pk, 0, 0);
 }
-extern int scale_ticks(int);
-
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-
-extern void FastVecScale(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
 
 extern int veldin2_frame_count MACRO_ADDR;
 
@@ -570,13 +554,7 @@ extern float deplanetizer_glow_quad_b_scale SDATA(deplanetizer_glow_quad_b_scale
 extern int deplanetizer_glow_tint_b SDATA(deplanetizer_glow_tint_b);
 extern float veldin2_deplanetizer_quad_corners[4][4];
 extern char veldin2_camera_pos[];
-extern unsigned long GetEffectTex(int);
-
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-
-extern void FastVecCross(void *, void *, void *);
-extern void transform_vector(void *, void *, void *);
+extern unsigned long GetEffectTex_v(int) __asm__("func_001F4868");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002f9c20. */
 void draw_moby_two_tint_glow_quads(struct Moby *m) {
@@ -592,7 +570,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
         deplanetizer_glow_local_offset_x = 0;
         deplanetizer_glow_local_offset_y = 0;
     }
-    pk.b = GetEffectTex(0xB);
+    pk.b = GetEffectTex_v(0xB);
     pk.c = 0x0000FF9000000260ULL;
     pk.d = 0x8000000048ULL;
     pk.a = 0;
@@ -661,7 +639,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     int i = 0;
     int color;
 
-    pk.b = GetEffectTex(0xB);
+    pk.b = GetEffectTex_v(0xB);
     pk.c = 0x0000FF9000000260ULL;
     pk.d = 0x8000000048ULL;
     pk.a = 0;
@@ -790,8 +768,6 @@ void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, f
 }
 extern int veldin2_cinematic_mode MACRO_ADDR;
 
-extern float FastAddRots(float, float);
-
 /* State machine: waits for level flags, then turns the moby around and back. */
 void update_moby_visibility_and_half_turn(char *moby) {
     enum { INITIALIZE_STATE_MACHINE = 0, WAIT_TO_HIDE_AND_TURN = 1, HIDDEN_WAIT_TO_SHOW = 2 };
@@ -818,7 +794,6 @@ void update_moby_visibility_and_half_turn(char *moby) {
             break;
     }
 }
-extern void FastVecSub(void *, void *, void *);
 
 /* updates a moby that drags a child moby along with it */
 void update_moby_transform_and_child(char *moby) {
@@ -944,9 +919,6 @@ extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
 
-extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                  float, int, int, int, int) __asm__("func_L00_0025F4A8");
-
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char gadgebot_params_block;
@@ -1071,8 +1043,7 @@ void gadgebot_1906_update(unsigned char *m) {
         case 6:
             qcopy(tmp, m + 0x10);
             ((float *)tmp)[2] += 0.5f;
-            func_L00_0025F4A8_alt(m, &e->unk_40, tmp, 0.0f, 0.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 0.5f, 4, 0.0f, 0, 1, -1,
-                                  0);
+            spawn_explosion(m, &e->unk_40, tmp, 0.0f, 0.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 0.5f, 4, 0.0f, 0, 1, -1, 0);
             ((Moby *)m)->state = 8;
             if (((Moby *)m)->prev_seq)
                 MobyBlendAnimation(m, 0, 0, scale_ticks(10));
@@ -1252,9 +1223,6 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
 typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
-extern float vec_distance_xy(float *, float *);
-
-extern float FastCos(float);
 
 /* Steers a Gadgebot enemy toward src and returns the distance to it. */
 float move_gadgebot_toward_target(char *self, float *src) {
@@ -1346,7 +1314,7 @@ short count_group_gadgebot_1906_mobys_not_in_state_8(int idx) {
     return n;
 }
 INCLUDE_ASM("asm/overlays", func_L18_002FDCC4);
-extern int FastTweenColor(int, int, float);
+
 typedef struct {
     float m[4][4];
     int col[4];
@@ -1365,12 +1333,8 @@ extern short D_L18_001626DC;
 extern short D_L18_001626E0;
 extern char veldin2_camera_pos_r[] __asm__("D_L18_00167840");
 extern float D_L18_001EFF90[4][2];
-extern void clear_u64_value(void *);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern unsigned long GetEffectTex_r(int) __asm__("func_001F4868");
-extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
+
+extern unsigned long GetEffectTex_v(int) __asm__("func_001F4868");
 
 void func_L18_002FDD20_r(struct Moby *m) __asm__("func_L18_002FDD20");
 
@@ -1393,9 +1357,9 @@ void func_L18_002FDD20_r(struct Moby *m) {
     FastVecSub(mat[0], veldin2_camera_pos_r, &m->pos);
     FastVecCross(mat[1], mat[0], mat[2]);
     FastVecCross(mat[0], mat[1], mat[2]);
-    vec_scale_to_length_r(mat[0], mat[0], w);
-    vec_scale_to_length_r(mat[1], mat[1], w);
-    pk.b = GetEffectTex_r((*(int *)&gadgebot_launch_glow_texture_index));
+    vec_scale_to_length(mat[0], mat[0], w);
+    vec_scale_to_length(mat[1], mat[1], w);
+    pk.b = GetEffectTex_v((*(int *)&gadgebot_launch_glow_texture_index));
     pk.c = 0x0000FF9000000260ULL;
     pk.a = 0;
     pk.d = (unsigned long)(*(int *)&gadgebot_launch_glow_blend_minuend_selector) |
@@ -1419,7 +1383,7 @@ void func_L18_002FDD20_r(struct Moby *m) {
         p[3] = 1.0f;
         pk.col[i] = c;
     }
-    draw_world_quad_r(&pk, mat, 0);
+    draw_world_quad(&pk, mat, 0);
 }
 extern unsigned short *veldin2_moby_groups[];
 extern int gadgebot_joint_glow_alpha SDATA(gadgebot_joint_glow_alpha);

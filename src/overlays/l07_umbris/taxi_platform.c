@@ -41,6 +41,8 @@
 #include "overlays/shared/pivot_reorientation.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_drops_and_death.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -1207,14 +1209,11 @@ extern unsigned short umbris_water_grid_override_value SDATA(umbris_water_grid_o
 extern char gHaveHeliPack[];
 extern char discount_purchase_pricing[];
 
-extern void func_L01_002B90A8(float);
-
-extern void func_L01_002B9440(void *, int, float, float, float, float);
+extern void pool_ripple_v(void *, int, float, float, float, float) __asm__("func_L01_002B9440");
 extern void initialize_level07_water_grid_neighbors_r(int) __asm__("func_L07_0030E128");
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
-extern void func_L01_002B9198(void *, int);
 extern void render_level07_water_grids_r(void) __asm__("func_L07_0030E100");
 
 /* Water plate update: the first plate sets up the 36-plate wave grid; each plate rises and sinks with its switch,
@@ -1280,7 +1279,7 @@ void WaterPlateUpdate(Moby *m) {
                     for (j = 0; j < 2; j++) {
                         float x = r->x + random_float_between(-6.0f, 6.0f);
                         float y = r->y + random_float_between(-6.0f, 6.0f);
-                        pool_ripple(t, 0x24, x, y, 2.0f, 0.2f);
+                        pool_ripple_v(t, 0x24, x, y, 2.0f, 0.2f);
                     }
                 }
                 for (n = 0; n < 0x24; n++) {
@@ -1618,8 +1617,6 @@ void ocean_umbris_update(unsigned char *moby) {
 }
 extern float umbris_zero_vec[] MACRO_ADDR;
 extern int umbris_frame_count MACRO_ADDR;
-
-extern void SetDeathBits(void *, int, int);
 
 // Bombomatic update: runs its fuse near the hero, bursts and drifts toward its target, with a state machine on m[0x20].
 void bombomatic_update(char *m) {
@@ -2038,8 +2035,6 @@ char *spawn_moby_class_1049(char *pos, char *vec, int arg) {
 extern char *debris_target_p __asm__("D_L07_00173F58");
 
 extern int coll_sphere_f(float, void *, int, int) __asm__("func_L00_001F10E0");
-extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 struct UpdateGrowingBallisticMobyVars {
     u8 pad_00[0x8];
@@ -2075,8 +2070,8 @@ void update_growing_ballistic_moby(char *m) {
         if (class_filter_moby == 0 || (class_filter_moby->oclass != 0x415 && class_filter_moby->oclass != 0x419 &&
                                        class_filter_moby->oclass != MOBY_CLASS_SNAGGLEBEAST)) {
             if (moby->visible != 0) {
-                spawn_explosion_alt(moby, moby_data, 0, 2.0f, 1.0f, 0, 3, 5, 0.0f, 0.0f, 1000.0f, 1.2f, 0, 10.0f, 0, 1,
-                                    -1, 0);
+                spawn_explosion(moby, moby_data, 0, 2.0f, 1.0f, 0, 3, 5, 0.0f, 0.0f, 1000.0f, 1.2f, 0, 10.0f, 0, 1, -1,
+                                0);
             } else {
                 Moby_PlaySound(0, 0, (int)moby);
             }
@@ -2192,8 +2187,6 @@ void func_L07_0030FC38_r(void *moby, LaunchParams_30FC38 *l, Vec4f *dir) {
     InitKnockback_r2(ang, moby, l, 6, 1, 0);
 }
 
-extern void SetDeathBits(void *, int, int);
-
 /* Hit handler: reacts to the hit type, then takes damage and dies (state 0xE) when health runs out. */
 void handle_sharkigator_hit(char *m, char *x, float *hp) {
     struct HitMessage *info;
@@ -2308,7 +2301,6 @@ void set_sharkigator_idle_state_from_water_height_gap(char *arg) {
 extern void cache_path_segment_lengths(char *data);
 extern int classify_sharkigator_water_height_gap(char *moby, char *data);
 extern void set_sharkigator_idle_state_from_water_height_gap(char *arg);
-extern int func_001160D8(void);
 
 extern int scene_points_addr __asm__("D_L07_0016016C") MACRO_ADDR;
 extern char umbris_sharkigator_no_path_msg[];
@@ -3126,13 +3118,8 @@ typedef struct D_3126A8 {
     float fCC;
 } D_3126A8;
 
-extern int func_001160D8_3126A8(void) __asm__("func_001160D8");
-
-extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 
-extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern char *level_mobys_r2 __asm__("D_L07_00160058") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
@@ -3167,7 +3154,7 @@ void update_command_triggered_falling_platform(Moby *m) {
             d->h24 = 0;
             d->b28 = 4;
             d->h3E = 0xD;
-            if (func_001160D8_3126A8() & 1) {
+            if (func_001160D8() & 1) {
                 m->rot.z = FastAddRots(m->rot.z, 3.1415927f);
             }
             d->fA4 = m->rot.x;
@@ -3190,7 +3177,7 @@ void update_command_triggered_falling_platform(Moby *m) {
             if (m->command == 1) {
                 float k;
                 if (d->fAC == 0)
-                    d->fAC = func_001160D8_3126A8() % 10;
+                    d->fAC = func_001160D8() % 10;
                 if (d->bBE != 0)
                     MobyGroup_SetByteBC(m->group, 2);
                 k = 0.017453292f;
@@ -3202,7 +3189,7 @@ void update_command_triggered_falling_platform(Moby *m) {
             float k = 0.017453292f;
             m->rot.x = FastAddRots(d->fA4, FastSin(normalize_angle(IntToFloat(d->fAC) * 0.75f)) * k);
             m->rot.y = FastAddRots(d->fA8, FastCos(normalize_angle(IntToFloat(d->fAC) * 0.89f)) * k);
-            if (fast_dec_timer_r2(&d->fAC) != 0) {
+            if (fast_dec_timer(&d->fAC) != 0) {
                 if (d->bBE != 0) {
                     q->b19D = d->bBF;
                     a->state = 0xC;
@@ -3279,7 +3266,7 @@ void update_command_triggered_falling_platform(Moby *m) {
             if (d->fAC != 0) {
                 float c;
                 float c2;
-                fast_dec_timer_r2(&d->fAC);
+                fast_dec_timer(&d->fAC);
                 FastVecSub(&v3, &g_hero.motion.pos, &m->pos);
                 c = FastVecDot(&v3, &m->rot_row0);
                 c2 = FastVecDot(&v3, &m->rot_row1);
@@ -3304,19 +3291,19 @@ void update_command_triggered_falling_platform(Moby *m) {
             break;
         }
     }
-    if (m->state == 5 && fast_dec_timer_r2(&d->fC8) != 0) {
+    if (m->state == 5 && fast_dec_timer(&d->fC8) != 0) {
         if ((d->fCC >= d->fB8 && m->pos.z < d->fB8) || (d->fCC <= d->fB8 && d->fB8 < m->pos.z)) {
             int c1;
             int r2;
             Moby_PlaySound_r3(0, 0, m);
-            c1 = func_001160D8_3126A8();
+            c1 = func_001160D8();
             r2 = scale_ticks(0x14);
             d->fC8 = c1 % r2 + scale_ticks(0x14);
         }
     }
     d->fCC = m->pos.z;
     FastVecAdd(&v1, &v1, &m->pos);
-    update_entity_matrix_r(d->a60, &v1, &v2, &m->rot);
+    update_entity_matrix(d->a60, &v1, &v2, &m->rot);
 }
 
 /* Falling leaf: drops off its branch after a random delay, swaying, then falls faster and vanishes near the ground. */
@@ -3562,11 +3549,7 @@ typedef struct Packet {
     long x138;
 } Packet;
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern int coll_line_r4(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-
-extern int func_001160D8_313800(void) __asm__("func_001160D8");
 
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
 extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
@@ -3591,7 +3574,7 @@ void draw_collision_clipped_moby_beam(Moby *arg) {
     v50[0] = v50[0] + FastSin(t);
     Moby_GetJointWorldPos(arg, 2, v30);
     FastVecSub(v10, v50, v30);
-    vec_scale_to_length_r(v10, v10, 30.0f);
+    vec_scale_to_length(v10, v10, 30.0f);
     FastVecAdd(v0, v50, v10);
     if (coll_line_r4(v30, v0, 2, arg, 0)) {
         qcopy(v0, umbris_coll_hit_point_r);
@@ -3600,30 +3583,29 @@ void draw_collision_clipped_moby_beam(Moby *arg) {
     }
     FastVecSub(v40, v30, v0);
     FastVecCross(v20, beam_cross_axis, v40);
-    vec_scale_to_length_r(v20, v20, 0.25f);
+    vec_scale_to_length(v20, v20, 0.25f);
     FastVecAdd(v10, v20, v0);
     if (flag) {
-        spawn_color_tween_emitter_particle(v0, 0, scale_ticks((func_001160D8_313800() & 1) + 0x2D),
-                                           scale_ticks((func_001160D8_313800() & 7) + 0x37), 1,
-                                           scale_ticks((func_001160D8_313800() & 3) + 0xD), arg, 1.0f, 1.0f);
+        spawn_color_tween_emitter_particle(v0, 0, scale_ticks((func_001160D8() & 1) + 0x2D),
+                                           scale_ticks((func_001160D8() & 7) + 0x37), 1,
+                                           scale_ticks((func_001160D8() & 3) + 0xD), arg, 1.0f, 1.0f);
         if (p->f15C != 0.0f) {
             FastVecSub(c2, v0, p->f150);
-            vec_scale_to_length_r(c2, c2, 0.2f);
+            vec_scale_to_length(c2, c2, 0.2f);
             qcopy(m, p->f150);
             for (k = 0; k < 4; k++) {
                 FastVecAdd(m, m, c2);
                 FastVecSub(h, m, v30);
-                vec_scale_to_length_r(h, h, 5.0f);
+                vec_scale_to_length(h, h, 5.0f);
                 FastVecSub(ii, m, h);
                 FastVecAdd(jj, m, h);
                 if (coll_line_r4(ii, jj, 2, arg, 0)) {
                     qcopy(m, umbris_coll_hit_point_r);
                 }
                 if (k == 2) {
-                    spawn_color_tween_emitter_particle(m, 0, scale_ticks((func_001160D8_313800() & 1) + 0x2D),
-                                                       scale_ticks((func_001160D8_313800() & 7) + 0x37), 1,
-                                                       scale_ticks((func_001160D8_313800() & 3) + 0xD), arg, 1.0f,
-                                                       1.0f);
+                    spawn_color_tween_emitter_particle(m, 0, scale_ticks((func_001160D8() & 1) + 0x2D),
+                                                       scale_ticks((func_001160D8() & 7) + 0x37), 1,
+                                                       scale_ticks((func_001160D8() & 3) + 0xD), arg, 1.0f, 1.0f);
                 } else {
                     spawn_color_tween_emitter_particle(m, 1, scale_ticks(0x2D), scale_ticks(0x37), 1, scale_ticks(0xD),
                                                        arg, 1.0f, 1.0f);

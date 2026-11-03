@@ -10,6 +10,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "core/libc/printf_rand.h"
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -132,7 +133,6 @@ unsigned char *spawn_type_52_particle(void *a, int b, int c, int d, float f, flo
     }
     return r;
 }
-extern int func_001160D8(void);
 
 extern unsigned char D_L01_001B2928[];
 /* spawns a type-74 particle with transformed offset and velocity */

@@ -1626,8 +1626,6 @@ void spawn_lightning_arc_particle_pairs(float *pos, int n) {
 extern void initialize_elevator_path_state_r(char *) __asm__("func_L14_002F03E8");
 extern void update_elevator_idle_glow_r(char *) __asm__("func_L14_002F0B78");
 
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 extern int advance_elevator_along_path_r(char *) __asm__("func_L14_002F05D8");
 extern void rebuild_elevator_world_path_r(char *) __asm__("func_L14_002F0AB8");
 
@@ -1750,7 +1748,7 @@ void elevator_685_update(char *moby) {
             }
             if (((char *)((Hero *)g_hero_r2)->ground_moby) == moby && ((Hero *)g_hero_r2)->frames_off_ground.s == 0) {
                 if (0.0f < FastVecDot(moby + 0xE0, ((char *)((Hero *)g_hero_r2)->moby) + 0xE0)) {
-                    f0 = vec_distance_xy_r(((Hero *)g_hero_r2)->motion.pos.f, moby + 0x10);
+                    f0 = vec_distance_xy(((Hero *)g_hero_r2)->motion.pos.f, moby + 0x10);
                     if (f0 < 1.0f) {
                         r = Moby_PlaySound(1, 0, (int)moby);
                         if (r >= 0) {
@@ -1896,8 +1894,6 @@ void initialize_elevator_path_state(struct Moby *m) {
     d->point = 0;
 }
 
-extern int Spline_AdvanceByDistance_r2(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
-
 extern float elevator_path_speed SDATA(elevator_path_speed);
 
 /* Moves the moby along its current path, easing its rotation; returns 1 when the path end is reached. */
@@ -1922,8 +1918,8 @@ int advance_elevator_along_path(char *m) {
         qcopy(rot, &moby_vars->rot_to);
     }
     step = elevator_path_speed * g_frame_time;
-    path_endpoint_reached = Spline_AdvanceByDistance_r2(selected_path, pos, &moby_vars->point, &moby_vars->point_dist,
-                                                        0, step * moby_vars->dir);
+    path_endpoint_reached = Spline_AdvanceByDistance(selected_path, pos, &moby_vars->point, &moby_vars->point_dist, 0,
+                                                     step * moby_vars->dir);
     Spring(&elevator_moby->pos.x, &moby_vars->pos_vel_x, pos[0], 0.003f, 0.2f, 0.0f);
     Spring(&elevator_moby->pos.y, &moby_vars->pos_vel_y, pos[1], 0.003f, 0.2f, 0.0f);
     Spring(&elevator_moby->pos.z, &moby_vars->pos_vel_z, pos[2], 0.003f, 0.2f, 0.0f);
@@ -2694,8 +2690,6 @@ extern void PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
 extern void STUB_printf_r2(const char *, short) __asm__("func_001E9730");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-
 extern int Sound_IsPlaying_r2(struct Moby *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r3(int, int, struct Moby *) __asm__("func_0022ED80");
 extern void initialize_flight_path_state_r(struct Moby *) __asm__("func_L14_002FDD18");
@@ -2766,7 +2760,7 @@ void update_enemy_fighter(struct Moby *moby) {
             advance_enemy_fighter_along_flight_path_r(moby);
             break;
         case 2:
-            if (fast_dec_timer_r(&data->timer)) {
+            if (fast_dec_timer(&data->timer)) {
                 path = oltanis_paths_r3[data->path];
                 moby->flags &= 0xffbe;
                 moby->collision = moby->pclass->collision;
@@ -3019,15 +3013,9 @@ typedef struct Skill_2FE038 {
     unsigned char f18;
 } Skill_2FE038;
 
-extern void mark_moby_and_linked_moby_for_removal_r(Moby *) __asm__("func_L14_002FF6C0");
-extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
-extern int PlayBankSound_r2(int, int, int) __asm__("func_0022EE28");
-
 extern int STUB_printf_r3() __asm__("func_001E9730");
 
 extern void initialize_flight_path_state_r2(Moby *) __asm__("func_L14_002FDD18");
-
-extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
@@ -3061,19 +3049,19 @@ void update_enemy_fighter_921(Moby *m) {
         (oltanis_collected_flags_base_r3.collected[(short)(id = m->save_id)] != 0 ||
          (*(int *)(level_moby_killed_r3 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) &
              1)) {
-        mark_moby_and_linked_moby_for_removal_r((Moby *)(oltanis_mobys_r + (d->f8C << 8)));
+        mark_moby_and_linked_moby_for_removal((Moby *)(oltanis_mobys_r + (d->f8C << 8)));
         DeleteMoby(m);
         return;
     }
     {
-        void *r = MobyGetHitMessage_r2(m, 0x800000, 0);
+        void *r = MobyGetHitMessage(m, 0x800000, 0);
         m->hit_slot = 0xFF;
         if (r != 0 && d->f8C == -1 && m->state != 3) {
             if (g_current_level_index_m == LEVEL_OLTANIS) {
                 fighter_skill_hit_count_r2 = fighter_skill_hit_count_r2 + 1;
                 if (fighter_skill_hit_count_r2 >= 3 && ((Skill_2FE038 *)gSkillPoints_r)->f18 == 0) {
                     ((Skill_2FE038 *)gSkillPoints_r)->f18 = 1;
-                    PlayBankSound_r2(1, 0, 0);
+                    PlayBankSound(1, 0, 0);
                     ShowBanner(0x53DB, -1);
                 }
             }
@@ -3135,7 +3123,7 @@ void update_enemy_fighter_921(Moby *m) {
                         qcopy(vt, (*(Vec_2FE038 *)&seat->pos));
                         vt[2] = vt[2] + 4.0f;
                         pitch = FastDiffRots(((Cam *)oltanis_player_camera_r)->f154,
-                                             -fast_atan2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
+                                             -fast_atan2(vec_distance_xy(((Cam *)oltanis_player_camera_r)->pos, vt),
                                                          vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
                         yaw = FastDiffRots(
                             ((Cam *)oltanis_player_camera_r)->f158,
@@ -3356,7 +3344,7 @@ int advance_moby_along_flight_path(char *m) {
     float yaw;
     float yaw_error_factor;
     int path_boundary_reached;
-    path_boundary_reached = Spline_AdvanceByDistance_r2(
+    path_boundary_reached = Spline_AdvanceByDistance(
         oltanis_paths_ee[moby_vars->path], path_target_position, &moby_vars->segment, &moby_vars->along,
         (unsigned int)*(int *)(((char *)moby_vars) + 0x8C) >> 31, fighter921_path_speed * g_frame_time);
     if (*(int *)(((char *)moby_vars) + 0x8C) != 0 &&
@@ -3415,7 +3403,6 @@ extern void func_L00_0025F4A8_2FF040(void *, void *, void *, float, float, int, 
 
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void FastVecAdd_r3(u8 *, u8 *, u8 *) __asm__("func_001F9BD8");
 
 /* Flyer: state 0 arms it (or removes it without a path point or target); state 2 flies it to its path point,
@@ -3471,7 +3458,7 @@ void FlyerUpdate(struct Moby *moby) {
             }
             moby->rot.x = FastAddRots(moby->rot.x, 2.0f * 0.017453292f);
             moby->rot.y =
-                interpolate_angle(moby->rot.y, -fast_atan2(vec_length_xy_r(&diff), diff.z), D_L14_0016207C_2FF040);
+                interpolate_angle(moby->rot.y, -fast_atan2(vec_length_xy(&diff), diff.z), D_L14_0016207C_2FF040);
             moby->rot.z = interpolate_angle(moby->rot.z, fast_atan2(diff.x, diff.y), D_L14_0016207C_2FF040);
             FastVecScale(&step, &moby->rot_row0, speed);
             FastVecAdd_r3((u8 *)&moby->pos, (u8 *)&moby->pos, (u8 *)&step);

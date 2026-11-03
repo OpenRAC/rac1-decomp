@@ -164,9 +164,8 @@ typedef struct {
 extern McDirEntry mc_directory[] __asm__("D_001A0980");
 extern char memcard_icon_path_a_filename[], memcard_icon_path_b_filename[], special_items_base[],
     memcard_slot_file_prefix[], memcard_slot_file_suffix[];
-extern void mc_memset(void *, s32, s32) __asm__("func_001153FC");
-extern s32 mc_strcmp(char *, char *) __asm__("func_001165B8");
-extern s32 mc_strncmp(char *, char *, s32) __asm__("func_00116948");
+extern void libc_memset(void *, s32, s32);
+
 typedef struct {
     s32 port;
     s32 slot;
@@ -242,21 +241,13 @@ extern char mc_data_001E8518[] __asm__("D_001E8518");
 extern void mc_call_001E9730(char *fmt, ...) __asm__("func_001E9730");
 extern s32 mc_call_0020BAD8(const u32 *packet) __asm__("func_0020BAD8");
 extern void mc_call_001F9978() __asm__("func_001F9978");
-extern s32 mc_call_00124340(s32 port, s32 slot) __asm__("func_00124340");
-extern s32 mc_call_00124528(s32 port, s32 slot) __asm__("func_00124528");
+
 extern void mc_call_001FDF10(s32, McChunk **, s32 *) __asm__("func_001FDF10");
 extern void mc_call_0020BCB0(u8 *, s32, s32) __asm__("func_0020BCB0");
 extern s32 mc_call_0020BD70(u8 *, s32, u32 *) __asm__("func_0020BD70");
 extern s32 mc_call_00217628(McChunk *, s32, s32) __asm__("func_00217628");
-extern s32 mc_call_00123A10(s32 fd) __asm__("func_00123A10");
-extern s32 mc_call_00124410(s32 port, s32 slot, char *name) __asm__("func_00124410");
 
-extern s32 mc_call_001239D8(s32 port, s32 slot, char *name) __asm__("func_001239D8");
 extern s32 mc_call_001238B0(s32 port, s32 slot, char *name, s32 mode) __asm__("func_001238B0");
-extern s32 mc_call_00123C30(s32 fd, void *buf, s32 size) __asm__("func_00123C30");
-extern s32 mc_call_00123AC8(s32 fd, s32 offset, s32 origin) __asm__("func_00123AC8");
-
-extern s32 mc_call_00123D48(s32 fd, void *buf, s32 size) __asm__("func_00123D48");
 
 extern char *mc_call_001166FC(char *, const char *) __asm__("func_001166FC");
 
@@ -344,8 +335,8 @@ void memcard_update_state(void) {
 
         case 3:
             if (mc_data_0013D390.card[mc_data_0013D390.cur].format == 0) {
-                if (mc_call_00124340(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                     mc_data_0013D390.card[mc_data_0013D390.cur].slot) == 0) {
+                if (sce_mc_format(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                                  mc_data_0013D390.card[mc_data_0013D390.cur].slot) == 0) {
                     mc_data_0013D390.state = 4;
                 }
                 break;
@@ -366,8 +357,8 @@ void memcard_update_state(void) {
 
         case 5:
             if (mc_data_0013D390.card[mc_data_0013D390.cur].format == 0) {
-                if (mc_call_00124528(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                     mc_data_0013D390.card[mc_data_0013D390.cur].slot) == 0) {
+                if (sce_mc_unformat(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                                    mc_data_0013D390.card[mc_data_0013D390.cur].slot) == 0) {
                     mc_data_0013D390.state = 6;
                 }
                 break;
@@ -405,7 +396,7 @@ void memcard_update_state(void) {
                         s32 i;
                         s32 blocks;
                         icon0 = 0;
-                        mc_memset(workspace.directory.seen, 0, 20);
+                        libc_memset(workspace.directory.seen, 0, 20);
                         icon1 = 0;
                         icon2 = 0;
                         blocks = 0;
@@ -414,14 +405,14 @@ void memcard_update_state(void) {
                             char *filename = (char *)((s32)mc_directory + i * 64 + 32);
                             s32 slot;
                             blocks += (entry->size + 1023U) >> 10;
-                            if (mc_strcmp(filename, memcard_icon_path_a_filename) == 0)
+                            if (libc_strcmp(filename, memcard_icon_path_a_filename) == 0)
                                 icon0 = 1;
-                            if (mc_strcmp(filename, memcard_icon_path_b_filename) == 0)
+                            if (libc_strcmp(filename, memcard_icon_path_b_filename) == 0)
                                 icon1 = 1;
-                            if (mc_strcmp(filename, special_items_base) == 0)
+                            if (libc_strcmp(filename, special_items_base) == 0)
                                 icon2 = 1;
-                            if (mc_strncmp(filename, memcard_slot_file_prefix, 4) == 0 &&
-                                mc_strncmp(filename + 5, memcard_slot_file_suffix, 4) == 0) {
+                            if (libc_strncmp(filename, memcard_slot_file_prefix, 4) == 0 &&
+                                libc_strncmp(filename + 5, memcard_slot_file_suffix, 4) == 0) {
                                 slot = (u8)entry->name[4] - '0';
                                 if (slot < 0)
                                     continue;
@@ -497,8 +488,7 @@ void memcard_update_state(void) {
                     break;
                 case 3:
                     mc_data_0013D390.size = 8;
-                    if (mc_call_00123C30(mc_data_0013D390.fd, &mc_data_0013D390.card[mc_data_0013D390.cur].xB0, 8) ==
-                        0) {
+                    if (sce_mc_read(mc_data_0013D390.fd, &mc_data_0013D390.card[mc_data_0013D390.cur].xB0, 8) == 0) {
                         mc_data_0013D390.sub = 4;
                     }
                     break;
@@ -518,7 +508,7 @@ void memcard_update_state(void) {
                         mc_data_0013D390.errCard = mc_data_0013D390.cur;
                         if (mc_data_0013D390.result >= 0) {
                             mc_data_0013D390.err = 0x2716;
-                            if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                            if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                                 mc_data_0013D390.state = 0;
                                 mc_data_0013D390.cur = 0;
                                 mc_data_0013D390.busy = 0;
@@ -546,7 +536,7 @@ void memcard_update_state(void) {
                     }
                     break;
                 case 5:
-                    if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                    if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                         mc_data_0013D390.busy = 0;
                         mc_data_0013D390.state = 21;
                     }
@@ -575,8 +565,8 @@ void memcard_update_state(void) {
                     mc_data_0013D390.busy = 0;
                     break;
                 case 1:
-                    if (mc_call_001239D8(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                         mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2D0) == 0) {
+                    if (sce_mc_mkdir(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                                     mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2D0) == 0) {
                         mc_data_0013D390.sub = 2;
                     }
                     break;
@@ -674,7 +664,8 @@ void memcard_update_state(void) {
                                 break;
                             }
                         }
-                        if (mc_call_00123D48(mc_data_0013D390.fd, mc_data_0013D390.buf, mc_data_0013D390.size) == 0) {
+                        if (sce_mc_write_buffer(mc_data_0013D390.fd, mc_data_0013D390.buf, mc_data_0013D390.size) ==
+                            0) {
                             mc_data_0013D390.sub++;
                         }
                     } else {
@@ -691,7 +682,7 @@ void memcard_update_state(void) {
                 case 15:
                 case 20:
                     if (mc_data_0013D390.result == mc_data_0013D390.size) {
-                        if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                        if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                             mc_data_0013D390.sub++;
                         }
                         break;
@@ -700,7 +691,7 @@ void memcard_update_state(void) {
                     if (mc_data_0013D390.result >= 0) {
                         finished_card = &mc_data_0013D390;
                         finished_card->err = 0xB;
-                        if (mc_call_00123A10(finished_card->fd) == 0) {
+                        if (sce_mc_close(finished_card->fd) == 0) {
                             finished_card->busy = 0;
                             goto reset_state;
                         }
@@ -767,8 +758,8 @@ void memcard_update_state(void) {
                     if (mc_data_0013D390.result == 1) {
                         sprintf(workspace.name, mc_data_0015FF68, mc_data_0013D2D0, mc_data_001A09A0);
                         mc_call_001E9730(mc_data_0015FF70, workspace.name);
-                        if (mc_call_00124410(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                             mc_data_0013D390.card[mc_data_0013D390.cur].slot, workspace.name) == 0) {
+                        if (sce_mc_delete(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                                          mc_data_0013D390.card[mc_data_0013D390.cur].slot, workspace.name) == 0) {
                             mc_data_0013D390.sub = 2;
                         }
                     } else {
@@ -799,8 +790,8 @@ void memcard_update_state(void) {
                     }
                     break;
                 case 3:
-                    if (mc_call_00124410(mc_data_0013D390.card[mc_data_0013D390.cur].port,
-                                         mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2D0) == 0) {
+                    if (sce_mc_delete(mc_data_0013D390.card[mc_data_0013D390.cur].port,
+                                      mc_data_0013D390.card[mc_data_0013D390.cur].slot, mc_data_0013D2D0) == 0) {
                         mc_call_001E9730(mc_data_001E8518, mc_data_0013D2D0);
                         mc_data_0013D390.sub = 4;
                     }
@@ -901,8 +892,7 @@ void memcard_update_state(void) {
                     break;
                 case 2:
                     mc_data_0013D390.size = 8;
-                    if (mc_call_00123C30(mc_data_0013D390.fd, &mc_data_0013D390.card[mc_data_0013D390.cur].xB0, 8) ==
-                        0) {
+                    if (sce_mc_read(mc_data_0013D390.fd, &mc_data_0013D390.card[mc_data_0013D390.cur].xB0, 8) == 0) {
                         mc_data_0013D390.sub = 3;
                     }
                     break;
@@ -915,7 +905,7 @@ void memcard_update_state(void) {
                     mc_data_0013D390.errCard = mc_data_0013D390.cur;
                     if (mc_data_0013D390.result >= 0) {
                         mc_data_0013D390.err = 0x1B;
-                        if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                        if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                             mc_data_0013D390.state = 0;
                             mc_data_0013D390.cur = 0;
                             mc_data_0013D390.busy = 0;
@@ -946,7 +936,7 @@ void memcard_update_state(void) {
                     if (mc_data_0013D390.size > 0x1800) {
                         mc_call_001F9978();
                     }
-                    if (mc_call_00123C30(mc_data_0013D390.fd, mc_data_0014EFD0, mc_data_0013D390.size) == 0) {
+                    if (sce_mc_read(mc_data_0013D390.fd, mc_data_0014EFD0, mc_data_0013D390.size) == 0) {
                         mc_data_0013D390.sub = 5;
                     }
                     break;
@@ -967,7 +957,7 @@ void memcard_update_state(void) {
                     mc_data_0013D390.errCard = mc_data_0013D390.cur;
                     if (mc_data_0013D390.result >= 0) {
                         mc_data_0013D390.err = 0x1B;
-                        if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                        if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                             mc_data_0013D390.state = 0;
                             mc_data_0013D390.cur = 0;
                             mc_data_0013D390.busy = 0;
@@ -998,7 +988,7 @@ void memcard_update_state(void) {
                     if (mc_data_0013D390.size > 0x1000) {
                         mc_call_001F9978();
                     }
-                    if (mc_call_00123C30(mc_data_0013D390.fd, mc_data_001507D0, mc_data_0013D390.size) == 0) {
+                    if (sce_mc_read(mc_data_0013D390.fd, mc_data_001507D0, mc_data_0013D390.size) == 0) {
                         mc_data_0013D390.sub = 7;
                     }
                     break;
@@ -1017,7 +1007,7 @@ void memcard_update_state(void) {
                     mc_data_0013D390.errCard = mc_data_0013D390.cur;
                     if (mc_data_0013D390.result >= 0) {
                         mc_data_0013D390.err = 0x1B;
-                        if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                        if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                             mc_data_0013D390.state = 0;
                             mc_data_0013D390.cur = 0;
                             mc_data_0013D390.busy = 0;
@@ -1045,7 +1035,7 @@ void memcard_update_state(void) {
                         mc_data_0013D390.card[0].request = 0;
                     break;
                 case 8:
-                    if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                    if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                         if (mc_data_0013D390.state == 23) {
                             mc_data_0013D390.busy = 0;
                             mc_data_0013D390.state = 22;
@@ -1111,7 +1101,7 @@ void memcard_update_state(void) {
                     mc_data_0013D390.busy = 0;
                     break;
                 case 2:
-                    if (mc_call_00123AC8(mc_data_0013D390.fd, 8, 0) == 0) {
+                    if (sce_mc_seek(mc_data_0013D390.fd, 8, 0) == 0) {
                         mc_data_0013D390.sub = 3;
                     }
                     break;
@@ -1125,8 +1115,8 @@ void memcard_update_state(void) {
                     }
                     break;
                 case 4:
-                    if (mc_call_00123D48(mc_data_0013D390.fd, mc_data_0014EFD0, mc_call_0020BAD8(mc_data_001A05C0)) ==
-                        0) {
+                    if (sce_mc_write_buffer(mc_data_0013D390.fd, mc_data_0014EFD0,
+                                            mc_call_0020BAD8(mc_data_001A05C0)) == 0) {
                         mc_data_0013D390.sub = 5;
                     }
                     break;
@@ -1139,7 +1129,7 @@ void memcard_update_state(void) {
                     if (mc_data_0013D390.result >= 0) {
                         finished_card = &mc_data_0013D390;
                         finished_card->err = 0x25;
-                        if (mc_call_00123A10(finished_card->fd) == 0) {
+                        if (sce_mc_close(finished_card->fd) == 0) {
                             finished_card->busy = 0;
                             goto reset_state;
                         }
@@ -1165,8 +1155,8 @@ void memcard_update_state(void) {
                         mc_data_0013D390.sub = 8;
                         break;
                     }
-                    if (mc_call_00123AC8(mc_data_0013D390.fd, mc_data_0013D390.xC8 * mc_call_0020BAD8(mc_data_001A08C0),
-                                         1) == 0) {
+                    if (sce_mc_seek(mc_data_0013D390.fd, mc_data_0013D390.xC8 * mc_call_0020BAD8(mc_data_001A08C0),
+                                    1) == 0) {
                         mc_data_0013D390.sub = 7;
                     }
                     break;
@@ -1180,8 +1170,8 @@ void memcard_update_state(void) {
                     }
                     break;
                 case 8:
-                    if (mc_call_00123D48(mc_data_0013D390.fd, mc_data_001507D0, mc_call_0020BAD8(mc_data_001A08C0)) ==
-                        0) {
+                    if (sce_mc_write_buffer(mc_data_0013D390.fd, mc_data_001507D0,
+                                            mc_call_0020BAD8(mc_data_001A08C0)) == 0) {
                         mc_data_0013D390.sub = 9;
                     }
                     break;
@@ -1194,7 +1184,7 @@ void memcard_update_state(void) {
                     if (mc_data_0013D390.result >= 0) {
                         finished_card = &mc_data_0013D390;
                         finished_card->err = 0x25;
-                        if (mc_call_00123A10(finished_card->fd) == 0) {
+                        if (sce_mc_close(finished_card->fd) == 0) {
                             finished_card->busy = 0;
                         reset_state:
                             finished_card->cur = 0;
@@ -1219,7 +1209,7 @@ void memcard_update_state(void) {
                     break;
                 case 10:
                     finished_card = &mc_data_0013D390;
-                    if (mc_call_00123A10(finished_card->fd) == 0) {
+                    if (sce_mc_close(finished_card->fd) == 0) {
                         finished_card->state = 0;
                         finished_card->cur = 0;
                     }
@@ -1285,7 +1275,8 @@ void memcard_update_state(void) {
                         mc_data_0013D390.fd = mc_data_0013D390.result;
                         n = mc_call_0020BAD8(mc_data_001A05C0);
                         mc_data_0013D390.size = n + mc_call_0020BAD8(mc_data_001A08C0) * 20 + 8;
-                        if (mc_call_00123D48(mc_data_0013D390.fd, mc_data_0013D390.buf, mc_data_0013D390.size) == 0) {
+                        if (sce_mc_write_buffer(mc_data_0013D390.fd, mc_data_0013D390.buf, mc_data_0013D390.size) ==
+                            0) {
                             mc_data_0013D390.sub = 2;
                         }
                         break;
@@ -1298,7 +1289,7 @@ void memcard_update_state(void) {
                     break;
                 case 2:
                     if (mc_data_0013D390.result == mc_data_0013D390.size) {
-                        if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                        if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                             mc_data_0013D390.sub = 3;
                         }
                         break;
@@ -1306,7 +1297,7 @@ void memcard_update_state(void) {
                     mc_data_0013D390.errCard = mc_data_0013D390.cur;
                     if (mc_data_0013D390.result >= 0) {
                         mc_data_0013D390.err = 0xB;
-                        if (mc_call_00123A10(mc_data_0013D390.fd) == 0) {
+                        if (sce_mc_close(mc_data_0013D390.fd) == 0) {
                             mc_data_0013D390.state = 0;
                             mc_data_0013D390.cur = 0;
                             mc_data_0013D390.busy = 0;

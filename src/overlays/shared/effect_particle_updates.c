@@ -18,6 +18,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "core/libc/printf_rand.h"
 extern Hero g_hero;
 
 extern int level_frame_counter MACRO_ADDR;
@@ -180,7 +181,6 @@ after:
     }
 }
 
-extern int func_001160D8(void);
 extern unsigned char *part_type04_textures;
 
 typedef struct PartType04Data {
@@ -1066,8 +1066,6 @@ extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 
 int func_L00_00237B70_26bca8(int, int, float) __asm__("func_L00_00237B70");
 
-void func_L00_001FF4B0_26bca8(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern unsigned char *func_L00_0026CA10_26bca8(void *, void *, int, int, int, float, int, int,
                                                int) __asm__("func_L00_0026CA10");
 /* Particle update: counts down its life, applies velocity and gravity, and now and then spawns a child particle with a random kick. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_00269290.c, FUN_L00_0026bca8. */
@@ -1098,7 +1096,7 @@ void update_shrinking_effect_particle_with_gravity_and_secondary_spawns(struct P
         w.f[2] = random_float_between(-1.0f, 1.0f);
         t.q = w.q;
         b = FastVecLength(o);
-        func_L00_001FF4B0_26bca8(&t, &t, b * random_float_between(0.15f, 0.25f));
+        vec_scale_to_length(&t, &t, b * random_float_between(0.15f, 0.25f));
         FastVecAdd(&t, &t, o);
         FastVecScale(&t, &t, random_float_between(0.75f, 0.95f));
         func_L00_0026CA10_26bca8(p, &t, m->color, o->color_end, scale_ticks(rand_range(0xF, 0x1E)), m->size, 0,
@@ -1924,7 +1922,6 @@ typedef struct {
 extern u8 *part_type28_textures;
 struct PartBase *func_00218928_6ED30(s32) __asm__("func_00218928");
 
-s32 func_001160D8(void);
 s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026de90. */

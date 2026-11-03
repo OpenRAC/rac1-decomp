@@ -33,6 +33,7 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -715,16 +716,13 @@ void initialize_woodcut_bot_movement_data(void *m) {
     initialize_leg_rig(m, p);
 }
 
-extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                  float, int, int, int, int) __asm__("func_L00_0025F4A8");
-
 // Clears a vector and spawns an effect on the moby.
 void emit_woodcut_bot_death_effects(void *m) {
     char pos[16];
     char vec[16];
     clear_u64_value(vec);
     Moby_GetJointWorldPos(m, 12, pos);
-    func_L00_0025F4A8_alt(m, vec, pos, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+    spawn_explosion(m, vec, pos, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
 }
 
 typedef struct WBQuery {
@@ -738,7 +736,6 @@ typedef struct WBQuery {
 } WBQuery;
 
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
-extern void SetDeathBits(void *, int, int);
 
 extern void coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
@@ -1712,8 +1709,6 @@ extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern char suck_cannon_no_exit_fmt_r[] __asm__("D_L04_001DCA60");
 extern Exit_002E2DF0 *portal_mobys_002E2DF0 __asm__("D_L04_00160058") MACRO_ADDR;
 
-extern f32 dist_002E2DF0(void *, void *) __asm__("func_001F9D48");
-
 extern void remove_moby_002E2DF0(Moby *) __asm__("func_0020D678");
 extern void update_suck_cannon_particles_r(Moby *) __asm__("func_L04_002E30E0");
 
@@ -1743,7 +1738,7 @@ void suck_cannon_update(Moby *moby) {
             break;
         case 1:
             update_suck_cannon_particles_r(moby);
-            if (dist_002E2DF0(&moby->pos, gHeroPos_r) < 3.0f) {
+            if (vec_distance_xy(&moby->pos, gHeroPos_r) < 3.0f) {
                 moby->flags |= 0x41;
                 StartCutscene(2);
                 moby->state = 2;

@@ -64,10 +64,10 @@ void MorphorayUpdate(Moby *m) {
             matrix_mul_vec3(&v0, &v0, ((Hero *)g_hero_r)->basis[0].f);
         }
         p->yaw = fast_atan2(v0.x, v0.y);
-        p->pitch = fast_atan2(vec_length_xy_r(&v0), v0.z);
+        p->pitch = fast_atan2(vec_length_xy(&v0), v0.z);
         *(u128_2BDAF0 *)&v[0] = *(u128_2BDAF0 *)p->pos;
         hit = select_morphoray_target_and_adjust_aim_r(m, &v[0], &p->yaw, &p->pitch);
-        fast_dec_timer_r2(&p->delay);
+        fast_dec_timer(&p->delay);
         if (p->target != 0) {
             if (p->target->state == 0xFE) {
                 p->target = 0;
@@ -106,10 +106,10 @@ void MorphorayUpdate(Moby *m) {
             if (g_current_level_index_r == LEVEL_RILGAR && p->target->oclass == MOBY_CLASS_EXTERMITANK &&
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 = 1;
-                PlayBankSound_r(1, 0, 0);
+                PlayBankSound(1, 0, 0);
                 ShowBanner(0x53D6, -1);
             }
-            spawn_morphoray_chicken_r(p->target);
+            spawn_morphoray_chicken(p->target);
             p->target = 0;
         }
         update_beam_ring_rail_and_pulse_effects_r(m);
@@ -118,7 +118,7 @@ void MorphorayUpdate(Moby *m) {
         }
         if (morphoray_light_slot_r >= 0) {
             morphoray_light_fade_timer_r = scale_ticks(20);
-            vec_scale_to_length_r(&v[0], &m->rot_row1, -0.5f);
+            vec_scale_to_length(&v[0], &m->rot_row1, -0.5f);
             FastVecAdd(&v[1], p, &v[0]);
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[0] = v[1].x;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[1].y;
@@ -139,7 +139,7 @@ void MorphorayUpdate(Moby *m) {
         D_L00_0016188C_2BDAF0 = 1;
         if (morphoray_light_slot_r >= 0) {
             float f;
-            vec_scale_to_length_r(&v0, &m->rot_row1, -0.5f);
+            vec_scale_to_length(&v0, &m->rot_row1, -0.5f);
             FastVecAdd(&v[0], p, &v0);
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[0] = v[0].x;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[0].y;
@@ -149,7 +149,7 @@ void MorphorayUpdate(Moby *m) {
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[0] = f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[1] = f;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[2] = f * 0.25f;
-            if (fast_dec_timer_r2(&morphoray_light_fade_timer_r) != 0) {
+            if (fast_dec_timer(&morphoray_light_fade_timer_r) != 0) {
                 release_point_light_slot(morphoray_light_slot_r);
                 morphoray_light_slot_r = -1;
             }

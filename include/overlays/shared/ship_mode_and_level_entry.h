@@ -7,6 +7,7 @@
 
 extern void deactivate_recorded_moby(void);
 extern void initialize_moby_state_record(char *);
+extern void prepare_level_entry_transition(void);
 extern void prepare_level_transition_with_help_cleanup(void);
 extern void prepare_target_level_transition(int);
 

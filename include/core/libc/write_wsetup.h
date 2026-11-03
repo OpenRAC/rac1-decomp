@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern long _write_r(void *, void *, void *, void *);
 extern int libc_swsetup(void *);
 
 #endif /* CORE_LIBC_WRITE_WSETUP_H */

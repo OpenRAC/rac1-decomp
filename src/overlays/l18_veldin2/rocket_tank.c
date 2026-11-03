@@ -16,6 +16,7 @@
 #include "overlays/l18_veldin2/rockets_and_platforms.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero;
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
@@ -249,8 +250,6 @@ void rocket_tank_update(M1454 *m) {
             break;
     }
 }
-
-extern void SetDeathBits(void *, int, int);
 
 /* Applies hits to the rocket tank and breaks it apart when its health runs out. */
 void update_rocket_tank_damage_and_aim(void *mv) {
