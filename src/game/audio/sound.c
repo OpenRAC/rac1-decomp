@@ -715,7 +715,7 @@ extern Hero D_0013F450;
 extern VoicePositionRecord D_0013E6E0[];
 extern u8 D_0013E6C0_2EB08[] __asm__("D_0013E6C0");
 
-extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
+extern s32 random_integer_below(s32);
 extern s32 calculate_voice_volume_r(VoiceSlot *, Vec4 *) __asm__("func_0022DB00");
 
 s32 func_0022EB08_r(VoiceDefinition *, u32, VoiceMoby *, Vec4 *, s32) __asm__("func_0022EB08");
@@ -827,7 +827,7 @@ check_calculated_volume:
     pitch_bend_max = definition->pitch_bend_max;
     pitch_bend_min = definition->pitch_bend_min;
     if (pitch_bend_max != pitch_bend_min) {
-        pitch_bend = random_integer_below_r(pitch_bend_max - pitch_bend_min) + definition->pitch_bend_min;
+        pitch_bend = random_integer_below(pitch_bend_max - pitch_bend_min) + definition->pitch_bend_min;
     } else {
         pitch_bend = pitch_bend_max;
     }

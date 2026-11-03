@@ -865,37 +865,33 @@ extern KillFlags D_L00_001BB5C0;
 extern unsigned char D_L00_0015FD48[] MACRO_ADDR;
 extern unsigned char D_0014C150[][16];
 
-extern int random_integer_below_r(int) __asm__("func_002140B0");
+extern int random_integer_below(int);
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void *GetFlaggedPvarWord_r(void *) __asm__("func_L00_00261448");
 
-extern float random_angle_radians_r(void) __asm__("func_00214158");
+extern float random_angle_radians(void);
 
-extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void quaternion_to_rotation_basis_r(void *, void *) __asm__("func_001FA648");
 extern void multiply_matrix3x3_r(void *, void *, void *) __asm__("func_001FA4F0");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
 
-extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
+extern void vec_reflect(void *, void *, void *);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern void matrix_to_euler_r(void *, void *) __asm__("func_002153E8");
+extern void matrix_to_euler(void *, void *);
 
 extern void update_bolt_grounded_pose_r(void *, void *, void *) __asm__("func_L00_002A8088");
 
 extern void quat_nlerp_r(void *, void *, void *, float) __asm__("func_001FA5C8");
 
 extern int begin_bolt_attraction_r(void *, void *, float, float) __asm__("func_L00_002A84B0");
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-
-extern void func_L00_002607A8(void *, float);
 
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
@@ -934,7 +930,7 @@ void bolt_update(Moby *m) {
             m->flags |= 0x100;
             m->update_dist = 0x20;
             m->draw_dist = 0x20;
-            if (random_integer_below_r(2) == 0) {
+            if (random_integer_below(2) == 0) {
                 d->f55 |= 1;
             }
             vec_scale_to_length_r(u.s.a, ((float *)&m->rot_row2), 0.2f);
@@ -947,8 +943,8 @@ void bolt_update(Moby *m) {
                 qcopy(d->pos, coll_hit_result_r.point.f);
                 c = &coll_hit_result_r;
                 clear_u64_value(d->ang);
-                d->ang[2] = fast_atan2_r(c->normal.f[0], c->normal.f[1]);
-                d->ang[1] = fast_atan2_r(c->normal.f[2], vec_length_xy_r(c->normal.f));
+                d->ang[2] = fast_atan2(c->normal.f[0], c->normal.f[1]);
+                d->ang[1] = fast_atan2(c->normal.f[2], vec_length_xy_r(c->normal.f));
                 if (((Moby *)c->moby) != 0 && GetFlaggedPvarWord_r((Moby *)c->moby) != 0) {
                     d->held = (Moby *)c->moby;
                     convert_pose_to_reference_local(m, d->held, d, d->ang, d, d->ang);
@@ -957,10 +953,10 @@ void bolt_update(Moby *m) {
                 qcopy(d->pos, ((float *)&m->pos));
                 clear_u64_value(d->ang);
             }
-            d->f50 = random_angle_radians_r();
-            d->f58 = random_angle_radians_r();
+            d->f50 = random_angle_radians();
+            d->f58 = random_angle_radians();
             d->start_z = m->pos.z;
-            d->h6E = rand_range_r(0, scale_ticks(0x258));
+            d->h6E = rand_range(0, scale_ticks(0x258));
             d->h6C = -1;
             switch (m->oclass) {
                 case BOLT_CLASS_ONE:
@@ -1002,7 +998,7 @@ void bolt_update(Moby *m) {
             if (m->pos.z < d->start_z - 2.0f) {
                 Hero *h = (Hero *)g_hero;
                 if (m->pos.z < h->motion.pos.f[2] - 2.0f) {
-                    begin_bolt_attraction_r(m, h->moby, random_float_between_r(-15.0f, 15.0f) * 0.017453292f, 0.0f);
+                    begin_bolt_attraction_r(m, h->moby, random_float_between(-15.0f, 15.0f) * 0.017453292f, 0.0f);
                     break;
                 }
             }
@@ -1014,33 +1010,33 @@ void bolt_update(Moby *m) {
                 qcopy(d->pos, coll_hit_result_r.point.f);
                 c = &coll_hit_result_r;
                 clear_u64_value(d->ang);
-                d->ang[2] = fast_atan2_r(c->normal.f[0], c->normal.f[1]);
-                d->ang[1] = fast_atan2_r(c->normal.f[2], vec_length_xy_r(c->normal.f));
+                d->ang[2] = fast_atan2(c->normal.f[0], c->normal.f[1]);
+                d->ang[1] = fast_atan2(c->normal.f[2], vec_length_xy_r(c->normal.f));
             }
             FastVecSub(u.s.a, ((float *)&m->pos), coll_hit_result_r.point.f);
-            vec_reflect_r(d->vel, d->vel, u.s.a);
+            vec_reflect(d->vel, d->vel, u.s.a);
             dist = vec_distance_xy_r(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
             {
                 Hero *h = (Hero *)g_hero;
                 if (dist < h->reach_distance && FastAbsF(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
                     if (h->health.hp != 0) {
-                        vec_scale_to_length_r(d->vel, d->vel, random_float_between_r(3.0f, 7.0f) * g_frame_time_r);
+                        vec_scale_to_length_r(d->vel, d->vel, random_float_between(3.0f, 7.0f) * g_frame_time_r);
                         begin_bolt_attraction_r(m, h->moby, 0.0f, 0.0f);
                     }
                     break;
                 }
             }
-            if (fast_atan2_r(u.s.a[2], vec_length_xy_r(u.s.a)) < 0.7853982f) {
+            if (fast_atan2(u.s.a[2], vec_length_xy_r(u.s.a)) < 0.7853982f) {
                 CollisionHit *c = &coll_hit_result_r;
-                if (fast_atan2_r(c->normal.f[2], vec_length_xy_r(c->normal.f)) < 0.7853982f) {
+                if (fast_atan2(c->normal.f[2], vec_length_xy_r(c->normal.f)) < 0.7853982f) {
                     m->state = 2;
                     d->f56 = d->f57 =
-                        truncate_float_to_s32_r2(multiply_global_factor(random_float_between_r(30.0f, 40.0f)));
+                        truncate_float_to_s32_r2(multiply_global_factor(random_float_between(30.0f, 40.0f)));
                     if (((Moby *)c->moby) != 0 && GetFlaggedPvarWord_r((Moby *)c->moby) != 0) {
                         d->held = (Moby *)c->moby;
                         convert_pose_to_reference_local(m, d->held, d, d->ang, d, d->ang);
                     }
-                    matrix_to_euler_r(((float *)&m->rot_row0), u.s.b);
+                    matrix_to_euler(((float *)&m->rot_row0), u.s.b);
                     build_quaternion_from_axis_rotations(d->quat, u.s.b);
                 }
             }
@@ -1051,7 +1047,7 @@ void bolt_update(Moby *m) {
             float t;
             update_bolt_grounded_pose_r(m, u.s.b, 0);
             u.s.b[2] += 0.25f;
-            matrix_to_euler_r(((float *)&m->rot_row0), u.s.a);
+            matrix_to_euler(((float *)&m->rot_row0), u.s.a);
             build_quaternion_from_axis_rotations(u.s.m, u.s.a);
             s = 1.0f / IntToFloat(d->f57);
             t = IntToFloat(d->f57) / IntToFloat(d->f56);
@@ -1061,8 +1057,7 @@ void bolt_update(Moby *m) {
             quaternion_to_rotation_basis_r(d->quat, ((float *)&m->rot_row0));
             if (--d->f57 == 0) {
                 m->state = 3;
-                d->f56 = d->f57 =
-                    truncate_float_to_s32_r2(multiply_global_factor(random_float_between_r(10.0f, 20.0f)));
+                d->f56 = d->f57 = truncate_float_to_s32_r2(multiply_global_factor(random_float_between(10.0f, 20.0f)));
             }
             break;
         }
@@ -1077,7 +1072,7 @@ void bolt_update(Moby *m) {
                 }
             }
             if (level_mobys_end_r < m && free_moby_slot_count < 200 && dist > 48.0f && m->visible == 0) {
-                DeleteMoby_r(m);
+                DeleteMoby(m);
                 break;
             }
             if (m->visible != 0 || d->held != 0) {
@@ -1101,7 +1096,7 @@ void bolt_update(Moby *m) {
                         FastVecAdd(u.s.a, u.s.a, ((float *)&m->pos));
                         d->h6C = allocate_glint_slot(u.s.a, m - moby_array_start, 1.4f);
                         lo = scale_ticks(0x12C);
-                        d->h6E = rand_range_r(lo, scale_ticks(0x258));
+                        d->h6E = rand_range(lo, scale_ticks(0x258));
                     }
                 }
             } else {
@@ -1167,7 +1162,7 @@ void bolt_update(Moby *m) {
                     checkpoint_level_state.killed[(short)m->save_id] = m->mission + 2;
                 }
             }
-            DeleteMoby_r(m);
+            DeleteMoby(m);
             break;
         }
     }
@@ -1192,8 +1187,6 @@ extern BoltSourceStats bolt_source_stats[][64];
 
 extern s32 current_moby_mission_complete MACRO_ADDR;
 extern void *level_mobys_end SDATA(level_mobys_end);
-
-extern void rand_vec(void *, f32, f32);
 
 extern u8 *PartType53Spawn_r(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel,
                              f32 f2) __asm__("func_L00_00272F00");
@@ -1253,8 +1246,6 @@ void collect_bolt(struct Moby *bolt) {
 
 extern int coll_sphere(float, void *, int, void *);
 
-extern char *GetFlaggedPvarWord(void *);
-extern char *moby_get_ride_transform(void *);
 extern void vec_scale_to_length(float *, float *, float);
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held
@@ -1704,7 +1695,7 @@ void update_wrench_animation_from_hero_state(char *m) {
     }
 }
 extern void *g_coll_hit_moby;
-extern char *GetFlaggedPvarWord(void *);
+
 /* Return 1 when the moby the wrench hit uses the alternate hit sound. */
 int get_wrench_hit_sound_variant(void) {
     int r = 0;
@@ -1715,8 +1706,7 @@ int get_wrench_hit_sound_variant(void) {
         r = *(unsigned char *)(x + 9) == 1;
     return r;
 }
-extern char *GetFlaggedPvarWord(void *);
-extern char *moby_get_ride_transform(void *);
+
 /* Return 1 when the moby the wrench hit is flagged to react to wrench hits. */
 int should_trigger_wrench_hit_reaction(void) {
     char *x = GetFlaggedPvarWord(g_coll_hit_moby);
@@ -1970,8 +1960,6 @@ extern void vec_set_length_xy(void *, void *, float);
 extern int func_L00_001F2BE8(void *, float, int, void *, void *);
 
 extern float ApproachValue(float *, float, float);
-
-extern int is_moby_in_class_range_500_to_540(int);
 
 static __inline__ WPlayer48 *wplayer48(void) {
     return (WPlayer48 *)g_hero;

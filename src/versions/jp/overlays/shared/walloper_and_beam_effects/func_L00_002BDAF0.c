@@ -20,7 +20,7 @@ void MorphorayUpdate(Moby *m) {
         morphoray_light_fade_timer_r = 0;
     }
     near = 1;
-    if (m->prev_seq == 0 && MobyGetFrameValue_r(m) < 6.0f) {
+    if (m->prev_seq == 0 && MobyGetFrameValue(m) < 6.0f) {
         near = 0;
     }
     FastDecTimer(&p->timer);
@@ -63,8 +63,8 @@ void MorphorayUpdate(Moby *m) {
             v0.x = 1.0f;
             matrix_mul_vec3(&v0, &v0, ((Hero *)g_hero_r)->basis[0].f);
         }
-        p->yaw = fast_atan2_r(v0.x, v0.y);
-        p->pitch = fast_atan2_r(vec_length_xy_r(&v0), v0.z);
+        p->yaw = fast_atan2(v0.x, v0.y);
+        p->pitch = fast_atan2(vec_length_xy_r(&v0), v0.z);
         *(u128_2BDAF0 *)&v[0] = *(u128_2BDAF0 *)p->pos;
         hit = select_morphoray_target_and_adjust_aim_r(m, &v[0], &p->yaw, &p->pitch);
         fast_dec_timer_r2(&p->delay);

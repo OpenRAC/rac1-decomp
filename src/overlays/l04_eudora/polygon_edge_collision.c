@@ -68,11 +68,11 @@ extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF
 
 extern int func_L00_001EFFF0(void *, void *, int, void *, int);
 
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 
 extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
 
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 extern int func_001FA898(float);
 extern int find_nearest_point_index_xy_r(Moby *, void *, int) __asm__("func_L04_001F2F68");
 
@@ -240,7 +240,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
         if (coll_line(&a, &e, 2, m, 0) != 0) {
             if (eudora_coll_hit.hit > 0 && eudora_coll_hit.z > m->pos.z) {
                 qcopy(&x, &eudora_coll_hit.normal);
-                s = fast_atan2_r(eudora_coll_hit.normal.z, vec_length_xy(&eudora_coll_hit.normal));
+                s = fast_atan2(eudora_coll_hit.normal.z, vec_length_xy(&eudora_coll_hit.normal));
                 vec_set_length_xy(&x, &x, 1.0f);
                 FastVecScale(&x, &x, f[3]);
                 FastVecAdd(c, c, &x);
@@ -270,11 +270,11 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
         c->vel.z = c->vel.z / c->f48;
     }
     if (FastDecTimer(&c->timer) != 0) {
-        c->timer = truncate_float_to_s32(random_float_between_r(45.0f, 90.0f));
-        c->drift.x = random_float_between_r(0.0f, c->range) - c->range * 0.5f;
-        c->drift.y = random_float_between_r(0.0f, c->range) - c->range * 0.5f;
+        c->timer = truncate_float_to_s32(random_float_between(45.0f, 90.0f));
+        c->drift.x = random_float_between(0.0f, c->range) - c->range * 0.5f;
+        c->drift.y = random_float_between(0.0f, c->range) - c->range * 0.5f;
         if (c->f48 != 0.0f) {
-            c->drift.z = random_float_between_r(0.0f, c->range) - c->range * 0.5f;
+            c->drift.z = random_float_between(0.0f, c->range) - c->range * 0.5f;
         } else {
             c->drift.z = 0.0f;
         }

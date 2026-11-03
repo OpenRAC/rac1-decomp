@@ -508,17 +508,14 @@ extern int beam_spark_style_r[] __asm__("D_L00_00161D38") MACRO_ADDR;
 extern int beam_slot_ids_r[] __asm__("D_L00_00161D58") MACRO_ADDR;
 extern float D_L00_00161CC0_2E3700 SDATA(D_L00_00161CC0);
 
-extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
-
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 extern Part *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, int,
                                                                   int) __asm__("func_L00_002757E8");
-extern int random_integer_below_r(int) __asm__("func_002140B0");
+extern int random_integer_below(int);
 
-extern void random_spherical_offset_r(void *, float, float) __asm__("func_002141A8");
+extern void random_spherical_offset(void *, float, float);
 
 /* Per-frame update of one beam slot: lays out the two 20-point strips between the slot's ends
    (a sine wave and a noisy one), spawns sparks at both ends and keeps the two looping sounds
@@ -568,7 +565,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
         float a = IntToFloat(j) / IntToFloat(20) * 0.3f + 0.1f;
         Pt *p = &beam_strand_points_r[k][j];
 
-        a = a * FastSin(normalize_angle_r(beam_strand_wave_phase_r[idx] + fj * ang));
+        a = a * FastSin(normalize_angle(beam_strand_wave_phase_r[idx] + fj * ang));
         p->y = 0.0f;
         p->w = 1.0f;
         p->z = a;
@@ -593,11 +590,11 @@ void update_slot_panes_and_effects(int unused, int idx) {
         float c;
 
         p->z = 0.0f;
-        s = normalize_angle_r(beam_strand_twist_phase_r[idx] + fn * 0.99483764f);
-        t = normalize_angle_r(beam_strand_sway_phase_r[idx] + fn * 0.20944f);
+        s = normalize_angle(beam_strand_twist_phase_r[idx] + fn * 0.99483764f);
+        t = normalize_angle(beam_strand_sway_phase_r[idx] + fn * 0.20944f);
         a = FastSin(t) * 0.5f;
         b = FastSin(s);
-        c = randf_sym_r(0.0f, 0.2f);
+        c = randf_sym(0.0f, 0.2f);
         p->z += a * b + c;
         p->y = FastCos(s) * 0.3f;
         p->w = 1.0f;
@@ -606,11 +603,11 @@ void update_slot_panes_and_effects(int unused, int idx) {
     }
     {
         float one;
-        float r = random_float_between_r(0.01f, 0.05f);
+        float r = random_float_between(0.01f, 0.05f);
         float a;
 
         one = 1.0f;
-        a = randf_sym_r(0.34906584f, 0.6981317f);
+        a = randf_sym(0.34906584f, 0.6981317f);
         vel.q = 0;
         vel.f[0] = one;
         vel.f[3] = one;
@@ -619,7 +616,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
         matrix_mul_vec3(&vel, &vel, &beam_origin_transforms_r[idx]);
         spawn_mode_controlled_rotating_alpha_fade_particle_r(beam_origin_transforms_r[idx].v30, &vel, 0x7F,
                                                              beam_slot_ids_r[idx]);
-        if (random_integer_below_r(3) == 0) {
+        if (random_integer_below(3) == 0) {
             Part *p;
 
             FastVecScale(pos, &beam_origin_transforms_r[idx], 0.3f);
@@ -637,10 +634,10 @@ void update_slot_panes_and_effects(int unused, int idx) {
                     q->f16 = 1;
             }
         }
-        random_float_between_r(0.01f, 0.05f);
-        random_spherical_offset_r(&vel, 0.01f, 0.05f);
+        random_float_between(0.01f, 0.05f);
+        random_spherical_offset(&vel, 0.01f, 0.05f);
         spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, &vel, 0x7F, beam_slot_ids_r[idx]);
-        if (random_integer_below_r(3) == 0) {
+        if (random_integer_below(3) == 0) {
             Part *p = spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, veldin1_zero_vec_r, 0x7F,
                                                                            beam_slot_ids_r[idx]);
 
@@ -1060,9 +1057,8 @@ void red_plant_update(Moby *m) {
     }
 }
 
-extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
-extern void spawn_explosion(void *, void *, void *, float, float, int, float, int, float, float, int, float, int, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, float, int, float, float, int, float, int,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int coll_sphere_s(void *, float, int, void *) __asm__("func_L00_001F10E0");
 
 extern char veldin1_zero_vec[] MACRO_ADDR;
@@ -1102,8 +1098,8 @@ void robot_arm_update(Moby *m) {
                 spawn_color_swapped_explosion_burst(m, a20, -1, d->radius * 0.5f, 0.0f);
             } else {
                 float h = d->radius * 0.5f;
-                spawn_explosion(m, veldin1_zero_vec, a20, 0.0f, 0.0f, 5, d->radius, 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0,
-                                -1, 0);
+                spawn_explosion_v(m, veldin1_zero_vec, a20, 0.0f, 0.0f, 5, d->radius, 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0,
+                                  -1, 0);
             }
             DeleteMoby(m);
             return;
@@ -2218,7 +2214,6 @@ extern short follow_camera_vehicle_collision_probe_step_growth_factor_gp;
 extern short follow_camera_vehicle_collision_probe_scale_gp;
 #define g78 (*(f32 *)&D_L00_00161E78)
 
-extern unsigned char *GetFlaggedPvarWord(int);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void set_follow_camera_angle_blend_from_direction(void *, float, float);
 extern void follow_camera_start_slide(void);
@@ -3220,7 +3215,7 @@ typedef struct {
 f32 CosineInterpolate(f32, f32, f32);
 #define CAST_func_L00_001EFFF0 ((s32 (*)(void *, void *, s32, void *, s32))func_L00_001EFFF0)
 #define CAST_func_L00_002E5740 ((s32 (*)(void *))func_L00_002E5740)
-s32 is_moby_in_class_range_500_to_540(s32);
+
 void InitDirectionalHitQuery_v(void *, void *, s32, void *, f32) __asm__("func_L00_0025A8C0");
 
 void build_look_at_matrix(void *, void *, void *, f32);

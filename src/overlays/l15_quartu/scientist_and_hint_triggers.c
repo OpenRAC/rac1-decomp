@@ -430,7 +430,7 @@ typedef struct Items {
     unsigned char f6F;
 } Items;
 
-extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *, int);
 
 extern unsigned char D_0013D5E7[];
 extern int D_0015EFA4 MACRO_ADDR;
@@ -462,7 +462,7 @@ void update_quartu_hint_triggers(Moby *m) {
             if (t->npc[0] != -1) {
                 e = (Moby *)(quartu_moby_array_r + (t->npc[0] << 8));
                 if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3 &&
-                    is_point_inside_clip_volume_r(&g_hero.motion.pos, t->zone[3]) != 0 &&
+                    is_point_inside_clip_volume(&g_hero.motion.pos, t->zone[3]) != 0 &&
                     (g_hero.state.control_mode < 2u || g_hero.state.control_mode == 9) &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1) {
@@ -508,7 +508,7 @@ void update_quartu_hint_triggers(Moby *m) {
                 Help_Request(0x3A9F, 0x89);
                 quartu_pending_help_flag = 0;
             }
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol54) != 0 && g_hero.vehicle_mode == 3 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, t->vol54) != 0 && g_hero.vehicle_mode == 3 &&
                 g_hero.glow_pulse_level == 0 && quartu_alarm_on == 0 &&
                 *(unsigned short *)(help_stats_base_r + 0x78D) == 0) {
                 Help_Request(0x3A9E, 0x88);
@@ -517,7 +517,7 @@ void update_quartu_hint_triggers(Moby *m) {
             npc = -1;
             found = 0;
             for (i = 0; i < 1; i++) {
-                if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->zone[i]) != 0) {
+                if (is_point_inside_clip_volume(&g_hero.motion.pos, t->zone[i]) != 0) {
                     pick = t->zone[i];
                     npc = t->npc[i];
                     found = 1;
@@ -548,12 +548,12 @@ void update_quartu_hint_triggers(Moby *m) {
             if (g_hero.moby->seq == 0xC && g_hero.vehicle_mode == 2) {
                 ((Items *)gSpecialItems)->f6F = 1;
             }
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol1C) != 0 && g_hero.vehicle_mode == 2 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, t->vol1C) != 0 && g_hero.vehicle_mode == 2 &&
                 ((Items *)gSpecialItems)->f6F == 0 && ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
                 Help_Request(0x3A9C, 0x80);
             }
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol20[0]) != 0 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, t->vol20[0]) != 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHeliPack[2] == 0 &&
                 !(*(unsigned int *)(help_stats_base_r + 0x761) & (1 << g_current_level_index_r))) {
@@ -562,7 +562,7 @@ void update_quartu_hint_triggers(Moby *m) {
             pick = -1;
             found = 0;
             for (j = 0; j < 3; j++) {
-                if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol20[j]) != 0) {
+                if (is_point_inside_clip_volume(&g_hero.motion.pos, t->vol20[j]) != 0) {
                     found = 1;
                     if (t->last != t->vol20[j]) {
                         pick = t->vol20[j];
@@ -587,8 +587,7 @@ void update_quartu_hint_triggers(Moby *m) {
                 t->last = pick;
                 t->hold38 = 0;
             }
-            if (((Items *)gSpecialItems)->f6E == 0 &&
-                is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol2C) != 0) {
+            if (((Items *)gSpecialItems)->f6E == 0 && is_point_inside_clip_volume(&g_hero.motion.pos, t->vol2C) != 0) {
                 ((Items *)gSpecialItems)->f6E = 1;
             }
             break;

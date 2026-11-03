@@ -903,7 +903,6 @@ extern void vscl_2d8e48(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern void vmul_2d8e48(float, void *, void *) __asm__("func_001F9C30");
 
-extern float rnd_2d8e48(float, float) __asm__("func_L00_00258C80");
 extern void func_L00_001FD1D8(void *, void *, int);
 /* Draw callback: builds a camera-facing matrix from the moby's position and draws two quads, each with a jittered scale. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d6810.c, FUN_L15_002d8e48. */
 void draw_electric_water_bolt_start_quads(char *mv) {
@@ -933,7 +932,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     quad.color[2] = c;
     quad.color[1] = c;
     quad.color[0] = c;
-    s = *(float *)&electric_water_glow_core_size + rnd_2d8e48(0.0f, 0.025f);
+    s = *(float *)&electric_water_glow_core_size + randf_sym(0.0f, 0.025f);
     for (i = 0; i < 4; i++) {
         vmul_2d8e48(s, &quad.corner[i], &electric_water_glow_quad_corners[i]);
         transform_vector(&quad.corner[i], &quad.corner[i], &mat[0]);
@@ -946,7 +945,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     quad.color[2] = c;
     quad.color[1] = c;
     quad.color[0] = c;
-    s = *(float *)&electric_water_glow_halo_size + rnd_2d8e48(0.0f, 0.05f);
+    s = *(float *)&electric_water_glow_halo_size + randf_sym(0.0f, 0.05f);
     for (i = 0; i < 4; i++) {
         vmul_2d8e48(s, &quad.corner[i], &electric_water_glow_quad_corners[i]);
         transform_vector(&quad.corner[i], &quad.corner[i], &mat[0]);
@@ -969,7 +968,6 @@ extern float g_frame_time MACRO_ADDR;
 extern int coll_line(void *, void *, int, void *, void *);
 extern int coll_sphere(void *, int, void *, float);
 
-extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
 extern void SpawnExplosionFx_v(void *, void *, float, float, int) __asm__("func_L00_00260108");
 
 extern void spawn_moby_point_offset_particle_v(void *, float, int, float) __asm__("func_L07_0029C6A8");
@@ -1035,7 +1033,6 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
     return m;
 }
 
-extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
 
 extern char quartu_collected_flags_base[];

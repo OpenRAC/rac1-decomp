@@ -470,7 +470,6 @@ void hoverboard_update(unsigned char *moby) {
     ((struct Moby *)moby)->command = 0;
 }
 
-extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
 
 struct AddMobyFramesForGroupProximityVars {
@@ -1112,7 +1111,6 @@ extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern s32 truncate_float_to_s32(f32);
 extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001F49B0");
-extern char *MobyGetHitMessage(struct Moby *, s32, s32);
 
 extern struct Moby *SpawnBreakFragment(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *, void *);
 

@@ -200,7 +200,7 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
 extern int FastBSphereCheck(void *, f32);
 
-extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
+extern f32 random_float_between(f32, f32);
 
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 
@@ -236,18 +236,18 @@ void update_spark_particle_emitter(EmitterMoby *self) {
         v->timer = v->delay;
         for (i = 0; i < v->count; i++) {
             p.q = self->pos.q;
-            off.f[0] = random_float_between_r(-v->spread[0], v->spread[0]);
-            off.f[1] = random_float_between_r(-v->spread[1], v->spread[2]);
-            off.f[2] = random_float_between_r(-v->spread[2], v->spread[2]);
+            off.f[0] = random_float_between(-v->spread[0], v->spread[0]);
+            off.f[1] = random_float_between(-v->spread[1], v->spread[2]);
+            off.f[2] = random_float_between(-v->spread[2], v->spread[2]);
             if (v->flags & 0x2000) {
                 euler_to_matrix(&u.rot.m, self->rot);
                 transform_vector(&off, &off, &u.rot.m);
             }
             FastVecAdd(&p, &p, &off);
             if (v->flags & 0x1000) {
-                u.rot.ang.f[0] = random_float_between_r(-v->vel_range[0], v->vel_range[0]) * 3.1415927f / 180.0f;
-                u.rot.ang.f[1] = random_float_between_r(-v->vel_range[1], v->vel_range[1]) * 3.1415927f / 180.0f;
-                u.rot.ang.f[2] = random_float_between_r(-v->vel_range[2], v->vel_range[2]) * 3.1415927f / 180.0f;
+                u.rot.ang.f[0] = random_float_between(-v->vel_range[0], v->vel_range[0]) * 3.1415927f / 180.0f;
+                u.rot.ang.f[1] = random_float_between(-v->vel_range[1], v->vel_range[1]) * 3.1415927f / 180.0f;
+                u.rot.ang.f[2] = random_float_between(-v->vel_range[2], v->vel_range[2]) * 3.1415927f / 180.0f;
                 if (v->flags & 0x4000) {
                     u.rot.ang.f[0] = FastAddRots(u.rot.ang.f[0], self->rot[0]);
                     u.rot.ang.f[1] = FastAddRots(u.rot.ang.f[0], self->rot[1]);
@@ -255,21 +255,21 @@ void update_spark_particle_emitter(EmitterMoby *self) {
                 }
                 euler_to_matrix(&u.rot.m, &u.rot.ang);
                 transform_vector(&out, &v->vel, &u.rot.m);
-                size = random_float_between_r(v->size_min, v->size_max);
+                size = random_float_between(v->size_min, v->size_max);
                 create_spark_particle(v, &p, out.f[0], out.f[1], out.f[2], size,
-                                      random_float_between_r(v->life_min, v->life_max), v->fade[0], v->fade[1],
+                                      random_float_between(v->life_min, v->life_max), v->fade[0], v->fade[1],
                                       v->fade[2], v->fade[3], v->tex, v->blend, v->alpha, 0xFF);
             } else {
-                u.lin.vel.f[0] = random_float_between_r(v->vel.f[0], v->vel_range[0]) * frame_scale_r;
-                u.lin.vel.f[1] = random_float_between_r(v->vel.f[1], v->vel_range[1]) * frame_scale_r;
-                u.lin.vel.f[2] = random_float_between_r(v->vel.f[2], v->vel_range[2]) * frame_scale_r;
+                u.lin.vel.f[0] = random_float_between(v->vel.f[0], v->vel_range[0]) * frame_scale_r;
+                u.lin.vel.f[1] = random_float_between(v->vel.f[1], v->vel_range[1]) * frame_scale_r;
+                u.lin.vel.f[2] = random_float_between(v->vel.f[2], v->vel_range[2]) * frame_scale_r;
                 if (v->flags & 0x4000) {
                     euler_to_matrix(&u.lin.m, self->rot);
                     transform_vector(&u.lin.vel, &u.lin.vel, &u.lin.m);
                 }
-                size = random_float_between_r(v->size_min, v->size_max);
+                size = random_float_between(v->size_min, v->size_max);
                 create_spark_particle(v, &p, u.lin.vel.f[0], u.lin.vel.f[1], u.lin.vel.f[2], size,
-                                      random_float_between_r(v->life_min, v->life_max), v->fade[0], v->fade[1],
+                                      random_float_between(v->life_min, v->life_max), v->fade[0], v->fade[1],
                                       v->fade[2], v->fade[3], v->tex, v->blend, v->alpha, 0xFF);
             }
         }
@@ -360,7 +360,6 @@ typedef struct {
     void *moby;
     s32 kind;
 } PathPickTarget;
-extern void FindNearestTargetMoby(void *, void *, f32);
 
 /* Picks the path node the follower should head for: an ordered path just steps to the next stop; otherwise the nearest
    node and its two neighbours are scored (distance, or heading change for slow movers) and the best one is written to
@@ -594,30 +593,17 @@ extern float novalis_birdbot_anim8_speed SDATA(novalis_birdbot_anim8_speed);
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern int select_birdbot_path_node(void *, int *);
-extern void FindNearestTargetMoby(void *, void *, float);
-extern void *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(float, void *, void *, int, int, int);
-extern void RerollEffectCounter(void *m, short *p);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern int mine_fall(void *, void *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void SetDeathBits(void *, int, int);
-
-extern void StepColorFade(void *, void *);
 
 /* Birdbot update: follows its path, turns on and shoots at the hero, flees when hurt, and blows up when it dies or
    leaves the level. */
@@ -704,7 +690,7 @@ void birdbot_update(Moby *m) {
                 v->bAD = 0;
                 va = hit->pos;
                 HeadingFromVector(&va, &ang, &v->f88, &v->f8C);
-                InitKnockback(ang, m, v->x70, 9, scale_ticks(2), 0);
+                InitKnockback_v(ang, m, v->x70, 9, scale_ticks(2), 0);
                 v->b67 = 0xB4;
                 m->state = 0xE;
                 m->flags &= 0xEFFF;
@@ -725,7 +711,7 @@ void birdbot_update(Moby *m) {
                 v->bAD = 0;
                 va = hit->pos;
                 HeadingFromVector(&va, &ang, &v->f88, &v->f8C);
-                InitKnockback(ang, m, v->x70, 0xC, 6, 0);
+                InitKnockback_v(ang, m, v->x70, 0xC, 6, 0);
                 if (m->prev_seq != 0xB) {
                     MobyBlendAnimation(m, 0xB, 0, scale_ticks(6));
                 }
@@ -745,7 +731,7 @@ void birdbot_update(Moby *m) {
                 v->bAD = 0;
                 va = hit->pos;
                 HeadingFromVector(&va, &ang, &v->f88, &v->f8C);
-                InitKnockback(ang, m, v->x70, 0xE, 6, 0);
+                InitKnockback_v(ang, m, v->x70, 0xE, 6, 0);
                 m->state = 0xC;
                 RerollEffectCounter(m, (short *)v->x60);
                 break;
@@ -1337,14 +1323,8 @@ extern short novalis_peckbot_spawn_d0_record;
 
 extern int func_001160D8(void);
 
-extern void ClampVectorLength(void *, float);
 extern int coll_sphere(float, void *, int, void *);
 extern float ApproachValue(float *, float, float);
-extern float jump_speed_4318(void *, void *, void *, float, float);
-
-extern int move_w(void *, void *, void *, void *, float);
-
-extern void set_ground_height_band(void *);
 
 /* Peckbot update: wanders and hops after the hero, flies in a hurt arc when hit, dies with a burst of parts. */
 void peckbot_update(Moby *m) {
@@ -1410,7 +1390,7 @@ void peckbot_update(Moby *m) {
                 v->f13C = g_frame_time * 11.0f;
                 va = hit->pos;
                 HeadingFromVector(&va, &ang, &v->f138, &v->f13C);
-                InitKnockback(ang, m, v->x120, 7, 1, 0);
+                InitKnockback_v(ang, m, v->x120, 7, 1, 0);
                 v->f170 = 11.0f;
                 v->f174 = 18.0f;
                 m->state = 0x63;
@@ -1420,7 +1400,7 @@ void peckbot_update(Moby *m) {
             } else {
                 va = hit->pos;
                 HeadingFromVector(&va, &ang, &v->f138, &v->f13C);
-                InitKnockback(ang, m, v->x120, 6, 1, 0);
+                InitKnockback_v(ang, m, v->x120, 6, 1, 0);
                 v->f170 = 5.0f;
                 v->f174 = 10.0f;
                 m->state = 6;
@@ -1607,7 +1587,7 @@ void peckbot_update(Moby *m) {
                                           -peckbot_home_knockback_acceleration_gp);
                 v->w144 = 0xD;
                 v->b15D = 0;
-                InitKnockback(m->rot.z, m, v->x120, 6, 1, 0);
+                InitKnockback_v(m->rot.z, m, v->x120, 6, 1, 0);
                 v->f170 = 5.0f;
                 v->f174 = 10.0f;
                 m->state = 0xB;
@@ -2001,8 +1981,6 @@ typedef struct {
     s16 pull; /* 0x2C: nonzero pulls the hero onto the path */
     s16 ready; /* 0x2E: segment lengths computed */
 } PathCarrierVars;
-
-extern s32 Spline_AdvanceByDistance(PePath_F44F8 *, void *, f32 *, s32 *, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002b96e0.c, FUN_L01_002f3120. */
 void water_current_update(Moby *self) {
@@ -2949,7 +2927,7 @@ typedef unsigned int u128_pt __attribute__((mode(TI)));
 
 extern f32 g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
+extern f32 fast_atan2(f32, f32);
 
 typedef union {
     u128_pt q;
@@ -3015,7 +2993,7 @@ void water_lily_update(HoverMoby *m) {
                              *(float *)&water_lily_spring_damping, 3.0f);
             if (vec_distance_xy_r(&m->pos, &g_hero_r2.motion.pos) < *(float *)&water_lily_hero_separation_radius) {
                 if (FastAbsF(m->pos.v.z - g_hero_r2.motion.pos.f[2]) < 0.7f) {
-                    ang = fast_atan2_r(m->pos.v.x - g_hero_r2.motion.pos.f[0], m->pos.v.y - g_hero_r2.motion.pos.f[1]);
+                    ang = fast_atan2(m->pos.v.x - g_hero_r2.motion.pos.f[0], m->pos.v.y - g_hero_r2.motion.pos.f[1]);
                     m->pos.v.x = FastCos(ang) * *(float *)&water_lily_hero_separation_radius;
                     m->pos.v.y = FastSin(ang) * *(float *)&water_lily_hero_separation_radius;
                     m->pos.v.x += g_hero_r2.motion.pos.f[0];
@@ -3336,8 +3314,6 @@ typedef struct {
     s32 xb4;
 } LiftVars;
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern void update_entity_matrix(char *, void *, void *, void *);
 
 /* Elevator update: waits, then moves the lift between its two stops and carries whatever rides it. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f95c0. */
 void piston_platform_update(Moby *m) {

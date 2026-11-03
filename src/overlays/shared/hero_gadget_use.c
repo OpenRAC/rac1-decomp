@@ -463,8 +463,8 @@ extern u8 D_L05_00174360[] NOT_SDA;
 extern u8 D_L05_0017AC20[] NOT_SDA;
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern s32 func_L00_0025F410(s32);
+extern float fast_atan2(float, float);
+
 extern void transform_hero_local_offset_to_world_r(float *, float, float, float) __asm__("func_L00_00233EE0");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
@@ -489,7 +489,7 @@ void update_hero_movement_and_collision_probes(void) {
         if (probe_hero_forward_collision(0.7f, 4.0f, &g_hero_r.wall_probe_distance)) {
             CollisionHit_4C558 *wall = &rilgar_coll_hit_r;
             float normal_xy = vec_length_xy_r(&wall->normal_x);
-            g_hero_r.wall_normal_pitch = fast_atan2_r(wall->normal_z, normal_xy);
+            g_hero_r.wall_normal_pitch = fast_atan2(wall->normal_z, normal_xy);
             if (wall->moby != 0) {
                 g_hero_r.wall_probe_hit_moby = 1;
                 if (is_moby_in_class_range_500_to_540(wall->moby))
@@ -1166,7 +1166,7 @@ void update_hero_hoverboard_trick_animations(void) {
         }
     }
 }
-extern int get_first_moby_in_group(void **, int, int, int);
+
 extern int get_next_moby_in_group(void **, void *, int, int);
 
 extern unsigned char menu_item_enabled_115[] NOT_SDA;
@@ -1468,7 +1468,7 @@ extern int race_respawn_gate_state SDATA(race_respawn_gate_state);
 extern float rilgar_off_course_reset_rate SDATA(rilgar_off_course_reset_rate);
 extern int hoverboard_race_finished SDATA(hoverboard_race_finished);
 
-extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 
 extern void compute_hero_hoverboard_respawn_transform_r(void *, void *) __asm__("func_L05_00254B38");
 extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
@@ -1534,9 +1534,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.race_path_node;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
-        if (FastDiffRots(ang, fast_atan2_r2(g_hero.motion.pos.f[0] - path->p[i].x,
-                                            g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
+        ang = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        if (FastDiffRots(ang, fast_atan2(g_hero.motion.pos.f[0] - path->p[i].x,
+                                         g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.race_path_node = next;
             if (next == 0) {
                 g_hero.race_lap++;
@@ -1560,7 +1560,7 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.wrong_way_path_point;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        dir = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        dir = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
     }
     if (near != 0 || (FastDiffRots(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
         g_hero.off_course_frames++;
@@ -1597,9 +1597,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.racer_path_point[j];
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        ang = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
         qcopy(v0, moby_pool_4f60_r2[d->f2C[j]].pos);
-        if (FastDiffRots(ang, fast_atan2_r2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
+        if (FastDiffRots(ang, fast_atan2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.racer_path_point[j] = next;
             if (next == 0) {
                 g_hero.racer_laps[j]++;
@@ -1743,8 +1743,6 @@ extern short hoverboard_trick_min_frames;
 extern float g_frame_time MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern int offset_path_index(void *, int, int, int);
 
 typedef struct {
     char pad0[0x80];

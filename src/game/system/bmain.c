@@ -164,7 +164,7 @@ extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
 
 extern void UpdatePad_r(void) __asm__("func_00218908");
-extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
+
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
 
 extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
@@ -243,7 +243,7 @@ void startlevel(void) {
         frames++;
     }
     if (prev != 0) {
-        FadeToBlack_r(8);
+        FadeToBlack(8);
     }
     decode_mode_r = -1;
     code = hdr->code + (s32)hdr;
@@ -256,7 +256,7 @@ void startlevel(void) {
                      (code + 0x2C003F) & ~0x3F, 0);
     }
     decode_mode_r = 0;
-    FadeToBlack_r(scale_game_frame_count(0xC));
+    FadeToBlack(scale_game_frame_count(0xC));
     flush_cache(0);
     if (pal_mode_r != 0) {
         fast_decompress(hdr->gfx_alt + (s32)hdr, hdr->code + (s32)hdr);

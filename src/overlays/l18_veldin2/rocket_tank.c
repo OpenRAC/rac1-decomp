@@ -14,6 +14,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/l18_veldin2/rockets_and_platforms.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
@@ -252,18 +253,10 @@ void rocket_tank_update(M1454 *m) {
             break;
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                              float, int, int, int, int);
+
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
 extern void SetDeathBits(void *, int, int);
-extern void RerollEffectCounter(void *, short *);
-extern int FindNearestTargetMoby(unsigned char *, char *, float);
-
-extern void StepColorFade(void *, void *);
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
 /* Applies hits to the rocket tank and breaks it apart when its health runs out. */
 void update_rocket_tank_damage_and_aim(void *mv) {
@@ -356,8 +349,6 @@ extern int *veldin2_paths[];
 extern float rocket_tank_path_speed SDATA(rocket_tank_path_speed);
 extern float rocket_tank_child_anim_ref_speed SDATA(rocket_tank_child_anim_ref_speed);
 extern float g_frame_time_g __asm__("D_0015EE6C") MACRO_ADDR;
-
-extern void move_4318(int, int, float, float, float, int);
 
 /* Turns and drives the rocket tank toward its next path point, picking a new one on arrival. */
 void update_rocket_tank_path_movement(char *m) {

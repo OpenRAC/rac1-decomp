@@ -162,8 +162,6 @@ typedef struct {
 
 extern void update_sentrybot_hit_response_and_target_visibility(void *, int);
 
-extern void set_ground_height_band(void *);
-
 extern void set_sentrybot_alarm_duration(char *m, int a);
 
 extern int find_sentrybot_attention_target(char *m);
@@ -185,7 +183,6 @@ extern int can_sentrybot_approach_linked_moby(void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern char *spawn_class_3a6_moby_v(char *, float *, char *, char *) __asm__("func_L15_002E5970");
-extern int mine_fall(void *, void *);
 
 extern void SetDeathBits(void *, int, int);
 
@@ -1028,10 +1025,8 @@ void begin_sentrybot_turn_toward_point(char *moby, void *a, float *point, void *
     begin_sentrybot_turn_toward_heading(moby, a, b, c, angle);
 }
 extern float g_frame_time_sq MACRO_ADDR;
-extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
-extern void ApproachValue(void *, float, float);
 
-extern void move_4318(int, int, float, float, float, int);
+extern void ApproachValue(void *, float, float);
 
 // Turns a moby toward a point, updates its speed and velocity, and reports whether it is within 0.2 of it.
 int move_sentrybot_toward_point(char *moby, float *point, float arg) {
@@ -1289,12 +1284,8 @@ void update_sentrybot_joint_aim(void *mv) {
     }
     EaseManipulatorOffsets(m, d->body_manip, 0, k1 * g_frame_scale_sq, k2 * g_frame_scale_sq);
 }
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(void *, void *, int, int, int, float);
-extern void RerollEffectCounter(void *, void *);
-extern void StepColorFade(void *, void *);
+
+extern void InitKnockback_v(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 
 #define func_002140F8_r func_002140F8
 
@@ -1303,7 +1294,7 @@ extern int truncate_float_to_s32(float);
 #define truncate_float_to_s32_r func_001FA898
 
 #define func_L00_001EFFF0_r func_L00_001EFFF0
-extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
+extern int FindNearestEligibleMoby_v(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 #define quartu_moby_array_m D_L15_00160058
 extern float quartu_sentrybot_scale_factor SDATA(quartu_sentrybot_scale_factor);
 extern float sentrybot_knockback_gravity_gp SDATA(sentrybot_knockback_gravity_gp);
@@ -1416,7 +1407,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                     angle = heading;
                 }
                 HeadingFromVector(hit_vector_or_sight_line_origin, &angle, &data->kb_forward, &data->kb_up);
-                InitKnockback(moby, data->knockback, 7, 1, 0, angle);
+                InitKnockback_v(moby, data->knockback, 7, 1, 0, angle);
                 moby->state = 0x15;
                 moby->command = 2;
                 data->flash = 0x78;
@@ -1450,7 +1441,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                     fall_angle = heading;
                 }
                 HeadingFromVector(hit_vector_or_sight_line_origin, &fall_angle, &data->kb_forward, &data->kb_up);
-                InitKnockback(moby, data->knockback, 8, 1, 0, fall_angle);
+                InitKnockback_v(moby, data->knockback, 8, 1, 0, fall_angle);
                 moby->state = 0x17;
                 moby->command = 2;
                 data->flash = 0xF0;
@@ -1483,7 +1474,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
         data->can_see = 0;
     }
     path = quartu_paths[data->search_path];
-    if (FindNearestEligibleMoby(moby, &data->target_pos, 128.0f, 0, 0, path + 4, *path) != 2) {
+    if (FindNearestEligibleMoby_v(moby, &data->target_pos, 128.0f, 0, 0, path + 4, *path) != 2) {
         float target_angle;
         seen = 0;
         target_angle = fast_atan2(data->target_pos.x - moby->pos.x, data->target_pos.y - moby->pos.y);
@@ -1581,7 +1572,6 @@ void ProjectileUpdate(unsigned char *m) {
     qcopy(m + 0x10, next);
     spawn_rocket_trail_spark((char *)m);
 }
-extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1701,8 +1691,6 @@ extern char quartu_missile_index_list[];
 extern char quartu_coll_hit[];
 extern char *quartu_coll_sphere_moby_hits[];
 extern char quartu_player_camera[];
-
-extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
@@ -2047,7 +2035,8 @@ void update_target_leading_missile(M_29E8A0 *m) {
         }
     }
 }
-extern void MobySphereHitDirectional(float, char *, char *, float, float, int, int, int, int);
+extern void MobySphereHitDirectional_v(float, char *, char *, float, float, int, int, int,
+                                       int) __asm__("func_L00_0025A8E8");
 
 typedef struct HitSphereState {
     f32 offset; /* 0x00: added to the half-scale each frame */
@@ -2075,8 +2064,8 @@ void update_scaling_fading_hit_sphere(char *param) {
         moby->alpha = state->frames * 127 / scale_ticks(0x28);
     globals = &g_hero;
     pos = (char *)&moby->pos;
-    MobySphereHitDirectional(half_relative_scale, *(char **)&globals->moby, pos,
-                             (float)truncate_float_to_s32_r(state->radius), 1.0f, 0x30000, 0, 1, 0);
+    MobySphereHitDirectional_v(half_relative_scale, *(char **)&globals->moby, pos,
+                               (float)truncate_float_to_s32_r(state->radius), 1.0f, 0x30000, 0, 1, 0);
     if (fast_dec_timer(&state->frames))
         DeleteMoby(moby);
 }
@@ -2315,7 +2304,6 @@ void update_charged_blast(Moby29FF90 *moby) {
     }
     d->active = 0;
 }
-extern char *MobyGetHitMessage(void *, int, int);
 
 extern void draw_group_moby_effect_quads(char *);
 extern void MobySphereHitDirectional_m(void *, void *, int, float, float, float, int, int,
@@ -2576,8 +2564,8 @@ typedef struct {
     unsigned char pad21[0xDF];
 } Moby256_2A3DD0;
 extern Moby256_2A3DD0 *D_L15_00160058_2A3DD0 SDATA(D_L15_00160058);
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern int random_integer_below_r(int) __asm__("func_002140B0");
+extern float random_float_between(float, float);
+extern int random_integer_below(int);
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
@@ -2642,15 +2630,15 @@ void update_spark_emitter_moby(Moby *moby) {
                     hi = 5.0f;
                     one = 1.0f;
                     i--;
-                    A[0] = random_float_between_r(-0.25f, 0.25f);
-                    A[1] = random_float_between_r(lo, hi);
-                    A[2] = random_float_between_r(z, hi);
+                    A[0] = random_float_between(-0.25f, 0.25f);
+                    A[1] = random_float_between(lo, hi);
+                    A[2] = random_float_between(z, hi);
                     B[0] = z;
-                    B[1] = random_float_between_r(lo, hi);
-                    B[2] = random_float_between_r(lo, hi);
+                    B[1] = random_float_between(lo, hi);
+                    B[2] = random_float_between(lo, hi);
                     C[0] = z;
-                    C[1] = random_float_between_r(lo, hi);
-                    C[2] = random_float_between_r(lo, hi);
+                    C[1] = random_float_between(lo, hi);
+                    C[2] = random_float_between(lo, hi);
                     matrix_mul_vec3(A, A, &moby->rot_row0);
                     matrix_mul_vec3(B, B, &moby->rot_row0);
                     matrix_mul_vec3(C, C, &moby->rot_row0);
@@ -2659,9 +2647,9 @@ void update_spark_emitter_moby(Moby *moby) {
                     vec_scale_to_length_r(C, C, one / (float)scale_ticks(30));
                     B[3] = 0.125f;
                     {
-                        int ra = random_integer_below_r(0x10);
-                        int rb = random_integer_below_r(0x20);
-                        int rc = random_integer_below_r(0x20);
+                        int ra = random_integer_below(0x10);
+                        int rb = random_integer_below(0x20);
+                        int rc = random_integer_below(0x20);
                         int m = ((rb + 0x60) << 8) | 0x60000000;
                         col = ((ra + 0x20) << 16) | m;
                         col |= rc + 0x60;

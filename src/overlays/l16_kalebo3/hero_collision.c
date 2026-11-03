@@ -17,6 +17,7 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/l16_kalebo3/hero_idle_animation.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
@@ -137,8 +138,6 @@ void HeroL16_UpdateStateFlags(void) {
 }
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void ClampVectorLength(void *a, float x);
-
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
 void compose_and_limit_hero_velocity(void) {
     char tmp[16];
@@ -158,8 +157,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
-s32 is_moby_in_class_range_500_to_540(s32);
-u8 *GetFlaggedPvarWord(s32);
 
 void vec_scale_to_length(void *, void *, f32);
 

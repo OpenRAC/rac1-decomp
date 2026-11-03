@@ -35,11 +35,7 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern void ClampVectorLength(void *a, float x);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
 
 extern int novalis_game_mode MACRO_ADDR;
 extern int pool_draw_tiles MACRO_ADDR;

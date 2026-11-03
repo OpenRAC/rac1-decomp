@@ -33,14 +33,14 @@ void alien_queen_update(unsigned char *moby) {
             p = blarg_paths_q[*(int *)(data + 0xEC)];
             lerp_vector_q(data + 0xD0, p + 4, (char *)p + ((*p / 2) * 16 + 16), 0.5f);
             *(float *)(data + 0xDC) = vec_distance_xy_q(data + 0xC0, data + 0xD0);
-            *(float *)(data + 0x128) = random_angle_radians_q();
+            *(float *)(data + 0x128) = random_angle_radians();
             *(int *)(data + 0x12C) = scale_ticks(0x1E);
             *(int *)(moby + 0x94) = 0;
             *(unsigned short *)(moby + 0x34) = (*(unsigned short *)(moby + 0x34) | 0x4001) & 0xEFFF;
             *(float *)(moby + 0x18) = *(float *)(moby + 0x18) + 17.5f;
             set_moby_list_state_18_q(*(int *)(data + 0xF4));
             if (menu_item_enabled_19_q[4] != 0 && race_gates_base_q[8] == 0) {
-                DeleteMoby_q(moby);
+                DeleteMoby(moby);
                 return;
             }
             moby[0x20] = 1;
@@ -66,7 +66,7 @@ void alien_queen_update(unsigned char *moby) {
             *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
             *(unsigned short *)(moby + 0x34) = (*(unsigned short *)(moby + 0x34) | 0x1000) & 0xFFFE;
             if ((unsigned char)moby[0x53] != 8) {
-                MobyBlendAnimation_q(moby, 8, 0, scale_ticks(1));
+                MobyBlendAnimation(moby, 8, 0, scale_ticks(1));
             }
             start_alien_queen_intro_q(moby);
             return;
@@ -77,7 +77,7 @@ void alien_queen_update(unsigned char *moby) {
             if ((unsigned char)moby[0x53] == 8) {
                 if (FastAbsF((*(float *)(moby + 0x18) - *(float *)(data + 0xC8)) / *(float *)(data + 0x48)) <= 6.0f &&
                     (unsigned char)moby[0x53] != 9) {
-                    MobyBlendAnimation_q(moby, 9, 0, scale_ticks(5));
+                    MobyBlendAnimation(moby, 9, 0, scale_ticks(5));
                 }
             } else {
                 if (*(float *)(moby + 0x18) < *(float *)(data + 0xC8)) {
@@ -85,9 +85,9 @@ void alien_queen_update(unsigned char *moby) {
                 }
                 if (*(float *)(moby + 0x54) == 0.0f && (moby[0x70] & 2)) {
                     if ((unsigned char)moby[0x53] == 9) {
-                        MobyBlendAnimation_q(moby, 6, 0, scale_ticks(0x1E));
+                        MobyBlendAnimation(moby, 6, 0, scale_ticks(0x1E));
                     } else if ((unsigned char)moby[0x53] != 1) {
-                        MobyBlendAnimation_q(moby, 1, 0, scale_ticks(0x1E));
+                        MobyBlendAnimation(moby, 1, 0, scale_ticks(0x1E));
                     }
                 }
             }
@@ -99,7 +99,7 @@ void alien_queen_update(unsigned char *moby) {
         }
         case 3:
             if ((unsigned char)moby[0x53] == 6 && *(float *)(moby + 0x54) == 0.0f && (moby[0x70] & 2)) {
-                MobyBlendAnimation_q(moby, 1, 0, scale_ticks(0x14));
+                MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
                 activate_listed_state_15_mobys_at_raised_positions_q(moby);
             }
             if (update_alien_queen_first_recovery_camera_q(moby) != 0) {
@@ -110,7 +110,7 @@ void alien_queen_update(unsigned char *moby) {
             break;
         case 5:
             if ((unsigned char)moby[0x53] == 6 && *(float *)(moby + 0x54) == 0.0f && (moby[0x70] & 2)) {
-                MobyBlendAnimation_q(moby, 1, 0, scale_ticks(0x14));
+                MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
                 clear_moby_list_state_18_q(*(int *)(data + 0xF4));
             }
             if (update_alien_queen_second_recovery_camera(moby) != 0) {
@@ -129,7 +129,7 @@ void alien_queen_update(unsigned char *moby) {
                 moby[0x20] = 8;
                 *(int *)(data + 0x120) = scale_ticks(0x4B0);
                 if ((unsigned char)moby[0x53] != 3) {
-                    MobyBlendAnimation_q(moby, 3, 0, scale_ticks(0x14));
+                    MobyBlendAnimation(moby, 3, 0, scale_ticks(0x14));
                 }
             }
             return;
@@ -139,16 +139,16 @@ void alien_queen_update(unsigned char *moby) {
             moby[0x20] = 8;
             if ((unsigned char)moby[0x53] == 3)
                 break;
-            MobyBlendAnimation_q(moby, 3, 0, scale_ticks(0x14));
+            MobyBlendAnimation(moby, 3, 0, scale_ticks(0x14));
             return;
         case 8: {
             float dist = vec_distance_xy_q(moby + 0x10, target + 0x10);
-            float turn = FastDiffRots(*(float *)(moby + 0x48),
-                                      fast_atan2_q(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
-                                                   *(float *)(target + 0x14) - *(float *)(moby + 0x14)));
+            float turn =
+                FastDiffRots(*(float *)(moby + 0x48), fast_atan2(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
+                                                                 *(float *)(target + 0x14) - *(float *)(moby + 0x14)));
             SteerAngleWithVelocity_q((float *)(moby + 0x48),
-                                     fast_atan2_q(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
-                                                  *(float *)(target + 0x14) - *(float *)(moby + 0x14)),
+                                     fast_atan2(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
+                                                *(float *)(target + 0x14) - *(float *)(moby + 0x14)),
                                      (float *)(data + 0xE0), g_frame_time_sq_q * 6.2831855f,
                                      g_frame_time_sq_q * 6.2831855f, g_frame_time_q * 3.1415927f);
             if (turn < 0.7853982f && alien_queen_attack_range < dist) {
@@ -178,7 +178,7 @@ void alien_queen_update(unsigned char *moby) {
                 moby[0x20] = 9;
                 moby[0xBC] = 7;
                 if ((unsigned char)moby[0x53] != 4) {
-                    MobyBlendAnimation_q(moby, 4, 0, scale_ticks(0x14));
+                    MobyBlendAnimation(moby, 4, 0, scale_ticks(0x14));
                     return;
                 }
             }
@@ -191,7 +191,7 @@ void alien_queen_update(unsigned char *moby) {
                 moby[0x20] = 0xB;
                 moby[0xBC] = 7;
                 if ((unsigned char)moby[0x53] != 6) {
-                    MobyBlendAnimation_q(moby, 6, 0, scale_ticks(0x14));
+                    MobyBlendAnimation(moby, 6, 0, scale_ticks(0x14));
                 }
             }
             return;
@@ -203,7 +203,7 @@ void alien_queen_update(unsigned char *moby) {
             if (moby[0x70] & 2) {
                 moby[0x20] = 0xA;
                 if ((unsigned char)moby[0x53] != 5) {
-                    MobyBlendAnimation_q(moby, 5, 0, scale_ticks(0x14));
+                    MobyBlendAnimation(moby, 5, 0, scale_ticks(0x14));
                     return;
                 }
             }
@@ -212,7 +212,7 @@ void alien_queen_update(unsigned char *moby) {
             QueenProbe probe;
             float buf[4];
             fast_dec_timer_q(data + 0x120);
-            if (1.0f < MobyGetFrameValue_q(moby) && MobyGetFrameValue_q(moby) < 8.0f) {
+            if (1.0f < MobyGetFrameValue(moby) && MobyGetFrameValue(moby) < 8.0f) {
                 v[0] = FastCos(*(float *)(moby + 0x48)) * 0.45f;
                 v[1] = FastSin(*(float *)(moby + 0x48)) * 0.45f;
                 v[2] = 0.0f;
@@ -242,7 +242,7 @@ void alien_queen_update(unsigned char *moby) {
             if (moby[0x70] & 2) {
                 moby[0x20] = moby[0xBC];
                 if ((unsigned char)moby[0x53] != 1) {
-                    MobyBlendAnimation_q(moby, 1, 0, scale_ticks(0x14));
+                    MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
                 }
             }
             return;
@@ -251,7 +251,7 @@ void alien_queen_update(unsigned char *moby) {
             if (moby[0x70] & 2) {
                 moby[0x20] = moby[0xBC];
                 if ((unsigned char)moby[0x53] != 1) {
-                    MobyBlendAnimation_q(moby, 1, 0, scale_ticks(0x14));
+                    MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
                 }
             }
             return;
@@ -260,11 +260,11 @@ void alien_queen_update(unsigned char *moby) {
             char *home = (char *)data + 0xC0;
             float dist = vec_distance_xy_q(pos, home);
             float turn =
-                FastDiffRots(*(float *)(moby + 0x48), fast_atan2_q(*(float *)(data + 0xC0) - *(float *)(moby + 0x10),
-                                                                   *(float *)(data + 0xC4) - *(float *)(moby + 0x14)));
+                FastDiffRots(*(float *)(moby + 0x48), fast_atan2(*(float *)(data + 0xC0) - *(float *)(moby + 0x10),
+                                                                 *(float *)(data + 0xC4) - *(float *)(moby + 0x14)));
             SteerAngleWithVelocity_q((float *)(moby + 0x48),
-                                     fast_atan2_q(*(float *)(data + 0xC0) - *(float *)(moby + 0x10),
-                                                  *(float *)(data + 0xC4) - *(float *)(moby + 0x14)),
+                                     fast_atan2(*(float *)(data + 0xC0) - *(float *)(moby + 0x10),
+                                                *(float *)(data + 0xC4) - *(float *)(moby + 0x14)),
                                      (float *)(data + 0xE0), g_frame_time_sq_q * 6.2831855f,
                                      g_frame_time_sq_q * 6.2831855f, g_frame_time_q * 3.1415927f);
             if (turn < 0.7853982f) {
@@ -281,7 +281,7 @@ void alien_queen_update(unsigned char *moby) {
             if (dist < 1.0f) {
                 moby[0x20] = 7;
                 if ((unsigned char)moby[0x53] != 1) {
-                    MobyBlendAnimation_q(moby, 1, 0, scale_ticks(0x14));
+                    MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
                     return;
                 }
             }
@@ -300,7 +300,7 @@ void alien_queen_update(unsigned char *moby) {
                 moby[0x31] = 0;
                 *(int *)(moby + 0x94) = 0;
                 if ((unsigned char)moby[0x53] != 1) {
-                    MobyBlendAnimation_q(moby, 1, 0, scale_ticks(0x14));
+                    MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
                     return;
                 }
                 break;
@@ -315,7 +315,7 @@ void alien_queen_update(unsigned char *moby) {
             set_listed_class_16f_state_2_and_clear_data_28_q(*(int *)(data + 0x104));
             moby[0x20] = 0xF;
             if ((unsigned char)moby[0x53] != 1) {
-                MobyBlendAnimation_q(moby, 1, 0, scale_ticks(0x14));
+                MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
             }
             *(int *)(moby + 0x94) = 0;
             moby[0x31] = 0;
@@ -344,7 +344,7 @@ void alien_queen_update(unsigned char *moby) {
             }
             if (level_game_mode_q_q == 2) {
                 set_moby_and_links_to_states_4_and_5_q(level_mobys_q_q + (*(int *)(data + 0xFC) << 8));
-                DeleteMoby_q(moby);
+                DeleteMoby(moby);
             }
             break;
         }

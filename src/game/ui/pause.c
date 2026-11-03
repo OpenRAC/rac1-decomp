@@ -2530,8 +2530,6 @@ typedef struct {
     s32 selected_option;
 } SoundMenu_1DE08;
 
-extern void SetupGifPaging_r(s32) __asm__("func_001F4630");
-extern void DoGifPaging_r(void) __asm__("func_001F4748");
 extern void *msg_string_r2(s32) __asm__("func_001FE540");
 extern void font_print_right_r(s32, s32, u64, void *, s32) __asm__("func_001F6CF8");
 extern void FontPrintLarge_r(s32, s32, u64, void *, s32) __asm__("func_001F68E8");
@@ -2554,7 +2552,7 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
 
     row_height = menu->height >> 2;
     center_x = menu->width >> 1;
-    SetupGifPaging_r(0);
+    SetupGifPaging(0);
     label_right = center_x - 8;
     border_left = center_x + 7;
     slider_left = center_x + 9;
@@ -2582,7 +2580,7 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
                        msg_string_r2(0x5219), -1);
     FontPrintLarge_r(center_x + 8, second_row - 8, 0x80FFA888, msg_string_r2(playback_mode_r != 0 ? 0x521B : 0x521A),
                      -1);
-    DoGifPaging_r();
+    DoGifPaging();
     return 2;
 }
 
@@ -3551,8 +3549,6 @@ int Menu_BackInput(MenuScreen *arg0) {
 extern void libc_memset(void *, int, int); /* memset */
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 
-extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
-
 /* DrawQuitGameMenu: a text box (zeroed, then sized from arg0+0x20/0x24)
    with text 0x4F6D, text 0x4F3F centred 0x40 above the bottom, and the
    two answers 0x5250/0x5254 at 0x28 and 0x14 above it, left-aligned so
@@ -3592,8 +3588,8 @@ int DrawQuitGameMenu(MenuScreen *arg0) {
         a = b;
     }
     x = (arg0->width - a) >> 1;
-    func_001F68E8_c(x, y2, 0x80FFA888L, msg_string_id(0x5250), -1);
-    func_001F68E8_c(x, y3, 0x80FFA888L, msg_string_id(0x5254), -1);
+    FontPrintLarge(x, y2, 0x80FFA888L, msg_string_id(0x5250), -1);
+    FontPrintLarge(x, y3, 0x80FFA888L, msg_string_id(0x5254), -1);
     DoGifPaging();
     return 2;
 }
@@ -3903,8 +3899,6 @@ int draw_map_screen_overlay(void) {
     return 8;
 }
 
-extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968");
-
 /* DrawMissionsMenu: the menu's text lines (0x4EEE, 0x4EEF only when
    g_current_level_index is set, then 0x4EFA, 0x4EFB, 0x4EFC, 0x4EE0) in one column,
    left-aligned so the widest (measure_text_width_small) is centred in arg0+0x20 but
@@ -3950,19 +3944,19 @@ int DrawMissionsMenu(char *arg0) {
     step = ((Menu *)arg0)->height / (g_current_level_index != LEVEL_VELDIN1 ? 7 : 6);
     Font_DisableColorCodes();
     y = step - 6;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEE), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string_id(0x4EEE), -1);
     if (g_current_level_index != LEVEL_VELDIN1) {
         y += step;
-        FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEF), -1);
+        FontPrintSmall(x, y, 0x80FFA888L, msg_string_id(0x4EEF), -1);
     }
     y += step;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFA), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string_id(0x4EFA), -1);
     y += step;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFB), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string_id(0x4EFB), -1);
     y += step;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFC), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string_id(0x4EFC), -1);
     y += step;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EE0), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string_id(0x4EE0), -1);
     Font_EnableColorCodes();
     DoGifPaging();
     return 2;
@@ -3973,7 +3967,7 @@ __asm__(".section .text\n\tnop\n");
    passes a packed 64-bit colour in $a2, and msg_string above is
    declared (void) while retail's caller here passes an id in $a0 --
    reach both through aliases rather than redeclaring them. */
-extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
+
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
 /* Sibling of draw_map_screen_overlay above: the same two VU1_addGSregister setup
@@ -3983,8 +3977,8 @@ int draw_mission_menu_labels(void) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
     SetupGifPaging(0);
-    func_001F68E8_c(4, 7, 0x80FFA888L, msg_string_id(0x4EE0), -1);
-    func_001F68E8_c(4, 0x17, 0x80FFA888L, msg_string_id(0x4F05), -1);
+    FontPrintLarge(4, 7, 0x80FFA888L, msg_string_id(0x4EE0), -1);
+    FontPrintLarge(4, 0x17, 0x80FFA888L, msg_string_id(0x4F05), -1);
     DoGifPaging();
     return 2;
 }
@@ -4991,8 +4985,8 @@ int draw_pause_ring(char *arg0) {
     } while (i < 8);
     HudSprite(GetIconFrame(0xE99E, 0), 8, 0x27, 0x20, -0x20, 0x80);
     HudSprite(GetIconFrame(0xE99E, 0), pause_state->w - 0xA, 0x27, -0x20, -0x20, 0x80);
-    func_001F68E8_c(0x28, 0xF, 0x80FFA888L, pause_ring_left_glyph, -1);
-    func_001F68E8_c(pause_state->w - 0x3C, 0xF, 0x80FFA888L, pause_ring_right_glyph, -1);
+    FontPrintLarge(0x28, 0xF, 0x80FFA888L, pause_ring_left_glyph, -1);
+    FontPrintLarge(pause_state->w - 0x3C, 0xF, 0x80FFA888L, pause_ring_right_glyph, -1);
     DoGifPaging();
     return 2;
 }
@@ -5300,7 +5294,7 @@ int draw_menu_choice_list(struct OptMenu *m) {
         } else {
             color = 0x80FFA888;
         }
-        func_001F68E8_c(0xC, y, color, msg_string_id(it->text), -1);
+        FontPrintLarge(0xC, y, color, msg_string_id(it->text), -1);
         font_print_right_c(m->x - 0xC, y, 0x80FFA888, msg_string_id(it->names[*it->value]), -1);
         y += step;
     }
@@ -5711,12 +5705,12 @@ int draw_menu_side_indicator(MenuScreen *arg0) {
     SetupGifPaging(0);
     if (arg0->data.options.selection != 0) {
         buf = *(Glyph2 *)menu_side_indicator_left_glyph;
-        func_001F68E8_c(4, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
+        FontPrintLarge(4, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
         draw_rotated_sprite(640.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex_v(GetIconFrame(0xE99E, 6)),
                             128.0f, 256.0f, 0.0f);
     } else {
         buf = *(Glyph2 *)menu_side_indicator_right_glyph;
-        func_001F68E8_c(arg0->width - 0x18, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
+        FontPrintLarge(arg0->width - 0x18, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
         draw_rotated_sprite(192.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex_v(GetIconFrame(0xE99E, 6)),
                             128.0f, 256.0f, 3.14159274f);
     }
@@ -6128,16 +6122,14 @@ struct ThreeOptionMenu {
 
 extern u8 normal_font_metrics_r[] __asm__("D_001DF3D0");
 extern u8 small_font_metrics_r[] __asm__("D_001DF770");
-extern void SetupGifPaging_r2(s32) __asm__("func_001F4630");
-extern void DoGifPaging_r2(void) __asm__("func_001F4748");
+
 extern char *msg_string_r5(s32) __asm__("func_001FE540");
-extern s32 count_nonzero_entries_up_to_40_r(void) __asm__("func_002160E0");
-extern s32 count_nonzero_entries_up_to_10_r(void) __asm__("func_00216150");
-extern s32 count_nonzero_entries_up_to_30_r(void) __asm__("func_00216198");
+extern s32 count_nonzero_entries_up_to_40(void);
+extern s32 count_nonzero_entries_up_to_10(void);
+extern s32 count_nonzero_entries_up_to_30(void);
 extern s32 sprintf_r(char *, const char *, ...) __asm__("func_00116248");
 extern s32 measure_text_width_regular_r(char *, s32) __asm__("func_001F6600");
-extern void Font_DisableColorCodes_r(void) __asm__("func_001F65A8");
-extern void Font_EnableColorCodes_r(void) __asm__("func_001F6598");
+
 extern void FontPrintCenter_r(s32, s32, u64, char *, s32) __asm__("func_001F6EA8");
 extern void draw_menu_selection_marker_r(s32, s32, s32) __asm__("func_002208F8");
 extern u64 GetEffectTex_r(s32) __asm__("func_001F4868");
@@ -6157,21 +6149,21 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu *menu) {
     s32 draw_y;
 
     font_texture_index = 1;
-    SetupGifPaging_r2(0);
+    SetupGifPaging(0);
     line_spacing = menu->height / 5;
     draw_y = menu->height / 5 - 8;
     maximum_text_width = 0;
-    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
+    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40(), 0x28);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
+    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10(), 10);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
+    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30(), 0x1E);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
@@ -6181,22 +6173,22 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu *menu) {
         font_texture_index = 2;
         glyphs = small_font_metrics_r;
     }
-    Font_DisableColorCodes_r();
+    Font_DisableColorCodes();
     FontPrintCenter_r(menu->menu_width >> 1, draw_y, 0x80FFA888, msg_string_r5(0x5233), -1);
     draw_y += line_spacing;
-    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_40_r() == 0x28);
-    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_40() == 0x28);
+    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40(), 0x28);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index), glyphs);
     draw_y += line_spacing;
-    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_10_r() == 10);
-    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_10() == 10);
+    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10(), 10);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index), glyphs);
     draw_y += line_spacing;
-    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_30_r() == 0x1E);
-    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_30() == 0x1E);
+    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30(), 0x1E);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index), glyphs);
-    Font_EnableColorCodes_r();
-    DoGifPaging_r2();
+    Font_EnableColorCodes();
+    DoGifPaging();
     return 2;
 }
 
@@ -6715,8 +6707,6 @@ extern char fmt_save_play_time_r[] __asm__("D_00160400");
 extern char fmt_save_bolt_count_r[] __asm__("D_00160410");
 extern char fmt_save_date_r[] __asm__("D_00160420");
 
-extern void SetupGifPaging_r3(s32) __asm__("func_001F4630");
-extern void DoGifPaging_r3(void) __asm__("func_001F4748");
 extern void FontPrintSmall_r(s32, s32, u64, char *, s32) __asm__("func_001F6968");
 extern void FontPrintCenterSmall_r(s32, s32, u64, char *, s32) __asm__("func_001F6F40");
 extern char *func_001FE540_24C30(s32) __asm__("func_001FE540");
@@ -6746,7 +6736,7 @@ s32 draw_save_slot_list(MenuScreen *menu) {
     s32 minutes;
 
     y = 4;
-    SetupGifPaging_r3(0);
+    SetupGifPaging(0);
     for (i = 0; i < 5; i++) {
         width = menu->width;
         highlight_top = y - 4;
@@ -6813,7 +6803,7 @@ s32 draw_save_slot_list(MenuScreen *menu) {
             y += 0x1B;
         }
     }
-    DoGifPaging_r3();
+    DoGifPaging();
     return 2;
 }
 
@@ -6834,7 +6824,7 @@ extern short pal_mode_r2 __asm__("D_0015EE80");
 extern void VU1_addGSregister_r4(s32, u64) __asm__("func_00234C98");
 
 extern s64 GetEffectTex_r2(s32) __asm__("func_001F4868");
-extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
+
 void draw_menu_flashing_panel(struct MenuPanelOwner *owner);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/fun_00223e28.c, draw_menu_flashing_panel. */
@@ -6878,7 +6868,7 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
         VU1_addGSregister_r4(8, 0);
         alpha = alpha * 2;
         VU1_addGSregister_r4(0x42, ((u64)(alpha > 0x80 ? 0x80 : alpha) << 32) | 0x68);
-        DrawTexturedQuad_r(x, y, width, height, u, v, width, height, 0x808080, GetEffectTex_r2(0x1A));
+        DrawTexturedQuad(x, y, width, height, u, v, width, height, 0x808080, GetEffectTex_r2(0x1A));
         if (panel->time >= 0x100) {
             panel->active = 0;
         }
@@ -6890,7 +6880,7 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
     VU1_addGSregister_r4(0x42, 0x8000000044ULL);
     width_adjustment = -2;
     height_adjustment = -2;
-    DrawTexturedQuad_r(x, y, width, height, 0, 0, width, (height * 3) >> 1, 0x50606060, GetEffectTex_r2(0x1C));
+    DrawTexturedQuad(x, y, width, height, 0, 0, width, (height * 3) >> 1, 0x50606060, GetEffectTex_r2(0x1C));
     if (width >= 0x4C) {
         width_adjustment = -1;
     }
@@ -6903,8 +6893,8 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
     if (height >= 0x97) {
         height_adjustment = 0;
     }
-    DrawTexturedQuad_r(x + 1, y + 1, width + width_adjustment, height + height_adjustment, 1, 1, 0x3E, 0x3E, 0x80808080,
-                       GetEffectTex_r2(0x19));
+    DrawTexturedQuad(x + 1, y + 1, width + width_adjustment, height + height_adjustment, 1, 1, 0x3E, 0x3E, 0x80808080,
+                     GetEffectTex_r2(0x19));
 }
 
 extern int clear_preview_animation_queue(void);
@@ -8169,7 +8159,7 @@ extern int start_audio_stream_read(int, int, int);
 extern int advance_preview_animation_queue(void);
 extern void load_preview_resource_bindings(s32, s32);
 
-extern void MobySetAnimation_q(void *, int, int) __asm__("func_00213D28");
+extern void MobySetAnimation(void *, int, int);
 extern void attachment_update_callback(void);
 
 int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char **o2) __asm__("func_00227100");
@@ -8271,7 +8261,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
                     blend_moby_animation_ex(m2, current_preview_animation_request[0].arg[4], 0, 10, 5);
                 }
                 if (m1 != 0) {
-                    MobySetAnimation_q(m1, 1, 0);
+                    MobySetAnimation(m1, 1, 0);
                 }
             } else if (m1 != 0) {
                 blend_moby_animation_ex(m1, current_preview_animation_request[0].arg[4], 0, 10, 5);
@@ -8281,7 +8271,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             *o2 = (char *)delete_moby((int)*o2);
             if (current_preview_animation_request[0].arg[5] != -1) {
                 if ((*o0 = create_menu_preview_moby(current_preview_animation_request[0].arg[5])) != 0) {
-                    MobySetAnimation_q(*o0, current_preview_animation_request[0].arg[6], 0);
+                    MobySetAnimation(*o0, current_preview_animation_request[0].arg[6], 0);
                     MobyBlendAnimation(*o0, current_preview_animation_request[0].arg[6], 0, 10);
                     *(short *)(*o0 + 0x34) = 0;
                     p = *o0;
@@ -8296,7 +8286,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             }
             if (current_preview_animation_request[0].arg[7] != -1) {
                 if ((*o1 = create_menu_preview_moby(current_preview_animation_request[0].arg[7])) != 0) {
-                    MobySetAnimation_q(*o1, current_preview_animation_request[0].arg[8], 0);
+                    MobySetAnimation(*o1, current_preview_animation_request[0].arg[8], 0);
                     MobyBlendAnimation(*o1, current_preview_animation_request[0].arg[8], 0, 10);
                     *(short *)(*o1 + 0x34) = 0;
                     p = *o1;
@@ -8311,7 +8301,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             }
             if (current_preview_animation_request[0].arg[9] != -1) {
                 if ((*o2 = create_menu_preview_moby(current_preview_animation_request[0].arg[9])) != 0) {
-                    MobySetAnimation_q(*o2, current_preview_animation_request[0].arg[10], 0);
+                    MobySetAnimation(*o2, current_preview_animation_request[0].arg[10], 0);
                     MobyBlendAnimation(*o2, current_preview_animation_request[0].arg[10], 0, 10);
                     *(short *)(*o2 + 0x34) = 0;
                     p = *o2;

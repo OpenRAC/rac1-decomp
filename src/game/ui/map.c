@@ -555,8 +555,6 @@ extern f32 map_data_0015FE50 SDATA(D_0015FE50);
 extern f32 map_data_0015FE54 SDATA(D_0015FE54);
 extern u8 D_001E8398[];
 
-extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
-
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
 
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64);
@@ -904,7 +902,7 @@ void draw_map_overlay(void) {
                                         label_y = (icon_bounds[i].y0 >> 4) - label_height / 2 + sprite_word;
                                     }
                                 }
-                                draw_ui_frame(label_y, label_y + label_height, label_x, label_x + label_width, 0x40);
+                                DrawUIFrame(label_y, label_y + label_height, label_x, label_x + label_width, 0x40);
                                 FormatMenuItemText(i, &label_buffer);
                                 libc_memset(&text_window, 0, sizeof(text_window));
                                 text_window.s[1] = label_y + label_height;

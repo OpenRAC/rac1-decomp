@@ -973,7 +973,7 @@ extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern int coll_sphere_2ED320(float, void *, int, int) __asm__("func_L00_001F10E0");
 
 extern float rope_spring_turn_2ED320(void *, float, float, float, float, float) __asm__("func_L00_001EB6A8");
-extern float FastArcTan_2ED320(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 
 extern unsigned short *D_L00_001ABBC0[];
 extern char *D_L00_00160098 MACRO_ADDR;
@@ -1063,8 +1063,8 @@ void update_target_tracking_camera_position(Camera *cam) {
             }
             if (chosen != 0) {
                 FastVecSub(offset, chosen + 0x10, current_target + 0x10);
-                *angle = rope_spring_turn_2ED320(turn, *angle, FastArcTan_2ED320(offset[0], offset[1]), 0.00125f,
-                                                 0.175f, 0.0f);
+                *angle =
+                    rope_spring_turn_2ED320(turn, *angle, fast_atan2(offset[0], offset[1]), 0.00125f, 0.175f, 0.0f);
             } else if (*(int *)(follow + 0x40) == 1)
                 *angle = rope_spring_turn_2ED320(turn, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48), 0.00125f,
                                                  0.175f, 0.0f);
@@ -1102,7 +1102,7 @@ void update_target_tracking_camera_position(Camera *cam) {
         }
         qcopy(&cam->pos, position);
         FastVecSub(offset, &hero_2ED320.motion.pos, &cam->pos);
-        *angle = FastArcTan_2ED320(offset[0], offset[1]);
+        *angle = fast_atan2(offset[0], offset[1]);
         *(int *)(angle + 1) = 0;
     } else
         qcopy(&cam->pos, position);
@@ -1247,8 +1247,6 @@ extern u8 *level_paths[];
 extern s32 g_hero_field_2284[];
 extern s32 is_point_inside_clip_volume(void *, s32);
 
-extern s32 test_point_in_transformed_unit_sphere_r(void *, s32) __asm__("func_L00_00260B68");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ec7e8. */
 s32 volume_camera_swing_active(A_2ec7e8 *a) {
     O_2ec7e8 *o;
@@ -1271,7 +1269,7 @@ s32 volume_camera_swing_active(A_2ec7e8 *a) {
         return 1;
     if (o->f10 >= 0 && (v17 || test_point_in_transformed_unit_cylinder(&gHeroPos[0], o->f10)))
         return 1;
-    if (o->f08 >= 0 && (v17 || test_point_in_transformed_unit_sphere_r(&gHeroPos[0], o->f08)))
+    if (o->f08 >= 0 && (v17 || test_point_in_transformed_unit_sphere(&gHeroPos[0], o->f08)))
         return 1;
     if (o->f14 >= 0 && (v17 || IsPointInPolygon(&gHeroPos[0], level_paths[o->f14] + 0x10, *(s32 *)level_paths[o->f14])))
         return 1;

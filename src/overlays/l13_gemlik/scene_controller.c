@@ -93,10 +93,7 @@ extern unsigned char D_001414F5[] NOT_SDA;
 
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
-extern void unlock_planet_r(int) __asm__("func_L00_00261848");
 
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
 void update_gemlik_scene_controller(Moby *moby) {
@@ -142,7 +139,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 moby->state = 6;
             }
             if (moby->state != 4 && data->fC != -1) {
-                DeleteMoby_r(&gemlik_moby_array_start_r[data->fC]);
+                DeleteMoby(&gemlik_moby_array_start_r[data->fC]);
             }
             break;
         case 5:
@@ -209,7 +206,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 Moby *e = &gemlik_moby_array_start_r[data->f10];
                 e->flags &= 0xFFFD;
             }
-            unlock_planet_r(0xE);
+            unlock_planet(0xE);
             if (data->f20 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags &= 0xFFBE;
@@ -245,11 +242,11 @@ void update_gemlik_scene_controller(Moby *moby) {
                 if (gemlik_mission_group_state[gemlik_moby_array_start_r[data->f10].mission] != 0xFF)
                     break;
                 if (data->f20 != -1) {
-                    DeleteMoby_r(&gemlik_moby_array_start_r[data->f20]);
+                    DeleteMoby(&gemlik_moby_array_start_r[data->f20]);
                 }
                 moby->state = 14;
             } else {
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
             }
             break;
         case 14:
@@ -410,8 +407,6 @@ char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
     }
     return moby;
 }
-
-extern char *MobyGetHitMessage(void *, int, int);
 
 /* updates the moby: deletes it when its owner is gone, else copies the owner's effect data and marks it */
 void forward_moby_hits_to_owner(char *moby) {
@@ -641,17 +636,15 @@ void update_moby_motion_and_emit_sparks(char *moby) {
         }
     }
 }
-extern void add_random_offset_to_vector_xyz(float *v, float s);
+
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float *, float *, float, float *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int g_current_level_index MACRO_ADDR;
 
 extern int level_moby_killed[][64] NOT_SDA;
 extern int gemlik_moby_killed_bits[];
 extern float gemlik_zero_vec[] MACRO_ADDR;
-extern void RerollEffectCounter(void *, short *);
-extern void StepColorFade(void *, void *);
 
 /* UpdateMoby_1805: deletes itself if its bit is set in level_moby_killed. State 0 moves to state 1; state 1 takes a
    hit's value
@@ -721,7 +714,8 @@ void blarg_ship_1805_update(void *moby) {
                                        gemlik_zero_vec);
                 }
             }
-            spawn_explosion(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1, 0);
+            spawn_explosion_v(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1,
+                              0);
             DeleteMoby(moby);
             break;
         }

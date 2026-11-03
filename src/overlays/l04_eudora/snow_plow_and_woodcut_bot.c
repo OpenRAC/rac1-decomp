@@ -237,16 +237,11 @@ extern VehicleCamera eudora_camera;
 
 extern s32 truncate_float_to_s32(float);
 
-extern void MobySpringTurn(void *, void *, float, float, float, float);
-
 extern void vec_scale_to_length(void *, void *, float);
 
-extern char *MobyGetHitMessage(void *, s32, s32);
 extern s32 PlayBankSound(s32, s32, s32);
 
 extern void coll_sphere_mobys(void *, float, s32, void *, void *);
-extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32, float, float, float, float, s32, float,
-                            s32, s32, s32, s32);
 
 extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
 
@@ -595,8 +590,6 @@ extern float D_0015EE64 MACRO_ADDR;
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
-extern void update_entity_matrix(char *, void *, void *, void *);
-
 struct FloatingPlatformUpdateVars {
     u8 pad_00[0x3E];
     s16 unk_3E;
@@ -749,17 +742,10 @@ typedef struct WBQuery {
     /* 0x24 */ int pad24[3];
 } WBQuery;
 
-extern void FindNearestTargetMoby(void *, void *, float);
 extern void Manipulator_ApplyScale(float, void *, int, void *);
 
-extern void set_ground_height_band(void *);
-
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(float, void *, void *, int, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 extern void SetDeathBits(void *, int, int);
-extern void RerollEffectCounter(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -772,11 +758,9 @@ extern void *libc_memset(void *, int, int);
 
 extern int IsFrameWithinWindow(void *, float);
 
-extern float SpringTurn(float, float, void *, float, float, float);
-extern int mine_fall(void *, void *);
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
+extern float SpringTurn_v(float, float, void *, float, float, float) __asm__("func_L00_00259148");
 
-extern void StepColorFade(void *, void *);
+extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern char eudora_camera_pos[];
 
@@ -876,7 +860,7 @@ void woodcut_bot_update(Moby *m) {
                     d->fDC = g_frame_time * 13.0f;
                     *(w128 *)v = *(w128 *)(p + 0x10);
                     HeadingFromVector(v, &angle, &d->fD8, &d->fDC);
-                    InitKnockback(angle, m, d->fC0, 8, 1, 0);
+                    InitKnockback_v(angle, m, d->fC0, 8, 1, 0);
                     d->f110 = 14.0f;
                     d->f114 = 24.0f;
                     m->state = 0xB;
@@ -1285,16 +1269,16 @@ void woodcut_bot_update(Moby *m) {
                         }
                         BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
                         FastVecAdd(pos, pos, v);
-                        m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
-                                              g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
-                                              g_frame_time * 4.1887903f);
+                        m->rot.z = SpringTurn_v(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
+                                                g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
+                                                g_frame_time * 4.1887903f);
                     } else if (d->f3D8 > 0.0f) {
                         d->f3D8 -= g_frame_time_sq * 200.0f;
                         BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
                         FastVecAdd(pos, pos, v);
-                        m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
-                                              g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
-                                              g_frame_time * 4.1887903f);
+                        m->rot.z = SpringTurn_v(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
+                                                g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
+                                                g_frame_time * 4.1887903f);
                     } else {
                         m->state = 1;
                         d->t3C2 = 0;
@@ -1315,11 +1299,11 @@ void woodcut_bot_update(Moby *m) {
                 m->command = (m->command | 8) & ~0x10;
             } else if (m->command & 0x10) {
                 m->rot.z =
-                    SpringTurn(m->rot.z, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), &d->f3D0,
-                               g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                    SpringTurn_v(m->rot.z, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), &d->f3D0,
+                                 g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
             } else {
-                m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, 0.03f, 0.3f,
-                                      g_frame_time * 6.4577184f);
+                m->rot.z = SpringTurn_v(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, 0.03f,
+                                        0.3f, g_frame_time * 6.4577184f);
             }
             break;
         case 11:
@@ -1749,7 +1733,7 @@ extern void remove_moby_002E2DF0(Moby *) __asm__("func_0020D678");
 extern void update_suck_cannon_particles_r(Moby *) __asm__("func_L04_002E30E0");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
-extern void grant_inventory_item_r(int, int) __asm__("func_L00_002618D8");
+
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern void STUB_printf_r(char *, int) __asm__("func_001E9730");
 extern void memcard_Save_r(int, int) __asm__("func_0020BFC8");
@@ -1791,7 +1775,7 @@ void suck_cannon_update(Moby *moby) {
             else
                 ShowBanner_r(0x53E4, -1);
             dialogue_message_duration_frames_r = 0xB4;
-            grant_inventory_item_r(9, 1);
+            grant_inventory_item(9, 1);
             if (vars->exitMoby != -1) {
                 exit = &portal_mobys_002E2DF0[vars->exitMoby];
                 jet_reset_camera_r(&exit->pos, &exit->rot);

@@ -19,7 +19,7 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         clear_u64_value(b);
         spawn_randomized_bolt_drop(m, 0x1F, 0x4A, 2, -1);
         *(int *)(d + 0xA4) = scale_ticks(500);
-        spawn_explosion(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
+        spawn_explosion_v(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
     }
     *(unsigned char *)(m + 0xA4) = 0xFF;
     if (planetbuster_engaged != 0 && flag != 0) {

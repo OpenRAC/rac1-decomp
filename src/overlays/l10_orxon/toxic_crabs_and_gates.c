@@ -160,31 +160,21 @@ extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 
 extern int coll_line(void *, void *, int, void *, void *);
 
-extern s32 is_moby_in_class_range_500_to_540(s32);
 extern s32 truncate_float_to_s32(f32);
-
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern float compute_toxic_crab_group_approach_angle(char *self);
 
-extern int move_w(void *, void *, void *, void *, float);
-
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
-
-extern int mine_fall(void *, void *);
 
 extern void InitKnockback_b(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void MobySpringTurn_b(char *moby, float target, float k, float d, float max,
                              float *vel) __asm__("func_L00_002592B0");
-extern void RerollEffectCounter(void *m, short *p);
+
 extern void SetDeathBits(void *, int, int);
 
-extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-
-extern void set_ground_height_band(void *);
 
 /* Update for the toxic crab (moby Toxic Crab): line-of-sight test, then a 13-state walk/chase/attack/death machine. */
 void toxic_crab_update(Moby *m) {
@@ -774,7 +764,6 @@ extern int toxic_crab_debris_end_color_b SDATA(toxic_crab_debris_end_color_b);
 extern int toxic_crab_debris_time1 SDATA(toxic_crab_debris_time1);
 extern int toxic_crab_debris_time2 SDATA(toxic_crab_debris_time2);
 extern int toxic_crab_debris_time3 SDATA(toxic_crab_debris_time3);
-extern void add_random_offset_to_vector_xyz(float *v, float s);
 
 // Per-frame update of the moby in arg0: builds two vectors from its position and the trig helpers, then calls the
 // level's helpers for each of its entries.
@@ -905,7 +894,7 @@ typedef struct {
     unsigned char b11;
 } Flags;
 extern void activate_waiting_moby_group_members_r(void *) __asm__("func_L10_002E14F8");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
@@ -919,7 +908,7 @@ extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_00
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern void trooper_set_knockback_r(float *, float, float) __asm__("func_L03_00251A58");
 extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
 extern void InitKnockback_r(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
@@ -929,7 +918,7 @@ extern int FindNearestTargetMoby_r(void *, void *, float) __asm__("func_L00_0026
 extern int FindNearestEligibleMoby_r(float, void *, void *, int, int, void *, int) __asm__("func_L00_00260FB0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
+extern void MobyBlendAnimation(void *, int, int, int);
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float D_L10_00161EC0_2E52B0 SDATA(D_L10_00161EC0);
 extern float D_L10_00161EAC_2E52B0 SDATA(D_L10_00161EAC);
@@ -961,7 +950,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     }
     if (d->f38 != 0) {
         activate_waiting_moby_group_members_r(m);
-        d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between_r(180.0f, 240.0f)));
+        d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->f38 = 0;
     }
     fast_dec_timer_r(&d->f1AC);
@@ -1032,7 +1021,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f98 = 0.75f;
         d->f94 = 9;
         d->bAD = 0;
-        fx = fast_atan2_r(r->pos.x, r->pos.y);
+        fx = fast_atan2(r->pos.x, r->pos.y);
         switch (v21) {
             case 3:
             case 6:
@@ -1064,7 +1053,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 d->fC4 = 7.0f;
                 *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)&r->pos;
                 HeadingFromVector_r(&vA, &fx, &d->f88, &d->f8C);
-                InitKnockback_r(m, d->a70, 9, 1, 0, fast_atan2_r(r->pos.x, r->pos.y));
+                InitKnockback_r(m, d->a70, 9, 1, 0, fast_atan2(r->pos.x, r->pos.y));
                 d->b67 = 0xFA;
                 RerollEffectCounter_r(m, d->a60);
                 break;
@@ -1116,11 +1105,11 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (1.0f < FastVecDist(&m->pos, &d->a170)) {
                 m->state = 8;
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(12));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(12));
             } else if (g_hero.vehicle_mode != 1) {
                 m->state = 1;
                 if (m->prev_seq != 0)
-                    MobyBlendAnimation_r(m, 0, 0, scale_ticks(20));
+                    MobyBlendAnimation(m, 0, 0, scale_ticks(20));
             }
         }
     } else {
@@ -1267,14 +1256,9 @@ extern unsigned char gHaveHeliPack[];
 
 extern void update_blarg_ship_hit_reactions_and_targeting(char *m);
 
-extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-
 extern int IsFrameWithinWindow(char *, float);
 
 extern char *create_rocket_v(void *vel, void *pos, int a, int b, int c, float scale) __asm__("func_L10_002CD578");
-extern void ClampVectorLength(void *, float);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
 
 /* Update for the blarg ship (moby Blarg Ship): rise, follow its path, hover and fire at the target, fly off or
    explode. */
@@ -1515,13 +1499,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
         }
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void RerollEffectCounter(void *, short *);
 
-extern void StepColorFade(void *, void *);
-
-extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern char *orxon_paths[];
 extern unsigned char hero_globals_base_e1d[] __asm__("D_0013E633");
 // Updates hit reactions and selects an enemy's movement target.
@@ -1798,7 +1776,7 @@ typedef struct Flags_2E9978 {
     unsigned char f5;
 } Flags_2E9978;
 
-extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Help_Request_r(int a, int b) __asm__("func_L00_00203F20");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
@@ -1819,7 +1797,7 @@ void update_conditional_help_messages(Moby *m) {
     int flag;
     int sub;
 
-    if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->f1C)) {
+    if (is_point_inside_clip_volume(&g_hero.motion.pos, d->f1C)) {
         D_L10_00161FB8_2E9978 = 1;
     } else {
         D_L10_00161FB8_2E9978 = 0;
@@ -1830,13 +1808,13 @@ void update_conditional_help_messages(Moby *m) {
             m->state = 1;
             break;
         case 1:
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->f0) != 0 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->f0) != 0 &&
                 (((HeroPos *)(&g_hero.motion.pos))->f200C < 2 || ((HeroPos *)(&g_hero.motion.pos))->f200C == 9) &&
                 ((Msg *)orxon_help_state_r)->f0 == 0 && ((Msg *)orxon_help_state_r)->f24 == -1 &&
                 *(unsigned short *)(help_stats_base_r + 0x4F5) == 0) {
                 Help_Request_r(0x2710, 0x35);
             }
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->f4) != 0 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->f4) != 0 &&
                 (((HeroPos *)(&g_hero.motion.pos))->f200C < 2 || ((HeroPos *)(&g_hero.motion.pos))->f200C == 9) &&
                 ((Msg *)orxon_help_state_r)->f0 == 0 && ((Msg *)orxon_help_state_r)->f24 == -1) {
                 if (((Flags_2E9978 *)gSpecialItems)->f4 == 0) {
@@ -1853,7 +1831,7 @@ void update_conditional_help_messages(Moby *m) {
                 ((Msg *)orxon_help_state_r)->f24 == -1 && *(unsigned short *)(help_stats_base_r + 0x4FD) == 0) {
                 Help_Request_r(0x2711, 0x36);
             }
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->f8) != 0 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->f8) != 0 &&
                 (((HeroPos *)(&g_hero.motion.pos))->f200C < 2 || ((HeroPos *)(&g_hero.motion.pos))->f200C == 9) &&
                 gHaveHeliPack_r[9] == 0 && ((Msg *)orxon_help_state_r)->f0 == 0 &&
                 ((Msg *)orxon_help_state_r)->f24 == -1 && *(unsigned short *)(help_stats_base_r + 0x62D) == 0) {
@@ -1873,7 +1851,7 @@ void update_conditional_help_messages(Moby *m) {
             }
             if (flag == 0)
                 break;
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->f18) == 0)
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->f18) == 0)
                 break;
             if (d->f20 == -1)
                 break;
@@ -1911,7 +1889,6 @@ extern LevelState_e9648 orxon_collected_flags_base;
 /* Per-frame update of a pickup/homing moby (states 0 idle, 1 wait, 2 chase one of up to three target mobys, 3 collect:
    delete the targets and set the saved-collected bits); the meaning of spawn_class_4ea_projectile and of the
    0x4/0x8/0xC/0x14 data slots is guessed, the operations follow the assembly. */
-extern float SpringTurn(float *, float, float, float, float, float);
 
 #define FIRST ((char *)D_L10_00160058)
 #define GPT ((char *)D_L10_00160058)
@@ -2385,7 +2362,6 @@ extern short orxon_spark_start_color_b, orxon_spark_end_color_a, orxon_spark_end
 extern short orxon_spark_burst_ticks_max, orxon_spark_pause_ticks_min, orxon_spark_pause_ticks_max;
 extern int FastBSphereCheck(char *, float);
 
-extern void rand_vec(float *, float, float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
 /* Emits sparks from pos in bursts: the burst timer alternates between a pause (counting up to 0) and an
@@ -2570,7 +2546,6 @@ void update_level_mode_dispatcher(char *m) {
             break;
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
 
 /* Update for moby class 1855: waits, arms, then fires an effect and deletes itself. */
 void Moby1855Update(char *m) {

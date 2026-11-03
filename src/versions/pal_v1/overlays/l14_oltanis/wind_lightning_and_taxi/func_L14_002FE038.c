@@ -9,7 +9,7 @@ void update_enemy_fighter_921(Moby *m) {
          (*(int *)(level_moby_killed_r3 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) &
              1)) {
         mark_moby_and_linked_moby_for_removal_r((Moby *)(oltanis_mobys_r + (d->f8C << 8)));
-        DeleteMoby_r3(m);
+        DeleteMoby(m);
         return;
     }
     {
@@ -25,7 +25,7 @@ void update_enemy_fighter_921(Moby *m) {
                 }
             }
             m->state = 3;
-            SpawnExplosionFx_r2(m, (*(Vec_2FE038 *)&m->pos), -1, 5.0f, 13.0f);
+            SpawnExplosionFx(m, (*(Vec_2FE038 *)&m->pos), -1, 5.0f, 13.0f);
             m->flags |= 0x41;
             m->collision = 0;
             if (d->f6C != -1 && ((VoicePoolRow *)(voice_pool_r + d->f6C * 0x70))->owner == m &&
@@ -39,16 +39,16 @@ void update_enemy_fighter_921(Moby *m) {
         case 0:
             if (d->f68 == -1) {
                 STUB_printf_r3(enemy_fighter_921_no_path_msg_r, (short)m->save_id);
-                DeleteMoby_r3(m);
+                DeleteMoby(m);
                 return;
             }
             if (*(int *)oltanis_paths_r4[d->f68] == 0) {
                 STUB_printf_r3(enemy_fighter_921_path_unset_msg_r, (short)m->save_id);
-                DeleteMoby_r3(m);
+                DeleteMoby(m);
                 return;
             }
             if (d->f98 < 0 || d->f9C < 0 || d->fA0 < 0) {
-                DeleteMoby_r3(m);
+                DeleteMoby(m);
                 return;
             }
             initialize_flight_path_state_r2(m);
@@ -75,20 +75,19 @@ void update_enemy_fighter_921(Moby *m) {
                 if (b == a) {
                     c = saved_mission_state_r[d->fA0 + (g_current_level_index_m << 4)];
                     if (c == b && g_hero.frames_off_ground.s == 0 && ((int)g_hero.ground_moby) == 0 &&
-                        is_point_inside_clip_volume_r3((*(Vec_2FE038 *)&g_hero.motion.pos), d->fA4) != 0) {
+                        is_point_inside_clip_volume((*(Vec_2FE038 *)&g_hero.motion.pos), d->fA4) != 0) {
                         Moby *jet = (Moby *)(oltanis_mobys_r + (d->f8C << 8));
                         Moby *seat = (Moby *)(oltanis_mobys_r + (((struct Jet *)jet->pvars)->f4 << 8));
                         float pitch, yaw;
                         qcopy(vt, (*(Vec_2FE038 *)&seat->pos));
                         vt[2] = vt[2] + 4.0f;
-                        pitch =
-                            FastDiffRots(((Cam *)oltanis_player_camera_r)->f154,
-                                         -fast_atan2_r2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
-                                                        vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
+                        pitch = FastDiffRots(((Cam *)oltanis_player_camera_r)->f154,
+                                             -fast_atan2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
+                                                         vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
                         yaw = FastDiffRots(
                             ((Cam *)oltanis_player_camera_r)->f158,
-                            fast_atan2_r2((*(Vec_2FE038 *)&seat->pos)[0] - ((Cam *)oltanis_player_camera_r)->pos[0],
-                                          (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam *)oltanis_player_camera_r)->pos[1]));
+                            fast_atan2((*(Vec_2FE038 *)&seat->pos)[0] - ((Cam *)oltanis_player_camera_r)->pos[0],
+                                       (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam *)oltanis_player_camera_r)->pos[1]));
                         if (yaw < 0.48869219f && pitch < 0.34906584f &&
                             coll_line_r(((Cam *)oltanis_player_camera_r)->pos, vt, 0x12, seat, 0) == 0) {
                             *(int *)(level_moby_killed_r3 +
@@ -141,8 +140,8 @@ void update_enemy_fighter_921(Moby *m) {
                 d->f60 = 0;
                 d->f64 = 0;
                 qcopy((*(Vec_2FE038 *)&m->pos), (*(Vec_2FE038 *)&p->pos));
-                (*(Vec_2FE038 *)&m->rot)[2] = fast_atan2_r2(*(float *)((char *)p + 0x20) - (*(Vec_2FE038 *)&p->pos)[0],
-                                                            *(float *)((char *)p + 0x24) - (*(Vec_2FE038 *)&p->pos)[1]);
+                (*(Vec_2FE038 *)&m->rot)[2] = fast_atan2(*(float *)((char *)p + 0x20) - (*(Vec_2FE038 *)&p->pos)[0],
+                                                         *(float *)((char *)p + 0x24) - (*(Vec_2FE038 *)&p->pos)[1]);
                 d->f80 = d->f84 = d->f88 = d->f70 = d->f74 = d->f78 = 0.0f;
             }
             break;

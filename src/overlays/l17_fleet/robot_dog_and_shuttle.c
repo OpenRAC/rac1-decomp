@@ -171,13 +171,7 @@ extern float g_frame_time MACRO_ADDR;
 
 extern int func_001FA898(float);
 
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void HeadingFromVector(void *, float *, void *, void *);
-
-extern void InitKnockback(float, void *, void *, int, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 extern int coll_line(void *, void *, int, int, int);
 
@@ -220,7 +214,7 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
         if (q != 0 && q->moby != 0 && q->moby->oclass == 0x63) {
             ang = fast_atan2(d->f1F0 - moby->pos.x, d->f1F4 - moby->pos.y);
         }
-        InitKnockback(ang, moby, d->v120, 0xB, 1, 0);
+        InitKnockback_v(ang, moby, d->v120, 0xB, 1, 0);
         moby->state = 15;
         d->b117 = 0xF0;
         RerollEffectCounter(moby, d->h110);
@@ -244,10 +238,8 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
         }
     }
 }
-extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
-extern float ApproachValue(float *p, float target, float maxstep);
 
-extern void move_4318(int, int, float, float, float, int);
+extern float ApproachValue(float *p, float target, float maxstep);
 
 /* Steers the moby toward a target point; returns nonzero when it is within 0.2 of it. */
 int move_robot_dog_toward_position(char *moby, float *target, float speed) {
@@ -671,8 +663,6 @@ void DrawLightRing(char *moby) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void update_entity_matrix(char *, void *, void *, void *);
 
 extern unsigned char help_stats_base[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -1459,7 +1449,6 @@ done:
 extern int FastBSphereCheck(char *, float);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void ClampVectorLength(void *a, float x);
 
 extern char fleet_blarg_ship_gun_offset_alt[];
 extern char fleet_blarg_ship_gun_offset[];

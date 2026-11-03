@@ -157,8 +157,6 @@ extern char *D_L03_00160064 MACRO_ADDR;
 extern int D_L03_0015F6B0 MACRO_ADDR;
 extern char spawner_revive_failed_fmt[];
 
-extern float *func_L00_0025D390(void *);
-
 typedef struct Spawner {
     u8 pad_00[0x83];
     u8 options; /* 0x83: bit 1 scales the child's draw scale by 0.1 */
@@ -346,26 +344,17 @@ typedef struct {
     float f2C;
 } Hit_2C0330;
 
-extern void set_ground_height_band(void *);
-
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
 extern void SetDeathBits(void *, int, int);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
+
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void libc_memset(void *, int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int func_001160D8(void);
-extern void add_random_offset_to_vector_xyz(float *v, float s);
 
-extern float jump_speed_4318(void *, void *, void *, float, float);
 extern char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int arg);
 
-extern void StepColorFade(void *, void *);
 extern char kerwan_camera_pos[];
 
 extern float kerwan_zero_vec[] MACRO_ADDR;
@@ -744,7 +733,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern int coll_sphere(float, void *, int, void *);
-extern void jet_animate(unsigned char *, float);
+
 typedef struct {
     char pad0[0x18];
     char *moby;
@@ -1042,25 +1031,21 @@ extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__(
 extern void handle_blarg_helicopter_hits_r(char *) __asm__("func_L03_002CF600");
 extern void AttachManipulator_r(char *, int, void *) __asm__("func_0020D960");
 
-extern float func_L00_00259148(float *, float, float, float, float, float);
-
 extern float func_00214D28(float *, float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 
-extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
+extern void vec_set_length_xy(void *, void *, float);
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern void raise_kernel_trap_r(void) __asm__("func_001F9978");
 
 extern char *spawn_homing_spark_projectile_r(char *, char *, int, int, float) __asm__("func_L03_002D65D0");
 
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *, int);
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
@@ -1071,7 +1056,7 @@ extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void add_vectors_r(void *, void *, void *) __asm__("func_L00_001FF240");
+extern void add_vectors(void *, void *, void *);
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
@@ -1080,7 +1065,7 @@ extern void SpawnBreakFragment_r(void *, int, void *, void *, int, int, float, v
 extern float kerwan_zero_vec_r[] __asm__("D_L03_0015F660") MACRO_ADDR;
 extern char kerwan_camera_pos_r[] __asm__("D_L03_00166F40");
 extern void set_ground_height_band_r(void *) __asm__("func_L00_0025B178");
-extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
+extern void moby_build_matrix(void *);
 
 /* Updates the gunship (helicopter) moby: activation path (1), patrol route with gun aiming and shots (2),
    exit path or climb-out (3), a short reaction after a route change (4) and destruction (5). */
@@ -1096,14 +1081,14 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
     index = (short)m->pool_index;
     if ((kerwan_moby_killed_bits[index >> 5] >> (m->pool_index & 31)) & 1) {
         if (d->child_index != -1)
-            DeleteMoby_r((HMob49_2CDDC8 *)(kerwan_mobys_p + (d->child_index << 8)));
-        DeleteMoby_r(m);
+            DeleteMoby((HMob49_2CDDC8 *)(kerwan_mobys_p + (d->child_index << 8)));
+        DeleteMoby(m);
         return;
     }
     if (d->route_a.path_id == -1 || (m->state != 0 && d->enabled != 1)) {
         if (d->child_index != -1)
-            DeleteMoby_r((HMob49_2CDDC8 *)(kerwan_mobys_p + (d->child_index << 8)));
-        DeleteMoby_r(m);
+            DeleteMoby((HMob49_2CDDC8 *)(kerwan_mobys_p + (d->child_index << 8)));
+        DeleteMoby(m);
         return;
     }
     if (d->request) {
@@ -1176,8 +1161,8 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             HPath49_2CDDC8 *path = kerwan_paths_r[d->activation_path];
             float progress, distance, step, limit, angle;
             if (d->activation_region != -1 &&
-                !is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                               d->activation_region))
+                !is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                             d->activation_region))
                 break;
             d->activation_region = -1;
             find_nearest_path_point(path, m->position, w.projected, &w.segment_a, &w.fraction_a, 0, 999.0f, 5.0f, 0.0f);
@@ -1221,10 +1206,10 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             FastVecAdd(w.projected, w.projected, path->points + w.segment_a);
             if (w.segment_a + 1 < path->count - 8) {
                 float *next = (float *)((char *)path + ((w.segment_a + 1) << 4));
-                angle = fast_atan2_r(next[4] - m->position[0], next[5] - m->position[1]);
+                angle = fast_atan2(next[4] - m->position[0], next[5] - m->position[1]);
                 m->rotation[2] = SpringTurn(&d->yaw_velocity, m->rotation[2], angle, 0.01f, 0.3f, 0.1f);
             } else {
-                angle = fast_atan2_r(w.target.position[0] - m->position[0], w.target.position[1] - m->position[1]);
+                angle = fast_atan2(w.target.position[0] - m->position[0], w.target.position[1] - m->position[1]);
                 m->rotation[2] = SpringTurn(&d->yaw_velocity, m->rotation[2], angle, 0.01f, 0.3f, 0.1f);
             }
             FastVecSub(w.movement, w.projected, m->position);
@@ -1237,7 +1222,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             {
                 float delta, roll, pitch;
                 FastVecAdd(m->position, m->position, w.movement);
-                delta = FastSubRots(fast_atan2_r(w.movement[0], w.movement[1]), m->rotation[2]);
+                delta = FastSubRots(fast_atan2(w.movement[0], w.movement[1]), m->rotation[2]);
                 roll = d->speed * 0.34906584f * FastCos(delta) / (g_frame_time_r * motion_scale);
                 pitch = d->speed * -0.34906584f * FastSin(delta);
                 motion_scale *= g_frame_time_r;
@@ -1252,7 +1237,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
         case 2: {
             HRoute49_2CDDC8 *route = d->alternate ? &d->route_b : &d->route_a;
             int point = route->index;
-            float angle = fast_atan2_r(w.target.position[0] - m->position[0], w.target.position[1] - m->position[1]);
+            float angle = fast_atan2(w.target.position[0] - m->position[0], w.target.position[1] - m->position[1]);
             HMob49_2CDDC8 *projectile;
             float distance, other_distance;
             m->rotation[2] = SpringTurn(&d->yaw_velocity, m->rotation[2], angle, 0.01f, 0.3f, 0.1f);
@@ -1263,10 +1248,10 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 *(HQuad49_2CDDC8 *)w.projected = *(HQuad49_2CDDC8 *)w.direction;
                 matrix_from_basis_rows(w.offset, m->transform);
                 transform_vector(w.projected, w.projected, w.offset);
-                angle = fast_atan2_r(w.projected[0], w.projected[1]);
+                angle = fast_atan2(w.projected[0], w.projected[1]);
                 d->gun_yaw = SpringTurn(&d->gun_yaw_velocity, d->gun_yaw, angle, g_frame_time_sq_r * 6.2831855f,
                                         g_frame_time_sq_r * 12.566371f, g_frame_time_r * 6.2831855f);
-                angle = -fast_atan2_r(vec_length_xy_r(w.projected), w.projected[2]);
+                angle = -fast_atan2(vec_length_xy_r(w.projected), w.projected[2]);
                 d->gun_pitch = SpringTurn(&d->gun_pitch_velocity, d->gun_pitch, angle, g_frame_time_sq_r * 3.1415927f,
                                           g_frame_time_sq_r * 6.2831855f, g_frame_time_r * 1.5707964f);
                 axis_rotation_2d48(d->gun_yaw_matrix + 4, 2, d->gun_yaw);
@@ -1278,10 +1263,10 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 *(HQuad49_2CDDC8 *)w.projected = *(HQuad49_2CDDC8 *)w.direction;
                 matrix_from_basis_rows(w.offset, m->transform);
                 transform_vector(w.projected, w.projected, w.offset);
-                angle = fast_atan2_r(w.projected[0], w.projected[1]);
+                angle = fast_atan2(w.projected[0], w.projected[1]);
                 d->gun_yaw = SpringTurn(&d->gun_yaw_velocity, d->gun_yaw, angle, g_frame_time_sq_r * 6.2831855f,
                                         g_frame_time_sq_r * 12.566371f, g_frame_time_r * 6.2831855f);
-                angle = -fast_atan2_r(vec_length_xy_r(w.projected), w.projected[2]);
+                angle = -fast_atan2(vec_length_xy_r(w.projected), w.projected[2]);
                 d->gun_pitch = SpringTurn(&d->gun_pitch_velocity, d->gun_pitch, angle, g_frame_time_sq_r * 3.1415927f,
                                           g_frame_time_sq_r * 6.2831855f, g_frame_time_r * 1.5707964f);
                 axis_rotation_2d48(d->gun_yaw_matrix + 4, 2, d->gun_yaw);
@@ -1318,7 +1303,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             {
                 float delta, roll, pitch;
                 FastVecAdd(m->position, m->position, w.direction);
-                delta = FastSubRots(fast_atan2_r(w.direction[0], w.direction[1]), m->rotation[2]);
+                delta = FastSubRots(fast_atan2(w.direction[0], w.direction[1]), m->rotation[2]);
                 roll = d->speed * 0.34906584f * FastCos(delta) / (g_frame_time_r * motion_scale);
                 pitch = d->speed * -0.34906584f * FastSin(delta);
                 motion_scale *= g_frame_time_r;
@@ -1328,8 +1313,8 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 m->rotation[0] = SpringTurn(&d->pitch_velocity, m->rotation[0], pitch, g_frame_time_sq_r * motion_gain,
                                             g_frame_time_sq_r * 2.0943952f, g_frame_time_r * 1.5707964f);
             }
-            if (is_point_inside_clip_volume_r(w.target.position,
-                                              d->alternate ? d->other_switch_region : d->switch_region)) {
+            if (is_point_inside_clip_volume(w.target.position,
+                                            d->alternate ? d->other_switch_region : d->switch_region)) {
                 if (d->alternate ? d->other_exit_path != -1 : d->exit_path != -1) {
                     HPath49_2CDDC8 *path = kerwan_paths_r[d->alternate ? d->other_exit_path : d->exit_path];
                     int i;
@@ -1340,12 +1325,12 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 m->state = 4;
                 d->reaction_timer = scale_ticks(15);
                 break;
-            } else if (is_point_inside_clip_volume_r(w.target.position, d->shoot_region) &&
+            } else if (is_point_inside_clip_volume(w.target.position, d->shoot_region) &&
                        (FastDecTimer(&d->shot_timer) || (!d->projectile && d->timer))) {
                 d->shot_timer = scale_ticks(360);
                 qcopy(w.shot_origin, w.target.position);
                 FastVecSub(w.shot_velocity, w.shot_origin, w.movement);
-                vec_set_length_xy_r(w.shot_velocity, w.shot_velocity, g_frame_time_r * 6.0f);
+                vec_set_length_xy(w.shot_velocity, w.shot_velocity, g_frame_time_r * 6.0f);
                 w.shot_velocity[2] = 0;
                 d->projectile = (HMob49_2CDDC8 *)spawn_homing_spark_projectile_r(
                     (char *)w.shot_velocity, (char *)w.movement, (int)m, scale_ticks(240), w.target.position[2]);
@@ -1406,7 +1391,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             FastVecSub(w.projected, &path->points[w.segment_b + 1], &path->points[w.segment_b]);
             FastVecScale(w.projected, w.projected, w.fraction_b);
             FastVecAdd(w.projected, w.projected, path->points + w.segment_b);
-            angle = fast_atan2_r(w.target.position[0] - m->position[0], w.target.position[1] - m->position[1]);
+            angle = fast_atan2(w.target.position[0] - m->position[0], w.target.position[1] - m->position[1]);
             m->rotation[2] = SpringTurn(&d->yaw_velocity, m->rotation[2], angle, 0.01f, 0.3f, 0.1f);
             FastVecSub(w.movement, w.projected, m->position);
             distance = FastVecLength(w.movement);
@@ -1418,7 +1403,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             {
                 float delta, roll, pitch;
                 FastVecAdd(m->position, m->position, w.movement);
-                delta = FastSubRots(fast_atan2_r(w.movement[0], w.movement[1]), m->rotation[2]);
+                delta = FastSubRots(fast_atan2(w.movement[0], w.movement[1]), m->rotation[2]);
                 roll = d->speed * 0.34906584f * FastCos(delta) / (g_frame_time_r * motion_scale);
                 pitch = d->speed * -0.34906584f * FastSin(delta);
                 motion_scale *= g_frame_time_r;
@@ -1445,7 +1430,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 {
                     float delta, roll, pitch;
                     FastVecAdd(m->position, m->position, w.movement);
-                    delta = FastSubRots(fast_atan2_r(w.movement[0], w.movement[1]), m->rotation[2]);
+                    delta = FastSubRots(fast_atan2(w.movement[0], w.movement[1]), m->rotation[2]);
                     roll = d->speed * 0.34906584f * FastCos(delta) / (g_frame_time_r * motion_scale);
                     pitch = d->speed * -0.34906584f * FastSin(delta);
                     motion_scale *= g_frame_time_r;
@@ -1469,7 +1454,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 w.offset[1] = FastSin(angle) * 1.5f;
                 w.offset[2] = 0;
                 angle = FastAddRots(angle, 1.5707964f);
-                add_vectors_r(w.hit.direction, w.offset, w.projected);
+                add_vectors(w.hit.direction, w.offset, w.projected);
             }
             Moby_GetJointWorldPos_r(m, 5, w.offset);
             if (d->child_index != -1) {
@@ -1482,7 +1467,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 w.hit.allow = 1;
                 w.hit.source = m;
                 FastVecSub(w.hit.direction, child->position, m->position);
-                vec_set_length_xy_r(w.hit.direction, w.hit.direction, 1.0f);
+                vec_set_length_xy(w.hit.direction, w.hit.direction, 1.0f);
                 w.hit.direction[2] = 1.0f;
                 w.hit.direction[3] = 5627.925f;
                 w.hit.kind = 3;
@@ -1507,7 +1492,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                     Sound_StopSlot_r(d->sound);
             }
             d->sound = -1;
-            DeleteMoby_r(m);
+            DeleteMoby(m);
             return;
         }
         default:
@@ -1523,7 +1508,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
         *(HQuad49_2CDDC8 *)child->position = *(HQuad49_2CDDC8 *)m->position;
         *(HQuad49_2CDDC8 *)child->rotation = *(HQuad49_2CDDC8 *)m->rotation;
         MobyAnimAdvance(child);
-        moby_build_matrix_r(child);
+        moby_build_matrix(child);
         child->flags |= 6;
     }
 }
@@ -1630,7 +1615,6 @@ typedef struct {
     Vec4A v30;
     void *moby;
 } Tgt;
-extern void FindNearestTargetMoby(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1876,7 +1860,7 @@ void fred_1_update(Moby *m) {
 }
 extern void func_L01_002FC890(char *);
 
-extern int is_point_inside_clip_volume_r2(void *arg0, int arg1) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 extern f32 vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
@@ -1950,7 +1934,7 @@ void qwark_rilgar_update(char *m) {
             moby->state = 1;
             break;
         case QWARK_RILGAR_WAIT_FOR_PLAYER_IN_REGION:
-            if (watch_data->region_a != -1 && is_point_inside_clip_volume_r2(&hero.motion.pos, watch_data->region_a)) {
+            if (watch_data->region_a != -1 && is_point_inside_clip_volume(&hero.motion.pos, watch_data->region_a)) {
                 set_moby_dialogue_record_value(m, 1);
                 moby->state = 2;
             }
@@ -2170,7 +2154,7 @@ void smooth_transform_orientation_toward_hero(char *m) {
 }
 
 extern int kerwan_camera_descriptors_r __asm__("D_L03_0015F050") MACRO_ADDR;
-extern int is_point_inside_clip_volume_r2(void *arg0, int arg1) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002de370.c, FUN_L03_002e8870. */
 int evaluate_clip_volume_candidate(char *a0, char *a1) {
@@ -2182,8 +2166,8 @@ int evaluate_clip_volume_candidate(char *a0, char *a1) {
         return 0;
     if (a1 != 0 && *(short *)(a1 + 0x7E) == 0 && !(*(unsigned char *)(a0 + 0x7C) > *(unsigned char *)(a1 + 0x7C)))
         return 0;
-    if (is_point_inside_clip_volume_r2(&g_hero.motion.pos, *(int *)(sub + 0xC)) != 0) {
-        if (is_point_inside_clip_volume_r2(kerwan_camera_pos, *(int *)(sub + 0xC)) != 0)
+    if (is_point_inside_clip_volume(&g_hero.motion.pos, *(int *)(sub + 0xC)) != 0) {
+        if (is_point_inside_clip_volume(kerwan_camera_pos, *(int *)(sub + 0xC)) != 0)
             return 1;
         q = kerwan_camera_pos - 0x140;
         five = *(int *)(q + 0x180);

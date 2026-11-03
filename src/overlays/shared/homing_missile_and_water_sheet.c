@@ -173,7 +173,6 @@ extern int truncate_float_to_s32(float);
 
 extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 
-extern void initialize_hit_descriptor(float, void *, struct Moby *, int);
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern char *PartType27Spawn_r(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
@@ -310,8 +309,6 @@ extern short projectile_trail_color_a, projectile_trail_color_b, projectile_trai
 extern char pokitaru_coll_hit_normal[];
 extern float g_frame_time_e __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern void rand_vec(float *, float, float);
-
 extern int coll_line(void *, void *, int, void *, void *);
 
 struct UpdateProjectileWithTrailVars {
@@ -395,10 +392,6 @@ typedef struct {
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
 extern char pokitaru_particle_textures_ptr_base[];
 extern char pokitaru_collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;
@@ -1186,8 +1179,6 @@ void project_world_point_to_screen_pixels(void *pt, int *outx, int *outy, int yo
 }
 typedef int u128_312780 __attribute__((mode(TI)));
 
-extern void add_random_offset_to_vector_xyz(float *v, float s);
-
 extern float g_frame_time MACRO_ADDR;
 extern float joint_trail_reference_speed SDATA(joint_trail_reference_speed);
 extern short joint_trail_particle_cfg_a;
@@ -1397,7 +1388,7 @@ void update_moby_trail_points(Moby *moby) {
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int skill_point_18_kill_count MACRO_ADDR;
 extern unsigned char gSkillPoints[] NOT_SDA;
-extern char *MobyGetHitMessage(void *, int, int);
+
 extern int PlayBankSound(int, int, int);
 
 extern int coll_sphere(float, void *, int, void *);
@@ -1484,7 +1475,7 @@ typedef struct {
 } Data_0031B8A8;
 extern Path_0031B8A8 *D_L11_001B11B0[];
 
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -1515,10 +1506,10 @@ void update_moby_path_transform(Moby *moby) {
     qcopy(B, path->pts[(i + 1) % n]);
     qcopy(C, path->pts[(i + 2) % n]);
     clear_u64_value(rot);
-    a = fast_atan2_r(A[0] - B[0], A[1] - B[1]);
-    b = fast_atan2_r(B[0] - C[0], B[1] - C[1]);
-    pitch = fast_atan2_r(vec_distance_xy_r2(A, B), B[2] - A[2]);
-    rot[1] = FastAddRots(FastSubRots(fast_atan2_r(vec_distance_xy_r2(B, C), C[2] - B[2]), pitch) * data->t, pitch);
+    a = fast_atan2(A[0] - B[0], A[1] - B[1]);
+    b = fast_atan2(B[0] - C[0], B[1] - C[1]);
+    pitch = fast_atan2(vec_distance_xy_r2(A, B), B[2] - A[2]);
+    rot[1] = FastAddRots(FastSubRots(fast_atan2(vec_distance_xy_r2(B, C), C[2] - B[2]), pitch) * data->t, pitch);
     rot[2] = FastAddRots(FastSubRots(b, a) * data->t, a);
     qcopy(&moby->rot, rot);
     if (data->flip > 0.0f) {

@@ -1073,14 +1073,13 @@ void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *po
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 
-void func_L00_002688A8_26bca8(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 
 int func_L00_00237B70_26bca8(int, int, float) __asm__("func_L00_00237B70");
 
-float func_002140F8_26bca8(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 
 void func_L00_001FF4B0_26bca8(void *, void *, float) __asm__("func_L00_001FF4B0");
-int func_L00_00258BC8_26bca8(int, int) __asm__("func_L00_00258BC8");
 
 extern unsigned char *func_L00_0026CA10_26bca8(void *, void *, int, int, int, float, int, int,
                                                int) __asm__("func_L00_0026CA10");
@@ -1091,7 +1090,7 @@ void update_shrinking_effect_particle_with_gravity_and_secondary_spawns(struct P
     unsigned char *p;
     float a, b;
     if (FastDecTimer(&m->timer)) {
-        func_L00_002688A8_26bca8(m);
+        KillPart(m);
         return;
     }
     p = (unsigned char *)&m->pos;
@@ -1107,16 +1106,16 @@ void update_shrinking_effect_particle_with_gravity_and_secondary_spawns(struct P
     qcopy(&u, p);
     if (o->spawn_flag && (level_frame_counter_r & 1)) {
         w.q = 0;
-        w.f[0] = func_002140F8_26bca8(-1.0f, 1.0f);
-        w.f[1] = func_002140F8_26bca8(-1.0f, 1.0f);
-        w.f[2] = func_002140F8_26bca8(-1.0f, 1.0f);
+        w.f[0] = random_float_between(-1.0f, 1.0f);
+        w.f[1] = random_float_between(-1.0f, 1.0f);
+        w.f[2] = random_float_between(-1.0f, 1.0f);
         t.q = w.q;
         b = FastVecLength(o);
-        func_L00_001FF4B0_26bca8(&t, &t, b * func_002140F8_26bca8(0.15f, 0.25f));
+        func_L00_001FF4B0_26bca8(&t, &t, b * random_float_between(0.15f, 0.25f));
         FastVecAdd(&t, &t, o);
-        FastVecScale(&t, &t, func_002140F8_26bca8(0.75f, 0.95f));
-        func_L00_0026CA10_26bca8(p, &t, m->color, o->color_end, scale_ticks(func_L00_00258BC8_26bca8(0xF, 0x1E)),
-                                 m->size, 0, m->texture, m->blend);
+        FastVecScale(&t, &t, random_float_between(0.75f, 0.95f));
+        func_L00_0026CA10_26bca8(p, &t, m->color, o->color_end, scale_ticks(rand_range(0xF, 0x1E)), m->size, 0,
+                                 m->texture, m->blend);
     } else {
         FastVecScale(o, o, 0.96f);
     }
@@ -1180,11 +1179,11 @@ extern char g_debug_camera_r[] __asm__("D_L00_00166EC0");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 extern int DefaultVtbl_DeleteMoby_r(int, int, float) __asm__("func_L00_00237B70");
-extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
+
 extern void mine_debris_r(void *, void *, int, int, float, int, int) __asm__("func_L00_0026CD70");
-extern void KillPart_r(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 
 /* Updates a type 16 particle: fades it by age and distance, applies its gravity, and on landing spawns the next kind.
    */
@@ -1199,7 +1198,7 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
     if (p->kind == 3 && cpu_frame_load_r > 0.95f)
         FastDecTimer(&m->timer);
     if (FastDecTimer(&m->timer)) {
-        KillPart_r(m);
+        KillPart(m);
         return;
     }
     {
@@ -1210,7 +1209,7 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
         if (m->timer < scale_ticks(6))
             c = c * m->timer / scale_ticks(6);
         if (f < 4.0f) {
-            KillPart_r(m);
+            KillPart(m);
             return;
         }
         if (f < 8.0f)
@@ -1223,15 +1222,15 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
         if (m->pos.f[2] < p->vel[3]) {
             if (k == 1) {
                 int u, w, t;
-                u = DefaultVtbl_DeleteMoby_r(0x7F000000, 0x7F182030, random_float_between_r(0.25f, 1.0f));
-                w = DefaultVtbl_DeleteMoby_r(0, 0x5F5F5F, random_float_between_r(0.5f, 1.0f));
+                u = DefaultVtbl_DeleteMoby_r(0x7F000000, 0x7F182030, random_float_between(0.25f, 1.0f));
+                w = DefaultVtbl_DeleteMoby_r(0, 0x5F5F5F, random_float_between(0.5f, 1.0f));
                 p->vel[2] = 0;
-                f = random_float_between_r(200000.0f, 300000.0f);
+                f = random_float_between(200000.0f, 300000.0f);
                 t = scale_ticks(0x5A);
-                r = rand_range_r(t, scale_ticks(0x96));
+                r = rand_range(t, scale_ticks(0x96));
                 mine_debris_r(&m->pos, p, u, w, f, r, 3);
             }
-            KillPart_r(m);
+            KillPart(m);
         } else
             m->spin++;
     }
@@ -1998,7 +1997,7 @@ void spawn_jittered_effect_particle_with_optional_basis(void *pos, void *dir, f3
     }
 }
 
-extern void KillPart_r2(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
 
 /* Particle update: size and phase advance with the frame time (frame_scale), the size following the particle's velocity. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_00269290.c, FUN_L00_0026e150. */
@@ -2018,7 +2017,7 @@ void update_moving_fade_in_out_effect_particle(struct PartBase *m) {
         m->size += d * 5460.0f;
     }
     if (q->size <= 0.0244f || FastDecTimer(&m->timer) != 0) {
-        KillPart_r2(m);
+        KillPart(m);
         return;
     }
     s = q->size;
@@ -3002,12 +3001,12 @@ void *spawn_splitting_effect_particle_with_collision_and_fade(char *a, char *b, 
     return (char *)p;
 }
 
-void func_L00_002688A8_717E8b(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 extern f32 frame_scale_r2 __asm__("D_0015EE60") MACRO_ADDR;
 
-void func_L00_002688A8_717E8g(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 
-extern void KillPart_717E8h(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 typedef unsigned int Q_270948 __attribute__((mode(TI)));
 typedef struct {
     Vec4 v;
@@ -3093,7 +3092,7 @@ void update_splitting_effect_particle_with_collision_and_fade(struct PartBase *m
         m->size -= 260000.0f / (f32)(s32)(8.0f / (frame_scale_r2 * 0.443f)) * frame_scale_r2 * 1.25f;
         if (m->size <= 0.0f) {
         kill:
-            KillPart_717E8h(m);
+            KillPart(m);
             return;
         }
     } else {

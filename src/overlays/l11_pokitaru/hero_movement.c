@@ -169,21 +169,13 @@ extern float pokitaru_hero_ledge_shimmy_frame_speeds[];
 
 extern int truncate_float_to_s32(float);
 
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float ApproachValue(float *, float, float);
 
-extern void ClampVectorLength(void *, float);
-
-extern float Spring(float *, float *, float, float, float, float);
-
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 
 extern int coll_line(void *, void *, int, int, int);
-
-extern int is_moby_in_class_range_500_to_540(int);
 
 struct HeroL11UpdateMovementVars {};
 

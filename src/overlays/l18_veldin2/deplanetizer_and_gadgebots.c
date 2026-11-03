@@ -128,8 +128,6 @@ extern int scale_ticks(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void clear_u64_value(void *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
 
 extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, float f1);
@@ -823,7 +821,6 @@ void update_moby_visibility_and_half_turn(char *moby) {
     }
 }
 extern void FastVecSub(void *, void *, void *);
-extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 
 /* updates a moby that drags a child moby along with it */
 void update_moby_transform_and_child(char *moby) {
@@ -951,10 +948,8 @@ extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
 
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int IsFrameWithinWindow(char *, float);
-extern void collect_mobies_in_sphere_at_moby_point(void *, float, float, float, int, int, int, int, int);
-extern int mine_fall(void *, void *);
+
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern float ApproachValue(float *p, float target, float maxstep);
@@ -1150,13 +1145,9 @@ extern short gadgebot_death_fall_base_vertical_speed_gp;
 extern int veldin2_paths[];
 
 extern void draw_group_gadgebot_1906_joint_glows(unsigned char *);
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(float, void *, void *, int, int, int);
-extern void RerollEffectCounter(void *, void *);
-extern void StepColorFade(void *, void *);
-extern int FindNearestEligibleMoby(float, void *, void *, int, int, int *, int);
+
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
+
 #define F(x) (*(float *)&x)
 
 #include "structs/hero.h"
@@ -1237,7 +1228,7 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
                 moby->flags &= ~0x1000;
                 v.q = *(u128 *)&coll->unk_10;
                 HeadingFromVector(&v, &angle, &sentry_vars->unk88, &sentry_vars->unk8C);
-                InitKnockback(angle, moby, sentry_vars->fall, 3, 1, 0);
+                InitKnockback_v(angle, moby, sentry_vars->fall, 3, 1, 0);
                 sentry_vars->unkC0 = 7.5f;
                 sentry_vars->unkC4 = 15.0f;
                 moby->state = 5;
@@ -1271,7 +1262,7 @@ typedef struct {
 extern float vec_distance_xy(float *, float *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern float FastCos(float);
-extern void move_4318(int, int, float, float, float, int);
+
 extern void resolve_point_path_segment_xy_clearance(float, void *, void *, void *);
 
 /* Steers a Gadgebot enemy toward src and returns the distance to it. */
@@ -1310,7 +1301,7 @@ typedef struct {
     u8 pad1F0[4];
     f32 unk1F4; /* 0x1F4: set to 1.0 on launch */
 } LaunchedMobyVars;
-extern float jump_speed_4318(void *, void *, float, float, int);
+extern float jump_speed_4318_v(void *, void *, float, float, int) __asm__("func_L00_0025BC48");
 
 /* Launches the first idle (state 8) class-0x772 moby of group `group` from `from` towards `to` at `speed`. Returns 1
    when one was launched.
@@ -1337,7 +1328,7 @@ int launch_first_idle_group_gadgebot_1906_moby(int group, void *from, void *to, 
                 FastVecSub(v->velocity, to, from);
                 v->velocity[2] = 0.0f;
                 vec_scale_to_length(v->velocity, v->velocity, speed);
-                v->velocity[2] = jump_speed_4318(from, to, speed, -(g_frame_time_sq * 10.0f), 0);
+                v->velocity[2] = jump_speed_4318_v(from, to, speed, -(g_frame_time_sq * 10.0f), 0);
                 v->spin = randf_sym(15.0f, 45.0f) * 0.017453292f;
                 return 1;
             }

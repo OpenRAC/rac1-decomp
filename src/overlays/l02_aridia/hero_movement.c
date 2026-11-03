@@ -307,8 +307,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
-s32 is_moby_in_class_range_500_to_540(s32);
-u8 *GetFlaggedPvarWord(s32);
 
 void vec_scale_to_length(void *, void *, f32);
 
@@ -616,13 +614,7 @@ extern float aridia_hero_anim_frame_speeds[];
 
 extern int truncate_float_to_s32(float);
 
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
 extern float ApproachValue(float *, float, float);
-
-extern void ClampVectorLength(void *, float);
-
-extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 

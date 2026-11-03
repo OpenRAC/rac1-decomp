@@ -409,8 +409,6 @@ extern float g_frame_time MACRO_ADDR;
 
 extern void STUB_printf_v(const char *, short) __asm__("func_001E9730");
 
-extern void update_entity_matrix(char *, void *, void *, void *);
-
 #define MB(m) ((u8 *)(m))
 #define COLL(m) (*(s32 *)(MB(m) + 0x94))
 #define FLAGS(m) (*(u16 *)(MB(m) + 0x34))
@@ -538,8 +536,8 @@ typedef struct Data_2EC3E8 {
     float rate2; /* 0x50C */
 } Data_2EC3E8;
 
-extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+extern int is_point_inside_clip_volume(void *, int);
+
 extern int STUB_printf_r() __asm__("func_001E9730");
 extern void initialize_wind_spark_r(Moby *, int, void *) __asm__("func_L14_002EC7E8");
 extern void update_wind_sparks_r(void *) __asm__("func_L14_002EC9C8");
@@ -570,17 +568,17 @@ void update_wind_control(Moby *m) {
         m->state = 1;
         if (d->vol0 < 0) {
             STUB_printf_r(wind_control_no_vol0_msg, (*(short *)&m->save_id));
-            DeleteMoby_r(m);
+            DeleteMoby(m);
             return;
         }
         if (d->node < 0) {
             STUB_printf_r(wind_control_no_node_msg, (*(short *)&m->save_id));
-            DeleteMoby_r(m);
+            DeleteMoby(m);
             return;
         }
         if (d->vol500 < 0) {
             STUB_printf_r(wind_control_no_vol500_msg, (*(short *)&m->save_id));
-            DeleteMoby_r(m);
+            DeleteMoby(m);
             return;
         }
         d->active = 0;
@@ -596,7 +594,7 @@ void update_wind_control(Moby *m) {
             initialize_wind_spark_r(m, i, sv);
         }
     }
-    if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->vol500)) {
+    if (is_point_inside_clip_volume(&g_hero.motion.pos, d->vol500)) {
         Hero *h;
         wind_push_vector.x = FastCos(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
         wind_push_vector.y = FastSin(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
@@ -605,7 +603,7 @@ void update_wind_control(Moby *m) {
         update_wind_sparks_r(m);
         h = &g_hero;
         if (h->unk308 == 0 && h->unk2284 != 0xD && (h->on_ice_ground != 0 || h->frames_off_ground.s != 0) &&
-            is_point_inside_clip_volume_r(&g_hero.motion.pos, d->vol0)) {
+            is_point_inside_clip_volume(&g_hero.motion.pos, d->vol0)) {
             float t;
             FastDecTimer(&d->timer2);
             t = (1.0f - IntToFloat(d->timer2) * d->rate2) * (d->speed * g_frame_time_r);
@@ -900,12 +898,6 @@ extern f32 g_frame_time MACRO_ADDR;
 extern void STUB_printf_v(const char *, short) __asm__("func_001E9730");
 
 extern int Spline_AdvanceByDistance_r(void *, float *, int *, float *, int, float) __asm__("func_L00_0025E860");
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
-extern L14MineHit *MobyGetHitMessage(void *, int, int);
-extern s32 ComputeHitResponse(struct Moby *, void *, f32 *, s32, s32 *, s32, s32, s32);
-
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
 
 /* Mine update: drifts along its looped path while spinning and pulsing; blows up on a hit.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ec810. */
@@ -1650,7 +1642,7 @@ void spawn_lightning_arc_particle_pairs(float *pos, int n) {
 }
 extern void initialize_elevator_path_state_r(char *) __asm__("func_L14_002F03E8");
 extern void update_elevator_idle_glow_r(char *) __asm__("func_L14_002F0B78");
-extern int is_point_inside_clip_volume_r2(void *, int) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *, int);
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
@@ -1756,7 +1748,7 @@ void elevator_685_update(char *moby) {
             update_elevator_idle_glow_r(moby);
             v = data->call_a;
             if (v >= 0) {
-                if (is_point_inside_clip_volume_r2(gHeroPos, v) != 0) {
+                if (is_point_inside_clip_volume(gHeroPos, v) != 0) {
                     ((unsigned char *)moby)[0xBC] = 0;
                     data->dir = -1.0f;
                     data->point = 0;
@@ -1764,14 +1756,14 @@ void elevator_685_update(char *moby) {
                 }
             }
             v = data->call_b;
-            if (v >= 0 && is_point_inside_clip_volume_r2(gHeroPos, v) != 0) {
+            if (v >= 0 && is_point_inside_clip_volume(gHeroPos, v) != 0) {
                 ((unsigned char *)moby)[0xBC] = 0;
                 data->point = *(int *)oltanis_paths_r2[data->path_from] - 2;
                 data->point_dist = *(float *)(oltanis_paths_r2[data->path_from] + (data->point << 4) + 0x1C);
                 data->dir = 1.0f;
             }
             v = data->call_c;
-            if (v >= 0 && is_point_inside_clip_volume_r2(gHeroPos, v) != 0) {
+            if (v >= 0 && is_point_inside_clip_volume(gHeroPos, v) != 0) {
                 ((unsigned char *)moby)[0xBC] = 1;
                 data->point = *(int *)oltanis_paths_r2[data->path_to] - 2;
                 data->point_dist = *(float *)(oltanis_paths_r2[data->path_to] + (data->point << 4) + 0x1C);
@@ -1924,7 +1916,7 @@ void initialize_elevator_path_state(struct Moby *m) {
     *(int *)&d->point_dist = 0;
     d->point = 0;
 }
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
+
 extern int Spline_AdvanceByDistance_r2(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
 extern float elevator_path_speed SDATA(elevator_path_speed);
@@ -1991,7 +1983,6 @@ int advance_elevator_along_path(char *m) {
     }
     return 0;
 }
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Springs the moby's position (and, while moving, its rotation) toward its current path point. */
 void settle_elevator_at_path_endpoint(char *m) {
@@ -2145,7 +2136,6 @@ extern void SamplePathAt_r2(float, int *, int, void *, float *, int) __asm__("fu
 
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
-extern void update_entity_matrix(char *, void *, void *, void *);
 extern int oltanis_frame_count MACRO_ADDR;
 extern int oltanis_shown_help_message MACRO_ADDR;
 extern Pose *oltanis_clip_volumes_r2 __asm__("D_L14_001601AC") MACRO_ADDR;
@@ -2553,8 +2543,6 @@ void request_taxi_stop_prompt(char *moby) {
     }
 }
 
-extern void set_ground_height_band(void *);
-
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -2731,7 +2719,7 @@ extern void STUB_printf_r2(const char *, short) __asm__("func_001E9730");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern int Sound_IsPlaying_r2(struct Moby *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r3(int, int, struct Moby *) __asm__("func_0022ED80");
 extern void initialize_flight_path_state_r(struct Moby *) __asm__("func_L14_002FDD18");
@@ -2811,8 +2799,8 @@ void update_enemy_fighter(struct Moby *moby) {
                 data->segment = 0;
                 data->along = 0;
                 qcopy(&moby->pos, path + 0x10);
-                moby->rot.z = fast_atan2_r(*(float *)(path + 0x20) - *(float *)(path + 0x10),
-                                           *(float *)(path + 0x24) - *(float *)(path + 0x14));
+                moby->rot.z = fast_atan2(*(float *)(path + 0x20) - *(float *)(path + 0x10),
+                                         *(float *)(path + 0x24) - *(float *)(path + 0x14));
                 data->f80 = data->f84 = data->f88 = data->f70 = data->f74 = data->f78 = 0.0f;
             }
             break;
@@ -2972,10 +2960,7 @@ void initialize_flight_path_state(char *moby) {
     ((struct Moby *)moby)->rot.z = fast_atan2(path[8] - path[4], path[9] - path[5]);
     data->spin_x = data->spin_y = data->spin_z = data->vel_x = data->vel_y = data->vel_z = 0.0f;
 }
-extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern float enemy_fighter_path_speed SDATA(enemy_fighter_path_speed);
 extern float enemy_fighter_spring_stiffness SDATA(enemy_fighter_spring_stiffness);
 extern float enemy_fighter_spring_damping SDATA(enemy_fighter_spring_damping);
@@ -3062,15 +3047,15 @@ extern void mark_moby_and_linked_moby_for_removal_r(Moby *) __asm__("func_L14_00
 extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int PlayBankSound_r2(int, int, int) __asm__("func_0022EE28");
 extern void ShowBanner_r2(int, int) __asm__("func_L00_00264DB8");
-extern void SpawnExplosionFx_r2(void *, void *, int, float, float) __asm__("func_L00_00260108");
+
 extern void Sound_StopSlot_r3(int) __asm__("func_L00_0028EBF0");
 extern int STUB_printf_r3() __asm__("func_001E9730");
-extern void DeleteMoby_r3(void *) __asm__("func_0020D678");
+
 extern void initialize_flight_path_state_r2(Moby *) __asm__("func_L14_002FDD18");
 
-extern int is_point_inside_clip_volume_r3(void *, int) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *, int);
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern void activate_descriptor_r(int) __asm__("func_L10_002F6E10");
@@ -3106,7 +3091,7 @@ void update_enemy_fighter_921(Moby *m) {
          (*(int *)(level_moby_killed_r3 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) &
              1)) {
         mark_moby_and_linked_moby_for_removal_r((Moby *)(oltanis_mobys_r + (d->f8C << 8)));
-        DeleteMoby_r3(m);
+        DeleteMoby(m);
         return;
     }
     {
@@ -3122,7 +3107,7 @@ void update_enemy_fighter_921(Moby *m) {
                 }
             }
             m->state = 3;
-            SpawnExplosionFx_r2(m, (*(Vec_2FE038 *)&m->pos), -1, 5.0f, 13.0f);
+            SpawnExplosionFx(m, (*(Vec_2FE038 *)&m->pos), -1, 5.0f, 13.0f);
             m->flags |= 0x41;
             m->collision = 0;
             if (d->f6C != -1 && ((VoicePoolRow *)(voice_pool_r + d->f6C * 0x70))->owner == m &&
@@ -3136,16 +3121,16 @@ void update_enemy_fighter_921(Moby *m) {
         case 0:
             if (d->f68 == -1) {
                 STUB_printf_r3(enemy_fighter_921_no_path_msg_r, (short)m->save_id);
-                DeleteMoby_r3(m);
+                DeleteMoby(m);
                 return;
             }
             if (*(int *)oltanis_paths_r4[d->f68] == 0) {
                 STUB_printf_r3(enemy_fighter_921_path_unset_msg_r, (short)m->save_id);
-                DeleteMoby_r3(m);
+                DeleteMoby(m);
                 return;
             }
             if (d->f98 < 0 || d->f9C < 0 || d->fA0 < 0) {
-                DeleteMoby_r3(m);
+                DeleteMoby(m);
                 return;
             }
             initialize_flight_path_state_r2(m);
@@ -3172,20 +3157,19 @@ void update_enemy_fighter_921(Moby *m) {
                 if (b == a) {
                     c = saved_mission_state_r[d->fA0 + (g_current_level_index_m << 4)];
                     if (c == b && g_hero.frames_off_ground.s == 0 && ((int)g_hero.ground_moby) == 0 &&
-                        is_point_inside_clip_volume_r3((*(Vec_2FE038 *)&g_hero.motion.pos), d->fA4) != 0) {
+                        is_point_inside_clip_volume((*(Vec_2FE038 *)&g_hero.motion.pos), d->fA4) != 0) {
                         Moby *jet = (Moby *)(oltanis_mobys_r + (d->f8C << 8));
                         Moby *seat = (Moby *)(oltanis_mobys_r + (((struct Jet *)jet->pvars)->f4 << 8));
                         float pitch, yaw;
                         qcopy(vt, (*(Vec_2FE038 *)&seat->pos));
                         vt[2] = vt[2] + 4.0f;
-                        pitch =
-                            FastDiffRots(((Cam *)oltanis_player_camera_r)->f154,
-                                         -fast_atan2_r2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
-                                                        vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
+                        pitch = FastDiffRots(((Cam *)oltanis_player_camera_r)->f154,
+                                             -fast_atan2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
+                                                         vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
                         yaw = FastDiffRots(
                             ((Cam *)oltanis_player_camera_r)->f158,
-                            fast_atan2_r2((*(Vec_2FE038 *)&seat->pos)[0] - ((Cam *)oltanis_player_camera_r)->pos[0],
-                                          (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam *)oltanis_player_camera_r)->pos[1]));
+                            fast_atan2((*(Vec_2FE038 *)&seat->pos)[0] - ((Cam *)oltanis_player_camera_r)->pos[0],
+                                       (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam *)oltanis_player_camera_r)->pos[1]));
                         if (yaw < 0.48869219f && pitch < 0.34906584f &&
                             coll_line_r(((Cam *)oltanis_player_camera_r)->pos, vt, 0x12, seat, 0) == 0) {
                             *(int *)(level_moby_killed_r3 +
@@ -3238,8 +3222,8 @@ void update_enemy_fighter_921(Moby *m) {
                 d->f60 = 0;
                 d->f64 = 0;
                 qcopy((*(Vec_2FE038 *)&m->pos), (*(Vec_2FE038 *)&p->pos));
-                (*(Vec_2FE038 *)&m->rot)[2] = fast_atan2_r2(*(float *)((char *)p + 0x20) - (*(Vec_2FE038 *)&p->pos)[0],
-                                                            *(float *)((char *)p + 0x24) - (*(Vec_2FE038 *)&p->pos)[1]);
+                (*(Vec_2FE038 *)&m->rot)[2] = fast_atan2(*(float *)((char *)p + 0x20) - (*(Vec_2FE038 *)&p->pos)[0],
+                                                         *(float *)((char *)p + 0x24) - (*(Vec_2FE038 *)&p->pos)[1]);
                 d->f80 = d->f84 = d->f88 = d->f70 = d->f74 = d->f78 = 0.0f;
             }
             break;
@@ -3461,13 +3445,11 @@ extern void func_L00_0025F4A8_2FF040(void *, void *, void *, float, float, int, 
 extern int Sound_IsPlaying_r4(void *, int) __asm__("func_L00_0028EB98");
 
 extern int Moby_PlaySound_r5(int, int, int) __asm__("func_0022ED80");
-extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
 
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 extern void Sound_StopSlot_r4(s32) __asm__("func_L00_0028EBF0");
 
-extern float interpolate_angle_r(float, float, float) __asm__("func_L00_0025C7A8");
-extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void FastVecAdd_r3(u8 *, u8 *, u8 *) __asm__("func_001F9BD8");
 
@@ -3486,7 +3468,7 @@ void FlyerUpdate(struct Moby *moby) {
     switch (moby->state) {
         case 0:
             if (vars->point < 0 || vars->target < 0) {
-                DeleteMoby_r4(moby);
+                DeleteMoby(moby);
                 return;
             }
             moby->state = 1;
@@ -3512,20 +3494,20 @@ void FlyerUpdate(struct Moby *moby) {
                 target = (struct Moby *)(oltanis_mobys_r2 + vars->target * 0x100);
                 vars->sound = -1;
                 if (target != 0) {
-                    DeleteMoby_r4(target);
+                    DeleteMoby(target);
                 }
                 qcopy(&moby->pos, oltanis_clip_volumes_r + vars->point * 0x80 + 0x30);
                 qcopy(&step, &moby->rot_row0);
                 step.f[2] = 1.0f;
                 func_L00_0025F4A8_2FF040(moby, &step, &moby->pos, 0.0f, 0.0f, 0x14, 0xA, 0xC, 10.0f, 6.0f, 9.0f, 0,
                                          1.0f, 30.0f, 1, 0xA, -1, 0);
-                DeleteMoby_r4(moby);
+                DeleteMoby(moby);
                 return;
             }
             moby->rot.x = FastAddRots(moby->rot.x, 2.0f * 0.017453292f);
             moby->rot.y =
-                interpolate_angle_r(moby->rot.y, -fast_atan2_r3(vec_length_xy_r(&diff), diff.z), D_L14_0016207C_2FF040);
-            moby->rot.z = interpolate_angle_r(moby->rot.z, fast_atan2_r3(diff.x, diff.y), D_L14_0016207C_2FF040);
+                interpolate_angle(moby->rot.y, -fast_atan2(vec_length_xy_r(&diff), diff.z), D_L14_0016207C_2FF040);
+            moby->rot.z = interpolate_angle(moby->rot.z, fast_atan2(diff.x, diff.y), D_L14_0016207C_2FF040);
             FastVecScale(&step, &moby->rot_row0, speed);
             FastVecAdd_r3((u8 *)&moby->pos, (u8 *)&moby->pos, (u8 *)&step);
             spawn_moby_offset_puffs(moby);

@@ -808,7 +808,7 @@ extern unsigned char sky_shell_matrix_r2[] __asm__("D_L00_001BDB70") NOT_SDA;
 extern short D_L00_00160580;
 extern q_28b1a0 D_L00_001605E0 MACRO_ADDR;
 
-void func_L00_001FFA40_28b1a0(void *, void *) __asm__("func_L00_001FFA40");
+extern void fast_euler_to_matrix(void *, void *);
 void func_001F9C48_28b1a0(void *, void *, float) __asm__("func_001F9C48");
 void func_0022C9A8_28b1a0(int) __asm__("func_0022C9A8");
 /* Per-entry update of a table of up to five entries (a switch on the index): each entry gets its own tilt, scale and turn speed, and its matrix is rebuilt every frame. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_0028b1a0. */
@@ -856,7 +856,7 @@ void SkyShellsEntryUpdate(void) {
         if (i > 0) {
             M = sky_shell_matrix_r2;
             v[2] = (float)((int)(*p + i * 2000.0f) % 10000) * 0.00062831853f - 3.1415927f;
-            func_L00_001FFA40_28b1a0(M, v);
+            fast_euler_to_matrix(M, v);
             func_001F9C48_28b1a0(M, M, k);
             func_001F9C48_28b1a0(M + 0x10, M + 0x10, k);
             func_001F9C48_28b1a0(M + 0x20, M + 0x20, k);

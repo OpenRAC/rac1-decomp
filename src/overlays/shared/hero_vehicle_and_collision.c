@@ -42,8 +42,6 @@ extern CollisionHit coll_hit_result;
 
 extern s32 probe_hero_forward_collision_v(f32 *, f32, f32) __asm__("func_L00_0020A8B8");
 
-extern s32 is_moby_in_class_range_500_to_540(s32);
-
 extern int coll_line_r(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
 
 extern s32 coll_sphere(f32, Vec4 *, s32, s32);
@@ -285,8 +283,6 @@ skip:
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
-
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 // Steers the player's slide: starts it when a dash ends near a wall, then aims its velocity.
 void update_hero_planar_distance_spring_motion(void) {
@@ -549,13 +545,7 @@ typedef struct {
 
 extern void set_hero_idle_state_for_vehicle_mode(void);
 
-extern void ClampVectorLength(void *a, float x);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
-
-extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
 extern void vec_scale_to_length(void *, void *, float);
 

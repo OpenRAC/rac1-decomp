@@ -31,11 +31,7 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern void ClampVectorLength(void *a, float x);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
 
 extern int pokitaru_cinematic_mode MACRO_ADDR;
 extern int pokitaru_pool_draw_tiles MACRO_ADDR;

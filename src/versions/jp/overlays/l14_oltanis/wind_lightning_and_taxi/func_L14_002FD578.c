@@ -59,8 +59,8 @@ void update_enemy_fighter(struct Moby *moby) {
                 data->segment = 0;
                 data->along = 0;
                 qcopy(&moby->pos, path + 0x10);
-                moby->rot.z = fast_atan2_r(*(float *)(path + 0x20) - *(float *)(path + 0x10),
-                                           *(float *)(path + 0x24) - *(float *)(path + 0x14));
+                moby->rot.z = fast_atan2(*(float *)(path + 0x20) - *(float *)(path + 0x10),
+                                         *(float *)(path + 0x24) - *(float *)(path + 0x14));
                 data->f80 = data->f84 = data->f88 = data->f70 = data->f74 = data->f78 = 0.0f;
             }
             break;

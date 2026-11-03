@@ -14,6 +14,7 @@
 #include "game/gameplay/missionfunc.h"
 #include "overlays/shared/stash_slots.h"
 #include "game/math/fastfunc.h"
+#include "game/render/draw.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -74,7 +75,7 @@ extern int STUB_printf_r() __asm__("func_001E9730");
 extern void init_stash_r(void) __asm__("func_00234018");
 extern void init_level_runtime_state_r(void) __asm__("func_L00_0023D9C0");
 extern int load_level_archive_resources_r(int, int) __asm__("func_L00_00244AE0");
-extern void clear_dma_queue_entry_r(void) __asm__("func_001F0F30");
+
 extern void initialize_level_map_archive_r(void) __asm__("func_L00_00246EC0");
 extern void init_hud_r(void) __asm__("func_001FF6B8");
 extern void load_misc_animations_into_stash_r(void) __asm__("func_L00_00276F18");
@@ -96,7 +97,7 @@ extern void handle_pause_input_r(void) __asm__("func_L00_00299250");
 extern void draw_debug_profiler_if_enabled_r(void) __asm__("func_L00_001F91B0");
 extern void play_queued_movie_r(void) __asm__("func_L00_0029AD18");
 extern void update_cutscene_playback_r(void) __asm__("func_L00_0029A300");
-extern void prepare_debug_profiler_render_r(void) __asm__("func_001F45F0");
+
 extern void update_pause_menu_r(void) __asm__("func_L00_00277A88");
 extern void draw_page_contents_r(void) __asm__("func_L00_001F92C0");
 extern void update_mode_freeze_r(void) __asm__("func_001FD3E8");
@@ -122,16 +123,15 @@ extern void sound_StopAllSounds_r(void) __asm__("func_0022EFE8");
 extern void music_Stop_r(void) __asm__("func_00216D88");
 extern void memcard_update_state_r(void) __asm__("func_00209E68");
 extern void Menu_RunStateHandler_r(void) __asm__("func_00209070");
-extern void SetupGifPaging_r(int) __asm__("func_001F4630");
+
 extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern int GetIconFrame_r(int, int) __asm__("func_00200198");
 extern void HudSprite_r(int, int, int, int, int, int) __asm__("func_00200468");
 
 extern void draw_rotated_sprite_r(float, float, int, int, long, float, float, float) __asm__("func_00200E38");
-extern void DoGifPaging_r(void) __asm__("func_001F4748");
+
 extern void flush_debug_text_queue_r(void) __asm__("func_L00_001F3A78");
 
-extern void ResetGsRegistersPr_r(void) __asm__("func_001F3D00");
 extern void SpaceTransition_Tick_r(void) __asm__("func_00228110");
 extern void DoSpaceTransition_r(void) __asm__("func_00233308");
 extern void music_Unpause_r(void) __asm__("func_00216F28");
@@ -169,7 +169,7 @@ void run_level_main_loop(void) {
     ((Cam *)g_debug_menu_r)->f38 = -1;
     ((Cam *)g_debug_menu_r)->fC = one;
     ((Cam *)g_debug_menu_r)->fF4 = one;
-    clear_dma_queue_entry_r();
+    clear_dma_queue_entry();
     initialize_level_map_archive_r();
     init_hud_r();
     load_misc_animations_into_stash_r();
@@ -229,7 +229,7 @@ void run_level_main_loop(void) {
             case 2:
                 func_00216270_2465F8();
                 update_cutscene_playback_r();
-                prepare_debug_profiler_render_r();
+                prepare_debug_profiler_render();
                 break;
             case 3:
                 func_00216270_2465F8();
@@ -278,7 +278,7 @@ void run_level_main_loop(void) {
                 float ang;
                 int t;
 
-                SetupGifPaging_r(0);
+                SetupGifPaging(0);
                 size = 272.0f;
                 VU1_addGSregister_r(0x47, 0x3004B);
                 t = GetIconFrame_r(0x755D, 0);
@@ -286,7 +286,7 @@ void run_level_main_loop(void) {
                 ang = (float)(rendered_frame_count_r % n) * -6.2831855f / (float)n;
                 draw_rotated_sprite_r(1312.0f, 5312.0f, 0x40, 0x40, GetFrameTex(GetIconFrame_r(0x755D, 1)), size, size,
                                       ang);
-                DoGifPaging_r();
+                DoGifPaging();
             }
         }
         ((Gs *)level_menu_system_r)->f13C = 0;
@@ -329,7 +329,7 @@ void run_level_main_loop(void) {
                 level_game_clock_paused_f_2465F8 = 0.0f;
             }
         }
-        ResetGsRegistersPr_r();
+        ResetGsRegistersPr();
         if (cinematic_mode_r == 0 && ((Hero *)g_hero_r)->fall_fade_pending != 0) {
             quit = 1;
             full = 1;

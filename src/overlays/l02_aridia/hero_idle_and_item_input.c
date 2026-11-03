@@ -41,11 +41,7 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern void ClampVectorLength(void *a, float x);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
 
 extern int aridia_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

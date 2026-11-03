@@ -548,10 +548,8 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 
-extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 extern Lid_0030FCC0 *CreateMoby_r(int) __asm__("func_0020D348");
 
 extern float g_frame_time MACRO_ADDR;
@@ -823,11 +821,9 @@ void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
                              drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
 }
 typedef u32 u128_10A90 __attribute__((mode(TI), aligned(16)));
-extern void *MobyGetHitMessage(struct Moby *, int, int);
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
-extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
 
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
@@ -937,7 +933,6 @@ extern float triggered_gate_swing_decel SDATA(triggered_gate_swing_decel);
 extern float triggered_gate_swing_max_speed SDATA(triggered_gate_swing_max_speed);
 extern int moby_pool_4f60_r2 __asm__("D_L05_00160098") MACRO_ADDR;
 extern int fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
 /* Gate: waits for its trigger moby, then rises to topZ and swings its yaw back to 0, with sounds per class.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00314eb0. */
@@ -991,7 +986,7 @@ extern char rilgar_camera_pos_r[] __asm__("D_L05_001672C0");
 extern int Moby_PlaySound_r() __asm__("func_0022ED80");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern float random_angle_radians_r(void) __asm__("func_00214158");
+extern float random_angle_radians(void);
 struct EmitterVars {
     s32 unk0;
     s32 floor; /* row of rilgar_water_ripple_params_2 */
@@ -1006,8 +1001,8 @@ struct FloorRow {
 };
 extern float vec_length_r(float) __asm__("func_001F9B50");
 
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
+extern float random_float_between(float, float);
+extern s32 random_integer_below(s32);
 
 extern void func_L00_00272770(float, float, void *, void *, void *);
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
@@ -1083,7 +1078,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
             }
             for (i = 0; (float)i < (*(float *)&D_L05_00161F78_165B8); i++) {
                 big = 1;
-                if ((*(float *)&D_L05_00161F7C_165B8) < random_float_between_r(0.0f, 100.0f)) {
+                if ((*(float *)&D_L05_00161F7C_165B8) < random_float_between(0.0f, 100.0f)) {
                     big = 0;
                 }
                 lim = (*(float *)&D_L05_00161F6C_165B8);
@@ -1093,11 +1088,11 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                 qcopy(v, &m->pos);
                 vec_scale_to_length_r(
                     u, &m->rot_row1,
-                    random_float_between_r(-(*(float *)&D_L05_00161F74_165B8), (*(float *)&D_L05_00161F74_165B8)));
+                    random_float_between(-(*(float *)&D_L05_00161F74_165B8), (*(float *)&D_L05_00161F74_165B8)));
                 FastVecAdd(v, v, u);
-                a = random_float_between_r(lim, (*(float *)&D_L05_00161F68_165B8));
-                b = random_float_between_r(lim, (*(float *)&D_L05_00161F68_165B8));
-                c = random_float_between_r(lim, (*(float *)&D_L05_00161F68_165B8));
+                a = random_float_between(lim, (*(float *)&D_L05_00161F68_165B8));
+                b = random_float_between(lim, (*(float *)&D_L05_00161F68_165B8));
+                c = random_float_between(lim, (*(float *)&D_L05_00161F68_165B8));
                 if (a < b) {
                     a = b;
                 }
@@ -1108,27 +1103,27 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                 if (big) {
                     scale = (*(float *)&D_L05_00161F60_165B8);
                     kind = (*(int *)&D_L05_00161F58_165B8);
-                    v[2] += (*(float *)&D_L05_00161F74_165B8) - scale + random_float_between_r(-0.4f, 0.4f);
+                    v[2] += (*(float *)&D_L05_00161F74_165B8) - scale + random_float_between(-0.4f, 0.4f);
                 } else {
                     scale = (*(float *)&D_L05_00161F64_165B8);
                     kind = (*(int *)&D_L05_00161F5C_165B8);
                     v[2] += (*(float *)&D_L05_00161F74_165B8) - scale + 0.4f;
                 }
-                create_particle_with_velocity_and_randomized_parameters(
-                    scale * random_float_between_r(0.8f, 1.2f), floor, g_frame_time_sq_r * 10.0f, v, w, kind, big);
-                if (random_integer_below_r(2)) {
+                create_particle_with_velocity_and_randomized_parameters(scale * random_float_between(0.8f, 1.2f), floor,
+                                                                        g_frame_time_sq_r * 10.0f, v, w, kind, big);
+                if (random_integer_below(2)) {
                     /* fall time from the emitter to the floor */
                     float t = vec_length_r(2.0f * (m->pos.z - floor) / (g_frame_time_sq_r * 10.0f));
                     if (t < (float)d->age) {
                         float s = t * (g_frame_time_r * 4.0f);
-                        float ang = random_angle_radians_r();
-                        float r = random_float_between_r(0.0f, 1.25f);
+                        float ang = random_angle_radians();
+                        float r = random_float_between(0.0f, 1.25f);
                         FastVecScale(v, &m->rot_row0, s);
                         FastVecAdd(v, v, &m->pos);
                         v[0] += FastCos(ang) * r;
                         v[1] += FastSin(ang) * r;
                         v[2] = floor + 0.05f;
-                        spawn_splash(random_float_between_r(1.0f, 1.5f), random_integer_below_r(2) ? 2.0f : -2.0f, v,
+                        spawn_splash(random_float_between(1.0f, 1.5f), random_integer_below(2) ? 2.0f : -2.0f, v,
                                      rilgar_zero_vec, &rilgar_water_patches[d->floor].z);
                     }
                 }
@@ -1436,8 +1431,6 @@ extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern short moby_pool_4f60 MACRO_ADDR;
 
-extern void AttachManipulator_r(void *, int, void *) __asm__("func_0020D960");
-
 extern char *g_hero_moby;
 
 struct ElectricGateData {
@@ -1477,7 +1470,7 @@ void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
                 m->pos.z += 4.0f;
             }
             qcopy(data, &m->pos);
-            AttachManipulator_r(moby, 0, &data->unk10);
+            AttachManipulator(moby, 0, &data->unk10);
             if (data->unk54 != 0) {
                 data->unk60 = 0.0f;
                 m->state = MOBY_WAIT_TO_RETURN_TO_SAVED_POSITION;
@@ -2119,8 +2112,6 @@ void qwarks_bouncer_update(char *m) {
     EaseManipulatorOffsets(m, &bouncer_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 
-extern void set_ground_height_band(void *);
-
 extern char shady_salesman_dialogue_name[];
 
 typedef struct ShadySalesmanNpc {
@@ -2265,7 +2256,7 @@ void shady_salesman_update(char *m) {
 extern int D_L05_0016139C MACRO_ADDR;
 extern float D_L05_001613A0[4] MACRO_ADDR;
 extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
-extern int find_319F78(void *, int) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *, int);
 
 /* Two-state marker: arms the moby, then once its target is found copies the
  * target position and sets the bob height from the frame counter.
@@ -2284,7 +2275,7 @@ void update_hero_clip_volume_outputs(char *m) {
             break;
         case 1:
             t = &g_hero.motion.pos;
-            if (find_319F78(t, *v) != 0) {
+            if (is_point_inside_clip_volume(t, *v) != 0) {
                 hero_inside_clip_volume = state;
                 qcopy(hero_clip_volume_bounds, t);
                 *(short *)(t + 0x15E) = 5;

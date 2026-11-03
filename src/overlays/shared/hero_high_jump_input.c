@@ -14,6 +14,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern int pad_held;
 extern Hero g_hero;
 
@@ -120,7 +121,6 @@ int pick_idle_fidget(int *index) {
 }
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
-extern void ClampVectorLength(void *a, float x);
 
 extern short g_frame_time_r __asm__("D_0015EE6C");
 extern float g_frame_scale_sq MACRO_ADDR;

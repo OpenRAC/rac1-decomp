@@ -884,17 +884,12 @@ extern void spawn_drek_boss_firing_effects(char *moby, void *p);
 /* Defined further down with a typedef the file only declares there: no prototype here. */
 extern void set_drek_boss_relative_aim_yaw();
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
-extern void set_ground_height_band(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                              float, int, int, int, int);
 
 extern int IsFrameWithinWindow(char *, float);
-
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
 /* Parameter order as retail sets the arguments up (the floats before the last integers); the definition of
    launch_mine_568_moby_from_list in vendor_002A8400.c lists its float first, with the same registers. */
@@ -1976,14 +1971,6 @@ typedef struct {
     char pad40[0x40];
 } L18Node;
 
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-
-extern void StepColorFade(void *, void *);
-
-extern int FindNearestEligibleMoby(float a, char *m, char *b, int c, int d, int *e, int f);
-
 extern char *create_class_274_ring_effect_v(void *, void *, float) __asm__("func_L18_002DD7D0");
 extern void reset_drek_boss_class_0565_moby_v(void *) __asm__("func_L18_002F30C8");
 extern void start_position_and_rotation_transition_v(char *, void *, void *, void *, void *, void *, int, int,
@@ -2259,7 +2246,6 @@ int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void 
     }
     return 0;
 }
-extern void ClampVectorLength(void *a, float x);
 
 extern char *veldin2_arena_nodes MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -2318,7 +2304,7 @@ extern f32 D_L18_001623E8_2F7F00 SDATA(D_L18_001623E8);
 extern f32 D_L18_001623EC_2F7F00 SDATA(D_L18_001623EC);
 extern f32 D_L18_00162400_2F7F00 SDATA(D_L18_00162400);
 extern f32 D_L18_00162404_2F7F00 SDATA(D_L18_00162404);
-extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
+extern f32 fast_atan2(f32, f32);
 
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
@@ -2338,10 +2324,10 @@ void func_L18_002F7F00_r(Moby *moby) {
     f32 speed;
     f32 dist;
 
-    ang = fast_atan2_r(((Hero *)g_hero_r)->motion.pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
-                       ((Hero *)g_hero_r)->motion.pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
-    self_ang = fast_atan2_r(v->pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
-                            v->pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
+    ang = fast_atan2(((Hero *)g_hero_r)->motion.pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
+                     ((Hero *)g_hero_r)->motion.pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
+    self_ang = fast_atan2(v->pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
+                          v->pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
     if (FastSubRots(self_ang, ang) < 0.0f)
         ang = FastAddRots(ang, -2.3561945f);
     else

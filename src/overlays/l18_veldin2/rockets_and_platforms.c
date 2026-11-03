@@ -214,8 +214,6 @@ extern int coll_line(void *, void *, int, void *, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern void rand_vec(float *, float, float);
-
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
@@ -454,7 +452,7 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
 extern float rocket_explosion_damage SDATA(rocket_explosion_damage);
-extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
+
 extern void spawn_explosion_x(void *, void *, void *, float, float, int, int, int, int, int, float, float, float, float,
                               float, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -546,9 +544,7 @@ extern short D_L18_00161A6C __asm__("D_0015EE6C");
 extern float D_L18_6C_m __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern float ApproachValue(float *p, float target, float maxstep);
-extern int FindNearestTargetMoby(char *, char *, float);
 
-extern void move_4318(int, int, float, float, float, int);
 extern int CarriedMobyUpdate(void *, void *);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time_sq_b __asm__("D_0015EE70") MACRO_ADDR;
@@ -656,7 +652,6 @@ extern char *veldin2_moby_table_m __asm__("D_L18_00160058") MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
 extern float g_frame_time_sq MACRO_ADDR;
 
@@ -729,7 +724,7 @@ char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float 
 }
 extern char g_hero_r[] __asm__("D_0013F450");
 extern float veldin2_zero_vec_r[] __asm__("D_L18_0015F660") MACRO_ADDR;
-extern int func_L00_0025B478(void *, int, int);
+
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -1414,8 +1409,6 @@ extern float floating_platform_motion_scale_input_end_gp SDATA(floating_platform
 
 extern void spawn_floating_platform_sparks_r(struct Moby *) __asm__("func_L18_002D9CA8");
 
-extern void update_entity_matrix(void *, void *, void *, void *);
-
 extern int Moby_PlaySound_r2(int, int, struct Moby *) __asm__("func_0022ED80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d82c0. */
@@ -1675,7 +1668,6 @@ void spawn_floating_platform_sparks(char *moby) {
         PartType02Spawn(v, a, b, i0, i1, i2, i3, i4, (*(int *)&(floating_platform_spark_texture)));
     }
 }
-extern void jet_animate(unsigned char *m, float s);
 
 extern void process_expanding_ring_collisions(char *moby);
 extern void draw_expanding_projectile_ring(void *);
@@ -2059,7 +2051,6 @@ void spawn_expanding_ring_segment_particles(char *moby, void *a1, void *a2) {
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern void draw_class_274_ring_effect(void *);
 extern float ring_effect_color_scroll_speed SDATA(ring_effect_color_scroll_speed);
 
@@ -3242,8 +3233,6 @@ void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
 extern float ApproachValue(float *, float, float);
 extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
 extern int veldin2_zero_vec MACRO_ADDR;
 extern float drek_missile_spin_speed SDATA(drek_missile_spin_speed);
 extern float drek_missile_wander_speed SDATA(drek_missile_wander_speed);
@@ -3382,7 +3371,7 @@ int activate_drek_fight_missiles_in_group(char *moby, int group, float *pos) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L18_002F1444);
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
+
 extern float drek_missile_climb_pitch SDATA(drek_missile_climb_pitch);
 
 /* Steering step for a Drek Fight Missile moby; returns 1 when it has reached the target. */

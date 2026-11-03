@@ -230,19 +230,16 @@ void emit_sand_shark_dust_burst(void *moby) {
 }
 extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 
-extern void set_ground_height_band(void *);
 extern void handle_sand_shark_damage_and_targeting(unsigned char *moby);
 
 extern int func_001160D8(void);
 
-extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
+extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
+                             float max) __asm__("func_L00_002592B0");
 
 extern void emit_sand_shark_single_particle(void *pos);
 
-extern int move_w(void *, void *, void *, void *, float);
 extern void begin_sand_shark_return_home_if_outside_path(unsigned char *moby);
-
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
@@ -250,14 +247,11 @@ extern void emit_sand_shark_radial_particles(void *pos, int n);
 
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
-extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
 
-extern int mine_fall(void *, void *);
 extern int CarriedMobyUpdate(void *, void *);
-extern void rand_vec(void *, float, float);
 
 extern void SetDeathBits(void *, int, int);
-extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
+
 extern int select_group_sand_shark_nest_moby(void *argp);
 
 extern char sand_shark_no_path_fmt[];
@@ -456,7 +450,7 @@ void sand_shark_update(unsigned char *moby) {
             qcopy(v0, d->home);
             a = fast_atan2(v0[0] - ((Moby *)moby)->pos.x, v0[1] - ((Moby *)moby)->pos.y);
             a = FastAddRots(a, d->f244);
-            MobySpringTurn((char *)moby, a, &d->f240, 0.05f, 0.3f, 0.04f);
+            MobySpringTurn_v((char *)moby, a, &d->f240, 0.05f, 0.3f, 0.04f);
             ((Moby *)moby)->pos.x += FastCos(((Moby *)moby)->rot.z) * g_frame_time;
             ((Moby *)moby)->pos.y += FastSin(((Moby *)moby)->rot.z) * g_frame_time;
             if (fast_dec_timer(&d->i260)) {
@@ -524,7 +518,7 @@ void sand_shark_update(unsigned char *moby) {
             qcopy(v1, d->tgt);
             hit = 0;
             a = fast_atan2(v1[0] - ((Moby *)moby)->pos.x, v1[1] - ((Moby *)moby)->pos.y);
-            MobySpringTurn((char *)moby, a + d->f244, &d->f240, 0.05f, 0.3f, 0.2f);
+            MobySpringTurn_v((char *)moby, a + d->f244, &d->f240, 0.05f, 0.3f, 0.2f);
             v0[0] = FastCos(((Moby *)moby)->rot.z) * 2.0f;
             v0[1] = FastSin(((Moby *)moby)->rot.z) * 2.0f;
             v0[2] = 0.0f;
@@ -653,7 +647,7 @@ void sand_shark_update(unsigned char *moby) {
             }
             qcopy(v3, d->tgt);
             a = fast_atan2(v3[0] - ((Moby *)moby)->pos.x, v3[1] - ((Moby *)moby)->pos.y);
-            MobySpringTurn((char *)moby, a + d->f244, &d->f240, 0.05f, 0.3f, 0.2f);
+            MobySpringTurn_v((char *)moby, a + d->f244, &d->f240, 0.05f, 0.3f, 0.2f);
             v0[0] = FastCos(((Moby *)moby)->rot.z) * 2.0f;
             v0[1] = FastSin(((Moby *)moby)->rot.z) * 2.0f;
             v0[2] = 0.0f;
@@ -695,7 +689,7 @@ void sand_shark_update(unsigned char *moby) {
             break;
         case 0x6:
             a = fast_atan2(d->tgt[0] - ((Moby *)moby)->pos.x, d->tgt[1] - ((Moby *)moby)->pos.y);
-            MobySpringTurn((char *)moby, a, &d->f240, 0.05f, 0.3f, 0.2f);
+            MobySpringTurn_v((char *)moby, a, &d->f240, 0.05f, 0.3f, 0.2f);
             if (((Moby *)moby)->seq == ((Moby *)moby)->prev_seq && IsFrameWithinWindow((char *)moby, 13.0f)) {
                 vec_scale_to_length(v0, moby + 0xC0, 0.75f);
                 FastVecAdd(v0, v0, moby + 0x10);
@@ -731,7 +725,7 @@ void sand_shark_update(unsigned char *moby) {
             }
             qcopy(v3, d->home);
             a = fast_atan2(v3[0] - ((Moby *)moby)->pos.x, v3[1] - ((Moby *)moby)->pos.y);
-            MobySpringTurn((char *)moby, a, &d->f240, 0.02f, 0.3f, 0.1f);
+            MobySpringTurn_v((char *)moby, a, &d->f240, 0.02f, 0.3f, 0.1f);
             v0[0] = FastCos(((Moby *)moby)->rot.z) * 2.0f;
             v0[1] = FastSin(((Moby *)moby)->rot.z) * 2.0f;
             v0[2] = 0.0f;
@@ -1158,16 +1152,10 @@ extern float sand_shark_death_knockback_horizontal_speed_approach_rate_gp
     SDATA(sand_shark_death_knockback_horizontal_speed_approach_rate_gp);
 extern int *aridia_paths_r[] __asm__("D_L02_001B0DB0");
 
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern int select_group_sand_shark_nest_moby(void *argp);
 extern void extend_group_sand_shark_timers(char *arg);
 
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern char *MobyGetHitMessage(void *, int, int);
-extern void InitKnockback(float, void *, void *, int, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-extern void StepColorFade(void *, void *);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 /* Path-following enemy: respawns at its home point on request, takes hits (dies and drops to the
    ground), then follows its path and retargets the hero when it strays. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/gameplay/entities/002400c8.c, FUN_L02_002d5c88. */
@@ -1243,7 +1231,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
             ((Moby *)moby)->flags &= 0xEFFF;
             v.q = *(u128_2D70C0 *)&h->unk_10;
             HeadingFromVector(&v, &k, &d->f138, &d->f13C);
-            InitKnockback(k, moby, d->knock, 6, 1, 0);
+            InitKnockback_v(k, moby, d->knock, 6, 1, 0);
             d->f148 = 0.85f;
             d->f170 = 7.0f;
             d->f174 = 14.0f;
@@ -1343,25 +1331,23 @@ void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
 }
 extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 
-extern void set_ground_height_band(void *);
 extern void handle_level02_bot_damage_and_retargeting(void *);
 extern int func_001160D8(void);
 
 /* The angle before the pointer: argument moves follow the parameter order, and retail loads $f12 before $a1 in state
    11. */
-extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
-extern void ClampVectorLength(void *a, float x);
+extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
+                             float max) __asm__("func_L00_002592B0");
+
 extern float ApproachValue(float *p, float target, float maxstep);
-extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 
-extern int mine_fall(void *, void *);
 extern void SetDeathBits(void *, int, int);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 /* The scale before the three vectors, as the other level files declare it. */
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
@@ -1527,7 +1513,7 @@ void update_level02_bot(unsigned char *raw) {
         case L02_BOT_ALIGN_TO_GROUND_AT_POST:
             target = (struct Moby *)data->target;
             angle = fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y);
-            MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, g_frame_time * 1.5707964f);
+            MobySpringTurn_v((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, g_frame_time * 1.5707964f);
             FastVecSub(position, aridia_scene_points + data->post * 0x80 + 0x30, &moby->pos);
             position[2] = 0.0f;
             ClampVectorLength(position, g_frame_time * 6.0f);
@@ -1582,7 +1568,7 @@ void update_level02_bot(unsigned char *raw) {
                 if (FastVecDist(&moby->pos, aridia_scene_points + data->post * 0x80 + 0x30) < 1.0f) {
                     target = (struct Moby *)data->target;
                     angle = fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y);
-                    MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
+                    MobySpringTurn_v((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
                     if (FastDiffRots(moby->rot.z, angle) < 0.08726646f) {
                         moby->state = 0xB;
                         if (moby->prev_seq != 8) {
@@ -1653,7 +1639,7 @@ void update_level02_bot(unsigned char *raw) {
             moby->anim_speed = 2.0f;
             target = (struct Moby *)data->target;
             angle = fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y);
-            MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
+            MobySpringTurn_v((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
             if (moby->anim_flags & 2) {
                 moby->anim_speed = 1.0f;
                 moby->state = 0xC;
@@ -1691,7 +1677,7 @@ void update_level02_bot(unsigned char *raw) {
         case L02_BOT_WAIT_FOR_ANIMATION_BEFORE_ATTACK_RECHECK:
             target = (struct Moby *)data->target;
             angle = fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y);
-            MobySpringTurn((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
+            MobySpringTurn_v((char *)moby, angle, &data->turn_speed, 0.02f, 0.3f, 0.1f);
             if (moby->anim_flags & 2) {
                 if (vec_distance_xy(&moby->pos, &((struct Moby *)data->target)->pos) < data->attack_range + 1.0f &&
                     FastAbsF(((struct Moby *)data->target)->pos.z - moby->pos.z) < 3.0f) {
@@ -1720,8 +1706,8 @@ void update_level02_bot(unsigned char *raw) {
                 qcopy(position, &moby->pos);
                 position[2] += 1.0f;
                 SetDeathBits(moby, 0, -1);
-                spawn_explosion(moby, data->velocity, position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f,
-                                1, 1, -1, 0);
+                spawn_explosion_v(moby, data->velocity, position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f,
+                                  15.0f, 1, 1, -1, 0);
                 SpawnBreakFragment((char *)moby, 0x6D7, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, aridia_zero_vec,
                                    aridia_zero_vec, aridia_zero_vec);
                 SpawnBreakFragment((char *)moby, 0x6D8, (float *)(&moby->pos), &moby->rot, 0, 0, 0.0f, aridia_zero_vec,
@@ -1741,7 +1727,7 @@ void update_level02_bot(unsigned char *raw) {
 }
 extern int truncate_float_to_s32(float);
 extern struct Hero g_hero_r __asm__("D_0013F450");
-extern char *MobyGetHitMessage(void *, int, int);
+
 extern f32 D_L02_00161B14_D99F0 SDATA(D_L02_00161B14);
 extern char g_hero_moby[];
 extern f32 D_L02_00161AF4_D99F0 SDATA(D_L02_00161AF4);
@@ -1751,7 +1737,7 @@ extern f32 D_L02_00161B00_D99F0 SDATA(D_L02_00161B00);
 extern f32 D_L02_00161B04_D99F0 SDATA(D_L02_00161B04);
 extern f32 D_L02_00161B08_D99F0 SDATA(D_L02_00161B08);
 extern f32 D_L02_00161B2C_D99F0 SDATA(D_L02_00161B2C);
-extern int FindNearestTargetMoby(char *a, char *o, float best);
+
 typedef struct {
     char pad0[0x20];
     float hp; /* 0x20 */
@@ -1815,9 +1801,9 @@ void handle_level02_bot_damage_and_retargeting(void *arg) {
                 d->fA0 = 0.5f;
                 d->i94 = 25;
                 d->bAD = 0;
-                InitKnockback(fast_atan2(((Moby *)moby)->pos.x - g_hero_r.motion.pos.f[0],
-                                         ((Moby *)moby)->pos.y - g_hero_r.motion.pos.f[1]),
-                              moby, k, 0xB, 1, 0);
+                InitKnockback_v(fast_atan2(((Moby *)moby)->pos.x - g_hero_r.motion.pos.f[0],
+                                           ((Moby *)moby)->pos.y - g_hero_r.motion.pos.f[1]),
+                                moby, k, 0xB, 1, 0);
                 d->fC0 = 6.5f;
                 d->fC4 = 11.0f;
                 moby[0x20] = 0x10;
@@ -1831,9 +1817,9 @@ void handle_level02_bot_damage_and_retargeting(void *arg) {
             d->fBC = D_L02_00161B2C_D99F0 * g_frame_time;
             d->i94 = 9;
             d->bAD = 0;
-            InitKnockback(fast_atan2(((Moby *)moby)->pos.x - g_hero_r.motion.pos.f[0],
-                                     ((Moby *)moby)->pos.y - g_hero_r.motion.pos.f[1]),
-                          moby, k2, 0xE, 1, 0);
+            InitKnockback_v(fast_atan2(((Moby *)moby)->pos.x - g_hero_r.motion.pos.f[0],
+                                       ((Moby *)moby)->pos.y - g_hero_r.motion.pos.f[1]),
+                            moby, k2, 0xE, 1, 0);
             d->fC0 = 6.5f;
             d->fC4 = 13.0f;
             ((Moby *)moby)->flags &= 0xEFFF;
@@ -1877,7 +1863,6 @@ extern float aridia_elevator_accel SDATA(aridia_elevator_accel);
 extern float aridia_elevator_max_speed SDATA(aridia_elevator_max_speed);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void update_entity_matrix(char *, void *, void *, void *);
 
 extern void DrawRotatingQuadRing(char *);
 
@@ -2299,8 +2284,8 @@ void sand_shark_nest_update(char *m) {
                 p->i150 -= 1;
             }
             qcopy(explosion_position, &((struct Moby *)m)->pos);
-            spawn_explosion(m, nest_vars->vel, explosion_position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f,
-                            15.0f, 1, 1, -1, 0);
+            spawn_explosion_v(m, nest_vars->vel, explosion_position, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f,
+                              15.0f, 1, 1, -1, 0);
             SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f,
                                aridia_zero_vec, aridia_zero_vec, aridia_zero_vec);
             SpawnBreakFragment(m, 0x6E4, (float *)&((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f,
@@ -2315,7 +2300,6 @@ void sand_shark_nest_update(char *m) {
     }
 }
 typedef int Q_2de418 __attribute__((mode(TI)));
-extern char *MobyGetHitMessage(void *, int, int);
 
 /* Enemy hit reaction: on a hit takes damage and is knocked back; when its health runs out it is flung and dies. */
 void handle_sand_shark_nest_damage(char *m) {
@@ -2354,7 +2338,7 @@ void handle_sand_shark_nest_damage(char *m) {
             }
             *(Q_2de418 *)v = *(Q_2de418 *)&h->unk_10;
             HeadingFromVector(v, &k1, &d->hit_yaw, &d->hit_pitch);
-            InitKnockback(k1, m, d->knockback, 3, 1, 0);
+            InitKnockback_v(k1, m, d->knockback, 3, 1, 0);
             if (1.0f <= dmg) {
                 d->flash = 0x78;
                 m[0x20] = 3;
@@ -2374,7 +2358,7 @@ void handle_sand_shark_nest_damage(char *m) {
             }
             *(Q_2de418 *)v = *(Q_2de418 *)&h->unk_10;
             HeadingFromVector(v, &k2, &d->hit_yaw, &d->hit_pitch);
-            InitKnockback(k2, m, d->knockback, 3, 1, 0);
+            InitKnockback_v(k2, m, d->knockback, 3, 1, 0);
             d->unk_C0 = 9.0f;
             d->unk_C4 = 19.0f;
             if (((unsigned char *)m)[0x53] != 3)
@@ -3012,7 +2996,7 @@ extern float rocket_launcher_shot_speed SDATA(rocket_launcher_shot_speed);
 extern int rocket_launcher_glow_start_color SDATA(rocket_launcher_glow_start_color);
 extern int rocket_launcher_glow_end_color SDATA(rocket_launcher_glow_end_color);
 extern void play_rocket_launcher_delayed_shot_sounds(char *moby);
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 typedef struct SwivelTurretVars {
@@ -3079,7 +3063,7 @@ void rocket_launcher_update(unsigned char *m) {
                 Moby_GetJointWorldPos(m, 0, v20);
                 FastVecSub(v20, v30, v20);
                 vec_scale_to_length(v20, v20, rocket_launcher_shot_speed * g_frame_time);
-                spawn_explosion(m, v20, v30, 0.0f, 0.0f, 0, 6, 32, 7.0f, 4.0f, 1.0f, -1, 3.0f, 30.0f, 0, 1, -1, 0);
+                spawn_explosion_v(m, v20, v30, 0.0f, 0.0f, 0, 6, 32, 7.0f, 4.0f, 1.0f, -1, 3.0f, 30.0f, 0, 1, -1, 0);
                 spawn_projectile_moby((char *)m, v30, v20);
             }
             break;
@@ -3328,14 +3312,13 @@ extern short D_L02_00161D54_2E1B58 SDATA(D_L02_00161D54);
 extern short D_L02_00161D58_2E1B58 SDATA(D_L02_00161D58);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 
-extern int random_integer_below_r(int) __asm__("func_002140B0");
+extern int random_integer_below(int);
 extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
 
 typedef struct {
@@ -3365,7 +3348,7 @@ void rocks_update(unsigned char *moby) {
     switch (((struct Moby *)moby)->state) {
         case ROCKS_INITIALIZE:
             if (menu_item_enabled_9 != 0) {
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
             } else {
                 ((struct Moby *)moby)->state = ROCKS_WAIT_FOR_HIT;
             }
@@ -3381,24 +3364,24 @@ void rocks_update(unsigned char *moby) {
     Moby_PlaySound_r(0, 0, (int)moby);
     for (i = 0; i < 200; i++) {
         *(u128 *)A = 0;
-        A[0] = random_float_between_r(-1.0f, 1.0f);
-        A[1] = random_float_between_r(-1.0f, 1.0f);
-        A[2] = random_float_between_r(-1.0f, 1.0f);
+        A[0] = random_float_between(-1.0f, 1.0f);
+        A[1] = random_float_between(-1.0f, 1.0f);
+        A[2] = random_float_between(-1.0f, 1.0f);
         *(u128 *)B = 0;
         *(u128 *)C = *(u128 *)A;
-        t = random_float_between_r(-2.0f, 2.0f);
+        t = random_float_between(-2.0f, 2.0f);
         t = t * FastCos(((struct Moby *)moby)->rot.z);
         B[0] = t;
-        t2 = random_float_between_r(-1.0f, 1.0f);
+        t2 = random_float_between(-1.0f, 1.0f);
         t2 = t2 * FastSin(((struct Moby *)moby)->rot.z);
         B[1] = t2;
-        B[2] = random_float_between_r(0.0f, 4.0f);
+        B[2] = random_float_between(0.0f, 4.0f);
         *(u128 *)A = *(u128 *)B;
         FastVecAdd(A, A, &((struct Moby *)moby)->pos);
-        k = random_float_between_r(1.5f, 3.5f) * g_frame_time_r;
+        k = random_float_between(1.5f, 3.5f) * g_frame_time_r;
         vec_scale_to_length_r(C, C, k);
-        s = random_float_between_r(1.5f, 3.5f) * 210000.0f;
-        r = scale_ticks(rand_range_r(120, 240));
+        s = random_float_between(1.5f, 3.5f) * 210000.0f;
+        r = scale_ticks(rand_range(120, 240));
         spawn_effect_particle_with_target_scalar(A, C, *(int *)&D_L02_00161D54_2E1B58, *(int *)&D_L02_00161D58_2E1B58,
                                                  s, r);
     }
@@ -3408,26 +3391,26 @@ void rocks_update(unsigned char *moby) {
         *(Int3 *)C = *(Int3 *)aridia_rocks_debris_colors;
         *(u128 *)B = 0;
         j--;
-        B[0] = random_float_between_r(-1.0f, 1.0f);
-        B[1] = random_float_between_r(-1.0f, 1.0f);
-        B[2] = random_float_between_r(-1.0f, 1.0f);
+        B[0] = random_float_between(-1.0f, 1.0f);
+        B[1] = random_float_between(-1.0f, 1.0f);
+        B[2] = random_float_between(-1.0f, 1.0f);
         *(u128 *)D = 0;
         *(u128 *)A = *(u128 *)B;
-        t = random_float_between_r(-2.0f, 2.0f);
+        t = random_float_between(-2.0f, 2.0f);
         t = t * FastCos(((struct Moby *)moby)->rot.z);
         D[0] = t;
-        t2 = random_float_between_r(-1.0f, 1.0f);
+        t2 = random_float_between(-1.0f, 1.0f);
         t2 = t2 * FastSin(((struct Moby *)moby)->rot.z);
         D[1] = t2;
-        D[2] = random_float_between_r(1.0f, 4.0f);
+        D[2] = random_float_between(1.0f, 4.0f);
         *(u128 *)B = *(u128 *)D;
         FastVecAdd(B, B, &((struct Moby *)moby)->pos);
-        k = random_float_between_r(1.0f, 5.0f) * g_frame_time_r;
+        k = random_float_between(1.0f, 5.0f) * g_frame_time_r;
         vec_scale_to_length_r(A, A, k);
-        pc = (unsigned int *)C + random_integer_below_r(3);
-        s = random_float_between_r(0.05f, 0.15f);
-        n = rand_range_r(60, 180);
+        pc = (unsigned int *)C + random_integer_below(3);
+        s = random_float_between(0.05f, 0.15f);
+        n = rand_range(60, 180);
         spawn_debris_moby(B, A, *pc, s, n, 1.0f, 1.0f, 0.75f, 0);
     } while (j >= 0);
-    DeleteMoby_r(moby);
+    DeleteMoby(moby);
 }

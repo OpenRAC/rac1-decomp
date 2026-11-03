@@ -120,7 +120,7 @@ extern struct Moby *batalia_mobys_r __asm__("D_L08_00160058") MACRO_ADDR;
 
 extern s32 Sound_IsPlaying_r(struct Moby *, s32) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r(s32, s32, struct Moby *) __asm__("func_0022ED80");
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
@@ -167,7 +167,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
     switch (moby->state) {
         case 0:
             if (saved_mission_state[moby->mission + g_current_level_index_r * 16] == 0xFF) {
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
                 return;
             }
             vars->follow[0].path = batalia_path_table[vars->follow[0].path_id];
@@ -284,7 +284,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                 }
             }
             SpawnExplosionFx(moby, &moby->pos, -1, 5.0f, 13.0f);
-            DeleteMoby_r(moby);
+            DeleteMoby(moby);
             break;
     }
 }
@@ -313,9 +313,9 @@ void update_moby_height_from_driver(char *m) {
             e = (char *)batalia_mobys_r + (t << 8);
             if (*(unsigned char *)(e + 0x20) < 0x7F && e != m) {
                 if ((unsigned short)(*(unsigned short *)(e + 0xA6) - 0x24C) < 0xB) {
-                    DeleteMoby_r(e);
+                    DeleteMoby(e);
                 } else if (*(short *)(e + 0xA6) == k) {
-                    DeleteMoby_r(e);
+                    DeleteMoby(e);
                 }
             }
             t = *(short *)p;
@@ -323,7 +323,7 @@ void update_moby_height_from_driver(char *m) {
                 break;
             p++;
         }
-        DeleteMoby_r(m);
+        DeleteMoby(m);
         return;
     }
     switch (((Moby *)m)->state) {
@@ -572,9 +572,8 @@ extern void vec_scale_to_length(void *, void *, f32);
 extern f32 ApproachValue(void *, f32, f32);
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 extern void Moby_PlaySound_r3(s32, s32, struct Moby *) __asm__("func_0022ED80");
-extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
-extern void spawn_explosion(char *, void *, char *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32, s32,
-                            s32, u8);
+extern void MobySpringTurn_v(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
+
 extern f32 path_follower_y_rotation_rate_degrees SDATA(path_follower_y_rotation_rate_degrees);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002f44c0. */
@@ -630,10 +629,10 @@ void update_path_following_moby_with_fade(struct Moby *moby) {
                 return;
             }
             waypoint = (follower->point + follower->path->count + follower->direction) % follower->path->count;
-            MobySpringTurn(moby,
-                           fast_atan2(follower->path->points[waypoint].f[0] - moby->pos.x,
-                                      follower->path->points[waypoint].f[1] - moby->pos.y),
-                           (f32 *)((char *)follower + 0x34), 0.01f, 0.3f, 0.1f);
+            MobySpringTurn_v(moby,
+                             fast_atan2(follower->path->points[waypoint].f[0] - moby->pos.x,
+                                        follower->path->points[waypoint].f[1] - moby->pos.y),
+                             (f32 *)((char *)follower + 0x34), 0.01f, 0.3f, 0.1f);
             qcopy(&point, &follower->path->points[waypoint]);
             if (waypoint != 0) {
                 FastVecSub(&step, &point, &moby->pos);
@@ -1173,8 +1172,6 @@ void update_flickering_mesh_effect(struct Moby *m) {
     }
     d->flags |= 2;
 }
-
-extern void set_ground_height_band(void *);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char batalia_commando_dialogue_name[];
@@ -2127,7 +2124,6 @@ void update_batalia_textured_effect(unsigned char *moby) {
             break;
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
 
 // Moby state machine: wait, check hit on first probe, then clean up and delete.
 void update_moby_hit_removal_state(char *m) {

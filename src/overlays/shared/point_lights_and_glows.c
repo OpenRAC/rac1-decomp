@@ -11,6 +11,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -159,10 +160,8 @@ void glow_quads_draw(char *moby) {
 typedef int ti_23e008 __attribute__((mode(TI)));
 extern float D_0015EE60 MACRO_ADDR;
 
-extern float rndf_23e008(float, float) __asm__("func_002140F8");
-extern int rndi_23e008(int) __asm__("func_002140B0");
-
-extern float rnd_23e008(float, float) __asm__("func_L00_00258C80");
+extern float random_float_between(float, float);
+extern int random_integer_below(int);
 
 extern unsigned char *func_L00_00272F00(float *, int, float, float, float, int, int, int, void *);
 extern int func_001FA898(float);
@@ -175,18 +174,18 @@ void emit_moby_particle_pairs(void *p) {
     unsigned char *r;
     Moby_GetJointWorldPos(p, 0, pos);
     for (i = 3; i >= 0; i--) {
-        float s = rndf_23e008(0.15f, 0.5f);
-        int k = rndi_23e008(2);
+        float s = random_float_between(0.15f, 0.5f);
+        int k = random_integer_below(2);
         float a, b;
         if (k == 0)
             k--;
         a = random_angle_radians();
-        b = rndf_23e008(0.34906584f, 1.53588974f);
-        BuildSphericalOffset(dir, rndf_23e008(0.05f, 0.2f) * frame_scale, a, b);
+        b = random_float_between(0.34906584f, 1.53588974f);
+        BuildSphericalOffset(dir, random_float_between(0.05f, 0.2f) * frame_scale, a, b);
         qcopy(old, pos);
-        pos[0] += rnd_23e008(0.0f, 0.15f);
-        pos[1] += rnd_23e008(0.0f, 0.15f);
-        pos[2] += rnd_23e008(0.0f, 0.15f);
+        pos[0] += randf_sym(0.0f, 0.15f);
+        pos[1] += randf_sym(0.0f, 0.15f);
+        pos[2] += randf_sym(0.0f, 0.15f);
         r = PartType53Spawn(pos, scale_ticks(0x3C), s * 0.1f, s, 0.009f, 0x7F7F2020, 0, k, dir);
         if (r)
             r[9] = truncate_float_to_s32(4.0f) + 0x70;

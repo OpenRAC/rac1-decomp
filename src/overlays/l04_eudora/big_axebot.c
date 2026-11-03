@@ -375,8 +375,8 @@ void set_big_axebot_and_axe_animation_speed(char *arg, float f) {
     }
 }
 
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Spawns an effect on the moby at its marker vector. */
 void SpawnMarkerEffect(char *moby) {
@@ -384,7 +384,7 @@ void SpawnMarkerEffect(char *moby) {
     float v[4];
     clear_u64_value(v);
     Moby_GetJointWorldPos(moby, 6, w);
-    spawn_explosion(moby, v, w, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, -1, 1.5f, 15.0f, 1, 1, -1, 0);
+    spawn_explosion_v(moby, v, w, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, -1, 1.5f, 15.0f, 1, 1, -1, 0);
 }
 typedef int u128_B7B0 __attribute__((mode(TI)));
 typedef float V4_B7B0[4] __attribute__((aligned(16)));
@@ -524,30 +524,20 @@ typedef struct {
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 
-extern void set_ground_height_band(void *);
-extern void FindNearestTargetMoby(char *, float *, float);
-
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-
 extern void set_big_axebot_and_axe_animation_speed(char *, float);
 
-extern void InitKnockback(float, void *, void *, int, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
-extern void HeadingFromVector(void *, float *, void *, void *);
 extern void SetDeathBits(void *, int, int);
 
 extern void *libc_memset(void *, int, unsigned int);
 
-extern float SpringTurn(float cur, float target, float *vel, float k, float d, float max);
+extern float SpringTurn_v(float cur, float target, float *vel, float k, float d,
+                          float max) __asm__("func_L00_00259148");
 
 extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
 
-extern int mine_fall(void *, void *);
-
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern void StepColorFade(void *, void *);
 
 extern float eudora_camera_pos[4];
 extern int eudora_game_mode MACRO_ADDR;
@@ -682,7 +672,7 @@ void big_axebot_update(M_B7B0 *moby) {
                         blend_big_axebot_and_axe_animation((char *)moby, (void *)5, 0, (void *)scale_ticks(6));
                         set_big_axebot_and_axe_animation_speed(moby, 2.0f);
                         moby->state = 8;
-                        InitKnockback(ang2, moby, data->fC0, 5, 1, 0);
+                        InitKnockback_v(ang2, moby, data->fC0, 5, 1, 0);
                         data->f110 = 5.0f;
                         data->f114 = 10.0f;
                         data->f42C = 3.4f / multiply_global_factor(7.0f);
@@ -709,7 +699,7 @@ void big_axebot_update(M_B7B0 *moby) {
                         trooper_set_knockback(data->fC0, 5.7f, 4.0f);
                         *(u128_B7B0 *)v = *(u128_B7B0 *)hit->pos;
                         HeadingFromVector(v, &ang2, &data->fD8, &data->fDC);
-                        InitKnockback(ang2, moby, data->fC0, 7, 1, 0);
+                        InitKnockback_v(ang2, moby, data->fC0, 7, 1, 0);
                         data->f110 = 12.0f;
                         data->f114 = 25.0f;
                         moby->state = 10;
@@ -860,8 +850,8 @@ void big_axebot_update(M_B7B0 *moby) {
                 }
             }
             a = fast_atan2(path->pts[data->f438][0] - moby->pos[0], path->pts[data->f438][1] - moby->pos[1]);
-            moby->rot[2] = SpringTurn(moby->rot[2], a, &data->f410, g_frame_time_sq * 12.566371f,
-                                      g_frame_time_sq * 6.2831855f, g_frame_time * 3.1415927f);
+            moby->rot[2] = SpringTurn_v(moby->rot[2], a, &data->f410, g_frame_time_sq * 12.566371f,
+                                        g_frame_time_sq * 6.2831855f, g_frame_time * 3.1415927f);
             v[0] = FastCos(moby->rot[2]) * (g_frame_time * 6.0f);
             v[1] = FastSin(moby->rot[2]) * (g_frame_time * 6.0f);
             v[2] = 0.0f;
@@ -874,8 +864,8 @@ void big_axebot_update(M_B7B0 *moby) {
                 moby->fBC &= ~8;
                 reset_leg_rig_from_animation(moby, data->f1A0);
             }
-            data->f414 = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 6.2831855f,
-                                    g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
+            data->f414 = SpringTurn_v(moby->rot[2], ang, &data->f410, g_frame_time_sq * 6.2831855f,
+                                      g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
             leg_walker_update(moby, data->f1A0, g_frame_time * 4.0f, data->f414, g_frame_time_sq * 20.0f);
             if (dist < 4.5f) {
                 blend_big_axebot_and_axe_animation((char *)moby, (void *)4, (void *)4, (void *)scale_ticks(0xC));
@@ -907,8 +897,8 @@ void big_axebot_update(M_B7B0 *moby) {
                     reset_leg_rig_from_animation(moby, data->f1A0);
                 }
                 a = fast_atan2(data->home[0] - moby->pos[0], data->home[1] - moby->pos[1]);
-                data->f414 = SpringTurn(moby->rot[2], a, &data->f410, g_frame_time_sq * 6.2831855f,
-                                        g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
+                data->f414 = SpringTurn_v(moby->rot[2], a, &data->f410, g_frame_time_sq * 6.2831855f,
+                                          g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
                 leg_walker_update(moby, data->f1A0, g_frame_time * 4.0f, data->f414, g_frame_time_sq * 20.0f);
                 if (vec_distance_xy(moby->pos, data->home) < 2.0f) {
                     moby->state = 1;
@@ -980,14 +970,14 @@ void big_axebot_update(M_B7B0 *moby) {
                     }
                     BuildSphericalOffset(v, data->f418, data->f414, moby->rot[1]);
                     FastVecAdd(moby->pos, moby->pos, v);
-                    moby->rot[2] = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
-                                              g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                    moby->rot[2] = SpringTurn_v(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
+                                                g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
                 } else if (data->f418 > 0.0f) {
                     data->f418 -= g_frame_time_sq * 200.0f;
                     BuildSphericalOffset(v, data->f418, data->f414, moby->rot[1]);
                     FastVecAdd(moby->pos, moby->pos, v);
-                    moby->rot[2] = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
-                                              g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                    moby->rot[2] = SpringTurn_v(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
+                                                g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
                 } else {
                     moby->state = 1;
                     data->f402 = 0;
@@ -1002,11 +992,11 @@ void big_axebot_update(M_B7B0 *moby) {
             } else if (moby->fBC & 0x10) {
                 float a = fast_atan2(data->home[0] - moby->pos[0], data->home[1] - moby->pos[1]);
 
-                moby->rot[2] = SpringTurn(moby->rot[2], a, &data->f410, g_frame_time_sq * 3.1415927f,
-                                          g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                moby->rot[2] = SpringTurn_v(moby->rot[2], a, &data->f410, g_frame_time_sq * 3.1415927f,
+                                            g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
             } else {
-                moby->rot[2] = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
-                                          g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                moby->rot[2] = SpringTurn_v(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
+                                            g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
             }
             break;
         case 10:
@@ -1265,7 +1255,7 @@ void spawn_circular_saw_destruction_effects(char *moby) {
                           1, 1, invalid_voice_index, 0);
     Moby_PlaySound(1, 0, moby);
 }
-extern void FindNearestTargetMoby(char *, float *, float);
+
 extern char *eudora_moby_list MACRO_ADDR;
 
 /* Check that a moby's spot is clear of the other Circular Saw Enemy mobys. */
@@ -2241,9 +2231,6 @@ struct Shot5BD0 {
 
 extern int truncate_float_to_s32(float);
 
-extern char *MobyGetHitMessage(void *, int, int);
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-
 extern int coll_line(void *, void *, int, void *, void *);
 extern int MoveKeepingOverGround_o(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
@@ -2399,7 +2386,7 @@ void BlargTrooperUpdate(char *moby) {
                 }
                 *(u128_5BD0 *)st.w.p.v70 = *(u128_5BD0 *)&hit->unk_10;
                 HeadingFromVector(st.w.p.v70, &ang, &data->target_dist, &data->unk_8C);
-                InitKnockback(ang, moby, &data->unk_70, 0xD, 1, 0);
+                InitKnockback_v(ang, moby, &data->unk_70, 0xD, 1, 0);
                 data->hit_scale = 12.0f;
                 data->unk_C4 = 25.0f;
                 ((Moby *)moby)->state = 0xB;
@@ -2972,7 +2959,7 @@ typedef struct {
     u8 pad1C[0x14];
     f32 rate; /* 0x30 */
 } LeverVars;
-extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
+extern void MobyBlendAnimation(void *, int, int, int);
 
 extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 extern struct Moby *eudora_mobys_r2 __asm__("D_L04_00160058") MACRO_ADDR;
@@ -2994,7 +2981,7 @@ void platform_booster_update(struct Moby *m) {
     }
     switch (m->state) {
         case 0:
-            MobyBlendAnimation_r2(m, 1, 0, scale_ticks(300));
+            MobyBlendAnimation(m, 1, 0, scale_ticks(300));
             m->state = 1;
             m->anim_speed = 0;
             v->voice = -1;

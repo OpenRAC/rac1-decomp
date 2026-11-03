@@ -25,7 +25,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
             spawn_randomized_bolt_drop_r(moby, 3, 5, 2, -1);
         }
         *(short *)(data + 0x14A) = scale_ticks(600);
-        spawn_explosion(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
+        spawn_explosion_v(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
         FastVecScale(push, moby + 0xC0, frame_scale * 0.075f);
         push[2] += frame_scale * 0.08f;
         switch (*(short *)(moby + 0xA6)) {

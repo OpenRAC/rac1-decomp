@@ -154,7 +154,7 @@ extern char gemlik_reference_axis_r[] __asm__("D_L13_00160700") MACRO_ADDR;
 
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, void *) __asm__("func_L00_00250800");
 
-extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
+extern void clamp_vec_length(void *, void *, float);
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
@@ -200,7 +200,7 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
     quad.texture_coordinates[3][1] = one;
     Moby_GetJointWorldPos_r(moby, 0x13, start);
     FastVecSub(direction, vars + 0x80, start);
-    clamp_vec_length_r(direction, direction, 100.0f);
+    clamp_vec_length(direction, direction, 100.0f);
     length = FastVecLength(direction);
     scale = length / 100.0f;
     if (scale < 1.0f)
@@ -547,8 +547,6 @@ extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
 extern void update_qwarks_starfighter_attack_commands(void *, void *);
 
-extern void StepColorFade(void *, void *);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int coll_line(void *, void *, int, void *, void *);
@@ -556,11 +554,8 @@ extern int FastBSphereCheck(void *, float);
 
 extern void draw_starfighter_tractor_beam();
 
-extern void MobySpringTurn(void *moby, float *vel, float target, float k, float d, float max);
-extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 extern int starfighter_part_classes[];
 
@@ -1027,8 +1022,8 @@ void update_qwarks_starfighter(QwarksStarfighterPart388 *moby) {
             moby->rot[1] = *(float *)(view + 0x154);
             moby->scale *= 0.98f;
             if (data->iF8 == scale_ticks(0x1E)) {
-                spawn_explosion(moby, &data->f70, 0, 0.0f, 0.0f, 0x1E, 8, 0x20, 5.0f, 3.0f, 0.0f, 7, 1.0f, 0.0f, 1, 5,
-                                -1, 0);
+                spawn_explosion_v(moby, &data->f70, 0, 0.0f, 0.0f, 0x1E, 8, 0x20, 5.0f, 3.0f, 0.0f, 7, 1.0f, 0.0f, 1, 5,
+                                  -1, 0);
             }
             emit_randomized_moby_joint_effects(moby, data);
             if (fast_dec_timer(&data->iF8) != 0) {
@@ -1283,8 +1278,8 @@ extern char gemlik_coll_hit_result[];
 
 extern int coll_sphere(float, void *, int, void *);
 
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 struct PieceVars {
     u8 pad_00[0x10];
@@ -1367,8 +1362,8 @@ void update_qwarks_starfighter_part(char *m) {
                 DeleteMoby(moby);
                 return;
             case 4:
-                spawn_explosion(moby, &vars->vel, 0, 2.0f, 4.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1,
-                                0);
+                spawn_explosion_v(moby, &vars->vel, 0, 2.0f, 4.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1,
+                                  -1, 0);
                 DeleteMoby(moby);
                 return;
         }
@@ -1760,7 +1755,7 @@ struct GifEntry_306D40;
 typedef int OvlQuad_306D40 __attribute__((mode(TI)));
 extern char *CreateMoby_r(int) __asm__("func_0020D348");
 extern void Moby_GetJointWorldPos_r2(void *, int, void *) __asm__("func_L00_00250800");
-extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
+extern void moby_build_matrix(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/vendor/003058a8.c, FUN_L13_003058a8. */
 char *create_attached_rocket(struct Moby *src, short cls) {
@@ -1784,7 +1779,7 @@ char *create_attached_rocket(struct Moby *src, short cls) {
         *(OvlQuad_306D40 *)&m->rot_row2 = *(OvlQuad_306D40 *)&src->rot_row2;
         qcopy(&d->launch_pos, pos);
         *(int *)&m->collision = 0;
-        moby_build_matrix_r(m);
+        moby_build_matrix(m);
     }
     return (char *)m;
 }
@@ -1814,7 +1809,7 @@ typedef int OvlQuad_p __attribute__((mode(TI)));
 typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) L13Vec_p;
-extern char *MobyGetHitMessage(void *, int, int);
+
 #define hit_lookup_p func_L00_0025B478
 #define moby_pos_p func_L00_00250800
 #define add_p func_001F9BD8
@@ -2035,14 +2030,14 @@ void spawn_attached_rocket_explosion(char *moby) {
                           0);
 }
 
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Spawns a small explosion with no damage at the attached rocket's position. */
 void spawn_attached_rocket_non_damaging_explosion(char *moby) {
     char vector[16];
     clear_u64_value(vector);
-    spawn_explosion(moby, vector, moby + 0x10, 0.0f, 0.0f, 5, 1, 5, 0.0f, 0.0f, 0.0f, 0, 1.0f, 0.0f, 0, 1, -1, 0);
+    spawn_explosion_v(moby, vector, moby + 0x10, 0.0f, 0.0f, 5, 1, 5, 0.0f, 0.0f, 0.0f, 0, 1.0f, 0.0f, 0, 1, -1, 0);
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 
@@ -2378,10 +2373,9 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
         spawn_randomly_rotated_colored_moby(moby, pos, velocity, scale * s, scale_ticks(0x1D), 0, 0x20, 0, 0x20);
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+
 extern void SetDeathBits(void *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
+
 extern void spawn_poison_vessel_destruction_effects(void *, void *);
 
 /* KEPT: the calls disagree on where the float goes: the argument order changes the moves. */
@@ -2585,15 +2579,12 @@ typedef struct {
 } Vars;
 extern void update_blarg_space_commando_damage_targeting_and_ground_motion(struct Moby *);
 extern void Manipulator_ApplyScale(float, struct Moby *, int, void *);
-extern void set_ground_height_band(void *);
 
-extern void SteerAngleWithVelocity(float *, float, float *, float, float, float);
+extern void SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 
-extern int move_w(struct Moby *, void *, void *, void *, float);
 extern int func_001160D8(void);
 extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);
 
-extern int mine_fall(void *, void *);
 extern void initialize_gemlik_trail_v(char *m) __asm__("func_L13_0030A828");
 extern void InitDirectionalHitQuery_r(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern char gemlik_camera_pos[];
@@ -2640,9 +2631,9 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
             moby->state = 1;
             break;
         case 1:
-            SteerAngleWithVelocity(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
-                                   &vars->turn, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
-                                   g_frame_time * 3.1415927f);
+            SteerAngleWithVelocity_v(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
+                                     &vars->turn, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
+                                     g_frame_time * 3.1415927f);
             if (vars->unk164 != 2) {
                 f32 dist = vec_distance_xy(&moby->pos, &target->pos);
                 if (D_L13_00161F04_309330 < dist) {
@@ -2699,9 +2690,9 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
             }
             break;
         case 4:
-            SteerAngleWithVelocity(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
-                                   &vars->turn, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
-                                   g_frame_time * 3.1415927f);
+            SteerAngleWithVelocity_v(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
+                                     &vars->turn, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
+                                     g_frame_time * 3.1415927f);
             if (fast_dec_timer(&vars->timer) != 0) {
                 moby->state = 3;
                 initialize_gemlik_trail_v((char *)moby);
@@ -2722,9 +2713,9 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
             }
             break;
         case 5:
-            SteerAngleWithVelocity(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
-                                   &vars->turn, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
-                                   g_frame_time * 3.1415927f);
+            SteerAngleWithVelocity_v(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
+                                     &vars->turn, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
+                                     g_frame_time * 3.1415927f);
             Moby_GetJointWorldPos(moby, 0, &a);
             qcopy(&b, &moby->pos);
             b.f[2] += 0.3f;
@@ -2884,16 +2875,16 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
             break;
         case 16:
             if (mine_fall(moby, &vars->vel) & 0x160) {
-                spawn_explosion(moby, &vars->vel, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1,
-                                0);
+                spawn_explosion_v(moby, &vars->vel, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1,
+                                  -1, 0);
                 DeleteMoby(moby);
             }
             break;
     }
 }
 extern void update_gemlik_trail(Moby *);
-extern void InitKnockback(void *, void *, float, int, int, int);
-extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
+
+extern int FindNearestEligibleMoby_v(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 
 extern char gemlik_reference_axis[] MACRO_ADDR;
 extern char gemlik_coll_hit_result[] MACRO_ADDR;
@@ -3030,7 +3021,7 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
         vars->range = vars->near_range;
     }
     path = (int *)walker_paths[vars->path];
-    if (FindNearestEligibleMoby(moby, vars->target, vars->range, 0, 0, path + 4, *path) != 2) {
+    if (FindNearestEligibleMoby_v(moby, vars->target, vars->range, 0, 0, path + 4, *path) != 2) {
         if (vars->range < vec_distance_xy(vars->home, vars->target) || FastAbsF(moby->pos.z - vars->target[2]) > 3.0f) {
             vars->mode = 2;
         }
@@ -3053,8 +3044,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
             case 13:
                 moby->flags &= ~0x1000;
                 SetDeathBits(moby, 0, -1);
-                spawn_explosion(moby, gemlik_reference_axis, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f,
-                                15.0f, 1, 1, -1, 0);
+                spawn_explosion_v(moby, gemlik_reference_axis, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f,
+                                  15.0f, 1, 1, -1, 0);
                 DeleteMoby(moby);
                 return;
             default:
@@ -3511,7 +3502,6 @@ void initialize_gemlik_pool_tile_neighbors(int arg) {
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_lift_mount_transform(char *moby, float *p, float *q);
 
-extern void update_entity_matrix(char *, void *, void *, void *);
 extern char gemlik_camera_pos[];
 
 typedef struct LiftVarsA6D8 {

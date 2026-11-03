@@ -13,6 +13,7 @@
 #include "game/audio/sound.h"
 #include "game/render/vuchain.h"
 #include "asm_functions/level_12.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Blarg commander shot (Blarg Commander): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
@@ -122,8 +123,7 @@ extern float g_frame_time MACRO_ADDR;
 
 extern int truncate_float_to_s32(float);
 
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(float, void *, void *, int, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 typedef struct {
     u8 pad0[0x20];
@@ -176,16 +176,13 @@ void start_blarg_commander_knockback(void *unused, struct Moby *m) {
     d->unk5D = 0;
     d->unk44 = 1;
     HeadingFromVector(dir, &ang, &d->launch_speed, &d->unk3C);
-    InitKnockback(ang, m, &d->arc, 1, 5, 2);
+    InitKnockback_v(ang, m, &d->arc, 1, 5, 2);
     d->unk6C = g_frame_time + g_frame_time;
     d->unk70 = -1.0f;
     d->unk74 = -1.0f;
     m->flags &= ~0x1000;
     MobyBlendAnimation(m, 1, 0, 0);
 }
-extern int mine_fall(void *, void *);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                              float, int, int, int, int);
 
 // updates a moby's velocity and either spawns an effect and deletes itself or expires by height
 void blarg_commander_update(char *m) {

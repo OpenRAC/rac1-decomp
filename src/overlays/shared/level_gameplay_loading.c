@@ -2331,7 +2331,6 @@ extern Tab disc_table;
 extern H_245610 cutscene_state_r2 __asm__("D_L00_0016C960");
 void func_00217628_45FE0b(void *, s32, s32) __asm__("func_00217628");
 void func_00217748_45FE0b(s32) __asm__("func_00217748");
-void func_001F4E08_45FE0b(s32) __asm__("func_001F4E08");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/world_animation_002454c8.c, FUN_L00_00245610. */
 void load_chunks_with_optional_fade(s32 i, s32 p) {
@@ -2344,7 +2343,7 @@ void load_chunks_with_optional_fade(s32 i, s32 p) {
     }
     if (p != 0) {
         func_00217748_45FE0b(0);
-        func_001F4E08_45FE0b(p);
+        FadeToBlack(p);
     }
     func_00217748_45FE0b(1);
     e = (s32 *)cutscene_state_r2.buf;

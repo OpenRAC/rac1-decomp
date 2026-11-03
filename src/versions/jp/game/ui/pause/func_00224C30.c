@@ -16,7 +16,7 @@ s32 draw_save_slot_list(MenuScreen *menu) {
     s32 minutes;
 
     y = 4;
-    SetupGifPaging_r3(0);
+    SetupGifPaging(0);
     for (i = 0; i < 5; i++) {
         width = menu->width;
         highlight_top = y - 4;
@@ -83,6 +83,6 @@ s32 draw_save_slot_list(MenuScreen *menu) {
             y += 0x1B;
         }
     }
-    DoGifPaging_r3();
+    DoGifPaging();
     return 2;
 }

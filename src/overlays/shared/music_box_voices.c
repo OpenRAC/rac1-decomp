@@ -37,7 +37,7 @@ typedef struct {
 } Moby_0031AD00;
 
 extern int play_voice_r(int, int, void *, int) __asm__("func_L00_0028F0B0");
-extern int random_integer_below_r(int) __asm__("func_002140B0");
+extern int random_integer_below(int);
 
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char camera_pos_r[] __asm__("D_L01_001672C0");
@@ -100,7 +100,7 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
             if (fast_dec_timer(&p->timer)) {
                 p->handle = play_voice_r(p->cls, flags, m, vol);
                 if (p->tmax > 0) {
-                    p->timer = (float)scale_ticks(p->tmin + random_integer_below_r(p->tmax - p->tmin)) * 60.0f;
+                    p->timer = (float)scale_ticks(p->tmin + random_integer_below(p->tmax - p->tmin)) * 60.0f;
                 }
             } else {
                 p->handle = -1;

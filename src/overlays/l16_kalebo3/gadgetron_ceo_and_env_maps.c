@@ -68,8 +68,6 @@ struct RepositionCycleVars {
     s32 timer; /* 0x0C */
 };
 
-extern void set_ground_height_band(void *);
-
 extern void restore_gadgetron_ceo_non_challenge_environment(char *);
 extern void activate_gadgetron_ceo_challenge_environment(char *);
 
@@ -691,7 +689,6 @@ extern float elevator_height_acceleration SDATA(elevator_height_acceleration);
 extern short elevator_max_speed;
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void update_entity_matrix(char *, void *, void *, void *);
 
 extern void DrawRingStack(char *);
 

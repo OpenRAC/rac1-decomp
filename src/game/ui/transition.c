@@ -697,8 +697,6 @@ extern s32 D_001E2900[];
 extern void queue_dma_transfer_r(s32) __asm__("func_001EB300");
 
 extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
-extern void InitViewContext_r(void) __asm__("func_001F3008");
-extern void UpdateViewContext_r(void) __asm__("func_001F3140");
 
 extern void InitMemSlots_r(void) __asm__("func_00201E10");
 
@@ -750,8 +748,8 @@ void transition_load_wad(void) {
     FastMemSet(resident_class_slot_by_id, -1, k_800);
     FastMemSet(resident_class_material_maps, -1, 0xE00);
     FastMemSet(resident_class_original_field_2c_r, 0, 0xE0);
-    InitViewContext_r();
-    UpdateViewContext_r();
+    InitViewContext();
+    UpdateViewContext();
     VU1_initChain_r();
     start_audio_stream_read((u8 *)0x1400000, disc_table_r.unk14E8.sector, disc_table_r.unk14E8.size);
     update_audio_stream_until_idle(1);
@@ -1281,7 +1279,7 @@ extern void default_draw_BB48(void) __asm__("func_001EB7C0");
 
 extern void parse_space_scene_BB48(s32) __asm__("func_00205220");
 extern void vu1_init_chain_BB48(void) __asm__("func_002348E8");
-extern void fade_to_black_BB48(s32) __asm__("func_001F4E08");
+
 extern s32 reset_vif1_gif_BB48(void) __asm__("func_001207B8");
 extern void reset_graph_BB48(s16, s16, s16, s16) __asm__("func_00121B78");
 
@@ -1403,7 +1401,7 @@ void transition_do_transition(void) {
         }
         if (requested_video_mode_BB48 != pal_mode_BB48) {
             pal_mode_BB48 = pal_mode_BB48 == 0;
-            fade_to_black_BB48(4);
+            FadeToBlack(4);
             reset_vif1_gif_BB48();
             reset_graph_BB48(0, 1, pal_mode_BB48 != 0 ? 3 : 2, 0);
             old = tex_start_BB48;

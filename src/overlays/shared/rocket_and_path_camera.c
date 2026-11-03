@@ -132,7 +132,7 @@ extern char gHeroPos[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
-extern float SpringTurn(float, float, float, float, float, float *);
+extern float SpringTurn_v(float, float, float, float, float, float *) __asm__("func_L00_00259148");
 extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00215C00");
 
 extern int coll_line(void *, void *, int, int, int);
@@ -197,10 +197,10 @@ void rocket_819_update(Moby *m) {
                     yaw = fast_atan2(diff[0], diff[1]);
                     pitch = -fast_atan2(vec_length_xy(diff), diff[2]);
                 }
-                m->rot.z = SpringTurn(m->rot.z, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
-                                      g_frame_time * 6.2831855f, &d->yawSpeed);
-                m->rot.y = SpringTurn(m->rot.y, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
-                                      g_frame_time * 6.2831855f, &d->pitchSpeed);
+                m->rot.z = SpringTurn_v(m->rot.z, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                                        g_frame_time * 6.2831855f, &d->yawSpeed);
+                m->rot.y = SpringTurn_v(m->rot.y, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                                        g_frame_time * 6.2831855f, &d->pitchSpeed);
                 m->rot.x = FastAddRots(m->rot.x, g_frame_time * 6.2831855f);
                 BuildSphericalOffset_v(speed, m->rot.z, -m->rot.y, d);
             }
@@ -647,7 +647,7 @@ extern float orxon_player_camera_fade_rate;
 extern char orxon_view_params[];
 extern float orxon_player_camera_matrix[];
 
-extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
+extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 
@@ -751,8 +751,8 @@ void Camera19_Update(char *moby) {
 
         g = orxon_paths[*(int *)(e + 0x20)];
         qcopy(va, (moby + 0x30));
-        rr = Spline_AdvanceByDistance(g, (moby + 0x30), (int *)f, (float *)(f + 4), *(float *)(e + 0x3C) * g_frame_time,
-                                      0);
+        rr = Spline_AdvanceByDistance_v(g, (moby + 0x30), (int *)f, (float *)(f + 4),
+                                        *(float *)(e + 0x3C) * g_frame_time, 0);
         if (*(short *)(f + 0x16) != 0) {
             if (FastDecTimer(f + 0x16) != 0) {
                 rr = 1;
@@ -820,7 +820,7 @@ void Camera19_Update(char *moby) {
             h = orxon_paths[*(int *)(e + 0x24)];
             ia = 0;
             ib = 0.0f;
-            Spline_AdvanceByDistance(h, v2, &ia, &ib, d, 0);
+            Spline_AdvanceByDistance_v(h, v2, &ia, &ib, d, 0);
             ((void (*)(void *, float))Profile_Mark_v)(v2, 0.2f);
             Profile_Mark_v(h + 0x10, h + (*(int *)h << 4));
             FastVecSub(v1, v2, (moby + 0x30));

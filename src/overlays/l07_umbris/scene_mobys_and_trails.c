@@ -298,13 +298,12 @@ typedef struct {
 
 extern int func_001FA898(float);
 
-extern int func_L00_0025E860(void *, void *, int *, float *, float, int);
+extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 extern int func_00120778_31E6B0(float) __asm__("func_00120778");
 
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern char D_L07_00211DE0[];
 extern char D_L07_00211E20[];
 extern char D_L07_00211E40[];
@@ -344,7 +343,7 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
         }
         if (bad) {
             STUB_printf(ammo_spawner_deleted_fmt, moby->oclass);
-            DeleteMoby_r(moby);
+            DeleteMoby(moby);
             return;
         }
         d->total = 0.0f;
@@ -367,7 +366,7 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
             have = IntToFloat(((int *)weapon_ammo_counts)[k]);
             max = IntToFloat(((Ent *)umbris_item_price_table)[k].max);
             ratio = have / max;
-            at = random_float_between_r(0.0f, d->total);
+            at = random_float_between(0.0f, d->total);
             if (d->lo / 100.0f <= ratio && ratio < d->hi / 100.0f) {
                 Path *p;
                 int q;
@@ -392,7 +391,7 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
                         rem = n - m;
                         done = 0;
                         do {
-                            Spline_AdvanceByDistance(p, vec, &ia, (float *)&fbz, at, 1);
+                            Spline_AdvanceByDistance_v(p, vec, &ia, (float *)&fbz, at, 1);
                             if (d->target == -1) {
                                 done = 1;
                             } else if (near < vec_distance_xy(level_mobys_r[d->target].pos, vec)) {
@@ -406,7 +405,7 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
                                     func_00120778_31E6B0(vec[1]), func_00120778_31E6B0(vec[2]),
                                     func_00120778_31E6B0(at));
                         spawn_on_path(vec, k, m, 0);
-                        at = at + random_float_between_r(d->total / step, 2.0f);
+                        at = at + random_float_between(d->total / step, 2.0f);
                         if (rem < m) {
                             m = rem;
                             STUB_printf(ammo_spawner_remainder_fmt, rem);
@@ -487,7 +486,6 @@ void update_scene_moby_effect_bursts(struct Moby *m) {
             break;
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
 
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
@@ -532,7 +530,7 @@ void mushroom_update(char *m) {
     }
 }
 extern char *mk_a(int) __asm__("func_0020D348");
-extern void upd_a(void *) __asm__("func_L00_00251E30");
+extern void moby_build_matrix(void *);
 
 /* Stage machine for a three-state effect moby: wait, activate, burst and delete. */
 void robot_head_update(char *self) {
@@ -567,7 +565,7 @@ void robot_head_update(char *self) {
                 qcopy(m + 0x10, self + 0x10);
                 qcopy(m + 0x40, self + 0x40);
                 *(long *)(m + 0x38) = *(long *)(self + 0x38);
-                upd_a(m);
+                moby_build_matrix(m);
             }
             DeleteMoby(self);
             break;

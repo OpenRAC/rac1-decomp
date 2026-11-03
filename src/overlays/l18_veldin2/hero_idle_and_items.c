@@ -34,13 +34,7 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern void ClampVectorLength(void *a, float x);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
-
-extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 
 extern void vec_scale_to_length(void *, void *, float);
 

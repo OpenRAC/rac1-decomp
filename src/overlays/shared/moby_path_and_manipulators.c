@@ -44,7 +44,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int SegmentCrossPolyline(int, void *, void *, void *);
 
 struct MobyBound;
-struct MobyBound *GetFlaggedPvarWord(struct Moby *);
 
 extern int current_moby_mission_complete MACRO_ADDR;
 extern unsigned char mission_state[] MACRO_ADDR;
@@ -806,7 +805,7 @@ void clear_moby_transform_history(struct TransformHistory *o) {
 }
 LINKER_REMNANT("asm/overlays", func_L00_00263938);
 
-extern float SpringAngle(char *, char *, float, float, float, float, int);
+extern float SpringAngle_v(char *, char *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
 
 /* A manipulator state: eased rotation offsets and scale applied to a held moby. */
 struct ManipState {
@@ -847,9 +846,9 @@ void EaseManipulatorOffsets(int m, struct ManipState *p, int c, float fa, float 
             DetachManipulator(m, p);
         return;
     }
-    SpringAngle((char *)p->euler, (char *)p->euler_vel, p->goal[0], fa, fb, 0.0f, 0);
-    SpringAngle((char *)&p->euler[1], (char *)&p->euler_vel[1], p->goal[1], fa, fb, 0.0f, 0);
-    SpringAngle((char *)&p->euler[2], (char *)&p->euler_vel[2], p->goal[2], fa, fb, 0.0f, 0);
+    SpringAngle_v((char *)p->euler, (char *)p->euler_vel, p->goal[0], fa, fb, 0.0f, 0);
+    SpringAngle_v((char *)&p->euler[1], (char *)&p->euler_vel[1], p->goal[1], fa, fb, 0.0f, 0);
+    SpringAngle_v((char *)&p->euler[2], (char *)&p->euler_vel[2], p->goal[2], fa, fb, 0.0f, 0);
     if (!p->attached)
         AttachManipulator(m, c, p);
     build_quaternion_from_axis_rotations(p->quat, &p->euler[0]);
@@ -878,12 +877,12 @@ void update_moby_rotation_oscillation(float *o, float *a, float *b, float r, flo
     *a = FastAddRots(*a, l1);
     *b = FastAddRots(*b, l2);
 }
-extern void BuildSphericalOffset_x(void *, float, float, float) __asm__("func_00215C00");
+extern void BuildSphericalOffset(void *, float, float, float);
 /* Set a to b plus the spherical offset built from r, y and z. */
 void fast_add_rotations_cf(void *a, void *b, float r, float y, float z) {
     typedef float W[4] __attribute__((aligned(16)));
     W v;
-    BuildSphericalOffset_x(v, r, y, z);
+    BuildSphericalOffset(v, r, y, z);
     FastVecAdd(a, v, b);
 }
 extern void ShowBanner(int arg0, int arg1);
@@ -913,7 +912,7 @@ extern struct Moby *suck_moby_list MACRO_ADDR;
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 
 void func_00215C00_64140(Vec4 *, float, float, float) __asm__("func_00215C00");
-MobyBound *GetFlaggedPvarWord(struct Moby *);
+
 int func_L00_001EFFF0_64140(void *, Vec4 *, int, void *, int) __asm__("func_L00_001EFFF0");
 
 /* Picks the best auto-aim target moby (kind 5) for a shot from pos along dir: writes yaw/pitch toward it and its aim
@@ -1303,8 +1302,6 @@ void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, in
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern void rand_vec(float *, float, float);
 
 /* Spawns a break-effect fragment moby of class cls from src, and initialises its motion data. */
 void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale,

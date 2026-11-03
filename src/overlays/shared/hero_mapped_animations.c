@@ -1257,12 +1257,8 @@ typedef struct {
 } Plat;
 extern void scale_ticks_r2(int) __asm__("func_001F9850");
 
-extern Plat *moby_get_ride_transform(void *);
-
-extern void RotateWithMoby(int, void *, void *, void *, void *, void *);
-
 extern float ApproachValue(float *, float, float);
-extern void vec_set_length_xy_r2(void *, void *, float) __asm__("func_L00_001FF500");
+extern void vec_set_length_xy(void *, void *, float);
 
 extern f32 g_frame_time_sq MACRO_ADDR;
 
@@ -1373,7 +1369,7 @@ void update_hero_attachment(void) {
         if (!(plat->i3C & 2)) {
             ApproachValue(&sB0, 0.0f, g_frame_time_sq * 25.0f * amt);
             ApproachValue(&sB4, 0.0f, (g_frame_time_sq + g_frame_time_sq) * amt);
-            vec_set_length_xy_r2(&v20, &((Hero *)g_hero)->attached_moby_move, sB4);
+            vec_set_length_xy(&v20, &((Hero *)g_hero)->attached_moby_move, sB4);
             v20.z = sB0;
         } else {
             qcopy(&v20, &((Hero *)g_hero)->attached_moby_move);

@@ -5,7 +5,7 @@ void magnetboots_update(Moby *m) {
         case 0:
             initialize_moby_particle_effect_r(m);
             if (*(race_gates_base_r + 7) != 0) {
-                remove_00299818(m);
+                DeleteMoby(m);
                 return;
             }
             m->state = 1;
@@ -27,7 +27,7 @@ void magnetboots_update(Moby *m) {
             if (orxon_cinematic_mode_r != 2) {
                 ShowBanner_r(0x271B, -1);
                 dialogue_message_duration_r = 0xB4;
-                grant_inventory_item_r(0x1C, 1);
+                grant_inventory_item(0x1C, 1);
                 if (*(int *)(d + 4) != -1) {
                     char *o = orxon_mobys_r + (*(int *)(d + 4) << 8);
                     jet_reset_camera_r(o + 0x10, o + 0x40);
@@ -37,7 +37,7 @@ void magnetboots_update(Moby *m) {
             }
             break;
         case 3:
-            remove_00299818(m);
+            DeleteMoby(m);
             break;
     }
 }

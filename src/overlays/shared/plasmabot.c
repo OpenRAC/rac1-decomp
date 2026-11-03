@@ -148,8 +148,6 @@ void activate_plasmabot(char *moby);
 
 int follow_plasmabot_path(char *moby);
 
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 #define call_CE58 ((float (*)(float *, float, float *, float, float, float))func_L00_0025CE58)
 void scale_and_apply_plasmabot_planar_velocity(char *moby);
 float update_plasmabot_aim_quaternion(char *moby, int flag, float x);
@@ -162,11 +160,8 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int coll_line(void *, void *, int, void *, void *);
 
-extern int mine_fall(void *, void *);
-
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
-extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                            float, int, int, int, int);
+
 #define call_F4A8                                                                                                     \
     ((void (*)(char *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, \
                int, int))func_L00_0025F4A8)
@@ -622,11 +617,11 @@ extern void draw_plasmabot_effect_quads_r(struct Moby *) __asm__("func_L14_002B3
 extern void AddDrawCallback_r(void (*)(struct Moby *), struct Moby *) __asm__("func_001F49B0");
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobyTransformScaledVertex_r(struct Moby *, s32, void *) __asm__("func_0020DAF8");
-extern void random_spherical_offset_r(void *, f32, f32) __asm__("func_002141A8");
+extern void random_spherical_offset(void *, f32, f32);
 extern Particle *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, s32,
                                                                       struct Moby *) __asm__("func_L00_002757E8");
-extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
-extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
+extern f32 random_float_between(f32, f32);
+extern s32 random_integer_below(s32);
 
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
@@ -652,10 +647,10 @@ void update_plasmabot_visual_effects(struct Moby *m) {
     FastVecSub(&dir, &pos, &oltanis_camera_pos_r);
     vec_scale_to_length_r(&dir, &dir, -0.5f);
     FastVecAdd(&pv->exhaust, &pos, &dir);
-    random_spherical_offset_r(&vel, 0.005f, 0.03f);
+    random_spherical_offset(&vel, 0.005f, 0.03f);
     p = spawn_mode_controlled_rotating_alpha_fade_particle_r(&pos, &vel, 0x7F, m);
     if (p != 0) {
-        p->life = random_float_between_r(6000.0f, 32000.0f);
+        p->life = random_float_between(6000.0f, 32000.0f);
     }
     for (i = 0; i < 3; i++) {
         p = spawn_mode_controlled_rotating_alpha_fade_particle_r(&pos, oltanis_zero_vector_r, 0x7F, m);
@@ -663,10 +658,10 @@ void update_plasmabot_visual_effects(struct Moby *m) {
             continue;
         }
         fade = &p->fade;
-        if (i == 2 && random_integer_below_r(8) == 0) {
+        if (i == 2 && random_integer_below(8) == 0) {
             p->life = 180000.0f;
         } else {
-            p->life = random_float_between_r(80000.0f, 120000.0f);
+            p->life = random_float_between(80000.0f, 120000.0f);
         }
         p->frames = scale_ticks(2);
         f = 1.0f / IntToFloat(p->frames);
@@ -848,14 +843,9 @@ void update_plasmabot_target_range(struct Moby *m) {
 extern char hero_globals_base_x[] __asm__("D_0013E633");
 extern float g_frame_time_x __asm__("D_0015EE6C") MACRO_ADDR;
 extern float plasmabot_knockback_lift_factor SDATA(plasmabot_knockback_lift_factor);
-extern void StepColorFade(void *, void *);
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 
-extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
 extern int truncate_float_to_s32(float);
 extern void SetDeathBits(void *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
 
 /* Enemy hit reaction: takes damage from attacks (not from its own kind), staggers or is knocked away and dies. */
 void process_plasmabot_hit_reaction(char *m) {
@@ -951,13 +941,13 @@ void process_plasmabot_hit_reaction(char *m) {
 }
 extern char hero_globals_base[];
 extern int *oltanis_paths[];
-extern int FindNearestEligibleMoby(char *, char *, float, int, int, int *, int);
+extern int FindNearestEligibleMoby_v(char *, char *, float, int, int, int *, int) __asm__("func_L00_00260FB0");
 
 // Checks the moby's distance against its radius and latches state fields.
 void update_plasmabot_target(char *moby) {
     struct PlasmabotVars *data = (struct PlasmabotVars *)((Moby *)moby)->pvars;
     int *tbl = oltanis_paths[data->path_b];
-    if (FindNearestEligibleMoby(moby, (char *)&data->home_pos, data->search_radius, 0, 0, tbl + 4, *tbl) != 2) {
+    if (FindNearestEligibleMoby_v(moby, (char *)&data->home_pos, data->search_radius, 0, 0, tbl + 4, *tbl) != 2) {
         if (data->search_radius < vec_distance_xy(&((Moby *)moby)->pos, &data->home_pos)) {
             data->owner_state = 2;
         }
@@ -1000,8 +990,6 @@ void initialize_plasmabot_path_state(char *moby) {
         *(float *)(p + o + 0x1C) = FastVecDist(p + (o + 0x10), p + (((i + 1) % *(int *)p) * 16 + 0x10));
     }
 }
-extern int Spline_AdvanceByDistance(void *, void *, void *, void *, int, float);
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 extern float SteerAngleWithVelocity_r(float *p, float a, float *v, float b, float c,
                                       float d) __asm__("func_L00_0025CE58");
@@ -1084,7 +1072,6 @@ float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
     return FastDiffRots(s, d->spawn_ref);
 }
 
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern float g_frame_time MACRO_ADDR;
 
 /* steers the pitch angle of a moby toward a target and updates the joint */
@@ -1332,8 +1319,7 @@ extern float spinning_debris_drag SDATA(spinning_debris_drag);
 extern float spinning_debris_gravity SDATA(spinning_debris_gravity);
 
 extern int coll_sphere(float, void *, int, void *);
-extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                            float, int, int, int, int);
+
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern void *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
@@ -1629,14 +1615,12 @@ typedef struct Particle_2E17B8 {
 } Particle_2E17B8;
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void random_spherical_offset_r2(void *, float, float) __asm__("func_002141A8");
+extern void random_spherical_offset(void *, float, float);
 extern Particle_2E17B8 *spawn_mode_controlled_rotating_alpha_fade_particle_r2(void *, void *, int,
                                                                               Moby *) __asm__("func_L00_002757E8");
-extern float random_float_between_r2(float, float) __asm__("func_002140F8");
-extern int random_integer_below_r2(int) __asm__("func_002140B0");
+extern float random_float_between(float, float);
+extern int random_integer_below(int);
 
-extern float randf_sym_r(float lo, float hi) __asm__("func_L00_00258C80");
-extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void PartType21Spawn_r(void *, void *, int, int, int, int, float) __asm__("func_L00_0026DA50");
 extern Particle_2E17B8 *PartType23Spawn_r(void *, float, float, float, int, void *, float,
                                           int) __asm__("func_L00_0026DEA0");
@@ -1664,10 +1648,10 @@ void emit_debris_trail_particles(Moby *m) {
     pv = *(Vars **)&m->pvars;
     vec_scale_to_length_r2(&dir, &*(Vec4 *)&m->rot_row2, 0.2f);
     FastVecAdd(&pos, &*(Vec4 *)&m->pos, &dir);
-    random_spherical_offset_r2(&vel, 0.005f, 0.03f);
+    random_spherical_offset(&vel, 0.005f, 0.03f);
     p = spawn_mode_controlled_rotating_alpha_fade_particle_r2(&pos, &vel, 0x7F, m);
     if (p != 0) {
-        p->life = random_float_between_r2(6000.0f, 32000.0f);
+        p->life = random_float_between(6000.0f, 32000.0f);
     }
     for (i = 0; i < 3; i++) {
         float f;
@@ -1677,10 +1661,10 @@ void emit_debris_trail_particles(Moby *m) {
             continue;
         }
         fade = &p->fade;
-        if (i == 2 && random_integer_below_r2(8) == 0) {
+        if (i == 2 && random_integer_below(8) == 0) {
             p->life = 180000.0f;
         } else {
-            p->life = random_float_between_r2(80000.0f, 120000.0f);
+            p->life = random_float_between(80000.0f, 120000.0f);
         }
         p->frames = scale_ticks(2);
         f = 1.0f / IntToFloat(p->frames);
@@ -1705,16 +1689,16 @@ void emit_debris_trail_particles(Moby *m) {
     off.f[2] = 0.0f;
     FastVecAdd(&pos, &pos, &off);
     if (m->state == 1) {
-        pos.f[0] += randf_sym_r(0.0f, 0.1f);
-        pos.f[1] += randf_sym_r(0.0f, 0.1f);
+        pos.f[0] += randf_sym(0.0f, 0.1f);
+        pos.f[1] += randf_sym(0.0f, 0.1f);
     }
-    PartType21Spawn_r(&pos, &vel, 0x4F007FFF, 0x1FFFFFFF, rand_range_r(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
-    n = random_integer_below_r2(6);
-    if (random_integer_below_r2(2) != 0) {
+    PartType21Spawn_r(&pos, &vel, 0x4F007FFF, 0x1FFFFFFF, rand_range(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
+    n = random_integer_below(6);
+    if (random_integer_below(2) != 0) {
         n = -n;
     }
-    size = random_float_between_r2(60000.0f, 140000.0f);
-    c = rand_range_r(0x30, 0xFF);
+    size = random_float_between(60000.0f, 140000.0f);
+    c = rand_range(0x30, 0xFF);
     alpha = 0x60000000;
     e = PartType23Spawn_r(&pos, 0.025f, 1.0f, 1.0f, n, &vel, size, c | ((c << 16) | ((c << 8) | alpha)));
     if (e != 0) {
@@ -1894,9 +1878,6 @@ extern MobyHit *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0
 
 extern int ComputeHitResponse_r(struct Moby *, MobyHit *, HitInfo *, int, int *, int, int,
                                 int) __asm__("func_L00_0025B4D0");
-
-extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                            float, int, int, int, int);
 
 extern int FastBSphereCheck_r(float *, float) __asm__("func_L00_00200290");
 
@@ -2125,8 +2106,6 @@ void update_vendor_beam(unsigned char *m) {
 typedef struct Vq {
     float x, y, z, w;
 } __attribute__((aligned(16))) Vq;
-
-extern void rand_vec(void *, float, float);
 
 extern int truncate_float_to_s32(float);
 

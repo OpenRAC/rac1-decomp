@@ -137,7 +137,6 @@ extern f32 D_L03_001619A0_CB280 SDATA(D_L03_001619A0);
 extern f32 D_L03_00161990_CB280 SDATA(D_L03_00161990);
 extern f32 D_L03_00161994_CB280 SDATA(D_L03_00161994);
 
-extern void FindNearestTargetMoby(void *, void *, f32);
 extern void Manipulator_ApplyScale(struct Moby *, int, void *, f32);
 void func_L03_002CBBD0_CB280(struct Moby *m) __asm__("func_L03_002CBBD0");
 char *spawn_mine_layer_projectile(char *p, void *pos, float *dir);
@@ -146,18 +145,14 @@ extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
 extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_00213DE0");
 
-extern void MobySpringTurn(f32, f32, f32, f32, struct Moby *, void *);
+extern void MobySpringTurn_v(f32, f32, f32, f32, struct Moby *, void *) __asm__("func_L00_002592B0");
 
-extern void ClassifyTargetInCone(struct Moby *, void *, void *, void *);
 extern void Sound_PlayClassSound_r(int, int, struct Moby *, int) __asm__("func_L00_0028EF68");
 
 extern int mine_fall_r(struct Moby *, void *) __asm__("func_L00_0025D6F0");
-extern void spawn_explosion(struct Moby *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
-                            s32, s32, s32);
+
 extern void SetDeathBits(struct Moby *, int, int);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-
-extern void set_ground_height_band(struct Moby *);
 
 /* l03 trooper update: patrols its rail path, turns to face the hero once in sight, fires three-shot bursts, falls
    under gravity and blows up when shot down or when it drops into a pit.
@@ -213,8 +208,8 @@ void mine_layer_update(struct Moby *m) {
             }
             break;
         case 1:
-            MobySpringTurn(fast_atan2(target.aim.f[0] - m->pos.x, target.aim.f[1] - m->pos.y), 0.01f, 0.3f, 0.1f, m,
-                           v->turn);
+            MobySpringTurn_v(fast_atan2(target.aim.f[0] - m->pos.x, target.aim.f[1] - m->pos.y), 0.01f, 0.3f, 0.1f, m,
+                             v->turn);
             if (vec_distance_xy(&m->pos, &target.aim) < sight && FastAbsF(target.aim.f[2] - m->pos.z) < 4.0f) {
                 m->state = 2;
                 if (m->prev_seq != 1) {
@@ -405,12 +400,8 @@ extern f32 D_L03_00161984_CBBD0 SDATA(D_L03_00161984);
 extern f32 D_L03_00161988_CBBD0 SDATA(D_L03_00161988);
 extern f32 D_L03_0016198C_CBBD0 SDATA(D_L03_0016198C);
 extern TrooperHit *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern s32 ComputeHitResponse(struct Moby *, TrooperHit *, f32 *, s32, s32 *, f32 *, s32, s32);
 
-extern void HeadingFromVector(Vec4 *, f32 *, f32 *, f32 *);
 extern void InitKnockback_r(f32, struct Moby *, void *, s32, s32, s32) __asm__("func_L00_0025D5B0");
-extern void RerollEffectCounter(struct Moby *, void *);
-extern void StepColorFade(struct Moby *, void *);
 
 /* Trooper hit handler: takes damage, then knocks back away from the attacker by hit strength (dying on lethal hits).
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002ca808. */
@@ -534,7 +525,6 @@ extern struct Moby *kerwan_coll_sphere_moby_hits[];
 extern MineCamera kerwan_player_camera;
 extern char kerwan_mine_index_list[];
 extern float frame_scale MACRO_ADDR;
-extern int mine_fall(struct Moby *, void *);
 
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 
@@ -692,7 +682,6 @@ void update_mine(struct Moby *m) {
             break;
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
 
 /* On a hit from a moby of another class, puts the mine into state 4 (exploding). */
 void handle_mine_hit(unsigned char *arg) {
@@ -708,7 +697,7 @@ void handle_mine_hit(unsigned char *arg) {
 
 extern float g_frame_scale_sq MACRO_ADDR;
 
-extern void InitKnockback(void *, void *, int, int, int, float);
+extern void InitKnockback_v(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 
 /* Spawns a projectile moby (Mine) at pos, heading along dir, owned by parent p.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002cc888. */
@@ -741,8 +730,8 @@ char *spawn_mine_layer_projectile(char *parent_moby, void *pos, float *launch_ve
     spawned_moby_vars->unk_4C = 0.01f;
     spawned_moby_vars->unk_3D = 0;
     spawned_moby_vars->unk_24 = 1;
-    InitKnockback(spawned_moby, ((char *)spawned_moby_vars), 0, 1, 0,
-                  fast_atan2(launch_velocity[0], launch_velocity[1]));
+    InitKnockback_v(spawned_moby, ((char *)spawned_moby_vars), 0, 1, 0,
+                    fast_atan2(launch_velocity[0], launch_velocity[1]));
     *(char **)&spawned_moby_vars->target = parent_moby;
     spawned_moby_vars->age = 0;
     spawned_moby->state = 1;
@@ -816,10 +805,9 @@ extern s32 D_L03_0015F674_D4560 SDATA(D_L03_0015F674);
 
 extern void request_hero_target_pose_v(void *, float, int) __asm__("func_L00_00234768");
 
-extern void update_entity_matrix(void *, void *, void *, void *);
 extern void DeleteMoby_r3(struct Moby *) __asm__("func_0020D678");
 
-extern f32 SteerAngleWithVelocity(f32 *, f32, f32 *, f32, f32, f32);
+extern f32 SteerAngleWithVelocity_v(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L00_0025CE58");
 s32 func_L03_002D4CE0_D4560(struct Moby *m, s32 path, s32 *snd) __asm__("func_L03_002D4CE0");
 
 /* Rail taxi: waits at its stop until the hero enters a route's trigger volume, flies the outbound path, lets the hero
@@ -902,11 +890,12 @@ void update_rail_taxi(struct Moby *m) {
             }
             break;
         case 3:
-            SteerAngleWithVelocity(&m->rot.y, 0.0f, &v->pitch_vel,
-                                   D_L03_00161B90_D4560 * 0.017453292f * g_frame_time_sq,
-                                   D_L03_00161B90_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
-            SteerAngleWithVelocity(&m->rot.x, 0.0f, &v->roll_vel, D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq,
-                                   D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&m->rot.y, 0.0f, &v->pitch_vel,
+                                     D_L03_00161B90_D4560 * 0.017453292f * g_frame_time_sq,
+                                     D_L03_00161B90_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&m->rot.x, 0.0f, &v->roll_vel,
+                                     D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq,
+                                     D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
             if (g_hero_r.ground_moby == m && g_hero_r.air_frames.s == 0) {
                 request_taxi_return_help_message(m, v->help[m->command]);
                 if ((pad0_pressed & PAD_TRIANGLE) && D_L03_0015F674_D4560 == 8) {
@@ -931,11 +920,12 @@ void update_rail_taxi(struct Moby *m) {
             }
             break;
         case 6:
-            SteerAngleWithVelocity(&m->rot.y, 0.0f, &v->pitch_vel,
-                                   D_L03_00161B90_D4560 * 0.017453292f * g_frame_time_sq,
-                                   D_L03_00161B90_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
-            SteerAngleWithVelocity(&m->rot.x, 0.0f, &v->roll_vel, D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq,
-                                   D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&m->rot.y, 0.0f, &v->pitch_vel,
+                                     D_L03_00161B90_D4560 * 0.017453292f * g_frame_time_sq,
+                                     D_L03_00161B90_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&m->rot.x, 0.0f, &v->roll_vel,
+                                     D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq,
+                                     D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
             if (v->onward[m->command] != -1 && FastVecDist(&m->pos, &g_hero_r.motion.pos) > 15.0f) {
                 m->state = 7;
                 v->idx = 1;
@@ -967,7 +957,7 @@ extern float kerwan_rail_taxi_roll_accel_deg SDATA(kerwan_rail_taxi_roll_accel_d
 extern float kerwan_rail_taxi_turn_roll_factor SDATA(kerwan_rail_taxi_turn_roll_factor);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern float SteerAngleWithVelocity(float *, float, float *, float, float, float);
+extern float SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 
 typedef struct RailFlyerVars {
     u8 pad_00[0x60];
@@ -1010,18 +1000,18 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
         target_pitch = 0.261799395f;
     else if (target_pitch < -0.261799395f)
         target_pitch = -0.261799395f;
-    SteerAngleWithVelocity(&rail_moby->rot.y, target_pitch, &rail_flyer_vars->pitch_vel,
-                           kerwan_rail_taxi_pitch_accel_deg * 0.017453292f * g_frame_time_sq,
-                           kerwan_rail_taxi_pitch_accel_deg * 0.017453292f * g_frame_time_sq,
-                           g_frame_time * 12.566371f);
-    SteerAngleWithVelocity(&rail_moby->rot.z,
-                           fast_atan2(target_path_point.x - rail_moby->pos.x, target_path_point.y - rail_moby->pos.y),
-                           &rail_flyer_vars->yaw_vel, kerwan_rail_taxi_yaw_accel_deg * 0.017453292f * g_frame_time_sq,
-                           kerwan_rail_taxi_yaw_accel_deg * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
-    SteerAngleWithVelocity(&rail_moby->rot.x,
-                           rail_flyer_vars->yaw_vel * rail_flyer_vars->speed * kerwan_rail_taxi_turn_roll_factor,
-                           &rail_flyer_vars->roll_vel, kerwan_rail_taxi_roll_accel_deg * 0.017453292f * g_frame_time_sq,
-                           kerwan_rail_taxi_roll_accel_deg * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
+    SteerAngleWithVelocity_v(&rail_moby->rot.y, target_pitch, &rail_flyer_vars->pitch_vel,
+                             kerwan_rail_taxi_pitch_accel_deg * 0.017453292f * g_frame_time_sq,
+                             kerwan_rail_taxi_pitch_accel_deg * 0.017453292f * g_frame_time_sq,
+                             g_frame_time * 12.566371f);
+    SteerAngleWithVelocity_v(
+        &rail_moby->rot.z, fast_atan2(target_path_point.x - rail_moby->pos.x, target_path_point.y - rail_moby->pos.y),
+        &rail_flyer_vars->yaw_vel, kerwan_rail_taxi_yaw_accel_deg * 0.017453292f * g_frame_time_sq,
+        kerwan_rail_taxi_yaw_accel_deg * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
+    SteerAngleWithVelocity_v(
+        &rail_moby->rot.x, rail_flyer_vars->yaw_vel * rail_flyer_vars->speed * kerwan_rail_taxi_turn_roll_factor,
+        &rail_flyer_vars->roll_vel, kerwan_rail_taxi_roll_accel_deg * 0.017453292f * g_frame_time_sq,
+        kerwan_rail_taxi_roll_accel_deg * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
     if (done == 0) {
         if (Sound_IsPlaying(moby, *sound) == 0)
             *sound = Sound_PlayClassSound(0, 4, (int)moby, 0x330);
@@ -1141,7 +1131,7 @@ typedef struct {
 } RocketTarget_D5790;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern void FindNearestTargetMoby_r(void *, void *, f32) __asm__("func_L00_00260D30");
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
 typedef struct {
@@ -1164,14 +1154,12 @@ typedef struct {
 
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern void add_vectors_r(void *, void *, void *) __asm__("func_L00_001FF240");
+extern void add_vectors(void *, void *, void *);
 
-extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void PartType04Spawn_r(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
-extern float func_L00_00259148(float *vel, float cur, float target, float k, float d, float max);
+
 extern int func_L00_001F10E0(float, void *, int, void *);
 
-extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
 extern Vec4 D_0013F590;
 extern short D_L03_00161BA8_D5790 SDATA(D_L03_00161BA8);
 extern char D_L03_00173FC0[];
@@ -1203,7 +1191,7 @@ void update_homing_rocket(struct Moby *m) {
             FastVecAdd(pos, pos, v);
             cam.q = g_hero_platform_carry.q;
             cam.f[2] *= (*(float *)&D_L03_00161BA8_D5790);
-            add_vectors_r(&trail, pos, &cam);
+            add_vectors(&trail, pos, &cam);
             m->rot.z = v->heading;
             m->rot.x = FastAddRots(m->rot.x, g_frame_time_r * 6.2831855f);
             side.f[0] = FastCos(v->heading) * v->speed * -0.5f;
@@ -1214,13 +1202,13 @@ void update_homing_rocket(struct Moby *m) {
             FastVecAdd(&trail, &side, &cam);
             side.q = trail.q;
             vec_scale_to_length_r(&back, v, -0.2f);
-            add_vectors_r(&trail, &back, pos);
-            PartType04Spawn_r(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range_r(0xF, 0x16)), 0x28,
-                              rand_range_r(0x14, 0x23), 1);
-            PartType04Spawn_r(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range_r(0x1E, 0x3C)), 0x28,
-                              rand_range_r(0x32, 0x4B), 0);
+            add_vectors(&trail, &back, pos);
+            PartType04Spawn_r(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(0xF, 0x16)), 0x28,
+                              rand_range(0x14, 0x23), 1);
+            PartType04Spawn_r(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(0x1E, 0x3C)), 0x28,
+                              rand_range(0x32, 0x4B), 0);
             if (target.found != 0) {
-                pitch = -fast_atan2_r(vec_distance_xy_r(pos, &target.pos), target.pos.f[2] - m->pos.z);
+                pitch = -fast_atan2(vec_distance_xy_r(pos, &target.pos), target.pos.f[2] - m->pos.z);
                 m->rot.y = SpringTurn(&v->turn_vel, m->rot.y, pitch, g_frame_time_sq_r * 0.7853982f,
                                       g_frame_time_sq_r * 3.1415927f, g_frame_time_r * 0.5235988f);
                 m->pos.z += FastSin(-m->rot.y) * v->speed;
@@ -1246,7 +1234,7 @@ void update_homing_rocket(struct Moby *m) {
             break;
         case 2:
             SpawnExplosionFx(m, &m->pos, 0, 0.25f, 13.0f);
-            DeleteMoby_r4(m);
+            DeleteMoby(m);
             break;
     }
 }
@@ -1564,8 +1552,8 @@ struct RailPath_DC560 {
     u8 pad4[0xC];
     Vec4 pts[1]; /* 0x10: xyz point, w length of the segment to the next */
 };
-extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
-extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
+extern float fast_atan2(float, float);
+extern void moby_build_matrix(void *);
 extern struct Moby *CreateMoby_r(int) __asm__("func_0020D348");
 extern void copy_hero_moby_field_38_r(struct Moby *) __asm__("func_L00_0025E210");
 
@@ -1598,12 +1586,12 @@ struct Moby *func_L03_002DC560_r(struct RailPath_DC560 *path, float dist) {
         qcopy(&m->pos, &path->pts[0]);
         clear_u64_value(&m->rot);
         end = (Vec4 *)((u8 *)path + (path->count - 1) * 16) + 1;
-        m->rot.z = fast_atan2_r2(end->f[0] - m->pos.x, end->f[1] - m->pos.y);
+        m->rot.z = fast_atan2(end->f[0] - m->pos.x, end->f[1] - m->pos.y);
         move = (u8 *)((struct PathMoverVars *)v)->matrix;
         ((struct L03002DC560RVars *)v)->unk_64 = dist;
         *(struct RailPath_DC560 **)&((struct L03002DC560RVars *)v)->unk_60 = path;
         ((struct L03002DC560RVars *)v)->unk_08 = move;
-        moby_build_matrix_r(m);
+        moby_build_matrix(m);
     }
     return m;
 }
@@ -2105,7 +2093,7 @@ extern struct RailPath_DE088 *kerwan_paths_r4[] __asm__("D_L03_001B08B0");
 extern u32 pad0_pressed_r __asm__("D_0013CBE4");
 extern short D_L03_0015F674_DE088 SDATA(D_L03_0015F674);
 extern void set_moby_dialogue_record_value_r(void *, int) __asm__("func_L00_002676A0");
-extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *, int);
 extern int is_hero_on_moby_r(void *) __asm__("func_L01_00278FA8");
 extern void request_hero_target_pose_r(void *, float, int) __asm__("func_L00_00234768");
 extern s32 get_hero_target_pose_status_r(void) __asm__("func_L00_002347B8");
@@ -2163,7 +2151,7 @@ void update_rail_lift(struct Moby *m) {
             lift_end = FastVecDist(&m->pos, &kerwan_paths_r4[d->path[0]]->pts[0]) <
                        FastVecDist(&m->pos, &kerwan_paths_r4[d->path[1]]->pts[0]);
             if (!d->started) {
-                if (d->autostart || is_point_inside_clip_volume_r(&g_hero_r.motion.pos, d->volume)) {
+                if (d->autostart || is_point_inside_clip_volume(&g_hero_r.motion.pos, d->volume)) {
                     m->collision = m->pclass->collision;
                     m->command = hero_end;
                     m->flags &= 0xFFBE;

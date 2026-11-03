@@ -190,20 +190,17 @@ extern u8 gold_weapon_purchased[40];
 extern int coll_hit_result[];
 extern M44 *g_coll_hit_moby;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern char *MobyGetHitMessage(void *, int, int);
 
-extern void RotateWithMoby(void *, void *, void *, void *, void *, void *);
 extern u8 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
 extern int move_moby_with_collision_integer_radius_v(void *, void *, int, int, float,
                                                      float) __asm__("func_L00_00259B08");
-extern void MobySpringTurn(void *, float *, float, float, float, float);
+
 extern int coll_sphere(float, void *, int, void *);
 extern void coll_sphere_mobys(float, void *, int, void *, void *);
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
-extern int ClassifyTargetInCone(void *, void *, void *, void *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Updates an Agent of Doom's movement, target selection and detonation. */
 void doom_bot_update(M44 *moby) {
@@ -564,9 +561,9 @@ void doom_bot_update(M44 *moby) {
                 scratch[2].v.z = 1.0f;
                 scratch[2].v.w = 1.0f;
                 ((void (*)(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                           int, int, int, int))spawn_explosion)(moby, &scratch[2], &moby->position, 0.0f, 0.0f, 5, 2, 4,
-                                                                2.0f * speed, speed, 9.0f, 1.0f, -1, 15.0f, 1, 5, -1,
-                                                                order->gold);
+                           int, int, int, int))spawn_explosion_v)(moby, &scratch[2], &moby->position, 0.0f, 0.0f, 5, 2,
+                                                                  4, 2.0f * speed, speed, 9.0f, 1.0f, -1, 15.0f, 1, 5,
+                                                                  -1, order->gold);
                 scratch[1].v.z += scale * 0.5f;
                 count = ((int (*)(void *, float, int, void *, void *))coll_sphere_mobys)(&moby->position, speed, 0x15,
                                                                                          moby, 0);
@@ -949,7 +946,7 @@ void mine_glove_update(struct Moby *moby) {
     }
 }
 
-extern float jump_speed_4318(float *a, float *b, float speed, float g, float *out);
+extern float jump_speed_4318_v(float *a, float *b, float speed, float g, float *out) __asm__("func_L00_0025BC48");
 
 typedef struct {
     float x, y, z, w;
@@ -983,7 +980,7 @@ void aim_throw_arc(float *a, float *b, float *out, float x, float y, float lim) 
     out[0] = FastCos(r) * e;
     out[1] = FastSin(r) * e;
     out[2] = 0.0f;
-    out[2] = jump_speed_4318(a, (float *)&t, e, -x, 0);
+    out[2] = jump_speed_4318_v(a, (float *)&t, e, -x, 0);
     if (pad_held & 5) {
         q = (IntToFloat(*(hero_globals_base - 9)) * 2.5f + 8.5f) / e;
     } else {
@@ -1438,8 +1435,6 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern unsigned char *moby_get_ride_transform(int);
-
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
 
@@ -1647,9 +1642,8 @@ ret0:
     return 0;
 }
 
-extern float Spring(float *, float, float *, float, float, float);
+extern float Spring_v(float *, float, float *, float, float, float) __asm__("func_L00_0025C918");
 
-extern void move_4318(void *, void *, float, float, float, int);
 extern float g_frame_scale_sq MACRO_ADDR;
 extern short g_frame_time_sq_s __asm__("D_0015EE70");
 
@@ -1683,8 +1677,8 @@ void update_decoy_proximity_motion(char *m) {
         horizontal_separation_error = 0.0f;
     if (proximity_response_gate == 0)
         horizontal_separation_error = 0.0f;
-    Spring(&horizontal_separation_error, 0.0f, &moby_vars->f60, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f,
-           g_frame_time * 4.0f);
+    Spring_v(&horizontal_separation_error, 0.0f, &moby_vars->f60, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f,
+             g_frame_time * 4.0f);
     if (horizontal_separation_error == 0.0f && moby_vars->f60 == 0.0f) {
         if (FastAbsF(((struct Moby *)m)->pos.z - ProbeGroundHeight(&((struct Moby *)m)->pos, 0, 0.5f)) < 0.02f)
             moby_vars->i68 = 0;
@@ -1728,18 +1722,12 @@ extern int coll_sphere(float, void *, int, void *);
 
 extern void destroy_decoy_on_selected_materials(void *);
 
-extern void add_random_offset_to_vector_xyz(float, void *);
+extern void add_random_offset_to_vector_xyz_v(float, void *) __asm__("func_L00_00260958");
 
-extern char *MobyGetHitMessage(void *, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern void RerollEffectCounter(void *, void *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
-extern void initialize_hit_descriptor(float, void *, void *, int);
 extern void coll_sphere_mobys(float, void *, int, void *, void *);
-extern void StepColorFade(void *, void *);
-
-extern void RotateWithMoby(void *, void *, void *, void *, void *, void *);
 
 /* Per-frame update of a projectile-like moby. */
 void decoy_update(Moby *moby) {
@@ -1904,7 +1892,7 @@ void decoy_update(Moby *moby) {
                         Moby_PlaySound(0, 0, moby);
                         vars->spin_timer = (unsigned char)scale_ticks(20);
                     } else {
-                        add_random_offset_to_vector_xyz(g_frame_time, vars->vel_xy);
+                        add_random_offset_to_vector_xyz_v(g_frame_time, vars->vel_xy);
                     }
                 }
             }
@@ -1956,9 +1944,9 @@ void decoy_update(Moby *moby) {
                             wv[2] = b;
                             wv[1] = a;
                             *(u128 *)v = *(u128 *)wv;
-                            add_random_offset_to_vector_xyz(a, v);
-                            spawn_explosion(moby, v, 0, 0.0f, 0.0f, 0, 0, 0, 4.0f, 3.0f, 9.0f, 2, 1.0f, 12.0f, 1, 1, -1,
-                                            active);
+                            add_random_offset_to_vector_xyz_v(a, v);
+                            spawn_explosion_v(moby, v, 0, 0.0f, 0.0f, 0, 0, 0, 4.0f, 3.0f, 9.0f, 2, 1.0f, 12.0f, 1, 1,
+                                              -1, active);
                             if (active != 0) {
                                 initialize_hit_descriptor(effect + effect, wv, moby, 0x810000);
                                 *(unsigned char *)((char *)xv + 8) = 2;
@@ -2496,7 +2484,7 @@ extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 extern Moby *spawn_swingshot_hook_r(void *, float) __asm__("func_L00_002C82E8");
 extern void func_L00_001EE2E0(int, int, float, void *, int, float, int, float, int);
 
-extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
+extern void MobyBlendAnimation(void *, int, int, int);
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
@@ -2548,7 +2536,7 @@ void func_L00_002C74B8_r(Moby *m) {
         case 1:
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 1)
-                    MobyBlendAnimation_r(m, 1, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 1, 0, scale_ticks(10));
                 m->state = 1;
             }
             if (d->hook) {
@@ -2563,7 +2551,7 @@ void func_L00_002C74B8_r(Moby *m) {
                     d->spin = 0.0f;
                     hd->speed = g_frame_time_r * 24.0f;
                     if (m->prev_seq != 3)
-                        MobyBlendAnimation_r(m, 3, 0, scale_ticks(10));
+                        MobyBlendAnimation(m, 3, 0, scale_ticks(10));
                     Moby_PlaySound_r(0, 0, m);
                     m->state = 2;
                 }
@@ -2578,7 +2566,7 @@ void func_L00_002C74B8_r(Moby *m) {
                 d->scale = 1.0f;
                 d->spin = 0.0f;
                 if (m->prev_seq != 3)
-                    MobyBlendAnimation_r(m, 3, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 3, 0, scale_ticks(10));
                 Moby_PlaySound_r(0, 0, m);
                 m->state = 9;
             }
@@ -2587,7 +2575,7 @@ void func_L00_002C74B8_r(Moby *m) {
             AddDrawCallback_r(draw_swingshot_cable_r, m);
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             }
             FastVecSub(&v0, &((Hero *)g_hero_r5)->grapple_target->pos, &d->hook->pos);
             speed = hd->speed;
@@ -2636,7 +2624,7 @@ void func_L00_002C74B8_r(Moby *m) {
             }
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             }
             AddDrawCallback_r(draw_swingshot_cable_r, m);
             d->spin = d->spin + 0.69813168f;
@@ -2667,7 +2655,7 @@ void func_L00_002C74B8_r(Moby *m) {
             qcopy(&d->hook->pos, &((Hero *)g_hero_r5)->grapple_target->pos);
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             }
             d->size = d->size * (frame_scale_r * -0.100000024f + 1.0f);
             d->spin = d->spin + 0.69813168f;
@@ -2690,7 +2678,7 @@ void func_L00_002C74B8_r(Moby *m) {
             } else {
                 qcopy(&d->hook->pos, &v10);
                 if (m->prev_seq != 1)
-                    MobyBlendAnimation_r(m, 1, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 1, 0, scale_ticks(10));
                 m->state = 1;
             }
             break;
@@ -2700,7 +2688,7 @@ void func_L00_002C74B8_r(Moby *m) {
             AddDrawCallback_r(draw_swingshot_cable_r, m);
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             }
             FastVecSub(&v0, &((Hero *)g_hero_r5)->swing_target_moby->pos, &d->hook->pos);
             if (hd->speed < FastVecLength(&v0)) {
@@ -2719,7 +2707,7 @@ void func_L00_002C74B8_r(Moby *m) {
         case 11:
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             }
             AddDrawCallback_r(draw_swingshot_cable_r, m);
             d->spin = d->spin + 0.69813168f;
@@ -2734,7 +2722,7 @@ void func_L00_002C74B8_r(Moby *m) {
                 qcopy(&d->hook->pos, &((Hero *)g_hero_r5)->swing_target_moby->pos);
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             }
             d->size = d->size * (frame_scale_r * -0.600000024f + 1.0f);
             d->spin = d->spin + 0.69813168f;
@@ -2745,7 +2733,7 @@ void func_L00_002C74B8_r(Moby *m) {
         case 13:
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             }
             AddDrawCallback_r(draw_swingshot_cable_r, m);
             hd->speed = g_frame_time_r * 80.0f;
@@ -2754,7 +2742,7 @@ void func_L00_002C74B8_r(Moby *m) {
         case 14:
             if (m->anim_flags & 2) {
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
             }
             Moby_GetJointWorldPos_r(m, 0, &v10);
             FastVecSub(&v0, &v10, &d->hook->pos);
@@ -2765,7 +2753,7 @@ void func_L00_002C74B8_r(Moby *m) {
             } else {
                 qcopy(&d->hook->pos, &v10);
                 if (m->prev_seq != 1)
-                    MobyBlendAnimation_r(m, 1, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 1, 0, scale_ticks(10));
                 m->state = 1;
             }
             if (((Hero *)g_hero_r5)->state.current == HERO_STATE_GRAPPLE_SWING_ENTRY && hd) {
@@ -2774,7 +2762,7 @@ void func_L00_002C74B8_r(Moby *m) {
                 d->size = 0.0f;
                 d->spin = 0.0f;
                 if (m->prev_seq != 3)
-                    MobyBlendAnimation_r(m, 3, 0, scale_ticks(10));
+                    MobyBlendAnimation(m, 3, 0, scale_ticks(10));
                 m->state = 9;
             }
             break;
@@ -2939,7 +2927,7 @@ void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, f
     out[0] = FastCos(ang) * s;
     out[1] = FastSin(ang) * s;
     *(int *)&out[2] = 0;
-    out[2] = jump_speed_4318(pos, (float *)&t, s, -speed, 0);
+    out[2] = jump_speed_4318_v(pos, (float *)&t, s, -speed, 0);
     if (pad_held & 5) {
         k = 3.5f / s;
     } else {
@@ -2967,12 +2955,12 @@ extern char g_debug_camera_r4[] __asm__("D_L00_00166EC0");
 extern char coll_hit_result_r4[] __asm__("D_L00_00173F40");
 extern float g_frame_time_sq_r2 __asm__("D_0015EE70") MACRO_ADDR;
 
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 
 extern float vec_length_r(float) __asm__("func_001F9B50");
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
+extern void BuildSphericalOffset(void *, float, float, float);
 extern int coll_line_r5(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 extern void compute_glove_of_doom_launch_velocity_r(float *pos, float *tgt, float *out, float speed, float unused,
                                                     float range) __asm__("func_L00_002C8680");
@@ -3002,12 +2990,12 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
     matrix_mul_vec3(v80, v80, ((struct Hero *)g_hero)->basis);
     {
         Hero *h = (Hero *)g_hero;
-        q0[0] = FastCos(FastAddRots(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
-        q0[1] = FastSin(FastAddRots(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
+        q0[0] = FastCos(FastAddRots(-0.361968011f, fast_atan2(h->facing_x, h->facing_y))) * 0.859039009f;
+        q0[1] = FastSin(FastAddRots(-0.361968011f, fast_atan2(h->facing_x, h->facing_y))) * 0.859039009f;
         q0[2] = 0.0f;
         FastVecAdd(q0, q0, &((struct Hero *)g_hero)->motion.pos);
         q0[2] = q0[2] + 0.390819997f;
-        fast_atan2_r(v80[0], v80[1]);
+        fast_atan2(v80[0], v80[1]);
         s = (((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f;
         FastVecScale(v90, v80, s);
         FastVecAdd(v90, v90, q0);
@@ -3016,14 +3004,14 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
             va0[2] = 1.0f;
             transform_vector(va0, va0, m40);
             flag = 0;
-            FastSubRots(((Moby *)h->moby)->rot.z, fast_atan2_r(va0[0], va0[1]));
-            f22 = fast_atan2_r(va0[0], va0[1]);
-            w = fast_atan2_r(vec_length_xy_r(va0), va0[2]);
+            FastSubRots(((Moby *)h->moby)->rot.z, fast_atan2(va0[0], va0[1]));
+            f22 = fast_atan2(va0[0], va0[1]);
+            w = fast_atan2(vec_length_xy_r(va0), va0[2]);
             if (0.593411922f < w)
                 w = 0.593411922f;
             if (w < -1.39626336f)
                 w = -1.39626336f;
-            BuildSphericalOffset_r(va0, (((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f, f22, w);
+            BuildSphericalOffset(va0, (((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f, f22, w);
             qcopy(vb0, player_camera_r2 + 0x140);
             y = vec_length_xy_r(va0);
             {
@@ -3047,7 +3035,7 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
                     ((Hit_2C88A8 *)coll_hit_result_r4)->moby != *(void **)&((struct Hero *)g_hero)->moby) {
                     qcopy(v90, ((Hit_2C88A8 *)coll_hit_result_r4)->point);
                     flag = 1;
-                    f22 = fast_atan2_r(v90[0] - q0[0], v90[1] - q0[1]);
+                    f22 = fast_atan2(v90[0] - q0[0], v90[1] - q0[1]);
                 }
                 if (flag == 0) {
                     f20 = 5.0f;
@@ -3086,7 +3074,6 @@ extern u32 pad0_pressed_r __asm__("D_0013CBE4");
 extern s32 gameplay_event_frame_count_r2 __asm__("D_0015EFA4") MACRO_ADDR;
 extern s32 g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern void Moby_GetJointWorldPos_r3(unsigned char *, int, void *) __asm__("func_L00_00250800");
-extern void MobyTransformScaledVertex_r(void *, int, void *) __asm__("func_0020DAF8");
 
 extern int HeroEnterMoveState_r2(int, int) __asm__("func_L00_00222B80");
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
@@ -3115,7 +3102,7 @@ void glove_of_doom_update(struct Moby *moby) {
     offset.f[1] = -0.14f;
     offset.f[2] = -0.05f;
     Moby_GetJointWorldPos_r3((u8 *)moby, 0, &pos);
-    MobyTransformScaledVertex_r(moby, 0, mat);
+    MobyTransformScaledVertex(moby, 0, mat);
     transform_vector(&local, &offset, mat);
     FastVecAdd(&vars->grip, &pos, &local);
     if (vars->held != 0) {

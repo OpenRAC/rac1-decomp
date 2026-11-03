@@ -43,7 +43,6 @@ extern LensFlare D_00187400;
 
 extern s32 truncate_float_to_s32(f32) __asm__("func_001FA898");
 
-extern void project_to_screen_r(f32 *, void *) __asm__("func_001F2418");
 extern s64 get_effect_texture(s32) __asm__("func_001F4868");
 
 /* Lens flare: projects the flare moby to the screen and fills the per-element alpha, texture, colour, distance and scale tables. Adapted from Lombyte's project (GPL-3.0) for PAL: rendering/effects/fun_001edc50.c, FUN_001edc50. */
@@ -76,7 +75,7 @@ void draw_lens_flare(void) {
     dist = FastVecDist(camera_position, effect_ribbon.moby->pos);
     ctr[0] = IntToFloat(g_screen_extent_r.cx);
     ctr[1] = IntToFloat(g_screen_extent_r.cy);
-    project_to_screen_r(scr, effect_ribbon.moby->pos);
+    project_to_screen(scr, effect_ribbon.moby->pos);
     scr[0] = (scr[0] - IntToFloat(g_screen_extent_r.ox)) * 0.0625f;
     scr[1] = (scr[1] - IntToFloat(g_screen_extent_r.oy)) * 0.0625f;
     d[0] = ctr[0] - scr[0];

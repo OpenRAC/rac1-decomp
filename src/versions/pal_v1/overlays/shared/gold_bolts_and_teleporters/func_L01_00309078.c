@@ -14,10 +14,10 @@ void gold_bolt_update(Moby *moby) {
             }
             qcopy(&vars->home, &moby->pos);
             vars->home.w = moby->rot.z;
-            moby->rot.x = rand_angle_00309078();
-            moby->rot.y = rand_angle_00309078();
-            moby->rot.z = rand_angle_00309078();
-            moby->rot.w = rand_angle_00309078();
+            moby->rot.x = random_angle_radians();
+            moby->rot.y = random_angle_radians();
+            moby->rot.z = random_angle_radians();
+            moby->rot.w = random_angle_radians();
             vars->unk68 = D_L01_00161FB0_00309078 * 0.017453292f * g_frame_time_r;
             vars->unk64 = D_L01_00161FB4_00309078 * 0.017453292f * g_frame_time_r;
             vars->unk60 = D_L01_00161FB8_00309078 * 0.017453292f * g_frame_time_r;
@@ -32,7 +32,7 @@ void gold_bolt_update(Moby *moby) {
             moby->rot.z = FastAddRots(moby->rot.z, D_L01_00161FB8_00309078 * 0.017453292f * g_frame_time_r);
             moby->rot.w = FastAddRots(moby->rot.w, D_L01_00161FBC_00309078 * 0.017453292f * g_frame_time_r);
             update_gold_bolt_glow_rings_r(moby);
-            if (!rand_below_00309078(D_L01_00161FE0_00309078)) {
+            if (!random_integer_below(D_L01_00161FE0_00309078)) {
                 spawn_gold_bolt_particles_r(moby);
             }
             if (!(dist_00309078(&moby->pos, &hero_00309078.motion.pos) < 3.0f)) {
@@ -53,7 +53,7 @@ void gold_bolt_update(Moby *moby) {
                 gold_bolts_collected_r[vars->id + g_current_level_index_r * 4] = 1;
                 save_00309078(0, -1);
             remove:
-                remove_00309078(moby);
+                DeleteMoby(moby);
                 return;
             }
             at.x = FastCos(vars->home.w) * 2.5f;
@@ -62,7 +62,7 @@ void gold_bolt_update(Moby *moby) {
             FastVecAdd(&at, &at, &vars->home);
             clear_u64_value(&look);
             look.z = FastAddRots(vars->home.w, 3.1415927f);
-            FadeToBlack_r(scale_ticks(10));
+            FadeToBlack(scale_ticks(10));
             if (hero_00309078.vehicle_mode == 3) {
                 exit_hero_vehicle_mode_and_restore_moby_r();
             }
@@ -100,7 +100,7 @@ void gold_bolt_update(Moby *moby) {
             qcopy(&moby->rot, &hero_00309078.motion.rot);
             if (moby->seq == 1) {
                 update_gold_bolt_visuals_r(moby);
-                if (!rand_below_00309078(10)) {
+                if (!random_integer_below(10)) {
                     spawn_gold_bolt_particles_r(moby);
                 }
                 if (moby->anim_flags & 2) {
@@ -128,7 +128,7 @@ void gold_bolt_update(Moby *moby) {
             Hero_ResetToPosition_r(&h->motion.pos, &h->motion.rot, 0, 0);
             CameraScript2_r(0);
             save_00309078(0, -1);
-            remove_00309078(moby);
+            DeleteMoby(moby);
             break;
     }
 }

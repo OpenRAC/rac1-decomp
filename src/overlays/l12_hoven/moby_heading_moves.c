@@ -10,10 +10,9 @@
 #include "game/math/fastfunc.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-
-extern s32 move_w(void *, void *, void *, void *, f32);
 
 /* steers the moby toward a point 100 units ahead along its heading.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/math/interpolation/00271dd8.c, FUN_L12_00271dd8. */

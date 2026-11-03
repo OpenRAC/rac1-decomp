@@ -75,17 +75,9 @@ extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int truncate_float_to_s32(float);
 
-extern void ClampVectorLength(void *a, float x);
-
 extern float ApproachValue(float *p, float target, float maxstep);
 
-extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-
 extern int coll_line(void *, void *, int, int, int);
-
-extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
-
-extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 18 build). */
 void HeroStateTransitions(void) {

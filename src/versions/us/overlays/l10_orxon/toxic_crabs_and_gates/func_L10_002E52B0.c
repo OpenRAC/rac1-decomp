@@ -22,7 +22,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     }
     if (d->f38 != 0) {
         activate_waiting_moby_group_members_r(m);
-        d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between_r(180.0f, 240.0f)));
+        d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->f38 = 0;
     }
     fast_dec_timer_r(&d->f1AC);
@@ -93,7 +93,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f98 = 0.75f;
         d->f94 = 9;
         d->bAD = 0;
-        fx = fast_atan2_r(r->pos.x, r->pos.y);
+        fx = fast_atan2(r->pos.x, r->pos.y);
         switch (v21) {
             case 3:
             case 6:
@@ -125,7 +125,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 d->fC4 = 7.0f;
                 *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)&r->pos;
                 HeadingFromVector_r(&vA, &fx, &d->f88, &d->f8C);
-                InitKnockback_r(m, d->a70, 9, 1, 0, fast_atan2_r(r->pos.x, r->pos.y));
+                InitKnockback_r(m, d->a70, 9, 1, 0, fast_atan2(r->pos.x, r->pos.y));
                 d->b67 = 0xFA;
                 RerollEffectCounter_r(m, d->a60);
                 break;
@@ -177,11 +177,11 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (1.0f < FastVecDist(&m->pos, &d->a170)) {
                 m->state = 8;
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks(12));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(12));
             } else if (g_hero.vehicle_mode != 1) {
                 m->state = 1;
                 if (m->prev_seq != 0)
-                    MobyBlendAnimation_r(m, 0, 0, scale_ticks(20));
+                    MobyBlendAnimation(m, 0, 0, scale_ticks(20));
             }
         }
     } else {

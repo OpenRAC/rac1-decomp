@@ -30,8 +30,8 @@ int DrawQuitGameMenu(char *arg0) {
         a = b;
     }
     x = (*(int *)(arg0 + 0x20) - a) >> 1;
-    func_001F68E8_c(x, y2, 0x80FFA888L, msg_string_id(0x52A2), -1);
-    func_001F68E8_c(x, y3, 0x80FFA888L, msg_string_id(0x52A6), -1);
+    FontPrintLarge(x, y2, 0x80FFA888L, msg_string_id(0x52A2), -1);
+    FontPrintLarge(x, y3, 0x80FFA888L, msg_string_id(0x52A6), -1);
     DoGifPaging();
     return 2;
 }

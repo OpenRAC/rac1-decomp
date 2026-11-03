@@ -51,9 +51,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.race_path_node;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
-        if (FastDiffRots(ang, fast_atan2_r2(g_hero.motion.pos.f[0] - path->p[i].x,
-                                            g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
+        ang = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        if (FastDiffRots(ang, fast_atan2(g_hero.motion.pos.f[0] - path->p[i].x,
+                                         g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.race_path_node = next;
             if (next == 0) {
                 g_hero.race_lap++;
@@ -77,7 +77,7 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.wrong_way_path_point;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        dir = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        dir = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
     }
     if (near != 0 || (FastDiffRots(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
         g_hero.off_course_frames++;
@@ -114,9 +114,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.racer_path_point[j];
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        ang = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
         qcopy(v0, moby_pool_4f60_r2[d->f2C[j]].pos);
-        if (FastDiffRots(ang, fast_atan2_r2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
+        if (FastDiffRots(ang, fast_atan2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.racer_path_point[j] = next;
             if (next == 0) {
                 g_hero.racer_laps[j]++;

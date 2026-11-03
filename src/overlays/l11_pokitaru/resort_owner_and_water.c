@@ -172,7 +172,8 @@ void update_pokitaru_pickup(char *moby) {
     }
 }
 
-extern float SteerAngleWithVelocity(float *p, float a, float *v, float b, float c, float d);
+extern float SteerAngleWithVelocity_v(float *p, float a, float *v, float b, float c,
+                                      float d) __asm__("func_L00_0025CE58");
 extern float g_frame_time_sq MACRO_ADDR;
 
 // Update for a moby that spawns a child copy once, then eases along a path and changes state.
@@ -204,8 +205,9 @@ void update_pokitaru_paired_rotation(char *moby) {
                 target_angle = FastAddRots(data->start_angle, 0.20769417f);
             else
                 target_angle = FastSubRots(data->start_angle, 0.20769417f);
-            if (SteerAngleWithVelocity(&m->rot.z, target_angle, (float *)((char *)data), g_frame_time_sq * 0.34906584f,
-                                       g_frame_time_sq * 0.34906584f, g_frame_time * 0.7853982f) == 0.0f)
+            if (SteerAngleWithVelocity_v(&m->rot.z, target_angle, (float *)((char *)data),
+                                         g_frame_time_sq * 0.34906584f, g_frame_time_sq * 0.34906584f,
+                                         g_frame_time * 0.7853982f) == 0.0f)
                 m->state = 3;
             break;
         }
@@ -234,10 +236,10 @@ extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern void clear_active_help_record_r(void) __asm__("func_L00_00203FB8");
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+extern float random_float_between(float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
+extern void BuildSphericalOffset(void *, float, float, float);
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__("func_L00_00263950");
@@ -331,11 +333,11 @@ void bob_update(char *m) {
             if (fast_dec_timer_r(&moby_vars->target_timer) != 0) {
                 float y;
                 float z;
-                float x = random_float_between_r(180.0f, 300.0f);
+                float x = random_float_between(180.0f, 300.0f);
                 moby_vars->target_timer = truncate_float_to_s32_r(multiply_global_factor(x));
-                y = FastAddRots(moby->rot.z, random_float_between_r(-90.0f, 90.0f) * 0.017453292f);
-                z = random_float_between_r(0.0f, 30.0f) * 0.017453292f;
-                BuildSphericalOffset_r(moby_vars->target, 6.0f, y, z);
+                y = FastAddRots(moby->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
+                z = random_float_between(0.0f, 30.0f) * 0.017453292f;
+                BuildSphericalOffset(moby_vars->target, 6.0f, y, z);
                 FastVecAdd(moby_vars->target, moby_vars->target, &moby->pos);
             }
             if (moby_vars->moving_timer != 0) {
@@ -375,7 +377,6 @@ void bob_update(char *m) {
     }
 }
 
-extern void set_ground_height_band(void *);
 extern void update_resort_owner_state_actions(char *);
 extern void apply_resort_owner_movement(void *);
 extern void update_resort_owner_state_transitions(void *);
@@ -413,11 +414,9 @@ extern short resort_owner_mount_offset;
 extern short resort_owner_mount_rot;
 extern float g_frame_time_d __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_d __asm__("D_0015EE70") MACRO_ADDR;
-extern float SteerAngleWithVelocity(float *, float, float *, float, float, float);
+extern float SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 
 extern int IsFrameWithinWindow(char *, float);
-
-extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
 extern int try_activate_pokitaru_gate(unsigned char *moby);
 
@@ -443,8 +442,8 @@ void update_resort_owner_state_actions(char *m) {
         case 10: {
             float *rz = &boss->rot.z;
             float yaw = fast_atan2(d->target[0] - boss->pos.x, d->target[1] - boss->pos.y);
-            SteerAngleWithVelocity(rz, yaw, &d->turnSpeed, g_frame_time_sq_d * 12.566371f,
-                                   g_frame_time_sq_d * 25.132742f, g_frame_time_d * 12.566371f);
+            SteerAngleWithVelocity_v(rz, yaw, &d->turnSpeed, g_frame_time_sq_d * 12.566371f,
+                                     g_frame_time_sq_d * 25.132742f, g_frame_time_d * 12.566371f);
             d->velocity[0] = FastCos(boss->rot.z) * d->moveSpeed;
             {
                 float y = FastSin(boss->rot.z);
@@ -494,7 +493,7 @@ void update_resort_owner_state_actions(char *m) {
         }
     }
 }
-extern void move_4318(int, int, float, float, float, int);
+
 extern void resolve_point_path_segment_xy_clearance(float, void *, void *, void *);
 
 /* moves the parts' positions and stores the moby's displacement since last frame */
@@ -570,7 +569,6 @@ extern void set_resort_owner_state_r(void *, int) __asm__("func_L11_002D3248");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern int try_find_resort_owner_jump_target_r(void *, void *) __asm__("func_L11_002D37A8");
-extern float probe_ground_height_flag20_r(void *) __asm__("func_L00_0025A748");
 
 extern void BossL11_SetPartFlag_r(void *) __asm__("func_L11_0030BC10");
 extern void trigger_pokitaru_paired_rotation_r(void *) __asm__("func_L11_002CCB50");
@@ -605,7 +603,7 @@ void update_resort_owner_state_transitions(void *mp) {
         FastVecAdd(v, v, &moby->pos);
         if (try_find_resort_owner_jump_target_r(moby, v)) {
             qcopy(d->target, v);
-            d->target[2] = probe_ground_height_flag20_r(d->target);
+            d->target[2] = probe_ground_height_flag20(d->target);
             d->next = 3;
             set_resort_owner_state_r(moby, 7);
         }
@@ -995,8 +993,6 @@ int classify_resort_owner_target_proximity(char *moby) {
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float probe_ground_height_flag20_f(void *) __asm__("func_L00_0025A748");
-
 extern int coll_line(void *, void *, int, void *, int);
 typedef int u128 __attribute__((mode(TI)));
 
@@ -1028,7 +1024,7 @@ int try_find_resort_owner_jump_target(char *m, float *out) {
                 path_table[*(int *)(pvars - (-(*(int *)&((struct ResortOwnerVars *)pvars)->rail_select * 4)) + 0x60)];
             if (IsPointInPolygon(candidate_position, path_entry + 4, *path_entry)) {
                 candidate_position[2] += 5.0f;
-                landing_ground_height = probe_ground_height_flag20_f(candidate_position);
+                landing_ground_height = probe_ground_height_flag20(candidate_position);
                 if (FastAbsF(landing_ground_height - moby->pos.z) > 0.5f) {
                     qcopy(collision_start_position, pos);
                     collision_start_position[2] += 0.15f;
@@ -1060,7 +1056,7 @@ typedef struct {
     float eye[4];
     float delta[4];
 } WS11_2D3970;
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 
 extern float vec_length_xy_r2(void *) __asm__("func_001F9CE8");
 
@@ -1114,8 +1110,8 @@ void func_L11_002D3970_r(WM11_2D3970 *m) {
         qcopy(scratch.eye, m->position);
         scratch.eye[2] += 1.0f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
-        yaw = FastSubRots(fast_atan2_r(scratch.delta[0], scratch.delta[1]), m->yaw);
-        pitch = -fast_atan2_r(vec_length_xy_r2(scratch.delta), scratch.delta[2]);
+        yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), m->yaw);
+        pitch = -fast_atan2(vec_length_xy_r2(scratch.delta), scratch.delta[2]);
         if (yaw > 1.2217305f)
             yaw = 1.2217305f;
         else if (yaw < -1.2217305f)
@@ -1264,10 +1260,9 @@ void fred_pokitaru_update(char *m) {
         if (fast_dec_timer_r((int *)&moby_vars->target_timer)) {
             float heading;
             moby_vars->target_timer =
-                truncate_float_to_s32_r(multiply_global_factor(random_float_between_r(180.0f, 300.0f)));
-            heading = FastAddRots(moby->rot.z, random_float_between_r(-90.0f, 90.0f) * 0.017453292f);
-            BuildSphericalOffset_r(moby_vars->target, 6.0f, heading,
-                                   random_float_between_r(0.0f, 30.0f) * 0.017453292f);
+                truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 300.0f)));
+            heading = FastAddRots(moby->rot.z, random_float_between(-90.0f, 90.0f) * 0.017453292f);
+            BuildSphericalOffset(moby_vars->target, 6.0f, heading, random_float_between(0.0f, 30.0f) * 0.017453292f);
             FastVecAdd(moby_vars->target, moby_vars->target, (char *)&moby->pos);
         }
         if (moby_vars->moving_timer != 0) {
@@ -1317,8 +1312,6 @@ extern void request_teleporter_help_message(char *);
 extern void draw_teleporter_ring(char *);
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-
-extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
 extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
@@ -1600,8 +1593,8 @@ void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
     }
 }
 extern unsigned char *CreateMoby_r(int) __asm__("func_0020D348");
-extern void *func_L00_0025D390(char *);
-extern void BuildSphericalOffset_r2(void *, float, float, float) __asm__("func_00215C00");
+
+extern void BuildSphericalOffset(void *, float, float, float);
 
 /* Spawns an effect moby (Rocket) attached to a target and positioned from a source. */
 unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *vec, int arg, float scale) {
@@ -1627,7 +1620,7 @@ unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *v
         data->scale = scale;
         data->unk_30 = 0;
         data->unk_34 = 0;
-        BuildSphericalOffset_r2(((char *)data), scale, *(float *)(vec + 8), -*(float *)(vec + 4));
+        BuildSphericalOffset(((char *)data), scale, *(float *)(vec + 8), -*(float *)(vec + 4));
         if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
@@ -1683,15 +1676,14 @@ typedef union {
     } v;
 } W_30AE90;
 extern void update_pokitaru_boat_joint_effects_r(void *) __asm__("func_L11_0030B8D0");
-extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
+extern void MobyBlendAnimation(void *, int, int, int);
 
-extern float random_angle_radians_r(void) __asm__("func_00214158");
-extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
+extern float random_angle_radians(void);
+extern float fast_atan2(float, float);
 
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern float ApproachValue_r2(float *, float, float) __asm__("func_00214D28");
-extern void func_L00_002607A8(void *, float);
 
 extern float vec_length_xy_r3(void *) __asm__("func_001F9CE8");
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
@@ -1731,7 +1723,7 @@ void pokitaru_boat_update(Moby *m) {
             int i;
             m->draw_dist = 0xFF;
             if (m->prev_seq != 1)
-                MobyBlendAnimation_r(m, 1, 0, 1);
+                MobyBlendAnimation(m, 1, 0, 1);
             a = path_table_r[d->fA8];
             b = path_table_r[d->fAC];
             matrix_from_basis_rows(W.mtx, &m->rot_row0);
@@ -1746,7 +1738,7 @@ void pokitaru_boat_update(Moby *m) {
             {
                 int j;
                 for (j = 0; j < 4; j++)
-                    d->fF0[j] = random_angle_radians_r();
+                    d->fF0[j] = random_angle_radians();
             }
             d->f9C |= 1;
             d->fC8 = -1;
@@ -1762,7 +1754,7 @@ void pokitaru_boat_update(Moby *m) {
             d->fC4 = p;
             n = p->count;
             qcopy(&m->pos, &p->nodes[n - 2]);
-            m->rot.z = fast_atan2_r2(p->nodes[n - 1].x - m->pos.x, p->nodes[n - 1].y - m->pos.y);
+            m->rot.z = fast_atan2(p->nodes[n - 1].x - m->pos.x, p->nodes[n - 1].y - m->pos.y);
             m->state = 5;
             break;
         }
@@ -1832,7 +1824,7 @@ void pokitaru_boat_update(Moby *m) {
                 }
                 m->state = 3;
             }
-            SteerAngleWithVelocity_r(&m->rot.z, fast_atan2_r2(W.v.d.x - m->pos.x, W.v.d.y - m->pos.y), &d->fD8,
+            SteerAngleWithVelocity_r(&m->rot.z, fast_atan2(W.v.d.x - m->pos.x, W.v.d.y - m->pos.y), &d->fD8,
                                      D_L11_00161E68_30AE90 * 0.0174532924f * g_frame_time_sq_d,
                                      D_L11_00161E68_30AE90 * 0.0174532924f * g_frame_time_sq_d,
                                      D_L11_00161E6C_30AE90 * 0.0174532924f * g_frame_time_d);
@@ -2918,7 +2910,7 @@ void populate_water_tile_neighbor_indices(int arg) {
  * The index-first sums (`idx + base`) and the Rec57 member are what keep retail's addressing. */
 extern char *CreateMoby_c(int) __asm__("func_0020D348");
 
-extern void moby_build_matrix_u(void *) __asm__("func_L00_00251E30");
+extern void moby_build_matrix(void *);
 extern void Moby_PlaySound_u(int, int, void *) __asm__("func_0022ED80");
 extern float ApproachWithVelocity_f(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern void vec_scale_to_length_u(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -2949,7 +2941,7 @@ void update_link_triggered_moby_motion(unsigned char *m) {
             qcopy(&spawned_moby->pos, &moving_moby->pos);
             qcopy(&spawned_moby->rot, &moving_moby->rot);
             spawned_moby->rot.x = FastAddRots(spawned_moby->rot.x, 3.1415927f);
-            moby_build_matrix_u(spawned_moby);
+            moby_build_matrix(spawned_moby);
             spawned_private_data = (struct LinkMoverVars *)spawned_moby->pvars;
             spawned_private_data->link = private_data->link;
             spawned_private_data->accel = private_data->accel;
@@ -3075,9 +3067,9 @@ void update_link_triggered_moby_turn(char *moby) {
             break;
         case LINKED_TURN_STATE_ROTATE_TO_TARGET: {
             float target_angle = FastAddRots(private_data[2], 1.0471976f);
-            if (SteerAngleWithVelocity(&turning_moby->rot.z, target_angle, private_data + 1,
-                                       g_frame_time_sq * 0.34906584f, g_frame_time_sq * 0.34906584f,
-                                       g_frame_time * 0.7853982f) == 0.0f)
+            if (SteerAngleWithVelocity_v(&turning_moby->rot.z, target_angle, private_data + 1,
+                                         g_frame_time_sq * 0.34906584f, g_frame_time_sq * 0.34906584f,
+                                         g_frame_time * 0.7853982f) == 0.0f)
                 turning_moby->state = 3;
             break;
         }
@@ -3135,11 +3127,9 @@ missing:
 }
 #define hero_f728 (*(Hero *)&D_0013F450)
 extern int coll_sphere(float, void *, int, void *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
+
 extern int sync_ship_pickup_child_pose(char *owner, char *data);
 
-extern void jet_animate(void *, float);
 extern struct Moby *pokitaru_coll_hit_moby __attribute__((section(".data")));
 
 typedef struct AmmoCrateVars {
@@ -3328,7 +3318,7 @@ extern int func_00120778_311318(float) __asm__("func_00120778");
 extern void STUB_printf_r(char *, int, int) __asm__("func_001E9730");
 extern int ComputeHitResponse_r(void *, void *, float *, int, int *, int, int, int) __asm__("func_L00_0025B4D0");
 extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
-extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
+extern void MobyBlendAnimation(void *, int, int, int);
 
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
 extern char D_L11_0021B820[];
@@ -3363,7 +3353,7 @@ void func_L11_00311318_r(struct Moby *m, unsigned char *d, float *t) {
                 d[0x67] = 0x78;
                 RerollEffectCounter_r(m, d + 0x60);
                 if (m->prev_seq != 2) {
-                    MobyBlendAnimation_r2(m, 2, 0, 3);
+                    MobyBlendAnimation(m, 2, 0, 3);
                 }
                 s = *(unsigned char **)(d + 0x70);
                 if (s != 0 && s[0x20] != 0xFE && s[0x20] != 0xFD) {
@@ -3376,7 +3366,7 @@ void func_L11_00311318_r(struct Moby *m, unsigned char *d, float *t) {
                 *(short *)(d + 0x26) = scale_ticks(0x3C);
                 RerollEffectCounter_r(m, d + 0x60);
                 if (m->prev_seq != 4) {
-                    MobyBlendAnimation_r2(m, 4, 0, 3);
+                    MobyBlendAnimation(m, 4, 0, 3);
                 }
             }
         }
@@ -3469,18 +3459,15 @@ extern float camera_pos_b358_r[] __asm__("D_L11_00167840");
 extern void set_ground_height_band_r(void *) __asm__("func_L00_0025B178");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern void MobyBlendAnimation_r3(void *, int, int, int) __asm__("func_00213DE0");
-extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
+extern void MobyBlendAnimation(void *, int, int, int);
+extern float fast_atan2(float, float);
 extern float SteerAngleWithVelocity_r2(float *p, float a, float *v, float b, float c,
                                        float d) __asm__("func_L00_0025CE58");
 extern int IsFrameWithinWindow_r(void *, float) __asm__("func_00215B18");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern int func_L00_0025D6F0(void *, void *);
-extern int IsPointInPolygon_r(void *, void *, int) __asm__("func_L00_0025A778");
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
-extern void func_L00_00260460(void *, void *, int, float, float);
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+
 extern Path_311648 *path_table_r2[] __asm__("D_L11_001B11B0");
 extern Moby *g_hero_moby_r __asm__("D_001414D0");
 extern float D_L11_00162058_311648 SDATA(D_L11_00162058);
@@ -3510,7 +3497,7 @@ void psytcopus_update(Moby *moby) {
             data->f5A = truncate_float_to_s32_r2(8.0f);
             moby->state = 3;
             if (moby->prev_seq != 0) {
-                MobyBlendAnimation_r3(moby, 0, 0, scale_ticks(10));
+                MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             }
             if (data->f130 != 0) {
                 moby->state = 1;
@@ -3519,7 +3506,7 @@ void psytcopus_update(Moby *moby) {
             }
             moby->state = 3;
             if (moby->prev_seq != 0) {
-                MobyBlendAnimation_r3(moby, 0, 0, scale_ticks(10));
+                MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
             }
             break;
         case 1:
@@ -3527,19 +3514,19 @@ void psytcopus_update(Moby *moby) {
             break;
         case 3:
             SteerAngleWithVelocity_r2(
-                &moby->rot.z, fast_atan2_r3(g_hero_moby_r->pos.x - moby->pos.x, g_hero_moby_r->pos.y - moby->pos.y),
+                &moby->rot.z, fast_atan2(g_hero_moby_r->pos.x - moby->pos.x, g_hero_moby_r->pos.y - moby->pos.y),
                 data->f14C, g_frame_time_sq_d * 6.2831855f, g_frame_time_sq_d * 6.2831855f,
                 g_frame_time_d * 6.2831855f);
             if (data->f114 == 2)
                 break;
             moby->state = 4;
             if (moby->prev_seq != 2) {
-                MobyBlendAnimation_r3(moby, 2, 0, scale_ticks(10));
+                MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
             }
             break;
         case 4:
             SteerAngleWithVelocity_r2(
-                &moby->rot.z, fast_atan2_r3(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), data->f14C,
+                &moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), data->f14C,
                 g_frame_time_sq_d * 6.2831855f, g_frame_time_sq_d * 6.2831855f, g_frame_time_d * 6.2831855f);
             if (IsFrameWithinWindow_r(moby, 15.0f)) {
                 vec_scale_to_length_r2(v, &moby->rot_row0, D_L11_00162058_311648);
@@ -3551,13 +3538,13 @@ void psytcopus_update(Moby *moby) {
             if (moby->anim_flags & 2) {
                 moby->state = 5;
                 if (moby->prev_seq != 3) {
-                    MobyBlendAnimation_r3(moby, 3, 0, scale_ticks(10));
+                    MobyBlendAnimation(moby, 3, 0, scale_ticks(10));
                 }
             }
             break;
         case 5:
             SteerAngleWithVelocity_r2(
-                &moby->rot.z, fast_atan2_r3(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), data->f14C,
+                &moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), data->f14C,
                 g_frame_time_sq_d * 6.2831855f, g_frame_time_sq_d * 6.2831855f, g_frame_time_d * 6.2831855f);
             if (data->f160 != 0 && IsFrameWithinWindow_r(moby, 33.0f)) {
                 vec_scale_to_length_r2(v, &moby->rot_row0, g_frame_time_d * 30.0f);
@@ -3567,7 +3554,7 @@ void psytcopus_update(Moby *moby) {
             if (moby->anim_flags & 2) {
                 moby->state = 6;
                 if (moby->prev_seq != 4) {
-                    MobyBlendAnimation_r3(moby, 4, 0, scale_ticks(10));
+                    MobyBlendAnimation(moby, 4, 0, scale_ticks(10));
                 }
             }
             break;
@@ -3575,7 +3562,7 @@ void psytcopus_update(Moby *moby) {
             if (moby->anim_flags & 2) {
                 moby->state = 3;
                 if (moby->prev_seq != 0) {
-                    MobyBlendAnimation_r3(moby, 0, 0, scale_ticks(10));
+                    MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
                 }
             }
             break;
@@ -3583,10 +3570,10 @@ void psytcopus_update(Moby *moby) {
             r = mine_fall(moby, data->f70);
             if (r & 0x41) {
                 Path_311648 *p = path_table_r2[data->f13C];
-                if (IsPointInPolygon_r(&moby->pos, p->pts, p->count)) {
+                if (IsPointInPolygon(&moby->pos, p->pts, p->count)) {
                     moby->state = 3;
                     if (moby->prev_seq != 0) {
-                        MobyBlendAnimation_r3(moby, 0, 0, scale_ticks(10));
+                        MobyBlendAnimation(moby, 0, 0, scale_ticks(10));
                     }
                     break;
                 }
@@ -3595,14 +3582,14 @@ void psytcopus_update(Moby *moby) {
             if (r & 0x120) {
                 SetDeathBits_r(moby, 0, -1);
                 spawn_color_swapped_explosion_burst(moby, &moby->pos, -1, 0.5f, 10.0f);
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
             }
             break;
         case 8:
             if (mine_fall(moby, data->f70) & 0x160) {
                 spawn_color_swapped_explosion_burst(moby, &moby->pos, -1, 1.0f, 10.0f);
                 SetDeathBits_r(moby, 0, -1);
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
             }
             break;
     }
@@ -3672,15 +3659,14 @@ extern void vec_scale_to_length_r3(void *, void *, float) __asm__("func_L00_001F
 extern Info *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r2(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern float fast_atan2_r4(float, float) __asm__("func_L00_001FF860");
-extern void func_L00_0025BBA0(void *, float *, void *, void *);
-extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
+extern float fast_atan2(float, float);
+
 extern void func_L00_00237B70(int);
 
 extern void SetDeathBits_r2(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r2(void *m, void *p) __asm__("func_L00_0025E4B0");
 extern void StepColorFade_r2(void *, void *) __asm__("func_L00_0025E590");
-extern int func_L00_00260FB0(float, void *, void *, int, int, void *, int);
+
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 /* Pokitaru psytcopus movement (called from psytcopus_update): follows its path, picks a jump or a hop from the
@@ -3732,7 +3718,7 @@ void handle_psytcopus_hits(Moby *moby) {
                 data->f88 = D_L11_00162020_311B60 * g_frame_time_d;
                 data->f8C = D_L11_0016201C_311B60 * g_frame_time_d;
                 data->fC4 = 6.0f;
-                d1 = fast_atan2_r4(moby->pos.x - info->moby->pos.x, moby->pos.y - info->moby->pos.y);
+                d1 = fast_atan2(moby->pos.x - info->moby->pos.x, moby->pos.y - info->moby->pos.y);
                 v.q = info->pos.q;
                 HeadingFromVector(&v, &d1, &data->f88, &data->f8C);
                 InitKnockback(moby, data->f70, d1, 5, 1, 0);
@@ -3752,7 +3738,7 @@ void handle_psytcopus_hits(Moby *moby) {
                 data->f8C = D_L11_00162024_311B60 * g_frame_time_d;
                 data->fC0 = 4.0f;
                 data->fC4 = 10.0f;
-                d2 = fast_atan2_r4(moby->pos.x - info->moby->pos.x, moby->pos.y - info->moby->pos.y);
+                d2 = fast_atan2(moby->pos.x - info->moby->pos.x, moby->pos.y - info->moby->pos.y);
                 v.q = info->pos.q;
                 HeadingFromVector(&v, &d2, &data->f88, &data->f8C);
                 InitKnockback(moby, data->f70, d2, 6, 1, 0);

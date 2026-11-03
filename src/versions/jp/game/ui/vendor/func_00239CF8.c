@@ -6,11 +6,11 @@ void render_vendor_item_details_pass(void) {
     DrawMobyList(vendor_state_m.f20 + 0x100, 1);
     DrawMobyList(vendor_state_m.f20, 1);
     if (vendor_state_m.slots[vendor_state_m.idx].kind == 1) {
-        FontPrintSmall_c(6, 8, 0x80F0F0F0L,
-                         msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
-        FontPrintSmall_c(0x18, 0x18, 0x80F0F0F0L, msg_string_id(0x4F5E), -1);
+        FontPrintSmall(6, 8, 0x80F0F0F0L,
+                       msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall(0x18, 0x18, 0x80F0F0F0L, msg_string_id(0x4F5E), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
-        font_print_right_small_c(0x76, 0x65, 0x80F0F0F0L, buf, -1);
+        font_print_right_small(0x76, 0x65, 0x80F0F0F0L, buf, -1);
         if (vendor_state_m.f40 != 0) {
             w = measure_text_width_regular((unsigned char *)buf, -1);
             draw_hud_rect_blended(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
@@ -23,13 +23,13 @@ void render_vendor_item_details_pass(void) {
             format_scaled_display_value(buf, vendor_state_m.f40
                                                  ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].d
                                                  : vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
-            font_print_right_small_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
+            font_print_right_small(0x76, 0x55, 0x80F0F0F0L, buf, -1);
         }
     } else {
-        FontPrintSmall_c(6, 8, 0x80F0F0F0L,
-                         msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall(6, 8, 0x80F0F0F0L,
+                       msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
-        font_print_right_small_c(0x76, 0x65, item_available_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
+        font_print_right_small(0x76, 0x65, item_available_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
         if (item_available_b[0x23] != 0) {
             w = measure_text_width_regular((unsigned char *)buf, -1);
             draw_hud_rect_blended(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
@@ -42,7 +42,7 @@ void render_vendor_item_details_pass(void) {
             format_scaled_display_value(buf, item_available_b[0x23]
                                                  ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].b
                                                  : vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
-            font_print_right_small_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
+            font_print_right_small(0x76, 0x55, 0x80F0F0F0L, buf, -1);
         }
     }
 }

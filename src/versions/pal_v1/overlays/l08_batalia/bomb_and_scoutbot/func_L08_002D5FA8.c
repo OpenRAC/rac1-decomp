@@ -134,9 +134,9 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
         float yaw, len, pitch;
         subtract_2D5FA8(vec, d->target, (float *)&m->pos);
         vec[2] -= 3.0f;
-        yaw = angle_2D5FA8(vec[0], vec[1]);
+        yaw = fast_atan2(vec[0], vec[1]);
         len = length_2D5FA8(vec);
-        pitch = -angle_2D5FA8(len, vec[2]);
+        pitch = -fast_atan2(len, vec[2]);
         if (0.34906585f < pitch) {
             pitch = 0.34906585f;
         } else if (pitch < -0.7853982f) {

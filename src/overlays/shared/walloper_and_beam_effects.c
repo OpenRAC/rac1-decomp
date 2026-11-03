@@ -156,8 +156,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 
-extern int GetFlaggedPvarWord();
-
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
@@ -1292,8 +1290,6 @@ extern float tesla_arc_range SDATA(tesla_arc_range);
 extern float morphoray_target_angle_threshold_degrees_gp SDATA(morphoray_target_angle_threshold_degrees_gp);
 extern int coll_hit_result[];
 
-extern int GetFlaggedPvarWord(char *);
-
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 
 /* Find the Morph-o-Ray target near the aim line and bend heading/pitch toward it; returns it or 0. */
@@ -1450,14 +1446,13 @@ extern int morphoray_beam_voice_r __asm__("D_L00_00161898") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern float MobyGetFrameValue_r(void *) __asm__("func_0020D830");
 
 extern void start_equipped_item_animation_r(void) __asm__("func_L00_0020EB60");
 
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern Moby *select_morphoray_target_and_adjust_aim_r(void *, void *, void *, void *) __asm__("func_L00_002BD6B8");
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
@@ -1507,7 +1502,7 @@ void MorphorayUpdate(Moby *m) {
         morphoray_light_fade_timer_r = 0;
     }
     near = 1;
-    if (m->prev_seq == 0 && MobyGetFrameValue_r(m) < 6.0f) {
+    if (m->prev_seq == 0 && MobyGetFrameValue(m) < 6.0f) {
         near = 0;
     }
     FastDecTimer(&p->timer);
@@ -1550,8 +1545,8 @@ void MorphorayUpdate(Moby *m) {
             v0.x = 1.0f;
             matrix_mul_vec3(&v0, &v0, ((Hero *)g_hero_r)->basis[0].f);
         }
-        p->yaw = fast_atan2_r(v0.x, v0.y);
-        p->pitch = fast_atan2_r(vec_length_xy_r(&v0), v0.z);
+        p->yaw = fast_atan2(v0.x, v0.y);
+        p->pitch = fast_atan2(vec_length_xy_r(&v0), v0.z);
         *(u128_2BDAF0 *)&v[0] = *(u128_2BDAF0 *)p->pos;
         hit = select_morphoray_target_and_adjust_aim_r(m, &v[0], &p->yaw, &p->pitch);
         fast_dec_timer_r2(&p->delay);
@@ -1758,8 +1753,8 @@ extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 extern Tab D_L00_001E9E30;
 extern char hero_globals_base_r2[] __asm__("D_0013E633");
 extern void reset_beam_chain_and_pulse_state_r(void) __asm__("func_L00_002BE2A0");
-extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
-extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
+
+extern void BuildSphericalOffset(void *, float, float, float);
 extern Info *GetFlaggedPvarWord_r2(Moby *) __asm__("func_L00_0025D390");
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -1768,15 +1763,15 @@ extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 
-extern void build_look_at_matrix_r(void *, void *, void *, float) __asm__("func_002156E0");
+extern void build_look_at_matrix(void *, void *, void *, float);
 
 extern void AddDrawCallback_r(void *, Moby *) __asm__("func_001F49B0");
 extern void draw_beam_ring_and_rail_effects_r(void *) __asm__("func_L00_002BEF58");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern int random_integer_below_r(int) __asm__("func_002140B0");
+extern float random_float_between(float, float);
+extern int random_integer_below(int);
 
 extern void PartType53Spawn_r(void *, int, int, int, int, void *, float, float, float) __asm__("func_L00_00272F00");
-extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
+
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
 
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
@@ -1810,13 +1805,13 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
     off.w = 1.0f;
     off.x = 0.0f;
     reset_beam_chain_and_pulse_state_r();
-    tesla_rail_twist_phase_r = normalize_angle_r(tesla_rail_twist_phase_r + D_L00_001617C8_2BE3A8);
-    BuildSphericalOffset_r(&aim, tesla_chain_segment_length_r, p->f48, p->f4C);
+    tesla_rail_twist_phase_r = normalize_angle(tesla_rail_twist_phase_r + D_L00_001617C8_2BE3A8);
+    BuildSphericalOffset(&aim, tesla_chain_segment_length_r, p->f48, p->f4C);
     if (p->target != 0 && (info = GetFlaggedPvarWord_r2(p->target)) != 0) {
         qcopy(&end, &p->target->pos);
         end.z = end.z + info->height;
     } else {
-        BuildSphericalOffset_r(&end, D_L00_001617AC_2BE3A8, p->f48, p->f4C);
+        BuildSphericalOffset(&end, D_L00_001617AC_2BE3A8, p->f48, p->f4C);
         FastVecAdd(&end, &end, p);
     }
     len = D_L00_001617AC_2BE3A8;
@@ -1865,7 +1860,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
                 Vec4A node;
 
                 for (j = 0; j < 20; j++) {
-                    build_look_at_matrix_r(&ring, &side, &dir, (float)j * D_L00_001617D4_2BE3A8);
+                    build_look_at_matrix(&ring, &side, &dir, (float)j * D_L00_001617D4_2BE3A8);
                     FastVecAdd(&tesla_ring_vertices_r[i][j], &ring, &tesla_chain_points_r[i]);
                 }
                 qcopy(&node, &tesla_chain_points_r[i]);
@@ -1874,7 +1869,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
                 FastVecCross(&up, &out, &fwd);
                 w = D_L00_001617FC_2BE3A8;
                 w = w + (D_L00_00161800_2BE3A8 - w) * t;
-                a = normalize_angle_r(tesla_rail_twist_phase_r + D_L00_001617CC_2BE3A8 * IntToFloat(i));
+                a = normalize_angle(tesla_rail_twist_phase_r + D_L00_001617CC_2BE3A8 * IntToFloat(i));
                 off.y = w * FastSin(a);
                 w = w * FastCos(a);
                 off.z = w;
@@ -1885,18 +1880,18 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
         }
     }
     AddDrawCallback_r(draw_beam_ring_and_rail_effects_r, m);
-    s = random_float_between_r(0.1f, 2.0f);
-    sign = random_integer_below_r(2);
+    s = random_float_between(0.1f, 2.0f);
+    sign = random_integer_below(2);
     if (sign == 0) {
         sign = sign - 1;
     }
-    if (random_integer_below_r(2) == 0) {
+    if (random_integer_below(2) == 0) {
         qcopy(&tmp, &tesla_rail0_points_r[11]);
         PartType53Spawn_r(&tmp, scale_ticks(30), 0x7F7F2020, 0, sign, veldin1_zero_vec_r, s * 0.1f, s, 0.003f);
         sign = -sign;
         PartType53Spawn_r(&tmp, scale_ticks(30), 0x7F7F7F7F, 1, sign, veldin1_zero_vec_r, s * 0.07f, s * 0.7f, 0.003f);
     }
-    if (random_integer_below_r(2) == 0) {
+    if (random_integer_below(2) == 0) {
         qcopy(&tmp, &tesla_rail1_points_r[11]);
         PartType53Spawn_r(&tmp, scale_ticks(30), 0x7F20207F, 0, sign, veldin1_zero_vec_r, s * 0.1f, s, 0.003f);
         sign = -sign;
@@ -1904,7 +1899,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
     }
     FastVecSub(&dir, &tesla_chain_points_r[1], &tesla_chain_points_r[0]);
     vec_scale_to_length_r2(&dir, &dir, D_L00_00161804_2BE3A8 * frame_scale_r);
-    if (random_integer_below_r(2) == 0) {
+    if (random_integer_below(2) == 0) {
         vec_scale_to_length_r2(&side, &m->rot_row1, D_L00_00161810_2BE3A8);
         FastVecAdd(&tmp, &tesla_chain_points_r[0], &side);
         {
@@ -1913,12 +1908,12 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             Vec4A up;
 
             cols = tesla_spark_colors;
-            col = cols.c[random_integer_below_r(5)];
-            w = randf_sym_r(0.0f, D_L00_0016180C_2BE3A8);
-            build_look_at_matrix_r(&out, &dir, &((struct Hero *)g_hero)->gravity_dir,
-                                   randf_sym_r(0.0f, D_L00_0016180C_2BE3A8));
+            col = cols.c[random_integer_below(5)];
+            w = randf_sym(0.0f, D_L00_0016180C_2BE3A8);
+            build_look_at_matrix(&out, &dir, &((struct Hero *)g_hero)->gravity_dir,
+                                 randf_sym(0.0f, D_L00_0016180C_2BE3A8));
             FastVecCross(&up, &dir, &((struct Hero *)g_hero)->gravity_dir);
-            build_look_at_matrix_r(&out, &out, &up, w);
+            build_look_at_matrix(&out, &out, &up, w);
             n = truncate_float_to_s32_r3(len * 1.2f / (D_L00_00161804_2BE3A8 * frame_scale_r));
             if (p->target != 0) {
                 n = n * 3;
@@ -2741,7 +2736,6 @@ void accumulate_local_vector_steps(char *a, char *b, int n) {
     }
 }
 
-extern float jump_speed_4318(void *, void *, int, float, float);
 extern float g_frame_time MACRO_ADDR;
 
 /* Updates a homing state block o from target m: turn rate, heading, and a speed clamped to seven times a global.

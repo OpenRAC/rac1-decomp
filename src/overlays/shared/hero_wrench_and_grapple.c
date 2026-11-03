@@ -22,6 +22,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "overlays/l02_aridia/hero_idle_and_item_input.h"
 #include "overlays/l02_aridia/hero_movement.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
@@ -205,8 +206,6 @@ extern int g_current_level_index MACRO_ADDR;
 extern float aridia_hero_speed_bands_field_18[];
 
 extern float ApproachValue(float *, float, float);
-
-extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 // Per-state hop velocity update for the player. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00220b80.c, FUN_L02_00223450.
 void hero_update_hop_velocity(void) {

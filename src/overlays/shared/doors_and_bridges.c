@@ -12,6 +12,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "game/audio/music.h"
 #include "game/math/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -360,7 +361,6 @@ extern void FastVecScale_v(f32, void *, void *) __asm__("func_001F9C30");
 
 extern void vec_scale_to_length(f32, void *, void *);
 
-extern void update_entity_matrix(void *, void *, void *, void *);
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 

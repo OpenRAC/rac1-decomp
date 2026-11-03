@@ -6,6 +6,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 // Add and subtract a delta from a moby field, storing results
 void initialize_moby_grounding(char *moby) {
@@ -40,7 +41,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32(float);
 

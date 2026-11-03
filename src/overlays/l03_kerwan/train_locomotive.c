@@ -154,8 +154,6 @@ typedef int Q_293720 __attribute__((mode(TI)));
 extern char *kerwan_mobys_t __asm__("D_L03_00160058") MACRO_ADDR;
 extern float kerwan_train_car_spacing SDATA(kerwan_train_car_spacing);
 
-extern void update_entity_matrix(char *, void *, void *, void *);
-
 /* Places a train: puts the engine at `at` facing ang (offset back by its length), then lays each linked
  * car behind the previous one along ang, updating their motion deltas, and enables the coupling moby. */
 void place_metropolis_train(char *moby, float *pos, float heading) {
@@ -222,7 +220,6 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -323,7 +320,6 @@ extern void update_entity_matrix_r(char *, void *, void *, void *) __asm__("func
 
 extern char kerwan_train_motion_error_msg_r[] __asm__("D_L03_001E2700");
 extern void STUB_printf_r(void *, int) __asm__("func_001E9730");
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 
 /* Drags each linked car to follow the train after it moved, then flags the coupling moby; with no cars it reports and
    deletes the train.
@@ -367,7 +363,7 @@ void update_metropolis_train_idle_motion(struct Moby *moby) {
         update_entity_matrix_r(motion, dp, old_rot, &moby->rot);
     } else {
         STUB_printf_r(kerwan_train_motion_error_msg_r, data->iB8);
-        DeleteMoby_r(moby);
+        DeleteMoby(moby);
         return;
     }
     *(unsigned short *)(kerwan_mobys_t + (data->iC4 << 8) + 0x34) |= 6;
@@ -757,7 +753,7 @@ extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF
 
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern float ApproachValue_r(float *p, float target, float maxstep) __asm__("func_00214D28");
-extern void func_L00_002607A8(void *, float);
+
 extern void update_entity_matrix_r2(char *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern Path_295DB0 *kerwan_paths_r2[] __asm__("D_L03_001B08B0");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
@@ -899,8 +895,6 @@ void moving_platform_small_update(Moby *moby) {
     FastVecAdd(v0, v0, &moby->pos);
     update_entity_matrix_r2(d->f60, v0, v1, &moby->rot);
 }
-
-extern void update_entity_matrix(char *, void *, void *, void *);
 
 // Update for a moby that tracks a position and orientation, initialising on state 0 and aiming each frame.
 void metropolis_train_carriage_update(char *moby) {
@@ -1179,13 +1173,13 @@ extern char voice_pool_r2[] __asm__("D_0013E650");
 extern unsigned char gSkillPoints_r[] __asm__("D_0013D510");
 extern float kerwan_zero_vec[] MACRO_ADDR;
 extern void *kerwan_red_ship_update_slot MACRO_ADDR;
-extern void *MobyGetHitMessage(void *, int, int);
+
 extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
 extern void allocate_voice_for_group_entry_r(int, int, void *) __asm__("func_0022EEB8");
 extern void spawn_randomized_bolt_drop_r(void *, int, int, int, int) __asm__("func_L00_00261B00");
 extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void spawn_debris_0029E498(char *, int, float *, void *, int, int, float, float *, float *,
                                   float *) __asm__("func_L00_00265050");
 void red_ship_1_update(char *moby);
@@ -1221,7 +1215,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
             spawn_randomized_bolt_drop_r(moby, 3, 5, 2, -1);
         }
         data->respawn_timer = scale_ticks(600);
-        spawn_explosion(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
+        spawn_explosion_v(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
         FastVecScale(push, &((struct Moby *)moby)->rot_row0, frame_scale * 0.075f);
         push[2] += frame_scale * 0.08f;
         switch (((Moby *)moby)->oclass) {
@@ -1344,7 +1338,7 @@ extern char kerwan_red_ship_no_path_msg[];
 
 extern int FastBSphereCheck(void *, float);
 extern int truncate_float_to_s32(float);
-extern int get_first_moby_in_group(int *, int, int, int);
+
 extern int get_next_moby_in_group(int *, int, int, int);
 
 extern void compute_sampled_spline_path_lengths_v(void *, int, void *, float, float) __asm__("func_L01_0028C958");
@@ -1552,7 +1546,7 @@ void red_ship_1_update(char *moby) {
 }
 typedef int OvlQuad_2BC038 __attribute__((mode(TI)));
 char *func_0020D348_2BC038(int) __asm__("func_0020D348");
-float func_00214158_2BC038(void) __asm__("func_00214158");
+extern float random_angle_radians(void);
 void func_L00_00251328_2BC038(char *, int, int, int) __asm__("func_L00_00251328");
 void func_L00_00251E30_2BC038(char *) __asm__("func_L00_00251E30");
 extern char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, float f,
@@ -1573,7 +1567,7 @@ char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, f
         d->parent = (char *)parent;
         qcopy(m + 0x10, (char *)parent->pvars + 0xF0);
         *(OvlQuad_2BC038 *)(m + 0x40) = *(OvlQuad_2BC038 *)&parent->rot;
-        ((Moby *)m)->rot.x = func_00214158_2BC038();
+        ((Moby *)m)->rot.x = random_angle_radians();
         d->unk_0C = a4;
         b = (color >> 16) & 0xFF;
         g = (color >> 8) & 0xFF;
@@ -1672,18 +1666,13 @@ extern char kerwan_moby573_spawn_d0_record;
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern int func_001160D8(void);
-extern int move_w(void *, void *, void *, void *, float);
+
 extern int ClassifyTargetInCone_r(char *m, char *p, char *pos, char *v) __asm__("func_L00_0025A060");
-extern int mine_fall(void *, void *);
 
 extern int FindNearestTargetMoby_r(char *, char *, float) __asm__("func_L00_00260D30");
 extern int is_point_inside_clip_volume_cf(int id);
 
 extern void SetDeathBits(void *, int, int);
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-
-extern void set_ground_height_band(void *);
-extern void StepColorFade(void *, void *);
 
 extern void Manipulator_ApplyScale(void *, int, void *, float);
 
@@ -1961,12 +1950,8 @@ void robot_dog_573_update(Moby *moby) {
 }
 extern int can_release_linked_robot_dog(unsigned char *);
 
-extern void *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(float, void *, void *, int, int, int);
-extern void RerollEffectCounter(void *, short *);
 extern char *kerwan_mobys MACRO_ADDR;
 typedef int L03Quad __attribute__((mode(TI)));
 typedef struct RobotDogHit {
@@ -2017,7 +2002,7 @@ void update_robot_dog_hit_reaction(unsigned char *moby) {
         data->unk_174 = 12.0f;
         *(L03Quad *)vector = hit->vec;
         HeadingFromVector(vector, &angle, &data->hit_pitch, &data->hit_yaw);
-        InitKnockback(angle, moby, data->knockback, 4, 1, 0);
+        InitKnockback_v(angle, moby, data->knockback, 4, 1, 0);
         ((struct Moby *)moby)->state = 21;
         data->flash = 240;
         RerollEffectCounter(moby, &data->color_fade);
@@ -2222,7 +2207,6 @@ typedef struct Data2C8398 {
     int i298;
     int i29C;
 } Data2C8398;
-extern void FindNearestTargetMoby(void *, void *, float);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -2231,17 +2215,12 @@ extern int is_point_inside_clip_volume_cf(int);
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
-
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern int coll_sphere(float, void *, int, void *);
-extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
-
-extern unsigned char *moby_get_ride_transform(int);
 
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -2782,7 +2761,7 @@ void update_kerwan_path_enemy(Moby *m) {
                     float v[4];
                     qcopy(v, (*(float (*)[4]) & m->pos));
                     v[2] += 1.0f;
-                    spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                    spawn_explosion_v(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                     SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4]) & m->pos), (*(float (*)[4]) & m->rot), 0, 0,
                                        0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
                     SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4]) & m->pos), (*(float (*)[4]) & m->rot), 0, 0,
@@ -2846,8 +2825,8 @@ void update_kerwan_path_enemy(Moby *m) {
                         float v[4];
                         qcopy(v, (*(float (*)[4]) & m->pos));
                         v[2] += 1.0f;
-                        spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1,
-                                        0);
+                        spawn_explosion_v(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1,
+                                          0);
                         SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4]) & m->pos), (*(float (*)[4]) & m->rot), 0,
                                            0, 0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
                         SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4]) & m->pos), (*(float (*)[4]) & m->rot), 0,
@@ -2936,7 +2915,7 @@ void update_kerwan_path_enemy(Moby *m) {
                     float v[4];
                     qcopy(v, (*(float (*)[4]) & m->pos));
                     v[2] += 1.0f;
-                    spawn_explosion(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                    spawn_explosion_v(m, d->v40, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                     SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4]) & m->pos), (*(float (*)[4]) & m->rot), 0, 0,
                                        0.0f, kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
                     SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4]) & m->pos), (*(float (*)[4]) & m->rot), 0, 0,
@@ -3082,7 +3061,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 float p[4];
                 qcopy(p, (*(float (*)[4]) & m->pos));
                 p[2] += 1.0f;
-                spawn_explosion(m, d->v40, p, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                spawn_explosion_v(m, d->v40, p, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                 SpawnBreakFragment((char *)m, 0x6D0, (*(float (*)[4]) & m->pos), (*(float (*)[4]) & m->rot), 0, 0, 0.0f,
                                    kerwan_zero_vec, kerwan_zero_vec, kerwan_zero_vec);
                 SpawnBreakFragment((char *)m, 0x6D1, (*(float (*)[4]) & m->pos), (*(float (*)[4]) & m->rot), 0, 0, 0.0f,
@@ -3107,7 +3086,7 @@ void update_kerwan_path_enemy(Moby *m) {
 
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 typedef int OvlQuad_2CA970 __attribute__((mode(TI)));
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern Hero D_0013F450;
 extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
@@ -3220,7 +3199,7 @@ extern f32 D_L03_00161968_2CA970 SDATA(D_L03_00161968);
 extern float vec_length_r(float) __asm__("func_001F9B50");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 
-extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
+extern void MobyBlendAnimation(void *, int, int, int);
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
 
 void func_L03_002CA970_r(Moby *m) __asm__("func_L03_002CA970");
@@ -3253,15 +3232,15 @@ void func_L03_002CA970_r(Moby *m) {
         other = hit->source;
         if (other != 0) {
             if (other != (char *)g_hero.items[0].moby) {
-                angle = fast_atan2_r((*(float (*)[4]) & m->pos)[0] - *(float *)(other + 0x10),
-                                     (*(float (*)[4]) & m->pos)[1] - *(float *)(other + 0x14));
+                angle = fast_atan2((*(float (*)[4]) & m->pos)[0] - *(float *)(other + 0x10),
+                                   (*(float (*)[4]) & m->pos)[1] - *(float *)(other + 0x14));
             } else {
-                angle = fast_atan2_r((*(float (*)[4]) & m->pos)[0] - g_hero.motion.pos.f[0],
-                                     (*(float (*)[4]) & m->pos)[1] - g_hero.motion.pos.f[1]);
+                angle = fast_atan2((*(float (*)[4]) & m->pos)[0] - g_hero.motion.pos.f[0],
+                                   (*(float (*)[4]) & m->pos)[1] - g_hero.motion.pos.f[1]);
             }
         } else {
-            angle = fast_atan2_r((*(float (*)[4]) & m->pos)[0] - g_hero.motion.pos.f[0],
-                                 (*(float (*)[4]) & m->pos)[1] - g_hero.motion.pos.f[1]);
+            angle = fast_atan2((*(float (*)[4]) & m->pos)[0] - g_hero.motion.pos.f[0],
+                               (*(float (*)[4]) & m->pos)[1] - g_hero.motion.pos.f[1]);
         }
         d->f20 -= damage;
         if (d->f20 <= 0.0f) {
@@ -3361,7 +3340,7 @@ void func_L03_002CA970_r(Moby *m) {
                 m->state = 0xD;
                 Moby_PlaySound_r(3, 0, (int)m);
                 if (m->prev_seq != 7) {
-                    MobyBlendAnimation_r(m, 7, 0, scale_ticks(6));
+                    MobyBlendAnimation(m, 7, 0, scale_ticks(6));
                 }
                 break;
         }
@@ -3371,7 +3350,7 @@ void func_L03_002CA970_r(Moby *m) {
     StepColorFade_r(m, (char *)d + 0x60);
 }
 
-extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern int find_nearest_path_point_r3(void *, void *, void *, int *, float *, int, float, float,
                                       float) __asm__("func_L00_0025EFC0");
 typedef struct {
@@ -3516,9 +3495,9 @@ void func_L03_002CB068_r(Moby *m) {
     do {
         if (pf->idx != seg) {
             qcopy(pt, pf->path + 0x10 + pf->idx * 0x10);
-            ang = fast_atan2_r2(pt[0] - (*(float (*)[4]) & m->pos)[0], pt[1] - (*(float (*)[4]) & m->pos)[1]);
-            ang = FastDiffRots(ang, fast_atan2_r2(target.pos[0] - (*(float (*)[4]) & m->pos)[0],
-                                                  target.pos[1] - (*(float (*)[4]) & m->pos)[1]));
+            ang = fast_atan2(pt[0] - (*(float (*)[4]) & m->pos)[0], pt[1] - (*(float (*)[4]) & m->pos)[1]);
+            ang = FastDiffRots(ang, fast_atan2(target.pos[0] - (*(float (*)[4]) & m->pos)[0],
+                                               target.pos[1] - (*(float (*)[4]) & m->pos)[1]));
             dist = FastVecDist(&target, pt);
             if (ang < 1.5707964f) {
                 if (best_ang < ang) {

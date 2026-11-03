@@ -259,7 +259,7 @@ typedef struct {
     GateMoby *owner; /* 0x88 */
 } SoundSlot;
 
-extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Moby_PlaySound_r(int, int, GateMoby *) __asm__("func_0022ED80");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern unsigned char gemlik_available_r[] __asm__("D_0013DE55");
@@ -303,8 +303,8 @@ void update_vertical_gate(GateMoby *m) {
                     }
                 }
             } else {
-                if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                                  d->vol_near)) {
+                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                                d->vol_near)) {
                     if (d->key == -1 || (hero_globals_base_r + 0xE9D)[0x2024] == 2) {
                         m->state = 2;
                     }
@@ -350,11 +350,11 @@ void update_vertical_gate(GateMoby *m) {
             if (d->key != -1) {
                 quartu_keyed_gate_open = 1;
             }
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                              d->vol_trigger) != 0 ||
-                is_point_inside_clip_volume_r(quartu_camera_pos_r, d->vol_trigger) != 0) {
-                if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                                  d->key) == 0) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                            d->vol_trigger) != 0 ||
+                is_point_inside_clip_volume(quartu_camera_pos_r, d->vol_trigger) != 0) {
+                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                                d->key) == 0) {
                     break;
                 }
             }
@@ -396,9 +396,9 @@ void update_vertical_gate(GateMoby *m) {
                 }
                 m->pos.z = z;
             }
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                              d->vol_near) != 0 ||
-                is_point_inside_clip_volume_r(quartu_camera_pos_r, d->vol_near) != 0) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                            d->vol_near) != 0 ||
+                is_point_inside_clip_volume(quartu_camera_pos_r, d->vol_near) != 0) {
                 m->state = 2;
             }
             break;
@@ -428,7 +428,6 @@ typedef struct {
     s32 sound; /* 0x18 */
 } DoorVars;
 
-extern void *GetFlaggedPvarWord(struct Moby *);
 extern char *quartu_moby_list MACRO_ADDR;
 extern struct Moby *quartu_moby_array_r __asm__("D_L15_00160058") MACRO_ADDR;
 extern f32 D_L15_0016157C_A4D88 SDATA(D_L15_0016157C);
@@ -709,9 +708,6 @@ extern void *spawn_debris_moby_v(void *, void *, int, float, int, float, float, 
 
 extern void SetDeathBits(void *, int, int);
 
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, unsigned char);
-
 /* One 0x40-byte record of the destructible-hit table (quartu_moby_hits, 64 entries). */
 struct HitRecord {
     Vec4 pos; /* 0x00: hit point, copied as one quadword */
@@ -841,12 +837,10 @@ void update_destructible_moby_on_hit(struct Moby *moby) {
         }
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern int truncate_float_to_s32(float);
-
-extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
@@ -1080,8 +1074,6 @@ typedef struct {
     char pad180[0x28];
     float height;
 } SteeringVars_4f88;
-
-extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 /* Steers a flying moby toward goal while facing look. */
 void steer_helicopter(struct Moby *moby, Vec4 *goal, Vec4 *look) {
@@ -1336,11 +1328,6 @@ extern UPath *quartu_paths[];
 
 extern void process_helicopter_hits();
 typedef int u128_6950 __attribute__((mode(TI)));
-
-extern void FindNearestTargetMoby(void *, float *, float);
-extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-
-extern void set_ground_height_band(void *);
 
 extern void moby_build_matrix_v(void *, void *) __asm__("func_L00_00251E30");
 
@@ -1744,11 +1731,6 @@ void helicopter_update(HMoby_6950 *m) {
         axis_rotation_2d48(d->anim1 + 0x10, 2, d->pitch);
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-
-extern void StepColorFade(void *, void *);
 
 /* Steps a moby's countdown from a helper's output, then aims it at its target. */
 void process_helicopter_hits(char *m) {
@@ -1936,26 +1918,20 @@ extern int func_001160D8(void);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-
 extern void vec_scale_to_length(void *, void *, float);
-extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
+extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 
 extern int IsFrameWithinWindow(char *, float);
 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
-extern int mine_fall(void *, void *);
-extern float jump_speed_4318(void *a, void *b, void *out, float speed, float g);
-extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
-extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
+extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern float frame_scale MACRO_ADDR;
 extern ULevelState quartu_moby_state_bytes_base;
@@ -2140,7 +2116,7 @@ void ultramech_unlimited_update(UMoby *m) {
             if (m->anim != 0 && (m->animFlags & 2))
                 MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
             if (d->w164 != 2) {
-                SteerAngleWithVelocity(
+                SteerAngleWithVelocity_v(
                     &m->rot.f[2], fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]), &d->turnVel,
                     g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
                 if (fast_dec_timer(&d->timer)) {
@@ -2168,7 +2144,7 @@ void ultramech_unlimited_update(UMoby *m) {
             }
             if (d->w164 != 2) {
                 int fire = -1;
-                SteerAngleWithVelocity(
+                SteerAngleWithVelocity_v(
                     &m->rot.f[2], fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]), &d->turnVel,
                     g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
                 if (m->anim == 7) {
@@ -2225,7 +2201,7 @@ void ultramech_unlimited_update(UMoby *m) {
             break;
         case 6:
             if (d->w164 != 2) {
-                SteerAngleWithVelocity(
+                SteerAngleWithVelocity_v(
                     &m->rot.f[2], fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]), &d->turnVel,
                     g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
                 if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < 8.0f && d->w1D4 == 0 &&
@@ -2287,9 +2263,9 @@ void ultramech_unlimited_update(UMoby *m) {
             break;
         }
         case 8:
-            SteerAngleWithVelocity(&m->rot.f[2], fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]),
-                                   &d->turnVel, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f,
-                                   g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&m->rot.f[2], fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]),
+                                     &d->turnVel, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f,
+                                     g_frame_time * 12.566371f);
             if (m->animFlags & 2) {
                 if (vec_distance_xy(&m->pos, &tgt->pos) < ultramech_mid_attack_range && d->w1D4 == 0 &&
                     d->point < quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]]->n - 1) {
@@ -2432,10 +2408,9 @@ void ultramech_unlimited_update(UMoby *m) {
     }
 }
 
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(float, void *, void *, int, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
-extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
+
 extern float ultramech_hit_check_scale SDATA(ultramech_hit_check_scale);
 extern float ultramech_knockback_gravity_gp SDATA(ultramech_knockback_gravity_gp);
 extern float ultramech_knockback_horizontal_speed_gp SDATA(ultramech_knockback_horizontal_speed_gp);
@@ -2566,7 +2541,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
                 *(u128 *)&vA = *(u128 *)(other + 0x10);
                 f48 = r;
                 HeadingFromVector(&vA, &f48, &data->unk_88, &data->unk_8C);
-                InitKnockback(f48, moby, &data->unk_70, 8, 1, 0);
+                InitKnockback_v(f48, moby, &data->unk_70, 8, 1, 0);
                 Sound_PlayClassSound_r(0, 0, moby, 0x79);
                 moby->state = 9;
                 data->unk_67 = 0x78;
@@ -2641,8 +2616,6 @@ void update_moby_yaw_from_linked_state(char *moby) {
         self->rot.z = FastAddRots(self->rot.z, step);
     }
 }
-
-extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 
 /* Updates a moby: initialises its vector, then applies an angle-based offset. */
 void SideDriftUpdate(char *moby) {
@@ -2719,20 +2692,17 @@ extern float D_L15_0016203C_2E9358 SDATA(D_L15_0016203C);
 extern char *D_L15_00178580[];
 extern int func_L00_001F10E0(float, void *, int, void *);
 extern Res *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-extern char *func_L00_00261448(int);
-extern void add_vectors_r(void *, void *, void *) __asm__("func_L00_001FF240");
+
+extern void add_vectors(void *, void *, void *);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
+extern void vec_reflect(void *, void *, void *);
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern float ProbeGroundHeight_r(void *, int, float) __asm__("func_00214358");
-extern int func_L00_00261478(void *, void *, void *, void *, void *, void *);
+extern float ProbeGroundHeight(void *, int, float);
 
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
-
-extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 
 /* Poison vessel update (moby Poison Vessel): tracks its target and fires its effect. */
 void PoisonVesselUpdate(Moby *moby) {
@@ -2762,7 +2732,7 @@ void PoisonVesselUpdate(Moby *moby) {
     switch (state) {
         case 0:
             data->f8 = data->f8 - D_L15_0016203C_2E9358 * g_frame_time_sq_r;
-            add_vectors_r(&s40, &moby->pos, data);
+            add_vectors(&s40, &moby->pos, data);
             if (coll_line_r(&s20, &moby->pos, 0x10, moby, 0)) {
                 if (((Tb *)quartu_coll_hit)->f18 != 0 && moby_get_ride_transform(((Tb *)quartu_coll_hit)->f18) != 0) {
                     data->target = (Moby *)((Tb *)quartu_coll_hit)->f18;
@@ -2772,13 +2742,13 @@ void PoisonVesselUpdate(Moby *moby) {
                 } else if (((Tb *)quartu_coll_hit)->f18 == g_hero_moby || data->f8 < g_frame_time_r * -9.8f) {
                     moby->command = 1;
                     qcopy(&moby->pos, &((Tb *)quartu_coll_hit)->v20);
-                    vec_reflect_r(&s30, data, &((Tb *)quartu_coll_hit)->v40);
+                    vec_reflect(&s30, data, &((Tb *)quartu_coll_hit)->v40);
                     vec_scale_to_length_r2(&s30, &s30, g_frame_time_r + g_frame_time_r);
                 }
             }
             break;
         case 1:
-            ProbeGroundHeight_r(&moby->pos, 0, 0.5f);
+            ProbeGroundHeight(&moby->pos, 0, 0.5f);
             if (data->target != 0) {
                 Moby *t = data->target;
 
@@ -2808,7 +2778,7 @@ void PoisonVesselUpdate(Moby *moby) {
         ret = coll_sphere_mobys_r(&moby->pos, 0x10, moby, 0, 2.0f);
         s40.q = (*(u128 *)&moby->pos);
         SendRadialMessageToMobys(moby, &s40, quartu_coll_sphere_moby_hits, ret, 0, 0x830001, 2, 1, 1.0f, 1.0f, 1.0f);
-        DeleteMoby_r2(moby);
+        DeleteMoby(moby);
     }
 }
 
@@ -3191,8 +3161,8 @@ void emit_randomized_vertical_effect(char *moby) {
     }
 }
 extern char *CreateMoby_c(int) __asm__("func_0020D348");
-extern void copy_hero_moby_field_38_u(void *) __asm__("func_L00_0025E210");
-extern void moby_build_matrix_u(void *) __asm__("func_L00_00251E30");
+
+extern void moby_build_matrix(void *);
 
 /* Spawns a Codebot moby: position from the first quad, the second quad stored at +0x40.
  * Same shape as spawn_axe_moby; the 0xFF store has to go through unsigned char. */
@@ -3204,13 +3174,13 @@ char *spawn_codebot_slot_effect(char *pos, char *vec) {
     *(u128 *)(tmp + 0x10) = *(u128 *)vec;
     m = CreateMoby_c(0x594);
     if (m != 0) {
-        copy_hero_moby_field_38_u(m);
+        copy_hero_moby_field_38(m);
         *(unsigned char *)(m + 0x30) = 0xFF;
         *(short *)(m + 0x32) = 0xFF;
         m[0x31] = 1;
         qcopy(m + 0x10, p);
         *(u128 *)(m + 0x40) = *(u128 *)(tmp + 0x10);
-        moby_build_matrix_u(m);
+        moby_build_matrix(m);
     }
     return m;
 }

@@ -33,7 +33,7 @@ void suck_cannon_update(Moby *moby) {
             else
                 ShowBanner_r(0x5436, -1);
             dialogue_message_duration_frames_r = 0xB4;
-            grant_inventory_item_r(9, 1);
+            grant_inventory_item(9, 1);
             if (vars->exitMoby != -1) {
                 exit = &portal_mobys_002E2DF0[vars->exitMoby];
                 jet_reset_camera_r(&exit->pos, &exit->rot);

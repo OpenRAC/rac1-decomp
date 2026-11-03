@@ -221,7 +221,7 @@ extern short D_001605C0;
 void func_001F9C30_2F4C8(float, void *, void *) __asm__("func_001F9C30");
 
 long func_001F4868_2F4C8(int) __asm__("func_001F4868");
-int func_002140B0_2F4C8(int) __asm__("func_002140B0");
+extern int random_integer_below(int);
 
 /* Resident effect quads: picks the row table by level_render_state's
    content_variant, builds a textured GS quad, and for each row of
@@ -254,7 +254,7 @@ void DrawResidentEffectQuads(struct Moby *m) {
         unsigned int col;
         float s;
         if (*(short *)&m->save_id)
-            c += func_002140B0_2F4C8(*(short *)&m->save_id);
+            c += random_integer_below(*(short *)&m->save_id);
         s = IntToFloat(c) * (tbl[i].f[3] / 40.0f);
         col = (c << 24) | 0x2058B0;
         if (m->oclass == MOBY_CLASS_PURPLE_SHIP_533)
@@ -1114,10 +1114,10 @@ extern void resident_call_001E97B8(void) __asm__("func_001E97B8");
 extern void resident_call_001E97C0(void *, void *, s32, s32) __asm__("func_001E97C0");
 extern void resident_call_001E97D0(ResidentRenderObject *, ResidentRenderObject *) __asm__("func_001E97D0");
 extern void resident_call_001EDE50(void) __asm__("func_001EDE50");
-extern void resident_call_001F3140(void) __asm__("func_001F3140");
+
 extern void resident_call_001F49B0(void *, ResidentRenderObject *) __asm__("func_001F49B0");
 extern void resident_call_001F4B68(void *, ResidentRenderObject *) __asm__("func_001F4B68");
-extern void resident_call_001F4E08(s32) __asm__("func_001F4E08");
+
 extern f32 resident_call_001F98B0(f32) __asm__("func_001F98B0");
 
 extern void resident_call_001F9C08(void *, void *, void *, f32) __asm__("func_001F9C08");
@@ -1131,9 +1131,9 @@ extern void resident_call_00205220(s32) __asm__("func_00205220");
 extern ResidentRenderObject *resident_call_0020D348(s32) __asm__("func_0020D348");
 extern void resident_call_0020D678(ResidentRenderObject *) __asm__("func_0020D678");
 extern void resident_call_0020D6D0(ResidentRenderObject *) __asm__("func_0020D6D0");
-extern void resident_call_0020DE20(void) __asm__("func_0020DE20");
+
 extern void resident_call_0020ED48(ResidentRenderObject *) __asm__("func_0020ED48");
-extern void resident_call_00213C78(void) __asm__("func_00213C78");
+extern void update_visible_resident_objects(void);
 extern void resident_call_00214550(ResidentRenderObject *) __asm__("func_00214550");
 extern f32 resident_call_00214D88(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
 extern void resident_call_00215CA8(ScriptedPath *, s32, void *, void *, s32, f32) __asm__("func_00215CA8");
@@ -1180,7 +1180,7 @@ void update_resident_gameplay_state(void) {
         case 0:
         case 8:
             resident_call_001E97B0();
-            resident_call_00213C78();
+            update_visible_resident_objects();
             resident_call_0022EF68();
             resident_call_001E97A0();
             UpdateParts();
@@ -1218,7 +1218,7 @@ void update_resident_gameplay_state(void) {
                     if (resident_data_0013E130.skip) {
                         resident_data_0013E130.skip = 0;
                     } else {
-                        resident_call_001F4E08(4);
+                        FadeToBlack(4);
                     }
                     resident_data_0015F53C = 1.0f;
                 } else {
@@ -1231,7 +1231,7 @@ void update_resident_gameplay_state(void) {
                 }
                 resident_call_002348B8();
                 resident_data_0018CEB0[0] = 0.63f;
-                resident_call_001F3140();
+                UpdateViewContext();
                 /* Retail releases the attachment once per sequence object, even when that object is null. */
                 for (release_index = 0; release_index < resident_data_0018CC20.count; release_index++) {
                     expired_object = resident_data_0018CC20.objects[release_index];
@@ -1277,7 +1277,7 @@ void update_resident_gameplay_state(void) {
             keyframe_angles = keyframe->rotation;
             keyframe_flags = keyframe->position.bytes[12];
             resident_data_0018CEB0[0] = keyframe_angles[3];
-            resident_call_001F3140();
+            UpdateViewContext();
             qcopy(&resident_data_00187040.position, &keyframe->position);
             matrix_mul_vec3(&resident_data_00187040.position, &resident_data_00187040.position,
                             resident_data_0013E130.player->transform);
@@ -1470,13 +1470,13 @@ void update_resident_gameplay_state(void) {
             }
             resident_call_0022DD68();
             resident_call_00202260();
-            resident_call_0020DE20();
+            update_resident_packed_direction();
             resident_call_001E97A8();
             break;
 
         case 3:
             resident_call_001E97B0();
-            resident_call_00213C78();
+            update_visible_resident_objects();
             resident_call_0022EF68();
             resident_call_001E97A0();
             UpdateParts();
@@ -1484,7 +1484,7 @@ void update_resident_gameplay_state(void) {
                 resident_call_00216EF0(0);
                 resident_call_00217748(0);
                 resident_data_001517D0.unk1C = resident_data_0013E130.content_variant + 0x9C4F;
-                resident_call_001F4E08(scale_game_frame_count(12));
+                FadeToBlack(scale_game_frame_count(12));
                 while ((s16)resident_data_001517D0.unk5A != 3) {
                     resident_call_0022DD68();
                     resident_call_00122598(0);
@@ -1698,7 +1698,7 @@ void update_resident_gameplay_state(void) {
             resident_call_001EDE50();
             resident_call_0022DD68();
             resident_call_00202260();
-            resident_call_0020DE20();
+            update_resident_packed_direction();
             resident_call_001E97A8();
             break;
 

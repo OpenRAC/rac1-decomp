@@ -429,11 +429,11 @@ extern char novalis_coll_hit_r[] __asm__("D_L01_00174340");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern int CollType_r(void) __asm__("func_L00_001F3958");
+extern int CollType(void);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern Obj_D688 *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
-extern Obj_D688 *moby_get_ride_transform(char *);
+
 extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
 
 /* the hero's ledge probe (single-size variant): looks for an edge ahead to grab, and where it finds one stores the
@@ -491,10 +491,10 @@ void update_hero_ledge_probe(void) {
         qcopy(v20, v0);
         v20[2] += top;
         if (coll_line_r(v10, v20, 4, (int)((Hero *)g_hero_r2)->moby, 0)) {
-            hit = CollType_r();
+            hit = CollType();
             if (hit != 9 && hit != 12 && hit != 0) {
-                if (fast_atan2_r(((Hit_D688 *)novalis_coll_hit_r)->v40[2],
-                                 vec_length_xy_r(((Hit_D688 *)novalis_coll_hit_r)->v40)) < 0.3490658402442932f)
+                if (fast_atan2(((Hit_D688 *)novalis_coll_hit_r)->v40[2],
+                               vec_length_xy_r(((Hit_D688 *)novalis_coll_hit_r)->v40)) < 0.3490658402442932f)
                     found = 1;
             }
         }
@@ -531,7 +531,7 @@ void update_hero_ledge_probe(void) {
     } else {
         ((Hero *)g_hero_r2)->ledge_flags &= 0xFFFFFFFE;
     }
-    ang = fast_atan2_r(v10[0] - ((Hero *)g_hero_r2)->motion.pos.f[0], v10[1] - ((Hero *)g_hero_r2)->motion.pos.f[1]);
+    ang = fast_atan2(v10[0] - ((Hero *)g_hero_r2)->motion.pos.f[0], v10[1] - ((Hero *)g_hero_r2)->motion.pos.f[1]);
     ((Hero *)g_hero_r2)->ledge_top_z = v10[2];
     if (v10[2] - ((Hero *)g_hero_r2)->ground_z.f < rise)
         return;
@@ -550,7 +550,7 @@ void update_hero_ledge_probe(void) {
         if (coll_line_r(v50, v60, 2, 0, 0)) {
             edge = 1;
             ((Hero *)g_hero_r2)->ledge_normal_yaw =
-                fast_atan2_r(((Hit_D688 *)novalis_coll_hit_r)->v40[0], ((Hit_D688 *)novalis_coll_hit_r)->v40[1]);
+                fast_atan2(((Hit_D688 *)novalis_coll_hit_r)->v40[0], ((Hit_D688 *)novalis_coll_hit_r)->v40[1]);
             break;
         }
     }
@@ -611,9 +611,9 @@ static inline void circle_offset_2DE30(Vec4 *v, f32 ang, f32 r) {
 }
 extern CollisionHit_2DE30 novalis_coll_hit_r2 __asm__("D_L01_00174340");
 extern int coll_line_r2(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
-extern int CollType_r2(void) __asm__("func_L00_001F3958");
+extern int CollType(void);
 extern f32 vec_length_xy_r2(void *) __asm__("func_001F9CE8");
-extern f32 fast_atan2_r2(f32, f32) __asm__("func_L00_001FF860");
+extern f32 fast_atan2(f32, f32);
 
 /* Ledge probe, FUN_L00_0020c758 without its hero.unk20A4 == 1 variant: steps forward from `pos` along the hero's yaw
    looking for a flat top (normal within 20 degrees of up, not material 9 or 12) at least 1.8 above the floor and not
@@ -651,9 +651,9 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
         qcopy(&low, &probe);
         low.f[2] += reach;
         if (coll_line_r2(&top, &low, 4, g_hero_r.moby, 0)) {
-            material = CollType_r2();
+            material = CollType();
             if (material != 9 && material != 12) {
-                if (fast_atan2_r2(novalis_coll_hit_r2.normal_z, vec_length_xy_r2(&novalis_coll_hit_r2.normal_x)) <
+                if (fast_atan2(novalis_coll_hit_r2.normal_z, vec_length_xy_r2(&novalis_coll_hit_r2.normal_x)) <
                     max_slope)
                     found = 1;
             }
@@ -668,7 +668,7 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
         return 0;
 
     qcopy(&top, &novalis_coll_hit_r2.point);
-    ang = fast_atan2_r2(top.f[0] - pos->f[0], top.f[1] - pos->f[1]);
+    ang = fast_atan2(top.f[0] - pos->f[0], top.f[1] - pos->f[1]);
     if (top.f[2] - g_hero_r.ground_z.f < 1.8f)
         return 0;
 
@@ -684,7 +684,7 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
         low.f[2] = wall.f[2];
         if (coll_line_r2(&low, &wall, 2, 0, 0)) {
             hit = 1;
-            wall_yaw = fast_atan2_r2(novalis_coll_hit_r2.normal_x, novalis_coll_hit_r2.normal_y);
+            wall_yaw = fast_atan2(novalis_coll_hit_r2.normal_x, novalis_coll_hit_r2.normal_y);
             break;
         }
     }
@@ -939,7 +939,6 @@ extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 
 f32 ApproachValue(f32, f32, f32 *);
-void Spring(f32 *, f32 *, f32, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231ae0. */
 void HeroSetCollisionSize(void) {
@@ -1100,8 +1099,6 @@ extern u8 novalis_coll_hit_point[];
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
-s32 is_moby_in_class_range_500_to_540(s32);
-u8 *GetFlaggedPvarWord(s32);
 
 void vec_scale_to_length(void *, void *, f32);
 
@@ -1609,7 +1606,6 @@ void request_hero_idle_state_for_vehicle_mode(void) {
 }
 extern int hl_next(int, int) __asm__("func_L01_0023D688");
 
-extern void ClampVectorLength(void *a, float x);
 extern int get_hero_idle_animation_index(int a);
 extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
 

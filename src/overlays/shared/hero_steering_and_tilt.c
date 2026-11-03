@@ -600,7 +600,7 @@ void compute_rotated_vector_angles(Vx *in, float *out) {
     out[1] = -fast_atan2(v0.z, v0.x);
 }
 
-extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern float SpringAngle_v(char *, char *, int, float, float, float, float) __asm__("func_L00_0025CCF0");
 
 typedef struct {
     float f[4];
@@ -655,8 +655,8 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
         r.f[2] = pitch;
         r.f[0] = 0.0f;
     } else {
-        SpringAngle((char *)&t, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot_spring_vel.f[1], 0,
-                    pitch, a, b, c);
+        SpringAngle_v((char *)&t, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot_spring_vel.f[1], 0,
+                      pitch, a, b, c);
         r.f[0] = 0.0f;
         r.f[2] = t;
     }
@@ -720,7 +720,7 @@ void apply_hero_reference_tilt(void) {
         }
     }
 }
-extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern float SpringAngle_v(char *, char *, int, float, float, float, float) __asm__("func_L00_0025CCF0");
 extern void apply_hero_reference_tilt(void);
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -751,10 +751,10 @@ void update_hero_tilt(void) {
         }
         t[0] = 0.0f;
         t[1] = 0.0f;
-        SpringAngle(&((struct Hero *)g)->motion.rot, &((struct Hero *)g)->motion.rot_spring_vel, 0, -t[0],
-                    g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
-        SpringAngle(&((struct Hero *)g)->motion.rot.f[1], &((struct Hero *)g)->motion.rot_spring_vel.f[1], 0, -t[1],
-                    g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
+        SpringAngle_v(&((struct Hero *)g)->motion.rot, &((struct Hero *)g)->motion.rot_spring_vel, 0, -t[0],
+                      g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
+        SpringAngle_v(&((struct Hero *)g)->motion.rot.f[1], &((struct Hero *)g)->motion.rot_spring_vel.f[1], 0, -t[1],
+                      g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
     } else if (r >= 0) {
         if (r < 3) {
             apply_hero_reference_tilt();

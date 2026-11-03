@@ -29,6 +29,7 @@
 #include "overlays/l15_quartu/hero_idle_animation.h"
 #include "overlays/l15_quartu/hero_movement.h"
 #include "overlays/l15_quartu/hero_hud_and_actions.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -242,7 +243,6 @@ extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 
 f32 ApproachValue(f32, f32, f32 *);
-void Spring(f32 *, f32 *, f32, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_001ff938.c, FUN_L15_00209450. */
 void update_hero_smoothing_parameters(void) {
@@ -372,8 +372,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 s32 coll_line(void *, void *, s32, s32, s32);
 
 f32 resolve_camera_surface_height(void *, void *);
-s32 is_moby_in_class_range_500_to_540(s32);
-u8 *GetFlaggedPvarWord(s32);
 
 void vec_scale_to_length(void *, void *, f32);
 

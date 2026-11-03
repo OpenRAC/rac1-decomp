@@ -10,7 +10,7 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
 
     row_height = menu->height >> 2;
     center_x = menu->width >> 1;
-    SetupGifPaging_r(0);
+    SetupGifPaging(0);
     label_right = center_x - 8;
     border_left = center_x + 7;
     slider_left = center_x + 9;
@@ -38,6 +38,6 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
                        msg_string_r2(0x5214), -1);
     FontPrintLarge_r(center_x + 8, second_row - 8, 0x80FFA888, msg_string_r2(playback_mode_r != 0 ? 0x5216 : 0x5215),
                      -1);
-    DoGifPaging_r();
+    DoGifPaging();
     return 2;
 }

@@ -7,11 +7,11 @@ void CollectiblePickupUpdate(struct Moby *moby) {
     switch (state) {
         case 0:
             if (saved_mission_state_r[moby->mission + g_current_level_index_r * 16] == 0xFF) {
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
                 return;
             }
             initialize_morphoray_private_state_r((void *)moby);
-            ProbeGroundHeight_r(o + 0x10, 0, 0.5f);
+            ProbeGroundHeight(o + 0x10, 0, 0.5f);
             moby->rot.x = 0.0f;
             moby->rot.y = -1.5707964f;
             moby->pos.z = oltanis_coll_hit_point_z_r[0] + D_L14_001622B8_06BE0;
@@ -34,7 +34,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
                 *(s32 *)(d + 0x18) = state;
             else
                 *(s32 *)(d + 0x18) = 0;
-            grant_inventory_item_r(0x15, 1);
+            grant_inventory_item(0x15, 1);
             StartCutscene_r(6);
             moby->state = 2;
             break;
@@ -49,7 +49,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
                 else
                     ShowBanner_r(0x36b2, -1);
                 Help_Request_r(0x36b0, 0x7a);
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
                 return;
             }
             *(u16 *)(o + 0x34) |= 0x41;
@@ -57,7 +57,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
         case 3:
             ApproachValue_r((f32 *)(o + 0x2c), 0.0f, *(f32 *)(*(u8 **)(o + 0x24) + 0x24) * 0.02f);
             if (*(f32 *)(o + 0x2c) == 0.0f)
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
             break;
     }
 }

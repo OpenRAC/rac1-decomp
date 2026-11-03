@@ -481,8 +481,6 @@ float get_hero_yaw_history(int back) {
 }
 extern char player_camera[];
 
-extern int is_moby_in_class_range_500_to_540(void *);
-
 /* Scores how far moby O is from the camera/hero reference point; flags *OUT when it is out of range. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020d6b0. */
 float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim, float plim, int *out) {
     char *o = o_v;
@@ -525,7 +523,7 @@ float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim,
         r += 7.0f;
     return r;
 }
-extern int GetFlaggedPvarWord(void *obj);
+
 extern float score_hero_target_candidate(void *obj, float y, float x, float z, float w, int *failed);
 
 extern void *active_mobies[];
@@ -2518,7 +2516,6 @@ int is_wrench_moby(Moby *m) {
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Updates the hero camera's follow-speed targets by mode, then eases them. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00211380. */
 void update_hero_collision_capsule_dimensions(void) {
@@ -2814,7 +2811,7 @@ typedef struct {
     float x, y, z, w;
 } Vp __attribute__((aligned(16)));
 
-extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern float SpringAngle_v(char *, char *, int, float, float, float, float) __asm__("func_L00_0025CCF0");
 
 /* Turns the matrix toward the heading between two points with a stepped angle. */
 void turn_hero_toward_transformed_move_direction(int m, float x, float y, float z) {
@@ -2826,7 +2823,7 @@ void turn_hero_toward_transformed_move_direction(int m, float x, float y, float 
     transform_vector(&v, p, p - 0x130);
     a = fast_atan2(v.x, v.y);
     t.x = zero;
-    *(float *)(p + 0x18) = SpringAngle((char *)&t, p + 0x14, m, a, x, y, z);
+    *(float *)(p + 0x18) = SpringAngle_v((char *)&t, p + 0x14, m, a, x, y, z);
     apply_hero_rotation_offset(zero, zero, t.x);
 }
 extern char g_hero[] NOT_SDA;
@@ -2838,7 +2835,7 @@ void turn_to(int a, float x, float y, float z) {
         turn_hero_toward_transformed_move_direction(a, x, y, z);
     } else {
         g->motion.yaw_error =
-            SpringAngle((char *)&g->motion.rot.f[2], (char *)&g->motion.yaw_rate, a, g->motion.move_yaw, x, y, z);
+            SpringAngle_v((char *)&g->motion.rot.f[2], (char *)&g->motion.yaw_rate, a, g->motion.move_yaw, x, y, z);
     }
 }
 extern float g_frame_time MACRO_ADDR;

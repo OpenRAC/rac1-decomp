@@ -379,7 +379,7 @@ extern f32 fast_atan2(f32, f32);
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern s32 move_moby_with_collision_integer_radius_r(void *, void *, f32, s32, f32, s32) __asm__("func_L00_00259B08");
-extern f32 ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
+extern f32 ProbeGroundHeight(void *, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math_interpolation_00257ef0.c, FUN_L00_00258b50. */
 s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
@@ -472,7 +472,7 @@ done:
             mask |= 1;
             if (d.f[0] * p.f[0] + d.f[1] * p.f[1] < l2 * 0.2f)
                 mask |= 2;
-            h = ProbeGroundHeight_r(&m->pos, 0, 0.5f);
+            h = ProbeGroundHeight(&m->pos, 0, 0.5f);
             if (c->f08 < save.f[2] - h || c->f0C < h - save.f[2]) {
                 mask |= 0x22;
                 m->pos.q = save.q;
@@ -914,7 +914,7 @@ void build_quaternion_from_axis_rotations(void *a, float *v) {
     multiply_quaternions(a, &t2, &t1);
     multiply_quaternions(a, a, &t0);
 }
-extern float func_00214358f(void *, int, float) __asm__("func_00214358");
+extern float ProbeGroundHeight(void *, int, float);
 extern int CollType(void);
 extern int ground_shadow_count MACRO_ADDR;
 struct Ent {
@@ -933,7 +933,7 @@ void jet_animate(Moby *m, float s) {
     if (m->visible && ground_shadow_count < 32) {
         n = ground_shadow_count;
         qcopy(&ground_shadow_entries[n], &m->pos);
-        h = func_00214358f(&m->pos, 0, 0.5f);
+        h = ProbeGroundHeight(&m->pos, 0, 0.5f);
         if (CollType()) {
             n = ground_shadow_count;
             e = &ground_shadow_entries[n];
@@ -1346,8 +1346,8 @@ extern float f_sqrt_BCF8(float) __asm__("func_001F9B50");
 
 extern void func_L00_001FF328(float, void *, void *);
 
-extern float f_randf_BCF8(float, float) __asm__("func_002140F8");
-extern float f_randang_BCF8(void) __asm__("func_00214158");
+extern float random_float_between(float, float);
+extern float random_angle_radians(void);
 
 /* Scatters up to MAXIMUM points over the volumes listed in the moby class's
    shape table (spheres, discs, capsules), picked by volume weight; returns how
@@ -1450,7 +1450,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
     if (maximum < limit)
         limit = maximum;
     for (emitted = 0; emitted < limit; emitted++) {
-        random = f_randf_BCF8(0.0f, total);
+        random = random_float_between(0.0f, total);
         for (chosen = 0; chosen < count; chosen++) {
             if (random < weights[chosen])
                 break;
@@ -1476,9 +1476,9 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 extent *= 0.0009765625f;
                 divide_vector_xyz(1024.0f, &first, &first);
                 for (;;) {
-                    second.f[0] = f_randf_BCF8(-extent, extent);
-                    second.f[1] = f_randf_BCF8(-extent, extent);
-                    second.f[2] = f_randf_BCF8(-extent, extent);
+                    second.f[0] = random_float_between(-extent, extent);
+                    second.f[1] = random_float_between(-extent, extent);
+                    second.f[2] = random_float_between(-extent, extent);
                     if (FastVecLength(&second) <= extent) {
                         FastVecAdd(&second, &second, &first);
                         matrix_mul_vec3(&second, &second, &((Moby *)entity)->rot_row0);
@@ -1497,10 +1497,10 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 divide_vector_xyz(1024.0f, &first, &first);
                 radius *= 0.0009765625f;
                 extent *= 0.0009765625f;
-                weight = f_randf_BCF8(0.0f, radius * radius);
+                weight = random_float_between(0.0f, radius * radius);
                 weight = f_sqrt_BCF8(weight);
-                random = f_randf_BCF8(0.0f, extent);
-                angle = f_randang_BCF8();
+                random = random_float_between(0.0f, extent);
+                angle = random_angle_radians();
                 second.f[0] = FastCos(angle) * weight;
                 second.f[1] = FastSin(angle) * weight;
                 second.f[2] = random;
@@ -1514,16 +1514,16 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 sceVu0ScaleVector(((Moby *)entity)->scale, &first, (void *)(0x70000000 + (*(short *)list << 4)));
                 sceVu0ScaleVector(((Moby *)entity)->scale, &second, (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
                 FastVecSub(&third, &second, &first);
-                weight = f_randf_BCF8(0.0f, 1.0f);
+                weight = random_float_between(0.0f, 1.0f);
                 f_vscale_BCF8(weight, &third, &third);
                 FastVecAdd(&fourth, &third, &first);
                 divide_vector_xyz(1024.0f, &fourth, &fourth);
                 extent = *(float *)(entry + 0xc) * ((Moby *)entity)->scale;
                 extent = extent * 0.0009765625f;
                 do {
-                    fifth.f[0] = f_randf_BCF8(-extent, extent);
-                    fifth.f[1] = f_randf_BCF8(-extent, extent);
-                    fifth.f[2] = f_randf_BCF8(-extent, extent);
+                    fifth.f[0] = random_float_between(-extent, extent);
+                    fifth.f[1] = random_float_between(-extent, extent);
+                    fifth.f[2] = random_float_between(-extent, extent);
                 } while (!(FastVecLength(&fifth) <= extent));
                 FastVecAdd(&fifth, &fifth, &fourth);
                 matrix_mul_vec3(&fifth, &fifth, &((Moby *)entity)->rot_row0);
@@ -1536,7 +1536,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025C488);
 
-extern float ProbeGroundHeight_f(void *, int, float) __asm__("func_00214358");
+extern float ProbeGroundHeight(void *, int, float);
 
 typedef struct O_25b440 {
     u8 pad00[0x10];
@@ -1615,7 +1615,7 @@ int update_arc_motion(char *m, char *p) {
             vec = moving_object->pos.f;
             moving_object->pos.f[2] += arc_motion_state->f10;
             arc_motion_state->f10 = arc_motion_state->f10 - arc_motion_state->f1C;
-            ground_height = ProbeGroundHeight_f(vec, 0, 0.5f);
+            ground_height = ProbeGroundHeight(vec, 0, 0.5f);
             if (moving_object->pos.f[2] <= ground_height) {
                 moving_object->pos.f[2] = ground_height;
                 arc_motion_state->state = WAIT_AFTER_GROUND_CLAMP;
@@ -1986,7 +1986,7 @@ int mine_fall(char *moby, struct FallState *st) {
 
     qcopy(v10, &((Moby *)moby)->pos);
     v10[2] = v10[2] + st->unk_28;
-    f21 = func_00214358f(v10, 0, 0.5f);
+    f21 = ProbeGroundHeight(v10, 0, 0.5f);
     if (CollType() == 0) {
         if (st->unk_5C == 0.0f && f21 <= v10[2] && v10[2] + st->vel_z < f21) {
             st->unk_5C = 1.0f;
@@ -2639,12 +2639,12 @@ extern S6_25F4A8 color_swapped_burst_colors_r __asm__("D_L00_001E93B0");
 extern S6_25F4A8 color_swapped_burst_fade_colors_r __asm__("D_L00_001E93C8");
 extern int D_L00_0016007C MACRO_ADDR;
 
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern float random_angle_radians_r(void) __asm__("func_00214158");
+extern float random_float_between(float, float);
+extern float random_angle_radians(void);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int random_integer_below_r(int) __asm__("func_002140B0");
-extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
+extern int random_integer_below(int);
+extern void BuildSphericalOffset(void *, float, float, float);
 extern unsigned swap_packed_color_channels_r(unsigned, int) __asm__("func_L00_0025D140");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void initialize_hit_descriptor_r(void *, void *, int, float) __asm__("func_L00_0025A890");
@@ -2653,7 +2653,7 @@ extern void *func_L00_0026CA10(void *, void *, int, int, int, int, int, int, flo
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
+extern void clamp_vec_length(void *, void *, float);
 extern void *SpawnFallingSpark_r(void *, void *, int, int, int) __asm__("func_L00_002B0738");
 extern void PartType11Spawn_r(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
 extern void spawn_particle_alt_9768_r(void *, void *, int, int, int, float) __asm__("func_L00_0026B368");
@@ -2702,9 +2702,9 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             Q_25F4A8 dir;
             float a;
             float b;
-            a = random_float_between_r(0.2617994f, 1.3962634f);
-            b = random_angle_radians_r();
-            BuildSphericalOffset_r(&dir, fF * (random_float_between_r(7.0f, 10.5f) * g_frame_time_r), b, a);
+            a = random_float_between(0.2617994f, 1.3962634f);
+            b = random_angle_radians();
+            BuildSphericalOffset(&dir, fF * (random_float_between(7.0f, 10.5f) * g_frame_time_r), b, a);
             dir.f[2] += g_frame_time_r * 3.0f;
             dist = fF * 40000.0f;
             spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
@@ -2721,16 +2721,16 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             Q_25F4A8 rnd;
             int i;
             *(u128_25F4A8 *)&rnd = 0;
-            rnd.f[0] = random_float_between_r(-1.0f, 1.0f);
-            rnd.f[1] = random_float_between_r(-1.0f, 1.0f);
-            rnd.f[2] = random_float_between_r(-1.0f, 1.0f);
+            rnd.f[0] = random_float_between(-1.0f, 1.0f);
+            rnd.f[1] = random_float_between(-1.0f, 1.0f);
+            rnd.f[2] = random_float_between(-1.0f, 1.0f);
             *(u128_25F4A8 *)&d2 = *(u128_25F4A8 *)&rnd;
             if (dist < 14.0f) {
                 v0.f[2] += dist * 0.5f;
                 vec_scale_to_length_r(&d2, &d2, dist / 5.0f * g_frame_time_r);
                 vec_scale_to_length_r(&v0, &v0, (dist + dist) * g_frame_time_r);
                 FastVecAdd(&d2, &d2, &v0);
-                clamp_vec_length_r(&d2, &d2, g_frame_time_r * 10.0f);
+                clamp_vec_length(&d2, &d2, g_frame_time_r * 10.0f);
                 SpawnFallingSpark_r(pos, &d2, rand_range_r(scale_ticks(0x3C), scale_ticks(0x5A)), 0, 0);
             }
             s16 = s16 - 1;
@@ -2744,9 +2744,9 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
                 float a;
                 float b;
                 int sel;
-                a = random_float_between_r(0.2617994f, 1.3089969f);
-                b = random_angle_radians_r();
-                BuildSphericalOffset_r(&rnd, fF * (random_float_between_r(7.0f, 10.5f) * g_frame_time_r), b, a);
+                a = random_float_between(0.2617994f, 1.3089969f);
+                b = random_angle_radians();
+                BuildSphericalOffset(&rnd, fF * (random_float_between(7.0f, 10.5f) * g_frame_time_r), b, a);
                 rnd.f[2] += g_frame_time_r + g_frame_time_r;
                 sel = 0;
                 if (i % 3 == 0)
@@ -2769,13 +2769,13 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             S6_25F4A8 c0;
             S6_25F4A8 c1;
             float sp;
-            sp = random_float_between_r(8.0f, 10.0f) * g_frame_time_r;
+            sp = random_float_between(8.0f, 10.0f) * g_frame_time_r;
             c0 = color_swapped_burst_colors_r;
             c1 = color_swapped_burst_fade_colors_r;
             sp = sp - t * g_frame_time_r;
             sp = sp * fF;
-            PartType11Spawn_r(pos, &vb, swap_packed_color_channels_r(c0.v[random_integer_below_r(6)], flag),
-                              swap_packed_color_channels_r(c1.v[random_integer_below_r(6)], flag), fF * 400000.0f,
+            PartType11Spawn_r(pos, &vb, swap_packed_color_channels_r(c0.v[random_integer_below(6)], flag),
+                              swap_packed_color_channels_r(c1.v[random_integer_below(6)], flag), fF * 400000.0f,
                               rand_range_r(scale_ticks(0xF), scale_ticks(0x14)) - s18 * 3,
                               rand_range_r(scale_ticks(0x1E), scale_ticks(0x2D)) - s18 * 5, 0, 0, sp);
             PartType11Spawn_r(pos, &vb, 0x7FFFFFFF, 0xFFFFFF, fF * 400000.0f,
@@ -2793,13 +2793,13 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             int p1;
             int p2;
             *(u128_25F4A8 *)&rnd = 0;
-            rnd.f[0] = random_float_between_r(-1.0f, 1.0f);
-            rnd.f[1] = random_float_between_r(-1.0f, 1.0f);
-            rnd.f[2] = random_float_between_r(-1.0f, 1.0f);
+            rnd.f[0] = random_float_between(-1.0f, 1.0f);
+            rnd.f[1] = random_float_between(-1.0f, 1.0f);
+            rnd.f[2] = random_float_between(-1.0f, 1.0f);
             *(u128_25F4A8 *)&vel = *(u128_25F4A8 *)&rnd;
-            vec_scale_to_length_r(&vel, &vel, fF * (random_float_between_r(0.0f, 3.0f) * g_frame_time_r));
-            p1 = swap_packed_color_channels_r(c0.v[random_integer_below_r(6)], flag);
-            p2 = swap_packed_color_channels_r(c1.v[random_integer_below_r(6)], flag);
+            vec_scale_to_length_r(&vel, &vel, fF * (random_float_between(0.0f, 3.0f) * g_frame_time_r));
+            p1 = swap_packed_color_channels_r(c0.v[random_integer_below(6)], flag);
+            p2 = swap_packed_color_channels_r(c1.v[random_integer_below(6)], flag);
             spawn_particle_alt_9768_r(pos, &vel, p1, p2, rand_range_r(scale_ticks(0x1E), scale_ticks(0x2D)) - s18 * 5,
                                       200000.0f);
         }

@@ -64,7 +64,8 @@ void blarg_ship_1805_update(void *moby) {
                                        gemlik_zero_vec);
                 }
             }
-            spawn_explosion(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1, 0);
+            spawn_explosion_v(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1,
+                              0);
             DeleteMoby(moby);
             break;
         }

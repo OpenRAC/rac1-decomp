@@ -378,23 +378,13 @@ extern float quartu_hero_run_turn_stick_threshold;
 extern float quartu_hero_anim_speed_curve[];
 extern float quartu_hero_anim_frame_speeds[];
 
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float ApproachValue(float *, float, float);
 
-extern void ClampVectorLength(void *, float);
-
-extern float Spring(float *, float *, float, float, float, float);
-
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 
 extern int coll_line(void *, void *, int, int, int);
-
-extern int is_moby_in_class_range_500_to_540(int);
-
-extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
 struct HeroUpdateStatePhysicsL15Vars {};
 

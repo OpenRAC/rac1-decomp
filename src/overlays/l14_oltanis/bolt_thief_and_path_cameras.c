@@ -171,9 +171,7 @@ extern float D_L14_00162070_2FF358 SDATA(D_L14_00162070);
 extern int D_L14_00162074_2FF358 SDATA(D_L14_00162074);
 extern Part *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
-extern int random_integer_below_r(int) __asm__("func_002140B0");
-
-extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
+extern int random_integer_below(int);
 
 /* Spawns the effect pieces for a moby: two sparks, the ring of three and a final coloured one. */
 void spawn_moby_offset_puffs(Moby *p) {
@@ -192,8 +190,8 @@ void spawn_moby_offset_puffs(Moby *p) {
     FastVecScale(A, (*(Vec_2FF358 *)&p->rot_row1), D_L14_00162064_2FF358);
     FastVecAdd(B, B, A);
     for (i = 1; i >= 0; i--) {
-        n = random_integer_below_r(0x10);
-        k = random_integer_below_r(2) == 0 ? n : -n;
+        n = random_integer_below(0x10);
+        k = random_integer_below(2) == 0 ? n : -n;
         e = PartType23Spawn(B, 0.2f, 1.0f, 0.9f, k, oltanis_zero_vector, 200000.0f, D_L14_00162074_2FF358);
         if (e != 0) {
             struct PartSub_2FF358 *f = &e->sub;
@@ -215,7 +213,7 @@ void spawn_moby_offset_puffs(Moby *p) {
             struct PartSub_2FF358 *f = &e->sub;
 
             e->life = m;
-            e->b8 = random_integer_below_r(0xFF);
+            e->b8 = random_integer_below(0xFF);
             f->f4 = 2;
             f->bA = 0x7F;
             f->bB = e->life;
@@ -227,20 +225,20 @@ void spawn_moby_offset_puffs(Moby *p) {
     s = 300000.0f;
     FastVecScale(A, (*(Vec_2FF358 *)&p->rot_row0), D_L14_00162070_2FF358);
     FastVecAdd(B, C, A);
-    col = rand_range_r(0x40, 0x80);
+    col = rand_range(0x40, 0x80);
     k = (col << 8) | 0x7F000000;
     col = col | ((col << 16) | k);
-    if (random_integer_below_r(3)) {
+    if (random_integer_below(3)) {
         Part *g;
 
-        n = random_integer_below_r(4);
-        k = random_integer_below_r(2) == 0 ? n : -n;
+        n = random_integer_below(4);
+        k = random_integer_below(2) == 0 ? n : -n;
         g = PartType23Spawn(B, 0.05f, 1.0f, 1.0f, k, oltanis_zero_vector, s, col);
         if (g != 0) {
             struct PartSub_2FF358 *f = &g->sub;
 
             g->life = scale_ticks(0x3C);
-            if (random_integer_below_r(2)) {
+            if (random_integer_below(2)) {
                 g->b3 = 0x44;
             }
             f->bA = 0x40;
@@ -334,19 +332,13 @@ extern char oltanis_bolt_thief_no_other_path_msg[];
 extern char oltanis_bolt_thief_empty_other_path_msg[];
 extern char oltanis_bolt_thief_no_trigger_msg[];
 
-extern char *MobyGetHitMessage(void *, int, int);
-
-extern void InitKnockback(void *, void *, int, int, int, float);
+extern void InitKnockback_v(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void SetDeathBits(void *, int, int);
 
-extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
+extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
+                             float max) __asm__("func_L00_002592B0");
 
 extern int update_bolt_thief_path_movement(char *);
-extern float Spring(float *, float *, float, float, float, float);
-
-extern int mine_fall(void *, void *);
-
-extern void StepColorFade(void *, void *);
 
 /* Bolt thief update (moby Bolt Thief, level 14): hit knockback, turn to the hero, walk a path, then fall back. */
 void BoltThiefUpdate(L14Moby *m) {
@@ -367,8 +359,8 @@ void BoltThiefUpdate(L14Moby *m) {
         d->knock_rise = g_frame_time * 12.0f;
         d->knock_flags = 1;
         d->knock_bAD = 0;
-        InitKnockback(m, d->knock, 1, 1, 0,
-                      fast_atan2(m->position[0] - hero->motion.pos.f[0], m->position[1] - hero->motion.pos.f[1]));
+        InitKnockback_v(m, d->knock, 1, 1, 0,
+                        fast_atan2(m->position[0] - hero->motion.pos.f[0], m->position[1] - hero->motion.pos.f[1]));
         d->ticks = 0x78;
         SetDeathBits(m, 0, -1);
         m->state = 6;
@@ -419,9 +411,9 @@ void BoltThiefUpdate(L14Moby *m) {
         case 1: {
             Hero *hero = &g_hero;
 
-            MobySpringTurn((char *)m,
-                           fast_atan2(hero->motion.pos.f[0] - m->position[0], hero->motion.pos.f[1] - m->position[1]),
-                           &d->turn, 0.005f, 0.2f, 0.0f);
+            MobySpringTurn_v((char *)m,
+                             fast_atan2(hero->motion.pos.f[0] - m->position[0], hero->motion.pos.f[1] - m->position[1]),
+                             &d->turn, 0.005f, 0.2f, 0.0f);
             emit_moby_offset_particles(m);
             break;
         }
@@ -517,7 +509,7 @@ void BoltThiefUpdate(L14Moby *m) {
 }
 extern int g_current_level_index MACRO_ADDR;
 extern float oltanis_bolt_thief_path_speed SDATA(oltanis_bolt_thief_path_speed);
-extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
+extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 /* Samples a path table with Spline_AdvanceByDistance and eases the moby's x, y and z toward the result;
  * returns that call's result. */
@@ -536,7 +528,7 @@ int update_bolt_thief_path_movement(char *moby) {
         path = oltanis_paths[data->path_b];
     else
         path = oltanis_paths[data->path_a];
-    r = Spline_AdvanceByDistance(path, pos, &data->spline_seg, &data->spline_t, t, 0);
+    r = Spline_AdvanceByDistance_v(path, pos, &data->spline_seg, &data->spline_t, t, 0);
     Spring(&((Moby *)moby)->pos.x, &data->pos_vel.x, pos[0], oltanis_bolt_thief_spring_stiffness,
            oltanis_bolt_thief_spring_damping, 0.0f);
     Spring(&((Moby *)moby)->pos.y, &data->pos_vel.y, pos[1], oltanis_bolt_thief_spring_stiffness,
@@ -546,8 +538,8 @@ int update_bolt_thief_path_movement(char *moby) {
     FastVecSub(delta, pos, &((Moby *)moby)->pos);
     if (FastAbsF(delta[0]) > 0.01f) {
         if (FastAbsF(delta[1]) > 0.01f) {
-            MobySpringTurn(moby, fast_atan2(delta[0], delta[1]), &data->turn_vel, oltanis_bolt_thief_spring_stiffness,
-                           oltanis_bolt_thief_spring_damping, 0.0f);
+            MobySpringTurn_v(moby, fast_atan2(delta[0], delta[1]), &data->turn_vel, oltanis_bolt_thief_spring_stiffness,
+                             oltanis_bolt_thief_spring_damping, 0.0f);
         }
     }
     return r;
@@ -737,8 +729,8 @@ extern int coll_line(void *, void *, int, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern Rgb_2288 oltanis_spark_fade_color;
 extern float frame_scale MACRO_ADDR;
 
@@ -872,7 +864,7 @@ void update_bouncing_spark(Moby *m) {
         }
 
         case 3:
-            spawn_explosion(m, &d->vel, &m->pos, 2.0f, 1.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 0, 1.0f, 15.0f, 1, 1, -1, 0);
+            spawn_explosion_v(m, &d->vel, &m->pos, 2.0f, 1.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 0, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(m);
             return;
     }
@@ -1052,14 +1044,13 @@ extern f32 oltanis_coll_hit_point_z_r[] __asm__("D_L14_00174668");
 extern f32 D_L14_001622B8_06BE0 SDATA(D_L14_001622B8);
 extern f32 D_L14_001622BC_06BE0 SDATA(D_L14_001622BC);
 extern f32 D_L14_001622C0_06BE0 SDATA(D_L14_001622C0);
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
+
 extern void initialize_morphoray_private_state_r(void *) __asm__("func_L14_00306EC0");
-extern f32 ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
+extern f32 ProbeGroundHeight(void *, s32, f32);
 
 extern void update_morphoray_particles_r(struct Moby *) __asm__("func_L14_00306FA0");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void grant_inventory_item_r(s32, s32) __asm__("func_L00_002618D8");
 extern void StartCutscene_r(s32) __asm__("func_L00_00299B68");
 extern void jet_clear_persistent_r(s32) __asm__("func_L00_002512D8");
 extern int memcard_Save_r(s32, s32) __asm__("func_0020BFC8");
@@ -1077,11 +1068,11 @@ void CollectiblePickupUpdate(struct Moby *moby) {
     switch (state) {
         case 0:
             if (saved_mission_state_r[moby->mission + g_current_level_index_r * 16] == 0xFF) {
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
                 return;
             }
             initialize_morphoray_private_state_r((void *)moby);
-            ProbeGroundHeight_r(&o->pos, 0, 0.5f);
+            ProbeGroundHeight(&o->pos, 0, 0.5f);
             moby->rot.x = 0.0f;
             moby->rot.y = -1.5707964f;
             moby->pos.z = oltanis_coll_hit_point_z_r[0] + D_L14_001622B8_06BE0;
@@ -1104,7 +1095,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
                 d->picked_up = state;
             else
                 d->picked_up = 0;
-            grant_inventory_item_r(0x15, 1);
+            grant_inventory_item(0x15, 1);
             StartCutscene_r(6);
             moby->state = 2;
             break;
@@ -1119,7 +1110,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
                 else
                     ShowBanner_r(0x36b2, -1);
                 Help_Request_r(0x36b0, 0x7a);
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
                 return;
             }
             o->flags |= 0x41;
@@ -1127,7 +1118,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
         case 3:
             ApproachValue_r(&o->scale, 0.0f, *(f32 *)(*(u8 **)&o->pclass + 0x24) * 0.02f);
             if (o->scale == 0.0f)
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
             break;
     }
 }
@@ -1229,10 +1220,9 @@ typedef struct Snd {
 } Snd;
 extern Moby *create_helper_sequence_owner_moby_r(Moby *owner) __asm__("func_L14_003075E0");
 
-extern float interpolate_angle_r(float, float, float) __asm__("func_L00_0025C7A8");
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
-extern float interpolate_scalar_linear_r(float, float, float) __asm__("func_L00_0025C700");
+
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char *oltanis_mobys_r __asm__("D_L14_00160098") MACRO_ADDR;
 extern float D_L14_001622C4_3071B0 SDATA(D_L14_001622C4);
@@ -1285,7 +1275,7 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
             Slots *slots = &data->slots;
             Moby *o = slots->m[data->cur];
             FastDecTimer(&data->timer);
-            o->rot.y = interpolate_angle_r(1.5707964f, 0.0f, IntToFloat(data->timer) * data->rate);
+            o->rot.y = interpolate_angle(1.5707964f, 0.0f, IntToFloat(data->timer) * data->rate);
             if (data->timer == 0) {
                 data->timer = scale_ticks(D_L14_001622D4_3071B0);
                 data->cur--;
@@ -1310,7 +1300,7 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
             FastDecTimer(&data->timer);
             slots = data->slots.m;
             t = IntToFloat(data->timer) * data->rate;
-            owner->rot.y = interpolate_scalar_linear_r(D_L14_001622D0_3071B0 * 0.017453292f, 0.0f, t);
+            owner->rot.y = interpolate_scalar_linear(D_L14_001622D0_3071B0 * 0.017453292f, 0.0f, t);
             for (i = 0; i < 6; i++) {
                 FastVecScale(vec, &owner->rot_row2, D_L14_001622C8_3071B0 * (float)i + D_L14_001622CC_3071B0);
                 FastVecAdd(&slots[i]->pos, &owner->pos, vec);
@@ -1531,17 +1521,16 @@ extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern void SpawnExplosionFx_r(void *, void *, float, float, int) __asm__("func_L00_00260108");
 extern void Sound_StopSlot_r2(int) __asm__("func_L00_0028EBF0");
 extern int STUB_printf_r() __asm__("func_001E9730");
-extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
+
 extern void initialize_flying_car_path_r(void *) __asm__("func_L14_00308998");
 
-extern void func_L00_0025E4B0(void *, void *);
-extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
+extern int is_point_inside_clip_volume(void *, int);
 
 extern int update_flying_car_path_motion_r(void *) __asm__("func_L14_00308AA8");
 
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern int Sound_IsPlaying_r2(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void seed_linked_record_for_flying_car_r(void *) __asm__("func_L14_00314A40");
@@ -1585,12 +1574,12 @@ void update_flying_car(Moby *m) {
         case 0:
             if (d->path == -1) {
                 STUB_printf_r(flying_car_no_path_msg, (*(short *)&m->save_id));
-                DeleteMoby_r2(m);
+                DeleteMoby(m);
                 return;
             }
             if (*(int *)oltanis_paths_r[d->path] == 0) {
                 STUB_printf_r(flying_car_path_unset_msg, (*(short *)&m->save_id));
-                DeleteMoby_r2(m);
+                DeleteMoby(m);
                 return;
             }
             initialize_flying_car_path_r(m);
@@ -1623,7 +1612,7 @@ void update_flying_car(Moby *m) {
             }
             break;
         case 1:
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->trigger)) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->trigger)) {
                 m->flags &= 0xFFBE;
                 m->collision = ((Model *)m->pclass)->bounds;
                 if (d->part >= 0) {
@@ -1680,7 +1669,7 @@ void update_flying_car(Moby *m) {
                 d->f70 = 0;
                 d->f74 = 0;
                 qcopy(&m->pos, &path->a);
-                m->rot.z = fast_atan2_r(path->b.x - path->a.x, path->b.y - path->a.y);
+                m->rot.z = fast_atan2(path->b.x - path->a.x, path->b.y - path->a.y);
                 d->f80 = d->f84 = d->f88 = 0.0f;
                 d->f90 = d->f94 = d->f98 = 0.0f;
                 if (d->part >= 0) {
@@ -1782,7 +1771,6 @@ extern int Spline_AdvanceByDistance_r(char *path, float *out, void *pos, void *t
                                       float step) __asm__("func_L00_0025E860");
 extern void SpawnExplosionFx_r2(void *, void *, f32, f32, s32) __asm__("func_L00_00260108");
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
-extern f32 Spring(f32 *, f32 *, f32, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00307620. */
 int update_flying_car_path_motion(struct Moby *moby) {
@@ -2310,7 +2298,7 @@ extern char *volatile race_paths_16E60v __asm__("D_L14_0015F7EC") MACRO_ADDR;
 extern float oltanis_key_cam_path_distances_r[][1000] __asm__("D_L14_001F6FC0");
 extern float oltanis_path_camera_keys_r[] __asm__("D_L14_001F67C8");
 extern float D_L14_00162578_16E60 SDATA(D_L14_00162578);
-extern float atan2_16E60(float, float) __asm__("func_L00_001FF860");
+extern float fast_atan2(float, float);
 extern void compute_position_from_spherical_offset_r(void *, void *, void *) __asm__("func_L00_001ED900");
 
 extern void normalize_16E60(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -2379,7 +2367,7 @@ void initialize_path_key_camera(struct UpdateCam *cam) {
     w[2] = 0;
     w[3] = 0;
     w[4] = 0;
-    f = atan2_16E60(g_hero.moby->rot_row1.x, g_hero.moby->rot_row1.y);
+    f = fast_atan2(g_hero.moby->rot_row1.x, g_hero.moby->rot_row1.y);
     ang[1] = v[1];
     ang[0] = f;
     ang[2] = v[2];

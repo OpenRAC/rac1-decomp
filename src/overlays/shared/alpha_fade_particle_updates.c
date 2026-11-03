@@ -326,20 +326,20 @@ typedef struct {
 } O00271d20;
 extern Vec4 collision_hit_point_r __asm__("D_L00_00173F60");
 
-void func_L00_002688A8_72BC0d(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 s32 func_L00_001EFFF0_72BC0(void *, void *, s32, s32, s32) __asm__("func_L00_001EFFF0");
 
-void func_L00_002688A8_72BC0e(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 
-void func_L00_002688A8_72BC0g(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 
-void func_L00_002688A8_72BC0h(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 
-void func_L00_002688A8_72BC0i(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 
 void func_L00_002688A8_72BC0n() __asm__("func_L00_002688A8");
 
-void func_L00_002688A8_72BC0o(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271d20. */
 void update_timed_line_collision_particle(O00271d20 *o) {
@@ -354,7 +354,7 @@ void update_timed_line_collision_particle(O00271d20 *o) {
     FastVecAdd(pos, pos, &t);
     FastVecAdd(vel, vel, &t);
     if (FastDecTimer(&o->xa)) {
-        func_L00_002688A8_72BC0o(o);
+        KillPart(o);
     } else if (func_L00_001EFFF0_72BC0(vel, pos, 0x10, acc->i[3], 0)) {
         o->pos.q = collision_hit_point_r.q;
         o->xa = 0;
@@ -615,7 +615,7 @@ P_2725d8 *spawn_moby_point_attached_particle(u8 *a0, u8 *a1, s32 a2, s32 a3, f32
     return p;
 }
 
-extern void KillPart_r4(void *) __asm__("func_L00_002688A8");
+extern void KillPart(void *);
 typedef unsigned int u128_2726d8 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     u8 *owner;
@@ -630,7 +630,7 @@ typedef struct {
     f32 f2C;
     Q_2726d8 q;
 } P_2726d8;
-extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
+extern f32 random_float_between(f32, f32);
 extern void Moby_GetJointWorldPos_r(void *, s32, void *) __asm__("func_L00_00250800");
 
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
@@ -641,15 +641,15 @@ void update_moby_point_attached_particle(P_2726d8 *p) {
     f32 save, sc, r2, f;
     if (p->q.owner == 0 || *(s16 *)(p->q.owner + 0xA6) != q->x8 || p->q.owner[0x20] == 0xFE ||
         p->q.owner[0x20] == 0xFD) {
-        KillPart_r4(p);
+        KillPart(p);
         return;
     }
-    sc = q->xC * random_float_between_r(0.5f, 1.0f);
+    sc = q->xC * random_float_between(0.5f, 1.0f);
     save = p->f2C;
     qcopy(&t, &p->pos);
     Moby_GetJointWorldPos_r(p->q.owner, q->x4, &p->pos);
     FastVecSub(&t, &t, &p->pos);
-    r2 = random_float_between_r(-0.021f, 0.021f);
+    r2 = random_float_between(-0.021f, 0.021f);
     if (FastVecLength(&t) < 0.0625f) {
         f = r2 + 0.0625f;
     } else {
@@ -763,7 +763,6 @@ unsigned char *spawn_color_tween_emitter_particle(float *pos, unsigned char a1, 
     }
     return r;
 }
-extern void add_random_offset_to_vector_xyz(float *v, float s);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1876,7 +1875,7 @@ void update_moving_lifetime_scaled_alpha_particle(char *m) {
         KillPart(m);
     }
 }
-extern unsigned char *GetFlaggedPvarWord(int);
+
 extern unsigned char *part_type78_textures;
 
 /* Spawns a type 78 particle: position, colour, lifetime and mode, with a trailing record of speeds, id and target. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00275910. */
