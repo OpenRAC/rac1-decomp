@@ -21,6 +21,9 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -218,8 +221,6 @@ extern struct {
     f32 f[0xB68 / 4];
 } D_L00_0017A780_15738 __asm__("D_L00_0017A780");
 
-extern void Hero_SetTiltSpringParams(f32, f32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00214fe8. */
 void update_hero_transformed_negative_z_angle_parameters(void) {
     Vec4 vec;
@@ -292,7 +293,7 @@ typedef struct {
 } T_215340;
 extern T_215340 lean_state_r __asm__("D_L00_0017A780");
 extern f32 g_frame_time MACRO_ADDR;
-extern void Hero_SetTiltSpringParams(f32, f32);
+
 extern void set_first_hero_easing_parameters_r(f32, f32) __asm__("func_L00_0020A858");
 extern void set_first_hero_easing_parameters_r2(f32, f32) __asm__("func_L00_0020A858");
 extern void set_first_hero_easing_parameters_r3(f32, f32) __asm__("func_L00_0020A858");
@@ -925,7 +926,6 @@ void update_hero_planar_movement_velocity(void) {
         g_hero_r3.motion.pos.f[2] = g_hero_r3.ground_z.f;
     }
 }
-extern int Moby_PlaySound(int, int, int);
 
 /* passes a pointer chosen by a mode byte to Moby_PlaySound, copying a vector first in mode 3 */
 int allocate_hero_voice_for_entry(int a, int b) {
@@ -993,10 +993,6 @@ void update_hero_delayed_voice_requests(void) {
     }
 }
 extern int hero_control_mode_11_flag NOT_SDA;
-
-extern void HeroEnterMoveState(int, int);
-
-extern void apply_nearest_environment_sample(int);
 
 /* resets the level state from two vectors: sets up camera matrices, clears flags, starts sound bank */
 void Hero_ResetToPosition(void *a, void *b, int c, int d) {

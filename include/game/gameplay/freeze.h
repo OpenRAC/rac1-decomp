@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void draw_freeze_message_box(void);
 extern void mode_freeze_init(int, void *, int);
 
 #endif /* GAME_GAMEPLAY_FREEZE_H */

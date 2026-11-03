@@ -2,6 +2,10 @@
 #include "structs/misc.h"
 #include "data/executable.h"
 #include "core/newlib_types.h"
+#include "core/libc/stdio_ops.h"
+#include "core/libc/findfp.h"
+#include "core/libc/fstat_r.h"
+#include "core/libc/free_malloc_trim.h"
 
 /*
  * core_text object 0x114518-0x1154C0. Boundaries are retail's linker fill
@@ -13,8 +17,6 @@
  * memmove.o and memset.o. Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like libc.a; _mbtowc_r is newlib's own text.
  */
-
-extern long __sseek(void *arg0, void *arg1, void *arg2);
 
 int _lseek_r(int *errOut, void *a, void *b, void *c) {
     int r;
@@ -33,12 +35,10 @@ int _lseek_r(int *errOut, void *a, void *b, void *c) {
  * here (HAVE_BLKSIZE is off in this build). malloc failure falls back
  * to unbuffered too; success sets _cleanup_r, __SMBF, and __SLBF when
  * the descriptor is a tty. */
-extern int _fstat_r(void *data, int file, void *st);  /* _fstat_r */
+
 struct _reent;
 extern void *_malloc_r(struct _reent *ptr, u32 bytes); /* _malloc_r */
-extern int libc_glue_isatty(int);                              /* isatty */
-extern void _cleanup_r(void);                             /* _cleanup_r */
-extern long __sseek(void *, void *, void *);           /* __sseek */
+extern int libc_glue_isatty_v(int) __asm__("func_001191C0");                              /* isatty */
 
 typedef struct {
     short st_dev;
@@ -110,7 +110,7 @@ void __smakebuf(File_114578 *fp) {
         fp->_flags |= 0x80;
         fp->_bf_base = fp->_p = p;
         fp->_bf_size = size;
-        if (couldbetty && libc_glue_isatty(fp->_file))
+        if (couldbetty && libc_glue_isatty_v(fp->_file))
             fp->_flags |= 0x1;
     }
 }
@@ -122,7 +122,6 @@ extern unsigned long __malloc_max_sbrked_mem; /* malloc_max_sbrked_mem */
 extern unsigned long __malloc_max_total_mem; /* malloc_max_total_mem */
 
 extern void *_sbrk_r(void *reent_ptr, unsigned int size); /* _sbrk_r */
-extern int _free_r(void *reent_ptr, void *mem);           /* _free_r */
 
 #define TOP (D_0012F888[2])
 #define INITIAL_TOP ((MallocChunk *)D_0012F888)

@@ -3,6 +3,9 @@
 #include "game/system/bloaders.h"
 #include "data/executable.h"
 #include "asm_functions/executable.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "core/gs/load_image.h"
 
 /*
  * bloaders.cpp in the original source; text 0x1E94E8-0x1E9730.
@@ -38,10 +41,6 @@ typedef struct {
 } PifHeader;
 
 /* sceGsSetDefLoadImage, FlushCache, sceGsExecLoadImage, sceGsSyncPath */
-extern int sceGsSetDefLoadImage(GsLoadImage *, short, short, short, short, short, short, short);
-
-extern int sceGsExecLoadImage(GsLoadImage *, void *);
-extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 /* LoadPifAsPSMT8H: uploads a PIF image (header arg0, CLUT at +0x20 of
    0x200 bytes when +0x14 is set, else 0x400, then w * h pixels) to GS

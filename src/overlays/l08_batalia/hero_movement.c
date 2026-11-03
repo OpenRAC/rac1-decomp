@@ -29,13 +29,16 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/l08_batalia/hero_idle_and_items.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int D_0015EE84 MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void Hero_TryMoveStateL08(int, int);
 
 // Handles a pending state change: clears the request and sets per-state flags.
 void HeroL08_ResetActionState(void) {
@@ -184,23 +187,14 @@ extern float batalia_hero_anim_frame_speeds[];
 
 extern int fast_dec_timer(int *);
 
-extern int get_hero_idle_animation_index(int);
-extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 
-extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern void vec_scale_to_length(void *, void *, float);
-extern int PartType34Spawn(void *, void *, float, float);
 
 extern float ApproachValue(float *, float, float);
-
-extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 
@@ -209,19 +203,14 @@ extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern void update_hero_target_heading(float, float, float);
 
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 extern int offset_path_index(void *, int, int, int);
 
-extern void allocate_hero_voice_for_entry(int, int);
-
 extern int coll_line(void *, void *, int, int, int);
 
 extern int is_moby_in_class_range_500_to_540(int);
-
-extern int Moby_PlaySound(int, int, int);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 

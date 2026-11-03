@@ -15,12 +15,12 @@
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/l16_kalebo3/hero_idle_animation.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void Hero_TryMoveState(int, int);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
 void HeroL16_UpdateStateFlags(void) {
@@ -161,13 +161,10 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
-void sceVu0Normalize(void *, void *);
-
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
 void func_L00_00233D50_105C8(void *, void *, f32) __asm__("func_L00_00233D50");
-f32 FastAbsF(f32);
+
 extern Hero g_hero;
 extern struct CollisionHit kalebo3_coll_hit;
 

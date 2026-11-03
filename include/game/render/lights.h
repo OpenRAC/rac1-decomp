@@ -7,5 +7,6 @@
 
 extern void DetachPointLight(int);
 extern void RefreshPointLight(int);
+extern void UpdateAllPointLights(void);
 
 #endif /* GAME_RENDER_LIGHTS_H */

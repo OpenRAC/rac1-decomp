@@ -25,6 +25,17 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/morphoray_chicken_and_drones.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -292,8 +303,6 @@ extern float SpringAngle_spark(void *, void *, float, float, float, float, int) 
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
-
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
 
@@ -398,9 +407,9 @@ extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 
 extern void SamplePathAt(int *, int, void *, float *, int, float);
-extern int Sound_IsPlaying(void *, int);
+
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
-extern void Moby_PlaySound(int, int, void *);
+
 extern float vec_distance_xy(void *, void *);
 extern int FastBSphereCheck(char *, float);
 typedef struct {
@@ -495,7 +504,6 @@ extern int coll_sphere(float, void *, int, void *);
 
 extern void BuildSphericalOffset_57(float, float, float, void *) __asm__("func_00215C00");
 
-extern void *spawn_feather_moby(void *, void *, void *);
 extern int Moby_PlaySound_57(int, int, void *) __asm__("func_0022ED80");
 
 extern float reposition_effect_velocity_elevation_degrees SDATA(reposition_effect_velocity_elevation_degrees);
@@ -727,10 +735,9 @@ typedef struct {
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int fast_dec_timer(int *);
-extern float IntToFloat(int);
+
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 
 /* Emit four camera-facing glow particles at the moby, cycling their spin and colour timers. */
 void emit_moby_sprite_effect_particles(char *m) {
@@ -767,7 +774,7 @@ void emit_moby_sprite_effect_particles(char *m) {
 extern float conveyor_belt_base_speed SDATA(conveyor_belt_base_speed);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float *, float, float);
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void draw_conveyor_belt_strips();
 extern void update_conveyor_group_voice(unsigned char *);
 extern void update_conveyor_group_motion_transforms(int, void *);
@@ -1036,9 +1043,9 @@ extern void update_test_dummy_damage_and_respawn(void *);
 extern void *find_nearest_test_dummy_door(int, void *);
 extern void refresh_test_dummy_door_timer(char *);
 extern int move_test_dummy_toward_position_and_heading(char *, void *, float);
-extern void reset_shot_tracking(char *);
+
 extern int IsFrameWithinWindow(char *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern float jump_speed_4318(void *, void *, void *, float, float);
 
 extern void ClampVectorLength(void *, float);
@@ -1046,7 +1053,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
-extern void collect_mobies_around_tracked_objects(char **, int, int);
+
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void SetDeathBits(void *, int, int);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
@@ -1889,7 +1896,7 @@ typedef struct {
 void copy_hoverboard_dummy_path_node(Level16VendorVectorMoby *moby, int index, void *out) {
     qcopy(out, moby->data->vectors + index * 16 + 16);
 }
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern int offset_path_index(char *, int, int, int);
 
 typedef struct {
@@ -2533,7 +2540,6 @@ void *activate_door_647_group_and_find_nearest(int index, int secondary) {
     }
 }
 
-extern void Moby_PlaySound(int, int, void *);
 extern int kalebo3_frame_count MACRO_ADDR;
 extern int last_test_dummy_door_sound_request_frame SDATA(last_test_dummy_door_sound_request_frame);
 extern float test_dummy_door_height_offset SDATA(test_dummy_door_height_offset);
@@ -2612,12 +2618,9 @@ extern int fast_dec_timer(int *);
 
 extern void activate_test_dummy_group(int);
 extern void compute_triggered_scene_path_pose(char *, void *, float *);
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-extern void Moby_PlaySound(int, int, void *);
+
 extern char hero_globals_base[], help_stats_base[], special_items_base[], kalebo3_camera_pos[];
 typedef struct {
     char pad[0x72];
@@ -2750,8 +2753,6 @@ void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
     out2[2] = ((Moby *)moby)->rot.z;
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void Moby_PlaySound(int, int, void *);
-extern void spawn_proximity_gated_bolts(void *);
 
 // Update moby 800: waits for a trigger value, then plays an effect and deletes itself.
 void update_moby_hit_triggered_removal(char *moby) {
@@ -2782,7 +2783,6 @@ extern float kalebo3_challenge_layout_value SDATA(kalebo3_challenge_layout_value
 void challenge_set_layout_param(float f) {
     kalebo3_challenge_layout_value = f;
 }
-extern void Moby_PlaySound(int, int, void *);
 
 /* Play the moby's sound and switch it from state 1 to state 7. */
 void request_target_reposition(unsigned char *moby) {
@@ -2806,13 +2806,6 @@ int get_target_reposition_status(Moby *m) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L16_002E22DC);
-
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
-extern int Help_Request(int, int);
-
-extern int memcard_Save(int, int);
 
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
@@ -3071,8 +3064,6 @@ extern char crate_platform_no_path_msg[], crate_platform_empty_path_msg[], crate
     crate_platform_empty_other_path_msg[], crate_platform_no_trigger_msg[];
 extern short kalebo3_path_spring_stiffness, kalebo3_path_spring_damping;
 
-extern int STUB_printf();
-
 extern void InitKnockback(void *, void *, int, int, int, float);
 extern void func_L00_002592B0(char *, float, float *, float, float, float);
 
@@ -3281,7 +3272,7 @@ int advance_bolt_thief_path(char *moby) {
     }
     return r;
 }
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern void SelectNearestTargetSlot(void *);
 extern void prepare_taxi_departure_path(char *);
 extern void request_moby_help_message(char *);
@@ -3805,7 +3796,7 @@ extern float move_chomper_toward_position(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int IsFrameWithinWindow(char *, float);
 extern void collect_mobies_in_sphere_at_moby_point(void *, int, int, float, float, float, int, int, int);
-extern int CarriedMobyUpdate(void *, void *);
+
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern short chomper_move_params;
 /* Update the wandering helper's motion, animations, interaction and damage states. */

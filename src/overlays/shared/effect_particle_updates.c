@@ -15,9 +15,9 @@
 #include "game/moby/mobyutil.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 extern Hero g_hero;
-
-extern float IntToFloat(int);
 
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -222,9 +222,8 @@ void PartType04Spawn(void *a, void *b, int c, int d, int n, int s1, int s2, int 
         e->damp_off = s1;
     }
 }
-extern float IntToFloat(int);
 
-extern int DefaultVtbl_DeleteMoby(int, int, float);
+extern int DefaultVtbl_DeleteMoby_v(int, int, float) __asm__("func_L00_00237B70");
 
 extern float frame_scale MACRO_ADDR;
 
@@ -236,7 +235,7 @@ void update_damped_effect_particle(struct PartBase *particle) {
     FastVecAdd(&particle->pos, &particle->pos, &s->vel);
     particle->spin++;
     particle->color =
-        DefaultVtbl_DeleteMoby(s->color_end, s->color_start, (float)particle->timer / IntToFloat(s->lifetime));
+        DefaultVtbl_DeleteMoby_v(s->color_end, s->color_start, (float)particle->timer / IntToFloat(s->lifetime));
     if (FastDecTimer(&particle->timer))
         KillPart(particle);
 }
@@ -285,7 +284,7 @@ void update_scalar_and_fade_effect_particle(struct PartBase *m) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 
 extern f32 coll_hit_normal[];
@@ -494,7 +493,7 @@ b0b0:
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
+
 extern unsigned char *part_type08_textures;
 
 typedef struct PartType08Data {
@@ -1371,7 +1370,6 @@ typedef struct PartType19Data {
 } PartType19Data;
 extern f32 frame_scale MACRO_ADDR;
 
-void Moby_GetJointWorldPos(void *, s32, void *);
 void vec_scale_to_length(void *, void *, f32);
 
 s32 truncate_float_to_s32(f32);
@@ -1485,8 +1483,8 @@ void update_shrinking_effect_particle_with_secondary_spawns(struct PartBase *par
     } else {
         particle_position = &particle->pos;
         particle->size = IntToFloat(particle->timer) * s->base_scale / IntToFloat(s->max_life);
-        particle->color =
-            DefaultVtbl_DeleteMoby(s->color_end, s->color_start, IntToFloat(particle->timer) / IntToFloat(s->max_life));
+        particle->color = DefaultVtbl_DeleteMoby_v(s->color_end, s->color_start,
+                                                   IntToFloat(particle->timer) / IntToFloat(s->max_life));
         FastVecAdd(particle_position, particle_position, &s->vel);
         s->vel.f[2] -= g_frame_scale_sq * 0.001f;
         qcopy(&updated_position_copy, particle_position);
@@ -1826,7 +1824,7 @@ void update_color_decaying_effect_particle_with_collision(struct PartBase *parti
     }
     particle->spin--;
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern char *part_type26_textures;
 
 typedef struct PartType26Data {
@@ -2061,7 +2059,7 @@ extern u8 *part_type29_textures;
 extern f32 g_debug_camera_r2[4] __asm__("D_L00_00166EC0");
 
 extern s32 truncate_float_to_s32(f32);
-extern void Moby_GetJointWorldPos(void *, s32, void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026e3a8. */
@@ -2157,8 +2155,6 @@ extern V_26e670_26e670 g_debug_camera_r3 __asm__("D_L00_00166EC0");
 extern V_26e670_26e670 coll_hit_normal_r __asm__("D_L00_00173F80");
 
 void vec_scale_to_length(void *, void *, f32);
-
-f32 FastAbsF(f32);
 
 s32 truncate_float_to_s32(f32);
 s32 func_L00_001F10E0_6F510(void *, s32, s32, f32) __asm__("func_L00_001F10E0");
@@ -2534,9 +2530,6 @@ extern int coll_hit_result[];
 
 extern int coll_line(void *, void *, int, int, int);
 
-extern void spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
-extern void spawn_random_planar_drift_particle(void *, int, float, float);
-
 /* Moves a particle by its velocity according to its mode, bouncing or killing it on contact. */
 void update_ballistic_effect_particle_with_contact_spawns(struct PartBase *p) {
     BallisticParticleData *particle_data = (BallisticParticleData *)p->data;
@@ -2626,7 +2619,7 @@ void update_flag_controlled_pulsing_effect_particle(struct PartBase *m) {
         return;
     }
     if (angle_sine > particle_data->lim) {
-        m->color = ((int (*)(float, int, int))DefaultVtbl_DeleteMoby)(
+        m->color = ((int (*)(float, int, int))DefaultVtbl_DeleteMoby_v)(
             (angle_sine - particle_data->lim) / (1.0f - particle_data->lim), 0, particle_data->arg);
     } else {
         m->color = 0;
@@ -2805,7 +2798,7 @@ extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_00
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern void KillPart_r3(struct PartBase *) __asm__("func_L00_002688A8");
-extern f32 IntToFloat(s32);
+
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026ff10. */

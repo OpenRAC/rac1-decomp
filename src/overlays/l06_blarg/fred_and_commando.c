@@ -27,6 +27,20 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "game/audio/music.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/music_track_requests.h"
+#include "asm_functions/level_06.h"
+#include "overlays/shared/space_commando_and_door_lock.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -421,23 +435,13 @@ extern char *blarg_scene_points MACRO_ADDR;
 extern float blarg_fade_level MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
 
-extern float IntToFloat(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern void set_camera_rotation(void *);
-
-extern void set_camera_position(void *);
-
-extern int HeroL06_TrySetMoveState(int, int);
 extern void spawn_moby_breakup_effect(char *, int);
-extern void AddDrawCallback(int, char *);
-extern void Moby_PlaySound(int, int, void *);
-extern void draw_tube_mesh96_twin(void);
+
 extern void effect_quad_draw_single(void);
-extern void draw_tube_mesh64_twin(void);
+
 extern void draw_backdrop_mesh(void);
 
 extern int scripted_camera_sequence_active MACRO_ADDR;
@@ -636,7 +640,7 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void spawn_spinning_moby_fragment(void *, void *, void *);
+
 extern float blarg_tube_base_z SDATA(blarg_tube_base_z);
 
 /* Replaces the moby with a broken copy (type 0x43C); with burst set, also throws 50 pieces around it. */
@@ -798,8 +802,6 @@ void effect_quad_draw_single(void) {
     }
 }
 
-extern float IntToFloat(int);
-
 extern int blarg_frame_count MACRO_ADDR;
 extern char hero_globals_base[] NOT_SDA;
 extern float blarg_bobbing_moby_amplitude SDATA(blarg_bobbing_moby_amplitude);
@@ -884,26 +886,11 @@ typedef struct Busy {
     int f24;
 } Busy;
 
-extern void attach_shared_manipulator_to_matching_class_moby(char *);
-
 extern void set_ground_height_band(void *);
-extern void set_moby_and_links_to_states_8_and_9(char *);
-extern void set_moby_and_links_to_states_4_and_5(char *);
 
-extern int DialogRequest_Init(void *, void *);
-extern int check_all_listed_frog_states_fe_fd_or_10(int);
-
-extern int Npc_TryStartDialog(void *, void *);
-
-extern int memcard_Save(int, int);
-extern int Help_Request(int a, int b);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
 
 extern float vec_distance_xy(void *, void *);
@@ -1138,19 +1125,15 @@ void fred_update(Moby *moby) {
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->fC0, 2);
 }
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern void func_L06_002F5A20(int);
-extern void func_L06_002FAD78(int);
+
 extern int count_active_moby_group_members_r(int, int) __asm__("func_L01_0026EFB8");
 extern void begin_red_button_rotation_r(char *) __asm__("func_L06_00305BF8");
 extern int get_red_button_sequence_status_r(char *) __asm__("func_L06_00305C38");
 extern void queue_moby_dialogue_line_r(char *, int) __asm__("func_L06_00303858");
 extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
-extern int func_00216960(void);
+
 extern void set_moby_list_state_17_r(int) __asm__("func_L06_00301068");
-extern void func_L06_002EB260(int);
-extern void func_L06_002F59D0(int);
-extern void func_L06_002FADE0(int);
-extern void func_L06_002FDA60(unsigned char *);
+
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -1169,7 +1152,7 @@ extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int allocate_voice_for_group_entry_r(int, int, int) __asm__("func_0022EEB8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
-extern void func_L06_00303630(void);
+
 extern void set_moby_state_5_r(char *) __asm__("func_L06_003054C8");
 extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
@@ -1455,18 +1438,9 @@ extern int D_0015EF1D MACRO_ADDR;
 extern int D_0015EF1C MACRO_ADDR;
 extern void update_shuttle_route_selection_and_prompt(char *m);
 extern void mark_shuttle_linked_mobys_for_removal(char *moby);
-extern void Moby_PlaySound(int, int, void *);
-
-extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
-extern void MusicRequestTrack(int, int);
-
-extern void FadeToBlack(int);
 
 extern float vec_distance_xy(void *, void *);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int update_shuttle_path_ride(char *, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -1811,7 +1785,7 @@ struct PathRide {
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int truncate_float_to_s32(float);
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
-extern int allocate_voice_for_group_entry(int, int, void *);
+
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
 extern void break_apart_shuttle_linked_mobys(struct Moby *);
 extern char blarg_paths[];
@@ -1909,7 +1883,6 @@ int update_shuttle_path_ride(char *moby, int path) {
 extern void rand_vec(void *, float, float);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern unsigned char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 extern char scatter_explode_spark_colors_start[];
 extern char scatter_explode_spark_colors_end[];
@@ -2030,7 +2003,6 @@ extern void rand_vec(void *, float, float);
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
 
 extern int truncate_float_to_s32(float);
-extern u8 *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 struct BreakApartShuttleLinkedMobysVars {
     u8 pad_00[0xCC];
@@ -2198,7 +2170,7 @@ extern void set_camera_position_r2(void *) __asm__("func_L00_002EBE88");
 extern void set_camera_rotation_r2(void *) __asm__("func_L00_002EBEE0");
 extern void Hero_ResetToPosition_r2(void *, void *, int, int) __asm__("func_L00_00217718");
 extern void CameraScript2_r2(int) __asm__("func_L00_002EC0C8");
-extern void func_L06_00304590(void *);
+
 extern void emit_red_button_particle_burst_r(void *, void *) __asm__("func_L06_00305C58");
 extern int allocate_voice_for_group_entry_r2(int, int, void *) __asm__("func_0022EEB8");
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
@@ -2343,7 +2315,6 @@ void red_button_update(Moby *m) {
             break;
     }
 }
-extern void Moby_PlaySound(int, int, void *);
 
 /* Advances a moby from state 1 to state 2 and calls Moby_PlaySound. */
 void begin_red_button_rotation(char *arg) {
@@ -2401,9 +2372,7 @@ void emit_red_button_particle_burst(int unused, void *obj) {
     }
 }
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void set_vec_to_origin_point(void *);
 
 extern void func_L00_00273F80(void *, void *, int, float, int, int, int);
 extern int vector_stream_fade_ticks MACRO_ADDR;
@@ -2613,9 +2582,7 @@ void test_moby_vector_stream_collision_lines(char *m) {
 }
 
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
-extern void blarg_draw_strand_strip(int *, float *);
 extern float vector_stream_matrix_scale SDATA(vector_stream_matrix_scale);
 extern int vector_stream_alpha_b SDATA(vector_stream_alpha_b);
 extern int vector_stream_alpha_a SDATA(vector_stream_alpha_a);
@@ -2692,8 +2659,6 @@ struct UsageStat {
 extern struct UsageStat help_records[];
 extern s32 gameplay_event_frame_count MACRO_ADDR;
 extern u8 item_available_14[];
-extern int Help_Request(int, int);
-extern int count_active_moby_group_members(int, int);
 
 /* Level 6 help hints: shows the help messages for the area and records how often and when each was due.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/vendor/003083b0.c, FUN_L06_003083b0. */
@@ -3038,7 +3003,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern float blarg_zero_vec[] MACRO_ADDR;
 extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern void spawn_proximity_gated_bolts(void *);
+
 void func_0020D678_0B248(struct Obj *obj) __asm__("func_0020D678");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay_vendor_003083b0.c, FUN_L06_00309e08. */

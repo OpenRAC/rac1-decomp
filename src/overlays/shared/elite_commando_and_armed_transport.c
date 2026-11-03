@@ -17,6 +17,14 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/sentrybot.h"
+#include "overlays/l16_kalebo3/gadgetron_ceo_and_env_maps.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -176,14 +184,12 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
     return moby;
 }
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern int Sound_PlayClassSound(int, int, int, int);
-extern void spawn_rocket_trail_spark(char *);
 
 extern float vec_length_xy(void *);
 
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int fast_dec_timer(int *);
-extern float IntToFloat(int);
+
 extern void lerp_vector(void *, void *, void *, float);
 
 extern int coll_line(void *, void *, int, void *, void *);
@@ -293,7 +299,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void select_blarg_elite_commando_movement_animation(char *);
 extern int IsFrameWithinWindow(char *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern char *spawn_blarg_elite_commando_rocket(char *, float *, char *);
 extern int mine_fall(void *, void *);
 extern int Moby_PlaySound_update(int, int, void *) __asm__("func_0022ED80");
@@ -301,7 +307,7 @@ extern int Moby_PlaySound_update(int, int, void *) __asm__("func_0022ED80");
 extern float ApproachValue(float *, float, float);
 
 extern float FastVecDist_update(void *, void *) __asm__("func_001F9D10");
-extern int Sound_IsPlaying(void *, int);
+
 extern char hero_globals_base[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -875,10 +881,9 @@ void select_blarg_elite_commando_movement_animation(char *moby) {
             MobyBlendAnimation(moby, 4, 0, scale_ticks(0x14));
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
-extern void spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
+
 extern float blarg_elite_commando_extra_glow_gate SDATA(blarg_elite_commando_extra_glow_gate);
 typedef struct {
     int values[6];
@@ -1006,7 +1011,6 @@ void update_blarg_elite_commando_joint_aim(char *m) {
 
 extern void rand_vec(float *, float, float);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 /* Emit randomized joint particles while the moby is active. */
 void emit_blarg_elite_commando_joint_sparks(char *m) {
     float matrix[16], velocity[4], acceleration[4], scatter[4];
@@ -1240,7 +1244,7 @@ void armed_transport_update(char *m) {
     ((Moby *)m)->pos.z = d->base_z + *(float *)&armed_transport_bob_height * FastSin(d->unk_18C);
     update_armed_transport_joint_animation(m);
 }
-extern int Sound_IsPlaying(void *, int);
+
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 extern char *MobyGetHitMessage(void *, int, int);
@@ -1396,9 +1400,8 @@ extern float grindrail_barrier_spin_speed_deg SDATA(grindrail_barrier_spin_speed
 extern float grindrail_barrier_pulse_speed SDATA(grindrail_barrier_pulse_speed);
 extern short grindrail_barrier_core_spin_speeds_deg;
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void draw_grindrail_barrier_effect();
 extern int check_grindrail_barrier_release_condition(int);
 extern void group_trigger_nearest(int);
@@ -1570,7 +1573,6 @@ int check_grindrail_barrier_release_condition(int idx) {
 INCLUDE_ASM("asm/overlays", func_L16_002E7160);
 extern char hero_globals_base[];
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern void Moby_PlaySound(int, int, int);
 
 /* picks the nearest moby in a list (skipping Grindrail Barrier) and acts on it */
 void group_trigger_nearest(int idx) {
@@ -1593,7 +1595,7 @@ void group_trigger_nearest(int idx) {
         }
     }
 }
-extern void draw_level16_reflection_mesh_batch(void);
+
 /* Draw-only moby update: after init, queue the reflection mesh draw every frame. */
 void moby_update_draw_only(unsigned char *moby) {
     switch (moby[0x20]) {

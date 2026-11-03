@@ -12,6 +12,8 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern int pad_held;
 extern Hero g_hero;
 
@@ -117,11 +119,8 @@ int pick_idle_fidget(int *index) {
     return 0;
 }
 
-extern int HeroEnterMoveState(int, int);
-
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern void ClampVectorLength(void *a, float x);
-extern int hero_idle_sequence(int);
 
 extern short g_frame_time_r __asm__("D_0015EE6C");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -185,10 +184,7 @@ void update_hero_locomotion_state(void) {
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 
-extern int check_pad_press_separation(int, int, int, int);
-extern int HeroEnterMoveState(int, int);
 extern int HeroEnterMoveState_b(int, int) __asm__("func_L00_00222B80");
-extern int pad_pressed_within(int, int, int);
 
 // Tries the crouch-jump style moves in priority order and starts the first whose conditions hold. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_00229660.
 int hero_handle_jump_press(void) {
@@ -284,8 +280,6 @@ typedef struct {
     char pad2[0x24];
 } Rec;
 extern Rec item_defs[] __attribute__((section(".data")));
-
-extern int HeroEnterMoveState(int, int);
 
 /* starts the pending global action if conditions hold; returns 1 on success */
 int try_start_hero_item_idle_animation(void) {

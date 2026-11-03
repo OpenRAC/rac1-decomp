@@ -7,6 +7,7 @@
 #include "structs/moby.h"
 #include "data/level_14.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 typedef struct Pkt {
     float corner[4][4];
@@ -19,7 +20,7 @@ typedef struct Pkt {
 } Pkt;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float IntToFloat(int);
+
 u64 GetEffectTex(s32);
 extern void draw_world_quad(void *, void *, int);
 typedef struct {

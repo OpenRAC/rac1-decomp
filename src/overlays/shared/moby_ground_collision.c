@@ -17,6 +17,10 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
+#include "core/vu0/vector.h"
 extern char gold_weapon_purchased[];
 
 extern int func_001160D8(void);
@@ -332,7 +336,7 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
     FastVecSub(v, q, &t0);
     return r;
 }
-extern float IntToFloat(int);
+
 extern void move_4318_c(int, int, float, float, float, int) __asm__("func_L00_00259868");
 
 /* Forwards its arguments, replacing the middle float with IntToFloat's result scaled by 1/1024. */
@@ -639,7 +643,7 @@ int decrement_packed_countdown(int *p, int b) {
     return v == 0;
 }
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
+
 /* Height after n gravity steps of size f, n = b.z / f; stores n in *out when given. */
 float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float f) {
     int n = truncate_float_to_s32(b[2] / f);
@@ -650,7 +654,7 @@ float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float 
     }
     return r;
 }
-extern float IntToFloat(int);
+
 /* Predicts the position after d frames of velocity c with per-frame gravity f. */
 void predict_position_with_vertical_drop(void *a, void *b, void *c, int d, float f) {
     float t[4];
@@ -766,7 +770,7 @@ int MobySphereHitDirectional(void *moby, void *position, int c, float d, float e
     descriptor.oclass = *(unsigned short *)&((Moby *)moby)->oclass;
     return coll_sphere_mobys(position, d, i, moby, &descriptor);
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern int MobySphereHitDirectional(void *, void *, int, float, float, float, int, int, int);
 
 /* Calls FUN_L00_002598b0 at a moby point; the f13 argument is ignored and c is passed again as a float.
@@ -1348,7 +1352,7 @@ extern void f_vadd_BCF8(void *, void *, void *) __asm__("func_001F9BD8");
 extern void f_vsub_BCF8(void *, void *, void *) __asm__("func_001F9BF0");
 extern void f_vscale_BCF8(float, void *, void *) __asm__("func_001F9C30");
 extern void func_001F9C48(float, void *, void *);
-extern void func_00125328(float, void *, void *);
+
 extern float f_vlen_BCF8(void *) __asm__("func_001F9CB8");
 extern float f_sqrt_BCF8(float) __asm__("func_001F9B50");
 extern void f_vrot_BCF8(void *, void *, void *) __asm__("func_001F9EC0");
@@ -1931,7 +1935,6 @@ void InitKnockback(float ang, char *o, float *s, int a, int b, int c) {
 extern float frame_scale_m __asm__("D_0015EE60") MACRO_ADDR;
 extern int *coll_sphere_moby_hits[];
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern char *spawn_burst_moby(void *, float);
 
 /* The falling state mine_fall steps (a moby's pvars + 0x20 in the blarg commander shot). */
 struct FallState {
@@ -2891,8 +2894,7 @@ extern CameraSystem player_camera_r2 __asm__("D_L00_00166D80");
 extern float blast_spawn_params[] NOT_SDA;
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
-extern void mine_camera_blast(void *, void *, int, int);
+
 extern int FastBSphereCheck_r2(void *, float) __asm__("func_L00_00200290");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
@@ -2957,8 +2959,6 @@ extern S6y10 color_swapped_burst_fade_colors;
 
 extern unsigned swap_packed_color_channels(unsigned, int);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
-extern void mine_camera_blast(void *, void *, int, int);
 
 // Spawn three bursts of coloured sparks around a point, then optional glow pieces and a flash.
 void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {

@@ -20,6 +20,10 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -31,20 +35,12 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 extern int truncate_float_to_s32(float);
-extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
-
-extern void release_and_clear_hero_voice_slots(void);
-extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern int novalis_game_mode MACRO_ADDR;
 extern int pool_draw_tiles MACRO_ADDR;
@@ -1600,11 +1596,7 @@ extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char D_0013D5C8[];
 extern Rec2C novalis_attack_records_r[] __asm__("D_L01_0017C128");
 extern int r1_double_tap_timer SDATA(r1_double_tap_timer);
-extern int func_L00_00267BA8(int, int, int *);
 
-extern int Sound_IsPlaying(void *, int);
-
-extern int Moby_PlaySound(int, int, int);
 extern int func_001F9908(int *);
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */

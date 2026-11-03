@@ -22,6 +22,17 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/spawner_and_chase_enemies.h"
+#include "overlays/shared/gadgebot_containers_and_frog.h"
+#include "overlays/l10_orxon/platforms_doors_and_bombthrower.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -151,11 +162,8 @@ extern int coll_line(void *, void *, int, void *, void *);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
 extern s32 truncate_float_to_s32(f32);
-extern void MoveCtl_Init(char *p);
 
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-
-extern void activate_waiting_moby_group_members(unsigned char *m);
 
 extern int fast_dec_timer(void *);
 extern float vec_distance_xy(void *, void *);
@@ -166,12 +174,9 @@ extern float compute_toxic_crab_group_approach_angle(char *self);
 
 extern int move_w(void *, void *, void *, void *, float);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 
 extern int mine_fall(void *, void *);
-
-extern void trooper_set_knockback(float *p, float a, float b);
 
 extern void InitKnockback_b(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void MobySpringTurn_b(char *moby, float target, float k, float d, float max,
@@ -774,8 +779,6 @@ extern int toxic_crab_debris_time2 SDATA(toxic_crab_debris_time2);
 extern int toxic_crab_debris_time3 SDATA(toxic_crab_debris_time3);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-
 // Per-frame update of the moby in arg0: builds two vectors from its position and the trig helpers, then calls the
 // level's helpers for each of its entries.
 void emit_moby_particles(void *p) {
@@ -1265,15 +1268,14 @@ extern float blarg_ship_fire_anim_speed SDATA(blarg_ship_fire_anim_speed);
 extern float frame_scale MACRO_ADDR;
 extern char orxon_help_state[];
 extern unsigned char gHaveHeliPack[];
-extern void STUB_printf(char *, ...);
+
 extern void update_blarg_ship_hit_reactions_and_targeting(char *m);
 
-extern int Help_Request(int a, int b);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 extern int IsFrameWithinWindow(char *, float);
 
-extern char *create_rocket(void *vel, void *pos, int a, int b, int c, float scale);
+extern char *create_rocket_v(void *vel, void *pos, int a, int b, int c, float scale) __asm__("func_L10_002CD578");
 extern void ClampVectorLength(void *, float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
@@ -1405,7 +1407,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
                     FastVecScale(&E, &B, multiply_global_factor(3.0f));
                     add_vectors(&D, &E, &C);
                     emit_radial_particle_burst(m, &E, 0);
-                    create_rocket(&B, &C, (int)m, (int)tgt, scale_ticks(300), 1.0f);
+                    create_rocket_v(&B, &C, (int)m, (int)tgt, scale_ticks(300), 1.0f);
                 }
             } else if (m->b52 == 3 && m->b53 != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(10));
@@ -1522,7 +1524,6 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern void RerollEffectCounter(void *, short *);
 
 extern void StepColorFade(void *, void *);
-extern void select_hero_or_gadgebot_target(float, void *, void *);
 
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern char *orxon_paths[];
@@ -1623,8 +1624,6 @@ finish:
 extern short orxon_vent_puff_color_a, orxon_vent_puff_color_b, orxon_vent_puff_speed_max, orxon_vent_puff_speed_min,
     directional_particle_gravity_gp, orxon_vent_spark_percent;
 
-extern int spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
-
 typedef struct {
     f32 size; /* 0x00 */
     f32 amount; /* 0x04 */
@@ -1681,10 +1680,8 @@ void emit_moby_directional_particles(char *m) {
                                            c1, c2, variant);
     }
 }
-extern void set_moby_dialogue_record_value(void *, int);
-extern int try_set_help_message(int, int);
 
-extern int memcard_Save(int, int);
+extern int try_set_help_message(int, int);
 
 extern unsigned char special_items_base[];
 
@@ -1920,7 +1917,7 @@ extern LevelState_e9648 orxon_collected_flags_base;
    delete the targets and set the saved-collected bits); the meaning of spawn_class_4ea_projectile and of the
    0x4/0x8/0xC/0x14 data slots is guessed, the operations follow the assembly. */
 extern float SpringTurn(float *, float, float, float, float, float);
-extern int spawn_class_4ea_projectile(void *, void *, void *, int);
+
 #define FIRST ((char *)D_L10_00160058)
 #define GPT ((char *)D_L10_00160058)
 
@@ -2192,7 +2189,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern float multiply_global_factor_r2(float) __asm__("func_001F9878");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern float func_001FA888(int);
+
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
 // Level 10 gate_2 update: four-state machine on m[0x20], moby Gate 2.
@@ -2400,8 +2397,6 @@ extern int FastBSphereCheck(char *, float);
 extern void rand_vec(float *, float, float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-
 /* Emits sparks from pos in bursts: the burst timer alternates between a pause (counting up to 0) and an
  * active window, and during the window a particle goes out on each emit-timer tick when the camera is near. */
 void emit_burst_spark_particle(void *pos, short *timer, short *burst) {
@@ -2585,8 +2580,6 @@ void update_level_mode_dispatcher(char *m) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern int Moby_PlaySound(int, int, int);
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Update for moby class 1855: waits, arms, then fires an effect and deletes itself. */
 void Moby1855Update(char *m) {

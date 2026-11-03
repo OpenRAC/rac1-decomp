@@ -1,6 +1,8 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "core/cdvd/read.h"
+#include "core/kernel/libkernl_glue.h"
 
 /*
  * core_text object 0x1224B0-0x122630. Boundaries are retail's linker fill
@@ -10,7 +12,6 @@
  * (sceGsSyncV), back to back. Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like the prebuilt libgraph.a.
  */
-
 
 extern void scePrintf();
 
@@ -47,9 +48,6 @@ typedef struct {
     short version;   /* 0x06 */
     int unk_08;      /* 0x08 */
 } GsGParam;
-extern GsGParam *sceGsGetGParam(void);
-extern void wait_vblank_start(void);
-extern long wait_vblank_csr(void);
 
 /* Returns the current field, bit 13 of the GS CSR (read directly at
    0x12001000, or through wait_vblank_csr), when the display is

@@ -21,6 +21,13 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern char g_hero[];
 extern char item_usage[];
 extern unsigned int pad_held;
@@ -33,7 +40,7 @@ typedef int OvlQuad __attribute__((mode(TI)));
 extern s32 level_frame_counter MACRO_ADDR;
 extern CollisionHit coll_hit_result;
 
-extern s32 probe_hero_forward_collision(f32 *, f32, f32);
+extern s32 probe_hero_forward_collision_v(f32 *, f32, f32) __asm__("func_L00_0020A8B8");
 extern f32 vec_length_xy(void *);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
@@ -59,7 +66,7 @@ void update_hero_motion_and_collision_probes(void) {
         g_hero_r.wall_probe_distance = 4.0f;
         g_hero_r.wall_probe_moby_in_class_range = 0;
         g_hero_r.wall_probe_hit_moby = 0;
-        if (probe_hero_forward_collision(&g_hero_r.wall_probe_distance, 0.7f, 4.0f)) {
+        if (probe_hero_forward_collision_v(&g_hero_r.wall_probe_distance, 0.7f, 4.0f)) {
             g_hero_r.wall_normal_pitch =
                 fast_atan2(coll_hit_result.normal.f[2], vec_length_xy(&coll_hit_result.normal.f[0]));
             if (coll_hit_result.moby != 0) {
@@ -549,28 +556,17 @@ typedef struct {
 } T2C;
 
 extern void set_hero_idle_state_for_vehicle_mode(void);
-extern int hero_idle_sequence(int a);
 
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 extern int truncate_float_to_s32(float);
-extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern int Moby_PlaySound(int, int, int);
-extern void RippleDisturb(int, int, int, float, float, float, float);
-extern void help_queue_add(int, int, int);
-
-extern void spawn_hero_radial_particle_burst(void);
 
 extern int cinematic_mode MACRO_ADDR;
 extern int water_patches MACRO_ADDR;
@@ -2937,10 +2933,7 @@ extern unsigned char item_available[];
 extern unsigned int pad_held;
 extern int hero_control_mode_11_flag[];
 extern short g_frame_time_r2 __asm__("D_0015EE6C");
-extern void queue_animation_update(int, int, void *, void *, void *, void *, int);
-extern void hud_init_particles(void);
-extern void hud_update_particles(void);
-extern void draw_hud_stars(void);
+
 extern int coll_line_r2(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern int HeroEnterMoveState(int, int);
 extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
@@ -3004,7 +2997,6 @@ collision_mode:
 
 extern int coll_line(void *, void *, int, int, int);
 
-extern int allocate_hero_voice_for_entry(int a, int b);
 extern float coll_hit_point_z;
 extern int level_frame_counter MACRO_ADDR;
 
@@ -3156,9 +3148,6 @@ extern unsigned char item_available_r[] __asm__("D_0013D5C8");
 extern Rec2C attack_records_r[] __asm__("D_L00_0017BD28");
 extern int hero_repeat_press_window_frames SDATA(hero_repeat_press_window_frames);
 extern int pad_pressed_within_r2(int, int, int *) __asm__("func_L00_00267BA8");
-extern void launch_hero_wrench(void);
-
-extern int Sound_IsPlaying(void *, int);
 
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 
@@ -3502,9 +3491,7 @@ int process_hero_equipped_item_input(void) {
     return g_hero_h228770.state_timer < start;
 }
 
-extern int pad_pressed_within(int, void *, void *);
 extern int get_hero_high_jump_input_window_frames(void);
-extern int check_pad_press_separation(int, void *, void *, int);
 
 /* Loads a record into A0 (type 0x40). If the flags at pad_globals_base + 0x2600
    have 0x2 or 0x8 set, saves it back and signals state 0xB; otherwise

@@ -4,6 +4,7 @@
 #include "structs/particle.h"
 #include "include_asm.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -69,7 +70,7 @@ unsigned char *func_L08_0027C218(int owner, void *pos, void *vec, short ticks, u
     }
     return m;
 }
-extern float IntToFloat(int);
+
 extern unsigned char *batalia_part_type77_textures;
 
 typedef int U128 __attribute__((mode(TI)));

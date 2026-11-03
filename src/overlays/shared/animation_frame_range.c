@@ -4,9 +4,9 @@
 #include "structs/moby.h"
 #include "structs/records.h"
 #include "include_asm.h"
+#include "game/math/fastfunc.h"
 
 extern MobyClass *eudora_moby_class_headers[];
-extern float IntToFloat(int);
 
 /* Return the first frame of animation b of moby class a (0 when b is none). */
 float animation_start(int a, unsigned int b) {

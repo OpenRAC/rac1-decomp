@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "core/kernel/exit.h"
 
 /*
  * crt0 (0x12D868-0x12DA38): the program entry point. The ELF's e_entry is
@@ -9,8 +10,6 @@
  */
 
 ASM_FUNC("asm/handwritten/core_text", func_0012D868); /* _start */
-
-extern void Exit(int);
 
 /* The CRT exit entry discards its argument and exits with status zero. */
 void func_0012DA28(int status) {

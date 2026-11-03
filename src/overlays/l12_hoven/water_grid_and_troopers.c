@@ -24,6 +24,20 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/shot_tracking.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
+#include "overlays/l12_hoven/moby_heading_moves.h"
+#include "overlays/l12_hoven/reservoir_turret_planetbuster.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -105,20 +119,10 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char hoven_camera_pos[];
 extern char hoven_ripple_patches[];
-extern int STUB_printf();
 
-extern void RescaleFloatTable(float s);
-
-extern void RipplePatch_ToFixedPoint(float *in, int *out);
 extern void initialize_level_12_slot_grid_neighbors(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void Group_CopyZToTableSlots(char *moby);
 
-extern void RippleDisturb(void *, int, int, float, float, float, float);
-extern int check_scaled_vector_bsphere(char *vec, float scale);
-
-extern void RippleSimClock(char *p, int n);
-extern void AddDrawCallback(void *, void *);
 extern void render_level_12_water_grids(void);
 
 typedef struct {
@@ -334,8 +338,6 @@ void initialize_level_12_slot_grid_neighbors(int arg) {
     }
 }
 
-extern void MobyGroup_SetByteBC(int, int);
-
 extern int func_L00_002DCDA8(void *, void *, void *);
 /* Suck cannon suction for a group moby: marks its group and sets state 8 while held. */
 int GroupMoby_UpdateActiveState(Moby *moby, void *pos, void *target) {
@@ -433,7 +435,6 @@ extern int spark_scatter_color_b SDATA(spark_scatter_color_b);
 extern int spark_scatter_sprite SDATA(spark_scatter_sprite);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Scatters 27 particles around a point with random offsets and velocities. */
 void spawn_spark_scatter(void *pos) {
@@ -1129,8 +1130,6 @@ extern s32 g_hero_moby;
 
 extern s32 fast_dec_timer(s32 *);
 
-extern s32 count_active_moby_group_members(s32, s32);
-extern void MobyGroup_SetByteBC(s32, s32);
 extern void PostHitMessage_r2(struct Moby *, s32, s32, Vec4f *, f32 *, f32) __asm__("func_L00_0025AC00");
 extern TrollHit *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern void ComputeHitResponse_r(struct Moby *, TrollHit *, f32 *, s32, s32 *, f32 *, s32,
@@ -1357,7 +1356,6 @@ typedef struct {
 
 extern Moby *D_L12_00160058 MACRO_ADDR;
 extern Path *hoven_paths_r2[] __asm__("D_L12_001B0C30");
-extern int count_active_moby_group_members(int, int);
 
 extern void steer_platform_toward_target_r(void *, void *, void *, int, int) __asm__("func_L12_002E4F18");
 
@@ -1601,16 +1599,9 @@ void HovenPlatformUpdate(Moby *moby) {
     update_entity_matrix(d->f60, delta, oldRot, (*(float (*)[4]) & moby->rot));
 }
 
-extern int DialogRequest_Init(void *, void *);
-extern void initialize_moby_grounding(void *);
-extern int Npc_TryStartDialog(void *, void *);
-
-extern int memcard_Save(int, int);
-
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r2(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
-extern void update_moby_bone_attachment(void *, void *, int);
 typedef struct Data_2E7FC8 {
     char pad00[0x20];
     char activation[0x40]; /* 0x20 */
@@ -1771,9 +1762,6 @@ void miner_update(Moby *m) {
         update_moby_bone_attachment(m, d->helper, 2);
     }
 }
-extern void draw_level_12_effects(void);
-
-extern void AddDrawCallback(void *, void *);
 
 /* Queues the level 12 effects draw when the camera is inside the moby's clip volume. */
 void register_level_12_effects_draw_callback(unsigned char *moby) {
@@ -1816,12 +1804,11 @@ extern char *hoven_nearby_mobys[];
 
 extern void process_blarg_trooper_damage_and_alerts(char *moby);
 extern void FindNearestTargetMoby(char *, float *, float);
-extern void MoveCtl_Init(void *);
+
 extern int func_001160D8(void);
 
-extern int test_point_within_moby_limits(void *, void *, float, float, float);
 extern int coll_line(void *, void *, int, void *, void *);
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float max_angle, float approach_speed);
 extern void set_blarg_trooper_aim_yaw_offsets(char *moby, float *pos);
 extern void ease_blarg_trooper_height_to_ground(char *moby);
@@ -1831,10 +1818,9 @@ extern int coll_sphere_mobys(void *, int, void *, int, float);
 extern int is_moby_in_class_range_500_to_540(void *);
 
 extern int IsFrameWithinWindow(void *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void Moby_PlaySound(int, int, int);
+
 extern int truncate_float_to_s32(float);
-extern void spawn_class_b8_projectile(void *, void *, void *, int);
+
 extern int mine_fall(void *, void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -2286,8 +2272,6 @@ tail:
 #undef M_P
 #undef COPY4
 
-extern int count_active_moby_group_members(int, int);
-
 extern void remove_blarg_trooper_and_attachment();
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -2497,7 +2481,6 @@ void remove_blarg_trooper_and_attachment(Moby *moby) {
     }
     DeleteMoby(moby);
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Keeps the Blarg trooper's attachment on its bone, spawning it if missing. */
 void update_blarg_trooper_attachment(unsigned char *moby) {
@@ -2530,7 +2513,6 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 typedef int OvlQuad __attribute__((mode(TI)));
 
 extern void SteerAngleWithVelocity(void *, void *, float, float, float, float);
-extern void move_moby_along_heading(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e8808. */
 void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float max_angle, float approach_speed) {
@@ -2623,14 +2605,10 @@ extern void Manipulator_ApplyScale(float, void *, int, void *);
 extern void process_blarg_helicopter_hits(char *);
 typedef int (*Fn_ED80)(int, int, void *);
 
-extern void start_blarg_commander_knockback(void *, void *);
-extern char *create_blarg_commander_moby_from_source(void *);
-extern void cache_consecutive_point_distances(int);
 extern int follow_blarg_helicopter_path(struct Moby *, int);
-extern void Help_Request(int, int);
+
 extern float SpringTurn(float *, float, float, float, float, float);
 extern void update_blarg_helicopter_motion_tilt(char *);
-extern char *spawn_rocket(void *, void *, void *, int, float, float, float);
 
 extern void set_ground_height_band(void *);
 
@@ -3180,7 +3158,7 @@ int follow_blarg_helicopter_path(struct Moby *m, int idx) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void Moby_PlaySound(int, int, int);
+
 extern void RerollEffectCounter(void *m, short *p);
 
 extern void StepColorFade(void *, void *);
@@ -3268,8 +3246,6 @@ typedef struct Helper {
     char pad36[0xA];
     float rot[4]; /* 0x40 */
 } Helper;
-
-extern void attach_shared_manipulator_to_matching_class_moby(char *);
 
 extern Helper *CreateMoby_r2(int) __asm__("func_0020D348");
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -3540,10 +3516,9 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
     }
 }
-extern float IntToFloat(int);
+
 extern int check_scaled_vector_bsphere_i(char *vec, float scale) __asm__("func_L01_00276680");
 extern void process_helicopter_hits_and_reactivation(char *m, int flag);
-extern void initialize_path_descriptor(char *p);
 
 extern float helicopter_path_speed SDATA(helicopter_path_speed);
 extern float helicopter_path_bank_scale SDATA(helicopter_path_bank_scale);

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "data/executable.h"
+#include "core/gs/put_draw_env.h"
 
 /*
  * movie/disp.cpp in the original source; text 0x23C5E0-0x23C9C0.
@@ -66,7 +67,6 @@ ASM_FUNC("asm/handwritten/text", func_0023C7A8); /* vblankHandler */
 ASM_FUNC("asm/handwritten/text", func_0023C910); /* handler_endimage */
 extern volatile int movie_display_active MACRO_ADDR;   /* display-active flag, shared with the vblank handler */
 extern volatile int movie_vblank_count MACRO_ADDR;
-extern int sce_gs_sync_v(int);
 
 /* startDisplay(int) -- waits until the vertical-sync field differs from the given one, then
  * marks the display active. */

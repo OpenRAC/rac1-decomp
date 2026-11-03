@@ -4,6 +4,9 @@
 #include "core/mpeg/motion_comp.h"
 #include "core/mpeg/demux.h"
 #include "asm_functions/executable.h"
+#include "core/mpeg/csc.h"
+#include "core/mpeg/ipu.h"
+#include "core/mpeg/ipu_dma_restart.h"
 
 /*
  * core_text object 0x12AC80-0x12CC70. Boundaries are retail's linker fill
@@ -18,9 +21,6 @@
  */
 
 extern void _Error_a(void *, void *) __asm__("func_0012C468");
-
-extern void ipu_set_mpeg1(int arg0);
-extern int sysbit_get(void *arg0, int arg1);
 
 /* {base id, field mask} per type; the mask selects the shift of value. */
 struct TypeEntry {
@@ -104,9 +104,9 @@ typedef struct {
     u8 pad0[0x40];
     MpegSys *sys;
 } sceMpeg;
-extern void sysbit_init(SysBit *bs, u8 *start, u8 *bufstart, s32 bufsize);
+
 extern s32 sysbit_show_r(SysBit *bs, s32 n) __asm__("func_0012AAA8");
-extern u8 *sysbit_ptr(SysBit *bs, s32 pos);
+
 extern s32 mpeg_pack_header_r(SysBit *bs, PackHdr *pack) __asm__("func_0012B100");
 extern s32 mpeg_pes_packet_r(MpegSys *sys, SysBit *bs, PesHdr *pes) __asm__("func_0012B2C0");
 
@@ -241,7 +241,6 @@ int sce_mpeg_add_str_callback(void *arg0, int arg1, int arg2, int arg3, int arg4
     return old;
 }
 
-extern void sysbit_marker(void *arg0);
 extern int mpeg_system_header();
 
 /*
@@ -300,7 +299,6 @@ int mpeg_system_header(void *arg0) {
     return 1;
 }
 
-extern void sysbit_jump(void *arg0, int n);
 extern char pes_optional_field_bits[];
 extern char pes_pack_header_field_flag_msg[];
 
@@ -465,8 +463,6 @@ int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
     return 1;
 }
 
-extern void sce_ipu_init(void);
-
 /*
  * sceMpegInit (libmpeg.a:mpeg.o): one-time IOP/EE SIF hardware bring-up.
  * disable_interrupts presumably queries the DMA/SIF state, gating whether
@@ -503,8 +499,6 @@ extern void mpeg_clear_once(void *);
 
 extern int sce_mpeg_clear_ref_buff(void *);
 extern void mpeg_work_area_set_mark(void *);
-extern void mpeg_stop_ipu_dma(void);
-extern void mpeg_restart_ipu_dma(void);
 
 /*
  * sceMpegCreate (libmpeg.a:mpeg.o): clear the caller's work area
@@ -811,7 +805,6 @@ unsigned int reserve_aligned_buffer_space(void *arg0, char *r, unsigned int size
     return 0;
 }
 
-extern int mpeg_next_header(void *);
 extern int mpeg_flush_last_frame(void *);
 extern int mpeg_decode_or_skip(void *, int, int);
 /* _errMessage sprintf's its format and passes the
@@ -894,10 +887,6 @@ int mpeg_getpic(void *arg0) {
     return 1;
 }
 
-extern int mpeg_update_ref_image(void *, int);
-extern int mpeg_dec_picture(void *);
-extern void mpeg_output_frame(void *, int, int);
-
 /* _decodeOrSkipFrame (libmpeg): sibling of mpeg_decode_or_skip_field
    (_decodeOrSkipField), for the frame-picture path. Adapted from
    Lombyte's project (GPL-3.0) for PAL. */
@@ -975,9 +964,7 @@ struct MpegHandle {
     unsigned char pad_C[0x34];
     struct MpegFieldDec *unk40;
 };
-extern int mpeg_dec_picture();
-extern int mpeg_update_ref_image();
-extern void mpeg_output_frame();
+
 /* _decodeOrSkipField (libmpeg). Adapted from Lombyte's project (GPL-3.0) for PAL. */
 int mpeg_decode_or_skip_field(void *handle, int arg1, int arg2) {
     struct MpegHandle *arg0 = handle;
@@ -1139,8 +1126,6 @@ void mpeg_clear_once(void *arg0) {
     *(int *)(p + 0x810) = 0;
 }
 
-extern void sce_ipu_sync(int, int);
-
 /*
  * _clearEach (libmpeg.a:init.o): per-stream hardware reset shared by
  * sceMpegInit's shape -- flag the bitstream state "in use" (+0x818 = 1),
@@ -1223,7 +1208,7 @@ int mpeg_set_frame_size(void *arg0, int arg1, int arg2) {
 }
 
 extern char mpeg_vertical_size_too_large_msg[];
-extern void send_ipu_command(void *, unsigned int);
+
 extern void mpeg_set_default_qm(void *, int, int);
 extern char mpeg_default_intra_qm[];
 extern char mpeg_default_non_intra_qm[];

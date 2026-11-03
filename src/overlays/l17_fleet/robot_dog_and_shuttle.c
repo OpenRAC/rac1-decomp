@@ -27,6 +27,15 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "asm_functions/level_08.h"
+#include "overlays/l17_fleet/hero_idle_and_items.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -161,7 +170,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 extern int func_001FA898(float);
-extern void update_float_countdown(float *);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void HeadingFromVector(void *, float *, void *, void *);
@@ -260,7 +269,6 @@ int move_robot_dog_toward_position(char *moby, float *target, float speed) {
     return vec_distance_xy(moby + 0x10, target) < 0.2f;
 }
 
-extern int func_L00_002DCDA8(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
@@ -328,10 +336,7 @@ void update_robot_dog_aim_joint(char *moby) {
     d->part.yaw = yaw;
     EaseManipulatorOffsets(moby, (char *)&d->part, 0, accel * g_frame_scale_sq, speed * g_frame_scale_sq);
 }
-extern float IntToFloat(int);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_three_moby_effect_quads(char *);
 extern int fleet_frame_count MACRO_ADDR;
 
@@ -431,7 +436,6 @@ void draw_three_moby_effect_quads(char *m) {
     }
 }
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
@@ -668,13 +672,7 @@ void DrawLightRing(char *moby) {
         }
     }
 }
-extern int Moby_PlaySound(int, int, int);
 
-extern void FadeToBlack(int);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -999,12 +997,6 @@ LINKER_REMNANT("asm/overlays", func_L17_002F4208);
 
 extern int PlayBankSound(int, int, int);
 
-extern void STUB_printf();
-extern int Help_Request(int a, int b);
-
-extern void HeroL17_SetMoveState(int, int);
-
-extern void set_follow_camera_angle_blend_from_position(int a, float x, float y);
 extern int fast_dec_timer_i(int *) __asm__("func_001F9908");
 
 extern char *fleet_mobys MACRO_ADDR;
@@ -1467,10 +1459,6 @@ done:
         AddDrawCallback(draw_fleet_backdrop_quads, moby);
     }
 }
-extern void update_moby_hit_stats_and_state(void *);
-
-extern void update_moby_trail_points(void *);
-extern void update_moby_path_transform(void *);
 
 extern int FastBSphereCheck(char *, float);
 
@@ -1750,7 +1738,6 @@ char *try_activate_blarg_ship_from_list(int list) {
     return 0;
 }
 extern void SetDeathBits(void *, int, int);
-extern void spawn_proximity_gated_bolts(void *);
 
 /* UpdateMoby 1873: wait for a target, then play two effects and delete itself. */
 void Moby1873Update(unsigned char *m) {

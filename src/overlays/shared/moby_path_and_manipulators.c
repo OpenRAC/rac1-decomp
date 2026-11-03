@@ -14,6 +14,12 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
+#include "overlays/shared/particle_type_registry.h"
 extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
@@ -33,14 +39,10 @@ typedef struct {
 } SegmentPath;
 extern SegmentPath *level_paths[];
 
-extern void STUB_printf();
-extern float IntToFloat(int);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int SegmentCrossPolyline(int, void *, void *, void *);
 
-extern void spawn_bolt_by_value(void *, void *, void *, int, int, int);
 struct MobyBound;
 struct MobyBound *GetFlaggedPvarWord(struct Moby *);
 
@@ -643,7 +645,6 @@ typedef struct {
     Vec4 points[1]; /* 0x10 */
 } PointPath;
 extern s32 truncate_float_to_s32(f32);
-extern f32 IntToFloat(s32);
 
 extern void vec_scale_to_length(void *, void *, f32);
 
@@ -918,10 +919,6 @@ extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 float vec_length_xy(void *);
 float vec_distance_xy(void *, void *);
 
-float FastAbsF(float);
-
-float IntToFloat(s32);
-
 void func_00215C00_64140(Vec4 *, float, float, float) __asm__("func_00215C00");
 MobyBound *GetFlaggedPvarWord(struct Moby *);
 int func_L00_001EFFF0_64140(void *, Vec4 *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -1013,7 +1010,6 @@ extern S166D player_camera;
 extern V collision_hit_point;
 extern int coll_line(void *, void *, int, int, int);
 extern float vec_length_xy(void *);
-extern void spawn_timed_effect_particle(char *, int);
 
 /* spawns impact sparks at a point on the ground near the camera. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_002634f8. */
 void spawn_ground_contact_effect_particle(V *v) {
@@ -1261,7 +1257,6 @@ void draw_trail(void *p0, void *p1, void *vel, float a, float b) {
 }
 extern int banner_display_ticks MACRO_ADDR;
 extern char banner_text_buffer[];
-extern int msg_string(int);
 
 /* Shows message arg0 in the on-screen text box for arg1 ticks. */
 void ShowBanner(int arg0, int arg1) {
@@ -1272,7 +1267,7 @@ void ShowBanner(int arg0, int arg1) {
     banner_display_ticks = arg1;
 }
 extern char banner_text_buffer[] NOT_SDA;
-extern void sprintf(void *, int, int);
+
 /* Like ShowBanner, but draws message a with parameter b. */
 void queue_formatted_dialogue_message(int a, int b, int c) {
     if (c == -1)
@@ -1385,11 +1380,7 @@ extern int timed_hud_frames_left MACRO_ADDR;
 extern int timed_hud_visible MACRO_ADDR;
 extern short D_L00_00161F04;
 extern short D_L00_00161F08;
-extern int queue_animation_update(int, int, void *, void *, void *, int, int);
-extern void draw_uniform_size_hud_stars(void);
-extern void DefaultVtbl_DeleteMoby(void);
 
-extern void hud_keep_visible(int, int);
 /* Per-frame update for the countdown timed_hud_frames_left. */
 void update_timed_hud_visibility(void) {
     if (timed_hud_frames_left != 0) {

@@ -6,6 +6,9 @@
 #include "core/gs/def_draw_env.h"
 #include "data/executable.h"
 #include "structs/gs.h"
+#include "game/render/vuchain.h"
+#include "core/gs/put_draw_env.h"
+#include "core/gs/put_disp_env.h"
 
 /*
  * framebuf.cpp in the original source; text 0x1FAA28-0x1FBC80.
@@ -203,7 +206,6 @@ void SetBackgroundColor(int arg0, int arg1, int arg2) {
 }
 
 extern void *active_fs_aa_buffer MACRO_ADDR;
-extern void sce_gs_put_disp_env(void *);
 
 /* PutDispBuffer(void) */
 void PutDispBuffer(void) {
@@ -211,7 +213,6 @@ void PutDispBuffer(void) {
 }
 
 extern int *g_render_packet_cursor MACRO_ADDR;
-extern void sceGsPutDrawEnv(void *);
 
 /* PutDrawBufferLarge: queue the draw environment at active_fs_aa_buffer+0x30 as a
    DMA ref tag when a packet buffer is open, else send it directly. */
@@ -398,9 +399,6 @@ void draw_centered_capture_background(int w, int h) {
     }
     g_render_packet_cursor = g_render_packet_cursor + (n * 4 + 20);
 }
-
-extern void vu1_add_vif_code(int);
-extern void VU1_addGSregister(int, long);
 
 /* Draws an alpha-blended sprite through a GIF packet appended to
    g_render_packet_cursor (a DMA/VIF header, TEST_1 0x33003, then PRIM 0x106 with

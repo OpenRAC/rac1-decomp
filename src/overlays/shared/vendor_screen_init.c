@@ -14,6 +14,9 @@
 #include "overlays/shared/level_gameplay_loading.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/render/vuchain.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
 extern char cd_read_state[];
 extern Hero g_hero;
 
@@ -34,16 +37,6 @@ extern float novalis_fade_level MACRO_ADDR;
 extern int relocated_address_base MACRO_ADDR;
 extern int novalis_white_fade_level SDATA(novalis_white_fade_level);
 extern char novalis_vendor_screen_anchor_offset;
-
-extern void snd_FlushSoundCommands(void);
-
-extern void Hero_SetMoveState(int, int);
-
-extern void calculate_dma_transfer_address(void);
-
-extern int sce_gs_sync_v(int);
-
-extern int Music_ContinueStreamIfReady(void);
 
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it
    closes. */

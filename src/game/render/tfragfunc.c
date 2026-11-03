@@ -7,14 +7,13 @@
 #include "game/render/vuchain.h"
 #include "data/executable.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
 
 /*
  * tfragfunc.cpp in the original source; text 0x234380-0x2347F0.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern int STUB_printf();
 
 extern char camera_position[];
 
@@ -147,8 +146,6 @@ extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern char str_tfrag_texs[];
 extern char str_tfrag_draw[];
 extern char tfrag_dma_block[];
-
-extern void write_vif_unpack_packet(int, void *, int);
 
 extern void DmaTfragTextures(void);
 

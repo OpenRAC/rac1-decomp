@@ -1,5 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "core/cdvd/callbacks.h"
+#include "core/cdvd/read.h"
 
 /*
  * movie/strfile.cpp in the original source; text 0x23CE18-0x23CEC8.
@@ -24,8 +26,6 @@ int set_state_fields(StrFile *f, int first, int second) {
 int get_state_callback_result(StrFile *f) {
     return 1;
 }
-extern void sce_cd_read(int, int, int, void *);
-extern void sce_cd_sync_s(int);
 
 /* Reads movie sectors and advances the cursor after a synchronous read. */
 int read_cd_stream_sectors(void *arg0, int arg1, int arg2, int arg3) {

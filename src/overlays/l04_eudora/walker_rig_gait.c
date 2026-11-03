@@ -10,6 +10,11 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/system/stub.h"
+#include "callees.h"
+#include "overlays/shared/draw_buffers_and_walker_gait.h"
+#include "overlays/shared/animation_frame_range.h"
+#include "overlays/shared/rig_probe_setup.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
@@ -105,10 +110,6 @@ typedef struct {
 } LegRig_p;
 extern char invalid_animation_message[];
 extern char rig_size_message[];
-extern void STUB_printf();
-extern void raise_kernel_trap(void);
-extern float animation_start(int, int);
-extern float animation_end(int, int);
 
 /* Sets up a two-legged rig on a moby. */
 void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
@@ -171,7 +172,6 @@ void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
     rig->mode = 5;
     STUB_printf(rig_size_message, 0x250);
 }
-extern int func_L00_002A2680(int *a, float v);
 
 // Finds the entry of arg1's 13-pointer table whose first word equals arg0's byte at 0x52, then calls on it or returns
 // a byte.
@@ -394,7 +394,6 @@ extern void MobyTransformScaledVertex_r(struct Moby *, int, float *) __asm__("fu
 
 extern float SpringTurn(float, float, float *, float, float, float);
 
-extern void multiply_quaternions(float *, float *, float *);
 extern f32 frame_scale MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/runtime/dma/002922d0.c, FUN_L04_00292d48. */
@@ -456,14 +455,11 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
     }
 }
 
-extern float IntToFloat(int);
 extern int rig_pick_mode_r(char *, char *, float) __asm__("func_L04_00293990");
 extern void rig_animate_r(char *, char *, int, float) __asm__("func_L04_00293F08");
 extern int update_leg_rig_height_and_tilt_r(char *, char *) __asm__("func_L04_002939E8");
 
 extern void divide_vector_xyz(void *, void *, float);
-extern void func_L00_002A2900(char *, char *, float, float, float, int);
-extern void rig_probe_setup(void *, int, int *, float *, float *, float *);
 
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;
@@ -682,9 +678,6 @@ typedef struct {
     /* 0x0F0 */ LegRigLeg legs[2];
 } LegRig;
 extern u8 eudora_leg_rig_anim_b7_values[13][4];
-
-extern float IntToFloat(int);
-extern float animation_start(int, int);
 
 extern int rig_pick_mode_r2(struct Moby *m, LegRig *rig, float t) __asm__("func_L04_00293990");
 

@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "enums/level.h"
+#include "game/render/draw.h"
 
 typedef struct {
     char pad0[0x30];
@@ -15,9 +16,6 @@ typedef struct {
 
 extern int g_current_level_index MACRO_ADDR;
 extern Level14State oltanis_cutscene_state;
-
-extern void glow_quads_draw(void *);
-extern void AddDrawCallback(void (*)(void *), void *);
 
 /* Attach the callback during the six active phases of this level event. */
 void update_level14_event_moby_effects(void) {

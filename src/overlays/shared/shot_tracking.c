@@ -5,6 +5,7 @@
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/effect_particle_updates.h"
 
 // Add and subtract a delta from a moby field, storing results
 void initialize_moby_grounding(char *moby) {
@@ -43,7 +44,6 @@ extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32(float);
 
-extern char *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
 extern void spawn_color_decaying_effect_particle(void *, void *, int);
 
 typedef struct {

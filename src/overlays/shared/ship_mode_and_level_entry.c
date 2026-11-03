@@ -15,13 +15,19 @@
 #include "game/audio/music.h"
 #include "enums/level.h"
 #include "game/moby/mobyutil.h"
+#include "game/math/fastfunc.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/sound_playback.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/shared/level_gameplay_loading.h"
 extern char cd_read_state[];
 extern char *level_render_state;
 
 extern int ship_level_entry_active SDATA(ship_level_entry_active);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char level_render_state_a[] __asm__("D_0013E130") NOT_SDA;
-extern void update_moby_proximity_interaction(void);
 
 /* Start the moby's camera-follow state: stash it in the global record, point its update at
    update_moby_proximity_interaction. */
@@ -107,13 +113,6 @@ typedef struct {
     short x5a;
 } S_171b;
 
-extern void calculate_dma_transfer_address(void);
-extern int HeroEnterMoveState(int, int);
-
-extern void load_chunks_with_optional_fade(int, int);
-
-extern int sce_gs_sync_v(int);
-extern void Music_ContinueStreamIfReady(void);
 // Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
 void initialize_level_transition_with_audio(int a) {
     O_28e9c8 *o;
@@ -219,7 +218,6 @@ extern char cutscene_state[];
 extern int pal_mode MACRO_ADDR;
 extern int memcard_last_save_slot MACRO_ADDR;
 extern short level_transition_ticks_by_variant;
-extern int memcard_Save(int, int);
 
 /* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
 void prepare_target_level_transition(int dest) {
@@ -281,7 +279,7 @@ extern int lvl_vu_chain_buffer_size_r __asm__("D_L00_0016128C") MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern u8 level_available_base NOT_SDA;
 extern u8 menu_item_enabled_92[];
-void calculate_dma_transfer_address(void);
+
 void initialize_level_transition_with_audio(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028eed0. */
@@ -341,7 +339,7 @@ void FastVecScale_v(float, void *, void *) __asm__("func_001F9C30");
 
 long GetEffectTex(int);
 int random_integer_below(int);
-float IntToFloat(int);
+
 void draw_world_quad(void *, void *, int);
 
 /* The 0x90-byte quad the effect builds: the NTSC GeometryQuad layout. */

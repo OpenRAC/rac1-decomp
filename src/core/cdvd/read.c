@@ -19,8 +19,6 @@
 
 extern void scePrintf();
 
-extern int cd_ncmd_disk_ready(void);
-
 /* sceCdRead: queue one CD/DVD read request (lba, sectors, buffer, mode)
  * in the request block at cd_read_request and start it through the RPC
  * sif_call_rpc. Returns 1 when the RPC was accepted, 0 otherwise.
@@ -36,7 +34,6 @@ extern char cd_read_call_msg[];
 extern char cd_read_end_msg[];
 extern volatile int cd_callback_num;
 extern void sceSifWriteBackDCache(void *, int);
-extern void cd_read_end_callback();
 
 int sce_cd_read(int lba, int sectors, void *buf, unsigned char *mode) {
     char *req = cd_read_request;

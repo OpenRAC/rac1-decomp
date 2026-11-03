@@ -16,6 +16,12 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/collision_queries.h"
+#include "overlays/shared/small_word_helpers.h"
+#include "overlays/shared/fast_vector_math.h"
 extern char g_hero[];
 extern u8 gHeroPos[];
 extern PadState g_controller_state;
@@ -28,10 +34,9 @@ extern int vendor_stock[] MACRO_ADDR;
 extern short follow_cam_setting_values;
 extern float follow_cam_setting_value SDATA(follow_cam_setting_value);
 extern void apply_follow_camera_translation();
-extern void follow_camera_apply_overrides(void *);
+
 extern void Profile_Mark();
-extern void follow_camera_springs(void *);
-extern void update_follow_camera_pose(void *);
+
 extern void follow_camera_approach(void *);
 /* Update for the camera moby. */
 void follow_camera_update(char *m) {
@@ -141,8 +146,6 @@ extern float hero_aligned_cam_input_max_step SDATA(hero_aligned_cam_input_max_st
 void func_L00_002EB170_EB3E8(void *) __asm__("func_L00_002EB170");
 void vec_scale_to_length(void *, void *, float);
 
-float IntToFloat(int);
-float FastAbsF(float);
 float func_001EC120_EB3E8(float, float, float, float, float, float *) __asm__("func_001EC120");
 void build_look_at_matrix(void *, void *, void *, float);
 
@@ -244,7 +247,7 @@ extern q_2eb938 gHeroPos_r __asm__("D_0013F4D0") NOT_SDA;
 extern E_2eb938 *camera_descriptors_r __asm__("D_L00_0015F050") MACRO_ADDR;
 extern char *g_current_follow_cam_r __asm__("D_L00_00166F00") NOT_SDA;
 extern char D_L00_00166F10[] NOT_SDA;
-extern char *func_L00_001EE530(void *, f32);
+
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern f32 FastCos_r(f32) __asm__("func_001F9F90");
 extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
@@ -351,7 +354,6 @@ typedef struct {
 } S;
 extern S player_camera;
 extern void reset_hero_aligned_camera(char *);
-extern void Moby_PlaySound(int, int, int);
 
 /* ActivateCamera_4, the first-person camera's init: the camera it gets is handed on to the
    state reset (reset_hero_aligned_camera), which builds the camera's rows. */
@@ -414,7 +416,6 @@ void select_camera_mode_by_hero_vector_alignment(char *m) {
     h->f0 = 0.018f;
 }
 extern char *g_current_follow_cam;
-extern char *find_camera_record_by_id(int);
 
 /* Copies a vector into the current object's slot, switching to state 5 first. */
 void set_camera_position(char *src) {
@@ -482,7 +483,6 @@ void CameraScript(V_2ebf50 *pa, V_2ebf50 *pb, s32 mode, s32 w, s32 x) {
     *(s32 *)(e + 4) = w;
     *(s32 *)(n + 0xE0) = w;
 }
-extern void initialize_camera_record_handoff_defaults(void);
 
 extern char hero_globals_base[];
 
@@ -543,13 +543,9 @@ void initialize_camera_pose_springs(Camera *m) {
     m->transition_state = 0;
 }
 extern int fast_dec_timer(int *);
-extern float IntToFloat(int);
 
-extern void compute_spherical_offset_from_positions(void *, void *, void *);
+extern float Cam_InterpValues_v(void *, float, float, float, float, float) __asm__("func_001EC120");
 
-extern void compute_position_from_spherical_offset(void *, void *, void *);
-extern float Cam_InterpValues(void *, float, float, float, float, float);
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
 extern char hero_globals_base[] __attribute__((section(".data")));
 extern float camera_yaw;
 
@@ -605,9 +601,9 @@ void update_camera_pose_from_targets(void *arg) {
         }
     } else {
         if (*(short *)(d + 0x1C) == 1) {
-            F(m, 0x30) = Cam_InterpValues(d, F(m, 0x30), F(b, 0), F(d, 0x10), F(d, 0x14), F(d, 0x18));
-            F(m, 0x34) = Cam_InterpValues(d + 4, F(m, 0x34), F(b, 4), F(d, 0x10), F(d, 0x14), F(d, 0x18));
-            F(m, 0x38) = Cam_InterpValues(d + 8, F(m, 0x38), F(b, 8), F(d, 0x10), F(d, 0x14), F(d, 0x18));
+            F(m, 0x30) = Cam_InterpValues_v(d, F(m, 0x30), F(b, 0), F(d, 0x10), F(d, 0x14), F(d, 0x18));
+            F(m, 0x34) = Cam_InterpValues_v(d + 4, F(m, 0x34), F(b, 4), F(d, 0x10), F(d, 0x14), F(d, 0x18));
+            F(m, 0x38) = Cam_InterpValues_v(d + 8, F(m, 0x38), F(b, 8), F(d, 0x10), F(d, 0x14), F(d, 0x18));
         }
         if (*(short *)(a + 0x2C) == 1) {
             F(m, 0x40) = Camera_SmoothAngle(a, F(m, 0x40), F(b, 0x10), F(a, 0x20), F(a, 0x24), F(a, 0x28));
@@ -619,7 +615,7 @@ void update_camera_pose_from_targets(void *arg) {
     matrix_copy_rows(m, mtx);
 }
 extern void update_camera_pose_from_targets(void *);
-extern void resolve_camera_movement_collisions(void *, float);
+
 /* Update wrapper: runs the base camera update, then a follow-up call if a flag is set. */
 void update_camera_pose_with_optional_collision(Camera *a) {
     char *p = *(char **)&a->state_buf + 0xE0;
@@ -645,9 +641,7 @@ void initialize_orbit_camera_pose(void *arg) {
     euler_to_matrix(m, ((Camera *)a)->type_data);
     matrix_copy_rows(a, m);
 }
-extern void copy_five_floats_with_rotation_offset(void *, void *, float);
-extern void zero_five_words(void *);
-extern void clear_twelve_bytes(void *);
+
 extern void initialize_orbit_camera_pose(void *);
 /* Sets up a camera moby from the vectors c and b and the value f. */
 void initialize_orbit_camera_from_parameters(char *a, void *b, void *c, float f) {
@@ -725,19 +719,19 @@ void update_orbit_camera_pose(char *camera_object) {
                                         camera_state->rate_b[0], camera_state->rate_c[0]);
     obj->angles[1] = Camera_SmoothAngle(camera_state->pos + 1, obj->angles[1], camera_state->target[1],
                                         camera_state->rate_a[1], camera_state->rate_b[1], camera_state->rate_c[1]);
-    obj->angles[2] = Cam_InterpValues(camera_state->pos + 2, obj->angles[2], camera_state->target[2],
-                                      camera_state->rate_a[2], camera_state->rate_b[2], camera_state->rate_c[2]);
+    obj->angles[2] = Cam_InterpValues_v(camera_state->pos + 2, obj->angles[2], camera_state->target[2],
+                                        camera_state->rate_a[2], camera_state->rate_b[2], camera_state->rate_c[2]);
     obj->angles[3] = Camera_SmoothAngle(camera_state->pos + 3, obj->angles[3], camera_state->target[3],
                                         camera_state->rate_a[3], camera_state->rate_b[3], camera_state->rate_c[3]);
     obj->angles[4] = Camera_SmoothAngle(camera_state->pos + 4, obj->angles[4], camera_state->target[4],
                                         camera_state->rate_a[4], camera_state->rate_b[4], camera_state->rate_c[4]);
     if (camera_state->eye_flag == 0) {
-        orbit_origin[0] = Cam_InterpValues(camera_state->eye, orbit_origin[0], camera_state->look_target[0],
-                                           camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
-        orbit_origin[1] = Cam_InterpValues(camera_state->eye + 1, orbit_origin[1], camera_state->look_target[1],
-                                           camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
-        orbit_origin[2] = Cam_InterpValues(camera_state->eye + 2, orbit_origin[2], camera_state->look_target[2],
-                                           camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
+        orbit_origin[0] = Cam_InterpValues_v(camera_state->eye, orbit_origin[0], camera_state->look_target[0],
+                                             camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
+        orbit_origin[1] = Cam_InterpValues_v(camera_state->eye + 1, orbit_origin[1], camera_state->look_target[1],
+                                             camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
+        orbit_origin[2] = Cam_InterpValues_v(camera_state->eye + 2, orbit_origin[2], camera_state->look_target[2],
+                                             camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
     } else {
         qcopy(orbit_origin, camera_state->look_target);
     }
@@ -829,7 +823,7 @@ one:
     return 1;
 }
 extern void initialize_orbit_camera_state(void *);
-extern void SwitchCamera(char *);
+
 extern int update_orbit_camera_from_target_moby(char *, char *);
 extern short camera_blend_phase[];
 extern char orbit_cam_mode6_params_a[];
@@ -1427,24 +1421,9 @@ extern float camera_view_field_a4;
 #define pad_held_r ((s32 *)(&pad_held))
 #define controller_state (*(PadSt *)(&g_controller_state))
 
-extern int try_select_follow_camera_volume(void *);
-extern void clear_follow_camera_volume_if_current(void *);
-
 extern void vec_scale_to_length(void *, void *, f32);
 
-extern f32 IntToFloat(int);
-
-extern void set_follow_camera_angle_blend_from_direction(void *, f32, f32);
-
-extern void set_follow_camera_flag_226(void);
-
-extern void Cam_SetDistanceGoal(s32, f32, f32);
-extern void set_follow_camera_float_22c(f32);
-extern void follow_camera_set_height(f32, f32);
-extern void Cam_SetEyeOffset(s32, f32, f32);
-extern void set_follow_camera_angle_1cc(f32);
-
-extern void follow_camera_set_lateral_spring(f32, f32);
+extern void Cam_SetDistanceGoal_v(s32, f32, f32) __asm__("func_L00_002E9900");
 
 /* Camera-swing script update. */
 void volume_camera_swing(char *arg) {
@@ -1593,10 +1572,10 @@ void volume_camera_swing(char *arg) {
     }
     if (params->distance != 0.0f) {
         if (params->type == 6 || params->type == 8) {
-            Cam_SetDistanceGoal(0, params->distance, 0.002f);
+            Cam_SetDistanceGoal_v(0, params->distance, 0.002f);
             set_follow_camera_float_22c(params->distance + 1.36f);
         } else {
-            Cam_SetDistanceGoal(0, params->distance, 0.003f);
+            Cam_SetDistanceGoal_v(0, params->distance, 0.003f);
             set_follow_camera_flag_226();
         }
     }
@@ -2007,7 +1986,7 @@ run:
         params->timer = scale_ticks(200);
     }
     if (params->distance != 0.0f) {
-        Cam_SetDistanceGoal(0, params->distance, 0.003f);
+        Cam_SetDistanceGoal_v(0, params->distance, 0.003f);
         set_follow_camera_flag_226();
     }
     if (params->height != 0.0f) {
@@ -2079,8 +2058,6 @@ s32 fast_dec_timer(s32 *);
 s32 func_L00_0028F0B0_EEE00(s32, s32, void *, s32) __asm__("func_L00_0028F0B0");
 s32 random_integer_below(s32);
 
-void Sound_StopSlot(s32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ed950. */
 void update_sound_emitter_playback_by_distance(u8 *m) {
     S_2ed950 *s = *(S_2ed950 **)(m + 8);
@@ -2114,7 +2091,7 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
     }
 }
 extern float g_debug_camera[];
-extern int play_voice(int a, int b, int c, int d);
+
 extern float random_float_between(float, float);
 extern int random_integer_below(int);
 

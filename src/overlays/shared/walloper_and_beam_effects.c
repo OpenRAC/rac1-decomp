@@ -19,6 +19,10 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -154,7 +158,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern void lerp_vector(void *, void *, void *, float);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 
 extern int GetFlaggedPvarWord();
@@ -163,8 +166,7 @@ extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm_
 
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
-extern void Moby_PlaySound(int, int, void *);
-extern unsigned char *PartType53Spawn(void *, int, float, float, int, int, int, float *, float);
+
 #define hero43 (*(Hero43 *)g_hero)
 
 typedef struct {
@@ -660,7 +662,7 @@ void draw_beam_and_arc_effects(char *m) {
 extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
-extern void VU1_addGSregister(int, long);
+
 extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
 extern int beam_and_arc_first_pass_base_vertex_color_gp SDATA(beam_and_arc_first_pass_base_vertex_color_gp);
 extern int beam_and_arc_second_pass_texture_index_gp SDATA(beam_and_arc_second_pass_texture_index_gp);
@@ -946,9 +948,7 @@ extern float walloper_arc_spread SDATA(walloper_arc_spread);
 extern float held_weapon_tesla_walloper_factor;
 
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-extern float IntToFloat(int);
 
-extern void AddDrawCallback(void *, void *);
 extern void draw_walloper_arc_and_quad_effects(int);
 
 // Per-frame update of a moby that scatters ten fading sparkle quads around the hero.
@@ -1067,7 +1067,7 @@ void walloper_update(Moby *m) {
     }
     AddDrawCallback(draw_walloper_arc_and_quad_effects, m);
 }
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float walloper_effect_fade_m __asm__("D_L00_001617A4") MACRO_ADDR;
 extern float walloper_arc_half_width SDATA(walloper_arc_half_width);
@@ -1794,7 +1794,7 @@ extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern void PartType53Spawn_r(void *, int, int, int, int, void *, float, float, float) __asm__("func_L00_00272F00");
 extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern void func_L00_002767B0(void *, int, int, int, int, void *, Moby *, float, float);
+
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
 /* Tesla claw arc: bends the twelve-point beam toward the target, builds the two side rails and the ring of
@@ -2747,8 +2747,6 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
     }
     return best;
 }
-
-extern float IntToFloat(int);
 
 /* Steps a vector by n repeated additions of the normalised difference. */
 void accumulate_local_vector_steps(char *a, char *b, int n) {

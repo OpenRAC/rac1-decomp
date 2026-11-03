@@ -19,6 +19,14 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/l06_blarg/hero_movement.h"
+#include "overlays/l06_blarg/hero_items_and_hud.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -62,19 +70,9 @@ int get_hero_help_value(int a) {
     }
 }
 
-extern void apply_hero_ground_material_response(void);
-
-extern void HeroL06_UpdateStateTransitions(void);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern float ApproachValue(float *, float, float);
 
-extern int Moby_PlaySound(void *, int, void *);
-
-extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern void allocate_hero_voice_for_entry(int, int);
 
 extern unsigned char hero_globals_base[];
 extern unsigned char gHaveMorphORay[];
@@ -343,10 +341,6 @@ void update_hero_vehicle_attachments_and_effects(void) {
 extern unsigned char g_hero[];
 extern s32 level_game_mode_q MACRO_ADDR;
 
-extern void release_and_clear_hero_voice_slots(void);
-
-extern void HeroL06_TrySetMoveState(int, int);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0021d0a0.c, FUN_L06_00227cf8. */
 void restore_hero_from_vehicle_mode(void) {
     Hero *g = (Hero *)g_hero;
@@ -593,10 +587,6 @@ extern f32 g_frame_time MACRO_ADDR;
 extern s32 fast_dec_timer(s32 *);
 
 extern void restore_hero_from_vehicle_mode(void);
-
-extern s32 pad_pressed_within(s32, s32, s32);
-
-extern void enter_hero_vehicle_mode_and_set_moby(s32, s32, struct Moby *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_002348d0. */
 void update_hero_timers_and_spatial_state(void) {

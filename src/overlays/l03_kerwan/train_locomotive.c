@@ -21,6 +21,19 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/helicopter_gunship_and_spawners.h"
+#include "asm_functions/level_03.h"
+#include "overlays/l03_kerwan/taxi_and_mine_layer.h"
+#include "overlays/l03_kerwan/rotate_point_about_axis.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -143,8 +156,6 @@ extern float kerwan_train_car_spacing SDATA(kerwan_train_car_spacing);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 /* Places a train: puts the engine at `at` facing ang (offset back by its length), then lays each linked
  * car behind the previous one along ang, updating their motion deltas, and enables the coupling moby. */
 void place_metropolis_train(char *moby, float *pos, float heading) {
@@ -210,12 +221,9 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
     ((struct Moby *)coupling)->flags |= 6;
 }
 extern float vec_distance_xy(void *, void *);
-extern void gunship_follow_path(char *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-
-extern int STUB_printf();
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -443,19 +451,10 @@ extern unsigned char hero_globals_base[];
 extern char voice_pool[];
 extern void update_metropolis_train_idle_motion_r(void *) __asm__("func_L03_00293EB8");
 
-extern void MusicRequestTrack(int, int);
-extern void set_moby_dialogue_record_value(void *, int);
-
-extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 extern int fast_dec_timer(int *);
 
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
                                      float) __asm__("func_L00_0025EFC0");
-
-extern void set_moby_state_14(unsigned char *);
-
-extern int is_moby_class_23e_in_state_14(char *);
 
 /* Update of the Metropolis train locomotive (moby Metropolis Train Locomotive): waits for the hero, rides its path,
    hands over to the next path. */
@@ -753,13 +752,13 @@ typedef struct {
     float accel;
 } Data_295DB0;
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001E9768(void *);
+
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
-extern int func_L00_0028EF68(int, int, void *, int);
+
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
@@ -973,8 +972,6 @@ void add_moby_rotation_based_offsets(char *moby, float *out) {
     }
 }
 extern int D_L03_0015F6B0 MACRO_ADDR;
-extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 typedef struct EmitterVoiceData {
     u8 pad_000[0x14A];
@@ -1013,10 +1010,6 @@ void maintain_emitter_sound_voice(unsigned char *moby) {
             break;
     }
 }
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
-
-extern void spawn_emitter_child_effect(void *, void *, int, int, float, float, int);
 
 // Per-class steering update for a level 3 moby: runs its path loops and writes the flag bytes at data+0x12E/0x12F.
 void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
@@ -1357,20 +1350,13 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
 extern char *kerwan_mobys MACRO_ADDR;
 
 extern char kerwan_red_ship_no_path_msg[];
-extern float IntToFloat(int);
 
 extern int FastBSphereCheck(void *, float);
 extern int truncate_float_to_s32(float);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
-extern int check_scaled_vector_bsphere(char *, float);
-extern int select_point_index_by_distance(void *, void *, float);
-extern int resolve_path_node_index(void *, int);
-extern int advance_path_node_index(char *);
-extern void initialize_path_descriptor(char *);
-extern void compute_path_node_tangent(void *out, int *l, int idx, float a, float b);
-extern void evaluate_cubic_hermite_segment(float t, void *out, void *p1, void *p2, void *p3, void *p4);
-extern void compute_sampled_spline_path_lengths(void *, int, void *, float, float);
+
+extern void compute_sampled_spline_path_lengths_v(void *, int, void *, float, float) __asm__("func_L01_0028C958");
 extern void add_moby_rotation_based_offsets_r(char *, char *) __asm__("func_L03_0029DA60");
 extern void STUB_printf_r2(void *, int, int) __asm__("func_001E9730");
 
@@ -1509,7 +1495,7 @@ void red_ship_1_update(char *moby) {
                 data->wobble_phase = random_angle_radians();
             }
             *(OvlQuad *)&data->cur_pos.x = *(OvlQuad *)&data->p1.x;
-            compute_sampled_spline_path_lengths(pm, 0, moby, data->unk_104, data->unk_108);
+            compute_sampled_spline_path_lengths_v(pm, 0, moby, data->unk_104, data->unk_108);
             if (data->timer > 0) {
                 moby[0x20] = 3;
             } else {
@@ -1698,7 +1684,7 @@ extern int func_001160D8(void);
 extern int move_w(void *, void *, void *, void *, float);
 extern int ClassifyTargetInCone_r(char *m, char *p, char *pos, char *v) __asm__("func_L00_0025A060");
 extern int mine_fall(void *, void *);
-extern int CarriedMobyUpdate(void *, void *);
+
 extern int FindNearestTargetMoby_r(char *, char *, float) __asm__("func_L00_00260D30");
 extern int is_point_inside_clip_volume_cf(int id);
 
@@ -1986,8 +1972,7 @@ extern int can_release_linked_robot_dog(unsigned char *);
 extern int fast_dec_timer(int *);
 extern void *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void MobyGroup_SetByteBC(int, int);
-extern void trooper_set_knockback(float *, float, float);
+
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void RerollEffectCounter(void *, short *);
@@ -2248,16 +2233,12 @@ typedef struct Data2C8398 {
 } Data2C8398;
 extern void FindNearestTargetMoby(void *, void *, float);
 
-extern void update_kerwan_path_enemy_hit_reaction(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern void MoveCtl_Init(char *p);
+
 extern int is_point_inside_clip_volume_cf(int);
 
-extern void is_value_within_interpolated_window_cf(void *);
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void compute_interpolated_record_value_cf(void *, void *, void *, int, float, float, float);
 
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 
@@ -2265,12 +2246,11 @@ extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, f
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int coll_line(void *, void *, int, void *, void *);
-extern float IntToFloat(int);
+
 extern int coll_sphere(float, void *, int, void *);
 extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
 
 extern unsigned char *moby_get_ride_transform(int);
-extern void RotatePointAboutAxis(void *, void *, float);
 
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;

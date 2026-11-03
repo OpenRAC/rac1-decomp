@@ -27,7 +27,7 @@ int _close_r(int *errOut, int arg1) {
  * loop -- estimate the digit q from the top limbs, subtract q*S from b
  * (trimming b's leading zero limbs), then bump q by one more if b is
  * still >= S (the estimate can undershoot by 1), subtracting S again. */
-extern int __mcmp(void *, void *); /* cmp */
+extern int __mcmp_v(void *, void *) __asm__("func_00115CE8"); /* cmp */
 
 #define STOREINC(xc, hi, lo) \
     (((unsigned short *)(xc))[1] = (unsigned short)(hi), ((unsigned short *)(xc))[0] = (unsigned short)(lo), (xc)++)
@@ -67,7 +67,7 @@ int dtoa_quorem(Bigint_1154D0 *b, Bigint_1154D0 *S) {
             b->wds = n;
         }
     }
-    if (__mcmp(b, S) >= 0) {
+    if (__mcmp_v(b, S) >= 0) {
         q++;
         borrow = 0;
         carry = 0;
@@ -137,14 +137,14 @@ extern char dtoa_nan_string[];
 extern char dtoa_zero_string[];
 extern _Bigint *_Balloc(struct _reent *, s32);
 extern void _Bfree(struct _reent *, _Bigint *);
-extern _Bigint *__d2b(struct _reent *, f64, s32 *, s32 *);
+extern _Bigint *__d2b_v(struct _reent *, f64, s32 *, s32 *) __asm__("func_00115EE8");
 
 extern _Bigint *__i2b(struct _reent *, s32);
-extern _Bigint *__multiply(struct _reent *, _Bigint *, _Bigint *);
+extern _Bigint *__multiply_v(struct _reent *, _Bigint *, _Bigint *) __asm__("func_00115840");
 extern _Bigint *__pow5mult(struct _reent *, _Bigint *, s32);
-extern _Bigint *__lshift(struct _reent *, _Bigint *, s32);
+extern _Bigint *__lshift_v(struct _reent *, _Bigint *, s32) __asm__("func_00115B70");
 extern s32 __mcmp_r(_Bigint *, _Bigint *) __asm__("func_00115CE8");
-extern _Bigint *__mdiff(struct _reent *, _Bigint *, _Bigint *);
+extern _Bigint *__mdiff_v(struct _reent *, _Bigint *, _Bigint *) __asm__("func_00115D50");
 extern _Bigint *__multadd(struct _reent *, _Bigint *, s32, s32);
 extern s32 dtoa_quorem_r(_Bigint *, _Bigint *) __asm__("func_001124C0");
 extern void *libc_memcpy(void *, const void *, u32);
@@ -241,7 +241,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
         return s;
     }
 
-    b = __d2b(ptr, d.d, &be, &bbits);
+    b = __d2b_v(ptr, d.d, &be, &bbits);
 
     if ((i = (s32)(((d).i[1]) >> 20 & (0x7ff00000U >> 20)))) {
 
@@ -526,7 +526,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
         if (leftright) {
             if (m5 > 0) {
                 mhi = __pow5mult(ptr, mhi, m5);
-                b1 = __multiply(ptr, mhi, b);
+                b1 = __multiply_v(ptr, mhi, b);
                 _Bfree(ptr, b);
                 b = b1;
             }
@@ -578,9 +578,9 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
         s2 += i;
     }
     if (b2 > 0)
-        b = __lshift(ptr, b, b2);
+        b = __lshift_v(ptr, b, b2);
     if (s2 > 0)
-        S = __lshift(ptr, S, s2);
+        S = __lshift_v(ptr, S, s2);
     if (k_check) {
         if (__mcmp_r(b, S) < 0) {
             k--;
@@ -604,7 +604,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
     }
     if (leftright) {
         if (m2 > 0)
-            mhi = __lshift(ptr, mhi, m2);
+            mhi = __lshift_v(ptr, mhi, m2);
 
         /* Compute mlo -- check for special case
        * that d is a normalized power of 2.
@@ -614,7 +614,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
         if (spec_case) {
             mhi = _Balloc(ptr, mhi->_k);
             libc_memcpy(&(mhi)->_sign, &(mlo)->_sign, (mlo)->_wds * sizeof(u32) + 2 * sizeof(s32));
-            mhi = __lshift(ptr, mhi, 1);
+            mhi = __lshift_v(ptr, mhi, 1);
         }
 
         for (i = 1;; i++) {
@@ -623,7 +623,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
        * that will round to d?
        */
             j = __mcmp_r(b, mlo);
-            delta = __mdiff(ptr, S, mhi);
+            delta = __mdiff_v(ptr, S, mhi);
             j1 = delta->_sign ? 1 : __mcmp_r(b, delta);
             _Bfree(ptr, delta);
 
@@ -642,7 +642,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
 
             ) {
                 if (j1 > 0) {
-                    b = __lshift(ptr, b, 1);
+                    b = __lshift_v(ptr, b, 1);
                     j1 = __mcmp_r(b, S);
                     if ((j1 > 0 || j1 == 0 && dig & 1) && ++dig == '9' + 1)
                         goto round_9_up;
@@ -680,7 +680,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
 
     /* Round off last digit */
 
-    b = __lshift(ptr, b, 1);
+    b = __lshift_v(ptr, b, 1);
     j = __mcmp_r(b, S);
     if (j > 0 || j == 0 && dig & 1) {
     roundoff:

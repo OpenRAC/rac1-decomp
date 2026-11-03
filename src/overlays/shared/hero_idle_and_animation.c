@@ -26,6 +26,17 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/hero_item_input_and_hud.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -252,7 +263,6 @@ void initialize_hero(void) {
 }
 extern unsigned char g_hero[] NOT_SDA;
 
-extern void HeroEnterMoveState(int, int);
 /* Resets the hero's tuning values and reinitialises the hero. */
 void reset_hero_to_idle(void) {
     struct Hero *hero_state = &g_hero_r;
@@ -577,7 +587,7 @@ struct HeroManip4_5FF0 {
 #define HV ((struct HeroManip4_5FF0 *)&g_hero_r3)
 #define HM (HV->m)
 extern float ApproachValue(float *, float, float);
-extern f32 IntToFloat(s32);
+
 extern s32 truncate_float_to_s32(f32);
 
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -693,10 +703,6 @@ void update_hero_glow_and_extra_manipulators(void) {
 }
 extern unsigned char gHaveMorphORay[] NOT_SDA;
 extern unsigned char hero_globals_base[] NOT_SDA;
-extern void reset_numeric_hud_element_32x32_base(void);
-extern void update_hud_panel_visibility(void);
-extern void draw_hud_bolt_exclamation_panel(void);
-extern int queue_animation_update(int, int, int, int, int, int, int);
 
 /* Update of the nearby-item HUD alert. */
 void update_hero_bolt_exclamation_hud(void) {
@@ -723,10 +729,7 @@ void update_hero_bolt_exclamation_hud(void) {
         }
     }
 }
-extern int request_grouped_voice(int, int, int, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern void spawn_texture_indexed_rotated_particle(float *, float, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
 // place a marker effect at the player's aim point while state 12 is active
@@ -825,8 +828,6 @@ void update_hero_bone_attachment(void) {
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
 
-extern void hero_update_transitions(void);
-
 extern void update_hero_easing_records(void);
 extern void update_hero_vehicle_moby(void);
 extern void update_hero_scalar_pulse(void);
@@ -841,11 +842,9 @@ extern float ApproachValue(float *p, float target, float maxstep);
 void func_001F9BC0_c(void *) __asm__("func_001F9BC0");
 
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern int func_0022ED80(void *, int, void *);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern void allocate_hero_voice_for_entry(int, int);
+
 extern void update_hero_moby_probed_height_bounds(void);
 
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -1314,13 +1313,11 @@ void scan_hero_input_sequences(void) {
             *(int *)(r + 0x21D4) = 0;
     }
 }
-extern void FadeToBlack(int);
+
 extern void update_hero_in_vehicle_mode(void);
 
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
-
-extern void hero_update_transitions(void);
 
 extern void update_hero_easing_targets_and_point_effects(void);
 extern void update_hero_collision_ease_target(void);
@@ -1339,7 +1336,6 @@ extern void check_hero_item_reward_conditions(void);
 extern void update_hero_bolt_exclamation_hud(void);
 extern void dispatch_hero_animation_timed_events(void);
 extern void scan_hero_input_sequences(void);
-extern void Profile_Mark(void *);
 
 extern void update_hero_color_and_item_tint(void);
 extern void update_hero_moby_probed_height_bounds(void);
@@ -1443,11 +1439,8 @@ void update_item_tint_from_hero(void *a, char *m) {
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 
-extern float IntToFloat(int);
-
 extern int truncate_float_to_s32(float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float FastAbsF(float);
+
 extern void HeroDrawQueue_Add(void *vec, int a, float f0, float f1);
 
 // Sets up a vendor moby's draw color from a time-driven wave and spawns its glow particle.
@@ -1677,7 +1670,7 @@ void update_hero_scalar_pulse(void) {
     }
 }
 extern unsigned char g_hero[] NOT_SDA;
-extern void AddDrawCallback(void *, int);
+
 extern void draw_hero_glow_quads(void);
 /* Queues the hero draw callback draw_hero_glow_quads, at most once per frame. */
 void enqueue_hero_glow_draw_callback_once(void) {
@@ -2016,8 +2009,6 @@ void update_hero_moby(void) {
     }
 }
 
-extern void set_moby_local_table_entry(void *, int, void *, float, float);
-
 /* positions the help-screen moby and re-aims it twice */
 void update_hero_vehicle_moby(void) {
     unsigned char *g;
@@ -2063,8 +2054,6 @@ void func_001F9C30_091D8(Vec4 *, Moby *, f32) __asm__("func_001F9C30");
 void vec_scale_to_length(Vec4 *, Vec4 *, f32);
 void func_001F9BD8_091D8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 s32 func_L00_001EFFF0_091D8(Vec4 *, Vec4 *, s32, s32, s32) __asm__("func_L00_001EFFF0");
-f32 min_float(f32, f32);
-f32 max_float(f32, f32);
 
 /* Steers the player aim and probes four rays for vertical motion limits. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_00208b60. */
 void update_hero_moby_probed_height_bounds(void) {
@@ -2273,7 +2262,7 @@ typedef struct {
 } T;
 extern T hero_world_matrix_joints;
 extern unsigned char hero_globals_base[] NOT_SDA;
-extern void compute_selected_world_matrices(int, int, void *, void *);
+
 /* update_hero_world_matrices: computes the hero attach matrices for model a. */
 void update_hero_world_matrices(int a) {
     T t;
@@ -2358,9 +2347,6 @@ void pack_pose(int *joints, PackedPose *pose, unsigned char *model, int padding,
     pose->unk0 = 0;
 }
 
-extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *pos, int b, int color, float f,
-                                                                               float g);
-
 // Bump a counter; once it passes the limit spawn a random-offset particle and reset the counter.
 int emit_hero_periodic_surface_effect(char *a, int b) {
     struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -2378,8 +2364,6 @@ int emit_hero_periodic_surface_effect(char *a, int b) {
         *cnt = random_integer_below((int)a);
     }
 }
-
-extern void spawn_splash(void *, void *, void *, float, float);
 
 // Emits a pair of sparks from the player's position each time the counter passes its limit. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209638.
 void fast_sin_cf(int seed, int limit) {
@@ -2502,7 +2486,7 @@ extern struct Hero D_0013F450_0A320 __asm__("D_0013F450");
 extern f32 g_frame_time MACRO_ADDR;
 
 extern s32 rand_range(s32, s32);
-extern void spawn_burst_moby(Vec4 *, f32);
+
 extern void spawn_moving_resizing_height_snapped_alpha_fade_particle_r(Vec4 *, f32 *, s32, f32,
                                                                        f32) __asm__("func_L00_00272488");
 extern void PartType35Spawn_r(Vec4 *, Vec4 *, s32, s32) __asm__("func_L00_002703E8");

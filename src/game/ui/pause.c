@@ -29,6 +29,16 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "game/system/update.h"
+#include "game/system/stash.h"
+#include "game/gameplay/missionfunc.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -38,8 +48,6 @@
 
 extern char voice_pool[];
 
-extern int measure_text_width_regular(unsigned char *, int);
-extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
 
 extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
@@ -63,11 +71,6 @@ extern unsigned char gSkillPoints[];
 extern short cd_read_state[];
 
 extern char g_controller_state[];
-
-extern void FontPrintLarge(void *a, void *b, void *c, void *d, void *e);
-extern void *msg_string(void);
-
-extern void memcard_MakeWholeSave(char *out);
 
 extern struct CameraSystem gCamera_r __asm__("D_00187040");
 extern s32 active_camera_basis_column1_x;
@@ -98,7 +101,7 @@ extern char pause_menu_screen_optional[];
 extern int selected_level_index;
 extern int pause_entry_cleared_word;
 extern int update_mission_list_i(void) __asm__("func_0020C7A0");
-extern int func_0012DDC0(void);
+
 extern void update_skill_point_and_gold_weapon_menu_entries(void);
 extern char menu_system[] NOT_SDA;
 extern int g_game_mode MACRO_ADDR;
@@ -216,8 +219,6 @@ extern struct O2_19E90 *panel_slots_r[] __asm__("D_001D6120");
 extern u8 D_001602C0 MACRO_ADDR;
 extern u8 D_001602D0 MACRO_ADDR;
 
-extern void func_00234AC8(s32);
-extern s32 func_00122598(s32);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern struct O2_19E90 *create_menu_preview_moby_r() __asm__("func_00226720");
 extern s32 MobySetAnimation_r() __asm__("func_00213D28");
@@ -359,8 +360,7 @@ extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
 
 extern s32 Moby_PlaySound_r(s32, s32, struct Ent *) __asm__("func_0022ED80");
 extern void mode_freeze_init_r(s32, MenuPage *, s32) __asm__("func_001FBC80");
-extern void func_002348B8(void);
-extern void func_001F2930(void);
+
 extern void MobySetAnimation_r2(struct Ent *, s32, s32) __asm__("func_00213D28");
 extern void close_menu_system_r(void) __asm__("func_0021A0B0");
 
@@ -498,15 +498,9 @@ extern s64 capture_texture_tex0 MACRO_ADDR;
 extern void *resident_object_pool MACRO_ADDR;
 extern short panel_clear_color;
 extern s32 panel_slot_enabled[];
-extern void VU1_addGSregister();
-extern void draw_hud_rect_blended();
-extern void DrawTexturedQuad();
-extern void SetupGifPaging();
-extern void DoGifPaging();
 
-extern void BuildViewMatrices(void);
-extern void project_graphics_bounds(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
-extern void configure_graphics_render_target_and_projection(s32, s32, s32, f32);
+extern void draw_hud_rect_blended();
+
 extern void draw_hud_rect_depth(s32, s32, s32, s32, u64, u32, s32);
 
 extern void draw_menu_flashing_panel();
@@ -758,7 +752,6 @@ int Pause_PageInput(int arg0) {
 }
 
 extern int menu_system_close_locked;
-extern void Moby_PlaySound(int, int, int);
 
 /* Pause list handler (Pause_PageInput's family: one `char *` pad local per
    block). The cursor at arg0+0x3C moves on 0x1000/0x4000 within
@@ -834,9 +827,6 @@ extern short panel_clear_color; /* SDA, gp -0x6A50 */
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
 extern int game_frame_counter MACRO_ADDR;
-
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
 
 /* Vertical picture list: each entry (10 bytes at +0x48, count at +0x40)
    is a 0x200-square image at x, stepping 0x252 down from the scroll
@@ -956,10 +946,7 @@ extern short menu_label_text_inset;
 extern int menu_label_marquee_gap SDATA(menu_label_marquee_gap);
 extern int pal_mode MACRO_ADDR;
 extern char *current_menu_page NOT_SDA;
-extern void VU1_addGSregister(int, int);
 
-extern void find_help_entry(int, int, void *);
-extern int sprintf(char *, const char *, ...);
 extern void libc_memset(void *, int, int);
 
 extern int fade_menu_color(int, int, int);
@@ -1423,10 +1410,9 @@ extern MenuPage *current_menu_page_r[] __asm__("D_001D5F74");
 extern short text_shadow_x;
 extern short text_shadow_y;
 extern void VU1_addGSregister_r(s32, long) __asm__("func_00234C98");
-extern void SetupGifPaging(s32);
+
 extern s32 GetEffectTex(s32);
 
-extern s32 func_001F65B0(char *, s32, u8 *);
 extern void FontPrint_r(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
 extern char *msg_string_r(s32) __asm__("func_001FE540");
 extern s32 fade_menu_color(s32, s32, s32);
@@ -1981,7 +1967,7 @@ extern struct MapEntry D_001384A0[];
 extern struct MapEntry D_00138538[];
 
 extern s32 func_00205C70();
-extern s32 func_00205A50(s32 id);
+extern s32 find_id_in_terminated_table_v(s32 id) __asm__("func_00205A50");
 extern s32 func_002058D0();
 extern s32 func_00205AA8();
 extern void func_00205830();
@@ -1996,9 +1982,9 @@ extern s32 start_audio_stream_read_r() __asm__("func_00217628");
 extern s32 stash_receive_data_r() __asm__("func_00234238");
 extern s32 fast_decompress_r() __asm__("func_0020C468");
 extern s64 register_8bit_texture_r() __asm__("func_00205660");
-extern void func_002083E0();
+
 extern void flush_pending_texture_uploads_r() __asm__("func_0020C2F8");
-extern void func_0020CDE0();
+
 extern void Moby_PlaySound_r3() __asm__("func_0022ED80");
 
 /* Map screen of the pause menu: pad input (close, back, the mission page, warp to the shown
@@ -2054,7 +2040,7 @@ s32 DrawMapScreen(MenuScreen *screen) {
             Moby_PlaySound_r3(0, 0x11, screen->moby);
             return 0;
         }
-        idx = find_id_in_terminated_table(level_map_selection_r.level);
+        idx = find_id_in_terminated_table_v(level_map_selection_r.level);
         if (idx >= 0) {
             if (g_controller_state_r.pressed_unmasked & 8) {
                 if (idx < 0x13) {
@@ -2177,15 +2163,14 @@ s32 DrawMapScreen(MenuScreen *screen) {
 extern int selected_level_index;
 extern int selected_mission_id;
 extern int selected_mission_index;
-extern void update_mission_list(void *);
-extern int collect_mission_ids(void *, void *, void *, int);
+extern void update_mission_list_v(void *) __asm__("func_0020C7A0");
 
 /* Enter hook for the mission list: rebuilds the list, collects the mission ids into
    scratchpad and loads the selected level's entry into selected_mission_id / selected_mission_index. */
 int enter_menu_mission_list(void *arg0) {
     int *p;
 
-    update_mission_list((void *)arg0);
+    update_mission_list_v((void *)arg0);
     *(int *)((char *)arg0 + 0x7C) = collect_mission_ids((void *)0x70000000, (void *)0, (void *)0x70000100, 1);
     p = (int *)((char *)arg0 + 0x30);
     p += selected_level_index;
@@ -2304,7 +2289,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
 
 extern char *current_menu_page NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern void Moby_PlaySound(int, int, int);
+
 typedef struct {
     char pad[0xA8];
     unsigned short count; /* 0xA8 */
@@ -2930,8 +2915,6 @@ extern short panel_clear_color;
 extern f32 menu_grid_icon_width SDATA(menu_grid_icon_width);
 extern f32 menu_grid_icon_height SDATA(menu_grid_icon_height);
 
-extern void SetupGifPaging(s32);
-
 extern void draw_hud_rect_blended_r2(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern s32 VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
 s32 draw_menu_item_grid(MenuScreen *grid);
@@ -3212,11 +3195,8 @@ int update_item_preview_moby(char *arg0) {
 
 extern char *current_menu_page NOT_SDA;
 
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void pack_image_descriptor(void *, char *);
-extern void font_print_window_regular(void *, long, void *, int);
 
 /* Draw/teardown callback (draw_available_item_preview_mobys's family). The entry address is
    written inline in the index; a `char *e` local leaves an addu swap. */
@@ -3293,7 +3273,7 @@ extern s32 active_decode_buffer MACRO_ADDR;
 extern u8 resident_class_slot_by_id[];
 extern struct PreviewClassResource *moby_class_resources_r[] __asm__("D_001B3580");
 extern void update_item_preview_transform();
-extern void noop_callback_q(s32, s32);
+
 extern void noop_callback_r_r(struct Moby *, s32) __asm__("func_001E97F8");
 
 extern struct Moby *create_menu_preview_moby_r2(s32) __asm__("func_00226720");
@@ -3575,7 +3555,7 @@ int Menu_BackInput(MenuScreen *arg0) {
 
 extern void libc_memset(void *, int, int); /* memset */
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-extern void FontPrintCenter(int, int, long, void *, int);
+
 extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 
 /* DrawQuitGameMenu: a text box (zeroed, then sized from arg0+0x20/0x24)
@@ -3701,14 +3681,13 @@ typedef struct {
 } ItemsMenu;
 extern s32 g_game_language_r2[] __asm__("D_0015EE88") MACRO_ADDR;
 extern char fmt_decimal[];
-extern void font_print_right(s32, s32, u64, char *, s32);
-extern void font_print_right_large(s32, s32, u64, char *, s32);
+extern void font_print_right_v(s32, s32, u64, char *, s32) __asm__("func_001F6CF8");
+
 extern void font_print_window_regular_r(struct TextRegion *, u64, char *, s32) __asm__("func_001F7560");
 extern char *msg_string_r3(s32) __asm__("func_001FE540");
 extern void draw_hud_rect_blended_r3(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 
 extern void *libc_memset_r(void *, s32, u32) __asm__("func_001153FC");
-extern int sprintf(char *, const char *, ...);
 
 extern char *libc_strcpy_r(char *, const char *) __asm__("func_001166FC");
 extern u32 libc_strlen_r(const char *) __asm__("func_00116810");
@@ -3777,16 +3756,16 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     }
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x1D);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F4F), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F4F), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x36);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F50), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F50), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x54);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F51), -1);
-    font_print_right(0xC8, 0x1D, 0x80FFA888L, msg_string_r3(0x4F4F), -1);
-    font_print_right(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F50), -1);
-    font_print_right(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F51), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F51), -1);
+    font_print_right_v(0xC8, 0x1D, 0x80FFA888L, msg_string_r3(0x4F4F), -1);
+    font_print_right_v(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F50), -1);
+    font_print_right_v(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F51), -1);
     collected_count = count_nonzero_entries_up_to_40();
     sprintf(text_buffer, fmt_decimal, collected_count);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D),
@@ -3814,7 +3793,7 @@ extern const float gold_bolt_marker_y_offset_f SDATA(D_001603A4);
 extern char fmt_gold_bolt_count_line[];
 extern int map_gold_bolt_totals[];
 extern int g_screen_extent[];
-extern int sprintf(char *, const char *, ...);
+
 extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6CF8");
 
 /* DrawGBsShipMenu (maybe): parks the marker object at arg0+0x44 by the
@@ -3865,7 +3844,7 @@ void rotate_preview_moby_x(Moby *arg0) {
    mobyfunc.c); the (int, int) declaration below this point is kept for
    the functions matched against it. */
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-extern int sprintf(char *, const char *, ...); /* sprintf */
+
 extern int weapon_ammo_counts[];
 extern char vendor_item_prices[];
 extern char fmt_decimal[]; /* "%d" */
@@ -3919,14 +3898,13 @@ int draw_selected_item_ammo(char *arg0) {
     return 2;
 }
 
-extern void VU1_addGSregister(int, int);
-extern void draw_map_overlay(void);
+extern void draw_map_overlay_v(void) __asm__("func_00205E70");
 
 /* Draws the map screen overlay with the needed GS registers set. Returns 8. */
 int draw_map_screen_overlay(void) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
-    draw_map_overlay();
+    draw_map_overlay_v();
     return 8;
 }
 
@@ -3996,8 +3974,6 @@ int DrawMissionsMenu(char *arg0) {
 }
 __asm__(".section .text\n\tnop\n");
 
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
 /* FontPrintLarge is defined above with pointer parameters; this site
    passes a packed 64-bit colour in $a2, and msg_string above is
    declared (void) while retail's caller here passes an id in $a0 --
@@ -4029,8 +4005,6 @@ extern void draw_menu_selection_marker(int, int, int);
 typedef struct {
     unsigned short f[12];
 } TextBox_p;
-
-extern void font_print_window_small(void *, long, void *, int);
 
 /* Draws a pause-style list of text rows with a selection marker and a footer line; returns 2. */
 int MissionMenu_DrawObjectives(char *arg) {
@@ -4285,7 +4259,6 @@ s32 update_menu_stream_image(MenuScreen *stream) {
     return 0;
 }
 
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern short fs_aa_buffer[];
 extern long transition_overlay_tex0;
 
@@ -4697,7 +4670,7 @@ struct MS {
     char pad130[0x24];
     int ticks;
 };
-extern long load_texture_file(int);
+extern long load_texture_file_v(int) __asm__("func_00205520");
 
 /* Draws the stream image screen: while the card is checked it prints the centred
    status text, otherwise it draws the streamed image full screen. Returns 1 when
@@ -4762,9 +4735,9 @@ int draw_checking_memory_card_data_menu(struct Stream *menu) {
     }
     SetupGifPaging(0);
     if (menu->state < 4) {
-        texture = load_texture_file(menu->buffer[0]);
+        texture = load_texture_file_v(menu->buffer[0]);
     } else {
-        texture = load_texture_file(menu->buffer[1]);
+        texture = load_texture_file_v(menu->buffer[1]);
     }
     DrawTexturedQuad(0, 0, fs_aa_buffer[0xB0], fs_aa_buffer[0xB1], 0, 0, menu->tw, menu->th, 0x80808080L, texture);
     DoGifPaging();
@@ -4825,7 +4798,7 @@ int advance_audio_stream_state(MenuScreen *arg0) {
 /* Returns the packed texture handle the draw call takes as its last
    64-bit argument, so it is `long`: retail stores $v0 straight to the
    stack slot with `sd`, without sign-extending it. */
-extern long load_texture_file(int);
+extern long load_texture_file_v(int) __asm__("func_00205520");
 
 /* Sibling of draw_transition_overlay above: same 0x44 guard and the same
    DrawTexturedQuad draw, twice, with the colour held in one local because
@@ -4838,8 +4811,8 @@ int draw_two_texture_panels(MenuScreen *arg0) {
     }
     c = 0x80808080L;
     SetupGifPaging(0);
-    DrawTexturedQuad(0, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c, load_texture_file(arg0->data.stream.buffer[0]));
-    DrawTexturedQuad(0x100, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c, load_texture_file(arg0->data.stream.buffer[1]));
+    DrawTexturedQuad(0, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c, load_texture_file_v(arg0->data.stream.buffer[0]));
+    DrawTexturedQuad(0x100, 0, 0x100, 0x100, 0, 0, 0x100, 0x100, c, load_texture_file_v(arg0->data.stream.buffer[1]));
     DoGifPaging();
     return 8;
 }
@@ -5029,9 +5002,6 @@ int draw_pause_ring(char *arg0) {
     return 2;
 }
 
-extern void Moby_PlaySound(int, int, int);
-
-extern void FadeToBlack(int);
 extern float gFade MACRO_ADDR;
 extern int requested_video_mode_i __asm__("D_0016044C") MACRO_ADDR;
 typedef struct {
@@ -5198,8 +5168,8 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
                 enabled = *entry->enabled_flag;
             }
             FontPrintLarge_r2(0xC, draw_y, color, msg_string_r4(entry->text_id), -1);
-            font_print_right(menu->width - 0xC, draw_y, 0x80FFA888,
-                             msg_string_r4(enabled ? entry->enabled_text_id : entry->disabled_text_id), -1);
+            font_print_right_v(menu->width - 0xC, draw_y, 0x80FFA888,
+                               msg_string_r4(enabled ? entry->enabled_text_id : entry->disabled_text_id), -1);
             draw_y += line_spacing;
             draw_index++;
             entry_index++;
@@ -5209,7 +5179,6 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
     return 2;
 }
 
-extern void Moby_PlaySound(int, int, int);
 typedef struct {
     int w0; /* 0x00 */
     unsigned char *buf; /* 0x04 */
@@ -5491,8 +5460,6 @@ int draw_level_selection_map_screen(void *arg0) {
     return 2;
 }
 
-extern void Moby_PlaySound(int, int, int);
-
 /* Pause sub-menu input on the pad word pad0_pressed_unmasked. One if/else-if chain
    falling to a single `return 0`; early returns in the 0x10 arm give a
    movn instead. */
@@ -5596,8 +5563,7 @@ typedef struct {
 extern char str_error_text[];
 extern int menu_system_save_prompt_kind;
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
+
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
 /* Draws the two-line prompt box (text 0x4FB3 for menu_system_save_prompt_kind in 0..2,
@@ -5651,8 +5617,6 @@ int assign_pause_level_sprite_list(MenuScreen *screen) {
     return 0;
 }
 
-extern void Moby_PlaySound(int, int, int);
-
 /* Pause sub-menu with a 30-entry wrapping cursor at arg0+0x40, in
    Menu_BackInput's shape. */
 int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
@@ -5693,8 +5657,6 @@ int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
     }
     return 0;
 }
-
-extern void Moby_PlaySound(int, int, int);
 
 /* handle_cyclic_menu_selection_input's twin with a 12-entry cursor at arg0+0x54. */
 int update_menu_cycle_selection(struct MenuScreen *arg0) {
@@ -5775,7 +5737,6 @@ typedef struct {
     int c;
 } IconRow;
 extern IconRow planet_icon_rows_i[] __asm__("D_001DE0C0");
-extern void FontPrintCenter(int, int, long, void *, int);
 
 /* Draws the current page's icons: the page record (stride 0xC) gives a
    row of planet_icon_rows, or -1 for the single icon 0x5019 centred in the
@@ -5807,9 +5768,6 @@ extern char restart_confirm_page[];
 extern unsigned char gold_bolts_collected_18[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char selector_available[] MACRO_ADDR;
-
-extern void memcard_RestoreGame(int);
-extern void memcard_Save(int, int);
 
 extern unsigned char g_hero[];
 
@@ -6960,7 +6918,7 @@ extern char class_pose_manipulator[];
 extern char first_attachment_manipulator[];
 extern char second_attachment_manipulator[];
 extern char level_init_cleared_block[];
-extern void noop_callback_e(void *);
+
 extern void gadget_moby_update_noop(void);
 extern void update_menu_preview_animation_pose(void *);
 
@@ -7139,7 +7097,7 @@ extern HandGadgetManipulator first_attachment_manipulator_r __asm__("D_001D61A0"
 extern HandGadgetManipulator second_attachment_manipulator_r __asm__("D_001D61E0");
 extern float ammo_preview_offsets[];
 extern s32 ammo_preview_velocities_r[] __asm__("D_001D6238");
-extern void noop_callback_r(Moby *, s32);
+
 extern void AttachManipulator_r(s32, s32, HandGadgetManipulator *) __asm__("func_0020D960");
 extern void DetachManipulator_r(s32, HandGadgetManipulator *) __asm__("func_0020D9D8");
 
@@ -7400,8 +7358,6 @@ void attachment_update_callback(void) {
 }
 
 extern char item_info_table_a[] __asm__("D_001864D0");
-
-extern void noop_callback_s(void *, void *, int, int, int);
 
 /* The pause-screen mobys these updates drive. */
 typedef struct {
@@ -7670,7 +7626,7 @@ extern f32 ammo_preview_offsets[];
 extern f32 ammo_preview_velocities[];
 
 extern f32 FastNormalizeAngle_r(f32) __asm__("func_001FA7D8");
-extern f32 IntToFloat(s32);
+
 extern void advance_moby_animation_r(void *) __asm__("func_0020E3D0");
 extern f32 ApproachWithVelocity(f32 *, f32 *, f32, f32, f32, f32);
 void update_ammo_preview_transform(struct AmmoPreviewMoby *moby);
@@ -7891,9 +7847,6 @@ extern s16 dialogue_playback_phase[];
 extern s32 g_game_language MACRO_ADDR;
 extern s32 D_0015EF20 MACRO_ADDR;
 
-extern void relocateObjectPointers(char *, int);
-
-extern s32 Music_ContinueStreamIfReady(void);
 extern int start_audio_stream_read(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_002256e8.c, update_streamed_moby_animation. */
@@ -8219,7 +8172,7 @@ extern Tbl_q disc_table_q[] __asm__("D_00137C80");
 extern char *moby_class_resources[] NOT_SDA;
 
 extern int start_audio_stream_read(int, int, int);
-extern void relocateObjectPointers(char *, int);
+
 extern int advance_preview_animation_queue(void);
 extern void load_preview_resource_bindings(s32, s32);
 
@@ -8513,7 +8466,7 @@ void clear_preview_resource_bindings(void) {
 
 extern u8 D_001D60C8[];
 extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40") MACRO_ADDR;
-extern s32 func_00234350();
+
 extern void relocateObjectPointers_r() __asm__("func_00203B18");
 extern s32 fast_decompress_r4() __asm__("func_0020C468");
 extern s32 get_menu_stream_buffer_size_r3() __asm__("func_00227018");

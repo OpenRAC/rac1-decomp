@@ -24,6 +24,9 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/ui/hud.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -51,36 +54,18 @@ extern HeroItemDefView novalis_item_defs[];
 extern HeroAttackRecord novalis_attack_records[];
 extern HeroSpeedBands novalis_hero_speed_bands;
 
-extern int handle_hero_gadget_button(void);
-
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
-extern int get_hero_idle_animation_index(int a);
-
-extern int Hero_SetMoveState(int, int);
-
 extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
-extern int pad_pressed_within(int, int, int *);
-
 extern int truncate_float_to_s32(float);
-extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void allocate_hero_voice_for_entry(int, int);
-
 extern void ClampVectorLength(void *a, float x);
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern void release_and_clear_hero_voice_slots(void);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 01 build). */
 void HeroL01_UpdateStateTransitions(void) {

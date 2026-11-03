@@ -19,6 +19,16 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/type_49_particle.h"
+#include "overlays/shared/span_particle.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -123,13 +133,12 @@ extern void func_L00_002592B0(void *, float, float *, float, float, float);
 extern float anglediff_3DF8(float, float) __asm__("func_001FA850");
 extern float fast_distance_3DF8(void *, void *) __asm__("func_001F9D48");
 extern float fabs_3DF8(float) __asm__("func_001F9B88");
-extern int func_0022ED80(int, int, void *);
+
 extern float animframe_3DF8(void *) __asm__("func_0020D830");
-extern void func_001F49B0(void *, void *);
+
 extern int func_00215B18(void *, float);
 extern void shoot_3DF8(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
-extern int func_L00_0028EB98(void *, int);
-extern int func_L00_002DDEA0(void *, void *);
+
 extern void explode_3DF8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void delete_3DF8(void *) __asm__("func_0020D678");
@@ -406,7 +415,7 @@ typedef struct Packet {
 
 extern u64 GetEffectTex(s32);
 #define func_001F4868_4B80 ((long (*)(int))func_001F4868)
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 #define func_L00_00250800_4B80 func_L00_00250800
 
 #define func_001F9BF0_4B80 ((void (*)(void *, void *, void *))func_001F9BF0)
@@ -611,7 +620,6 @@ void update_scoutbot_movement(char *m) {
         FastVecAdd((float *)(m + 0x10), (float *)(m + 0x10), tmp);
     }
 }
-extern void *cancel_suck_cannon_suction(void *);
 
 struct EnterScoutbotReturnHomeStateVars {
     u8 pad_00[0xC8];
@@ -705,7 +713,6 @@ extern float vec_length_xy(void *);
 extern void *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 
-extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int batalia_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float homing_shot_lifetime SDATA(homing_shot_lifetime);
@@ -812,7 +819,6 @@ extern int truncate_float_to_s32(float);
 extern int fast_dec_timer(int *);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void ClampVectorLength(float, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -988,7 +994,7 @@ void emit_pair_offset_render_batch(int a) {
                               batalia_scrolled_uvs, 1);
     }
 }
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Scales every RGBA word of a set of colour tables by four factors, optionally using the flat 255 for colour. */
@@ -1085,7 +1091,7 @@ void advance_scroll_entry(int i) {
 extern int fast_dec_timer(int *);
 
 extern int truncate_float_to_s32(float);
-extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
+
 extern s32 spark_emitter_lower SDATA(spark_emitter_lower);
 extern s32 spark_emitter_upper SDATA(spark_emitter_upper);
 extern f32 spark_emitter_start_rise SDATA(spark_emitter_start_rise);
@@ -1201,9 +1207,7 @@ extern void helper302618(void *) __asm__("func_L08_00303998");
 extern void sound302618(float, void *, int, void *) __asm__("func_L00_00264B40");
 extern void wake302618(void *) __asm__("func_L00_0025B178");
 extern int hero_anim302618(int) __asm__("func_002140B0");
-extern void func_001E9730(char *, int);
-extern void func_L01_0026E8E0(void *);
-extern int func_L01_0028C2D8(void *, void *, float);
+
 extern void func_L00_0025A060(void *, void *, void *, void *);
 extern int range302618(int, int) __asm__("func_L00_00258BC8");
 extern void subtract302618(void *, void *, void *) __asm__("func_001F9BF0");
@@ -1998,7 +2002,7 @@ extern void *D_L08_001623E8_3091B0 SDATA(D_L08_001623E8);
 extern float D_L08_001623EC_3091B0 SDATA(D_L08_001623EC);
 extern float D_L08_001602E0_3091B0 SDATA(D_L08_001602E0);
 extern void randomize_ground_particle_scatter_parameters_r(int) __asm__("func_L08_00309050");
-extern int func_L08_00211A38(float *);
+
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void fast_add_rotations_cf_r(void *, void *, float, float, float) __asm__("func_L00_00263D68");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
@@ -2007,7 +2011,6 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 
 extern void spawn_span_particle_r(void *, void *, float, void *) __asm__("func_L08_00273A80");
-extern void func_L08_002803B8(void *, void *, float, void *);
 
 /* moby class 1400 update: steers the offset vectors from the mode, fans them out to the object over counted loops */
 void scatter_ground_particles(Moby *m) {
@@ -2214,8 +2217,6 @@ void scatter_ground_particles(Moby *m) {
 typedef int u128 __attribute__((mode(TI)));
 extern float ground_particle_scatter_spawn_vector_y_bias MACRO_ADDR;
 
-extern void spawn_span_particle(void *, void *, void *, float);
-
 /* While the player is within range, scatters spawned particles around the moby on a random disc. */
 void spawn_moby_radial_particles(char *moby) {
     float v[4];
@@ -2258,8 +2259,6 @@ void set_level_state_flag_88(void) {
     batalia_player_camera_current[0x88] = 1;
 }
 extern float batalia_wind_level SDATA(batalia_wind_level);
-
-extern int Sound_SetPitchBend(int, int);
 
 /* Wind ambience: probes 20 points around the hero; the more of them are below the camera, the louder the loop. */
 void update_ground_height_modulated_voice(char *m) {

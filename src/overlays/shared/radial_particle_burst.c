@@ -7,6 +7,7 @@
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 
 LINKER_REMNANT("asm/overlays", func_L03_00249488);
 
@@ -44,7 +45,6 @@ void trooper_set_knockback(float *p, float a, float b) {
     p[5] = (a + a) / (x * x);
 }
 
-extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 extern int truncate_float_to_s32(float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 typedef int U128 __attribute__((mode(TI)));

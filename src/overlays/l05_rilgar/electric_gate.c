@@ -22,6 +22,17 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/shot_tracking.h"
+#include "overlays/shared/moby_context_table.h"
+#include "overlays/l05_rilgar/velocity_particles.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -156,7 +167,6 @@ void record_grid_entry_neighbor_indices(int arg) {
         }
     }
 }
-extern void AddDrawCallback(void *, void *);
 
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void draw_electric_gate_beams(char *);
@@ -243,7 +253,6 @@ extern int electric_gate_alpha_b SDATA(electric_gate_alpha_b);
 extern int electric_gate_alpha_c SDATA(electric_gate_alpha_c);
 extern int electric_gate_alpha_d SDATA(electric_gate_alpha_d);
 extern int electric_gate_effect_tex SDATA(electric_gate_effect_tex);
-extern float IntToFloat(int);
 
 extern int GetEffectTex(int);
 
@@ -537,7 +546,6 @@ typedef struct {
     int sound;
     Lid_0030FCC0 *lid;
 } Data_0030FCC0;
-extern int Sound_IsPlaying(void *, int);
 
 extern void update_drain_cover_tilt(char *obj, float a, float b);
 extern void emit_drain_cover_particles(char *obj, float a, float b);
@@ -548,7 +556,6 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 
@@ -736,10 +743,8 @@ void drain_cover_update(Moby *moby) {
     }
 }
 
-extern float IntToFloat(int);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void create_particle_with_velocity_and_lifetime(float, void *, void *, int, int, int);
+
 extern float drain_cover_spray_spacing SDATA(drain_cover_spray_spacing);
 extern float drain_cover_spray_size_min SDATA(drain_cover_spray_size_min);
 extern float drain_cover_spray_size_max SDATA(drain_cover_spray_size_max);
@@ -832,9 +837,7 @@ extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
 extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
-extern int Moby_PlaySound(int, int, void *);
-extern void initialize_moby_launch_motion(struct Moby *, struct Moby *, void *, void *, int);
-extern void record_moby_context_bytes(void *, int, void *, int, void *);
+
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
 extern u8 *PartType53Spawn(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel, f32 f2);
 extern char rilgar_saved_moby_bytes[];
@@ -925,7 +928,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
         DeleteMoby_r(moby);
     }
 }
-extern int Moby_PlaySound(int, int, void *);
+
 struct GateVars {
     s32 trigger; /* D_L05_0015FFD8 index of the moby whose byte 0xBC opens it */
     s32 riseTimer;
@@ -1015,8 +1018,7 @@ extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
-extern void func_L01_0026F090(int, int);
-extern void func_L05_0029CCB8(float, float, float, void *, void *, int, int);
+
 extern void func_L00_00272770(float, float, void *, void *, void *);
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern short D_0015EE84_165B8 SDATA(D_0015EE84);
@@ -1145,7 +1147,6 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern int Moby_PlaySound();
 
 extern s32 truncate_float_to_s32(f32);
 typedef struct {
@@ -1192,8 +1193,6 @@ extern f32 ApproachWithVelocity_r(f32 *, f32 *, f32, f32, f32, f32) __asm__("fun
 
 extern f32 vec_distance_xy(void *, void *);
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern void lift_camera_view_r(void *, void *, void *) __asm__("func_L05_003173A8");
 extern void place_marker_ring_r(void *) __asm__("func_L05_00317438");
@@ -1419,7 +1418,7 @@ void draw_ocean_grid_outside_clip_volumes(char *moby) {
     if (none)
         draw_textured_grid(rilgar_ocean_grid);
 }
-extern void prepare_scaled_table_with_byte_128(void *, float);
+
 extern void draw_ocean_grid_outside_clip_volumes_r(void) __asm__("func_L05_00317538");
 extern float rilgar_ocean_grid_r[] __asm__("D_L05_00211E60");
 
@@ -1702,16 +1701,6 @@ extern const char race_girl_dialogue_name[];
 extern HGVec rilgar_race_camera_vectors[];
 extern unsigned char gCheats[];
 
-extern int get_dialogue_entry();
-extern int DialogRequest_Init(void *, void *);
-extern void initialize_moby_grounding(char *);
-extern int Npc_TryStartDialog(void *, void *);
-
-extern void Hero_ResetToPosition();
-extern void MusicRequestTrack();
-
-extern int memcard_Save(int, int);
-
 extern float vec_length_xy(void *);
 extern void update_hoverboard_girl_cutscene_instances();
 extern void PlayBankSound();
@@ -1984,12 +1973,6 @@ void update_hoverboard_girl(Moby *moby) {
 #undef update_hoverboard_girl_cutscene_instances_r
 #undef update_hoverboard_girl_boobs_animation_r
 #undef func_0022EE28_x
-extern void attach_big_head_cheat_manipulator(char *);
-extern int DialogRequest_Init(void *, void *);
-extern void initialize_moby_grounding(char *);
-extern int Npc_TryStartDialog(void *, void *);
-
-extern int memcard_Save(int, int);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -2361,10 +2344,9 @@ void television_update(unsigned char *moby) {
             break;
     }
 }
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern void PickNearestTargetSlot(char *);
 extern void select_taxi_route(char *);
-extern void request_moby_variant_help_message(char *);
 
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void SamplePathAt(int *, int, void *, float *, int, float);
@@ -2636,7 +2618,6 @@ void qwarks_trailer_update(char *moby) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L05_0031B15C);
-extern void Help_Request(int, int);
 
 #define hero (hero_a[0])
 #define D_001413DC (D_001413DC_a[0])

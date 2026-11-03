@@ -7,6 +7,11 @@
 #include "asm_functions/executable.h"
 #include "game/ui/hud.h"
 #include "enums/level.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "core/libc/sprintf.h"
 
 // Ticks two small counters up or down depending on a random roll; copies a value.
 void update_hud_counter_transition(char *m) {
@@ -51,14 +56,9 @@ typedef struct {
     int unk7C;
     void *unk80;
 } HudElem;
-extern int hud_screen_position(HudElem *, int *, int *);
-extern f32 IntToFloat(s32);
+
 extern s32 truncate_float_to_s32(f32);
-extern int sprintf(char *str, const char *fmt, ...);
 
-extern void HudFrame(void *, int, int, int, int, int);
-
-extern void font_print_right(s32, s32, s32, char *, s32);
 extern s32 frame_size[];
 extern s32 pal_mode MACRO_ADDR;
 extern char aridia_hud_counter_format[];
@@ -162,7 +162,6 @@ s32 draw_hud_counter(HudElem *m) {
 
 extern int D_0015EE84 MACRO_ADDR;
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Aridia sky shells and sets the GS test and depth registers. */
 void Sky_DrawLevel02(void) {

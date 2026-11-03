@@ -22,6 +22,16 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/music_track_requests.h"
+#include "asm_functions/level_10.h"
+#include "overlays/l10_orxon/toxic_crabs_and_gates.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -139,10 +149,7 @@ struct PathSparkEffectVars {
     f32 unk_18; /* 0x18 */
 };
 
-extern int STUB_printf();
-
 extern int fast_dec_timer(int *);
-extern int Moby_PlaySound(int, int, int);
 
 typedef int u128 __attribute__((mode(TI)));
 extern char cycling_platform_no_vars_fmt[];
@@ -390,9 +397,6 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern char *orxon_scene_points MACRO_ADDR;
 extern int orxon_relocation_reset_flag SDATA(orxon_relocation_reset_flag);
 extern int try_set_help_message(int, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern void MusicRequestTrack(int, int);
 
 // Level 10 update for moby class 22: links two Ent records, sets table bits, calls the spawn helpers.
 void update_hero_relocation_trigger(char *m) {
@@ -541,20 +545,20 @@ extern float vec_distance_xy(void *, void *);
 #define func_L00_001FF240_2BFBB8 ((void (*)(void *, void *, void *))func_L00_001FF240)
 extern void vec_scale_to_length(void *, void *, float);
 #define func_L00_001FF4B0_2BFBB8 ((void (*)(void *, void *, float))func_L00_001FF4B0)
-extern void *PartType53Spawn(void *, int, float, float, int, int, int, void *, float);
+
 #define func_L00_00272F00_2BFBB8 func_L00_00272F00
-extern void *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
+
 #define func_L00_00272488_2BFBB8 func_L00_00272488
 #define func_0022ED80_2BFBB8 ((int (*)(int, int, int))func_0022ED80)
 #define func_L00_00217718_2BFBB8 func_L00_00217718
-extern float IntToFloat(int);
+
 #define func_001FA888_2BFBB8 ((float (*)(int))func_001FA888)
 extern int truncate_float_to_s32(float);
 #define func_001FA898_2BFBB8 ((int (*)(float))func_001FA898)
 
 #define func_001FA8A8_2BFBB8 func_001FA8A8
 #define func_001F9908_2BFBB8 ((int (*)(int *))func_001F9908)
-extern void follow_camera_set_lateral_spring(float, float);
+
 #define func_L00_002E9A40_2BFBB8 func_L00_002E9A40
 
 #define func_L00_002E9B30_2BFBB8 func_L00_002E9B30
@@ -738,11 +742,6 @@ void gate_update(Moby *m) {
 }
 extern int fast_dec_timer(int *arg0);
 
-extern void *spawn_splitting_effect_particle_with_collision_response_and_fade(char *a, char *b, unsigned char c, int d);
-
-extern int Sound_IsPlaying(void *, int);
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
-
 // Update for a swirling effect moby: spawns particles along an axis and manages a sound slot.
 void update_timed_effect_emitter(unsigned char *moby) {
     struct TimedEmitterVars *data = (struct TimedEmitterVars *)((Moby *)moby)->pvars;
@@ -890,7 +889,7 @@ typedef struct {
 } HitBox;
 void func_L10_002CAD18_CB030(struct Moby *moby, HitBox *box) __asm__("func_L10_002CAD18");
 extern struct Moby *orxon_mobys_r3 __asm__("D_L10_00160058") MACRO_ADDR;
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 extern char linked_hitbox_no_target_msg[];
 extern char linked_moby_present_message[];
@@ -1038,7 +1037,6 @@ extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int FindNearestTargetMoby(float, void *, void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void PartType27Spawn(void *, void *, int, int, float);
 /* The result record of a collision query (ground_hit). */
 struct GroundHitRecord {
     u8 pad_00[0x18];
@@ -1432,7 +1430,6 @@ extern int fast_dec_timer(int *arg0);
 
 extern void BuildSphericalOffset(void *, float, float, float);
 
-extern int Moby_PlaySound(int, int, int);
 extern int bombthrower_grass_fire_ticks_min SDATA(bombthrower_grass_fire_ticks_min);
 extern int bombthrower_grass_fire_ticks_max SDATA(bombthrower_grass_fire_ticks_max);
 extern float bombthrower_grass_yaw_spread SDATA(bombthrower_grass_yaw_spread);
@@ -1474,9 +1471,7 @@ extern int STUB_printf_r(void *, int) __asm__("func_001E9730");
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 
 extern void PathSampleAtDistance_f(float, float, void *, int *, float *, void *) __asm__("func_L00_002633D8");
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
-extern void spawn_path_spark_effect(char *, float *, int *, float, float, float);
 extern int Sound_PlayClassSound_v(int, int, void *, int) __asm__("func_L00_0028EF68");
 
 /* Electric spark: runs along its wire path with a light and a buzzing sound, then rests for a random time. */
@@ -1739,13 +1734,14 @@ inactive:
     set_moby_color(moby, 8, 8, 8);
 }
 extern char *spawn_fixed_height_destruction_moby(char *owner);
-extern char *spawn_destruction_replacement_moby(char *owner);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern int Sound_PlayClassSound_v(int, int, void *, int) __asm__("func_L00_0028EF68");
 
-extern void spawn_debris_moby(void *, void *, unsigned int, float, int, float, float, float, int);
+extern void spawn_debris_moby_v(void *, void *, unsigned int, float, int, float, float, float,
+                                int) __asm__("func_L01_002F9908");
 
 /* Orxon moby update: destroys itself when its item is taken, else fires its effect once per pass. */
 void handle_moby_destruction(char *moby) {
@@ -1788,7 +1784,7 @@ void handle_moby_destruction(char *moby) {
             c16 = rand_range(0x3C, 0x78);
             f20 = random_float_between(2.0f, 3.0f);
             r2 = random_integer_below(4);
-            spawn_debris_moby(&v30, &v40, k, f21, c16, f20, 1.0f, 3.0f, r2 == 0);
+            spawn_debris_moby_v(&v30, &v40, k, f21, c16, f20, 1.0f, 3.0f, r2 == 0);
         } while (n >= 0);
         v30.q = 0;
         v30.f[0] = 2.8599999f;
@@ -1809,9 +1805,9 @@ extern char data_processor_no_link_fmt[];
 extern char data_processor_strand_order[];
 extern void render_data_processor_linked_effect(unsigned char *);
 extern float data_processor_fade_seconds SDATA(data_processor_fade_seconds);
-extern float vec_length(float);
+
 extern int FastBSphereCheck(void *, float);
-extern void AddDrawCallback(void *, void *);
+
 typedef struct DataProcessorVars {
     f32 half_width; /* 0x00 */
     s32 count; /* 0x04: order bytes copied into order[] */
@@ -2214,7 +2210,7 @@ unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, fl
 typedef int Effect128 __attribute__((mode(TI)));
 
 extern s32 truncate_float_to_s32(f32);
-extern f32 IntToFloat(s32);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern float frame_scale MACRO_ADDR;
@@ -2814,7 +2810,7 @@ void set_moby_group_command_frames(unsigned char *moby);
 extern float vec_length_xy(void *);
 
 extern int IsFrameWithinWindow(char *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 

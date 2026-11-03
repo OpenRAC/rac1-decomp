@@ -3,6 +3,7 @@
 #include "structs/misc.h"
 #include "core/kernel/libkernl_glue.h"
 #include "asm_functions/executable.h"
+#include "core/kernel/tty_queue.h"
 
 /*
  * core_text object 0x118A40-0x119328. Boundaries are retail's linker fill
@@ -223,7 +224,6 @@ long wait_vblank_csr(void) {
 /* sceTtyInit takes no argument (it sets $a0 itself before its first
    call); the file's `extern int sceTtyInit(int)` below is wrong. */
 extern int sceTtyInit_v(void) __asm__("func_00119CC8");
-extern int sceTtyWrite(int, int);
 
 /* Deci2 tty write for fd 1/2: open the tty channel on first use
    (sceTtyInit), then write. Calling the opener with no argument is
@@ -243,8 +243,6 @@ int libc_glue_write(int fd, int buf, int len) {
     }
     return -1;
 }
-
-extern int sceTtyRead(int, int);
 
 extern int sceTtyInit_v(void) __asm__("func_00119CC8");
 

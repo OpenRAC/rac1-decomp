@@ -23,6 +23,12 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/l15_quartu/hero_idle_animation.h"
+#include "overlays/l15_quartu/hero_movement.h"
+#include "overlays/l15_quartu/hero_hud_and_actions.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -32,17 +38,8 @@ extern int quartu_frame_count MACRO_ADDR;
 
 extern float quartu_hero_bones_28_scale, quartu_hero_bones_30_scale;
 
-extern void Hero_UpdateAimFlags(void);
-extern void HeroL15_UpdateStateTransitions(void);
-
-extern void update_hero_bone_attachment(void);
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern float IntToFloat(int);
-
 extern int truncate_float_to_s32(float);
 extern unsigned int FastTweenColor_v(float, unsigned int, unsigned int) __asm__("func_001FA8A8");
-extern void allocate_hero_voice_for_entry(int, int);
 
 /* Per-frame hero update: animation, state, voices, vehicle, scale, glow pulse and attachments. */
 void update_hero_and_vehicle_mode_effects(void) {
@@ -199,10 +196,6 @@ void update_hero_bobbing_and_target_position(void) {
     }
 }
 extern int quartu_game_mode MACRO_ADDR;
-
-extern void release_and_clear_hero_voice_slots(void);
-
-extern void HeroQuartu_TrySetMoveState(int, int);
 
 /* Reset the help prompt state and show the default message unless the level is in a special phase. */
 void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
@@ -384,12 +377,8 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
-void sceVu0Normalize(void *, void *);
-
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
-f32 FastAbsF(f32);
 extern Hero g_hero_r __asm__("D_0013F450");
 extern struct CollisionHit quartu_coll_hit_r __asm__("D_L15_001744C0");
 
@@ -580,8 +569,6 @@ extern u8 gHaveBoltGrabber NOT_SDA;
 extern s32 fast_dec_timer(s32 *);
 
 extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
-
-extern s32 pad_pressed_within(s32, s32, s32);
 
 /* Per-frame hero upkeep: tick the hero timers, spawn the respawn marker, track sinking, and set the camera follow
    target. Clone of FUN_L00_002215c8 without the case-1 camera tuning.

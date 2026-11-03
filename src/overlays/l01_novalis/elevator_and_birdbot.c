@@ -24,6 +24,17 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
+#include "asm_functions/level_01.h"
+#include "overlays/l01_novalis/spark_particles.h"
+#include "overlays/l01_novalis/rocks_and_sandmouse.h"
+#include "overlays/l01_novalis/range_centered_on_value.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -88,7 +99,7 @@ extern union PacketCursor D_L01_00161240 MACRO_ADDR;
 extern u8 D_L01_001CAF00[];
 extern s32 FastBSphereCheck_r(void *, f32) __asm__("func_L00_00200290");
 extern u64 func_001F4868(s32);
-extern void func_L01_002635C8(ScrollLayer *);
+
 extern void emit_textured_strip_packet_r(s32, s32, s32, s32, s32, s32) __asm__("func_L01_0021F9C8");
 
 void func_L01_002BA898_r(s32 count, ScrollLayer *l) __asm__("func_L01_002BA898");
@@ -190,7 +201,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
 extern int FastBSphereCheck(void *, f32);
 
-extern void create_spark_particle(void *, void *, f32, f32, f32, f32, f32, f32, f32, f32, f32, s32, u8, u8, u8);
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 
 f32 func_001FA748_BE2C8b(f32 a, f32 b) __asm__("func_001FA748");
@@ -283,10 +293,6 @@ typedef struct {
 extern SplashColors novalis_birdbot_splash_inner_colors;
 extern SplashColors novalis_birdbot_splash_outer_colors;
 extern float g_frame_time MACRO_ADDR;
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, unsigned int, unsigned int, float, int);
 
 /* Spawns three bursts of sparks around a moby with random velocity, colours and size. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002e6518. */
 void spawn_birdbot_movement_particles(SplashMoby *m, u128 *origin) {
@@ -601,8 +607,6 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 
-extern int STUB_printf();
-extern void MoveCtl_Init(char *p);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
@@ -611,13 +615,9 @@ extern float vec_distance_xy(void *, void *);
 
 extern int coll_line(void *, void *, int, void *, void *);
 
-extern int Hero_SetMoveState(int, int);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_length_xy(void *);
-
-extern char *spawn_colored_half_scale_moby(void *, void *, void *, float, float, int);
 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern int mine_fall(void *, void *);
@@ -627,7 +627,6 @@ extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, f
 extern void SetDeathBits(void *, int, int);
 
 extern void StepColorFade(void *, void *);
-extern void set_range_centered_on_value(char *arg, float value);
 
 /* Birdbot update: follows its path, turns on and shoots at the hero, flees when hurt, and blows up when it dies or
    leaves the level. */
@@ -1354,9 +1353,6 @@ extern float jump_speed_4318(void *, void *, void *, float, float);
 
 extern int move_w(void *, void *, void *, void *, float);
 
-extern int CarriedMobyUpdate(void *, void *);
-
-extern float IntToFloat(int);
 extern void set_ground_height_band(void *);
 
 /* Peckbot update: wanders and hops after the hero, flies in a hurt arc when hit, dies with a burst of parts. */
@@ -2156,9 +2152,6 @@ extern short novalis_tethered_mine_min_scale, novalis_tethered_mine_far_distance
 extern unsigned char menu_item_enabled_115_k __asm__("D_0013D50F") NOT_SDA;
 extern void PlayBankSound(int, int, int);
 
-extern void SpawnDebrisMoby(char *, void *, float);
-extern void gunship_follow_path(char *);
-
 /* Floating mine: scales with the camera distance; when hit it explodes (unlocks the first-mine hint
  * once), deletes its four tethers and itself; otherwise it bobs and fades out with height. */
 void TetheredMineUpdate(char *m) {
@@ -2245,7 +2238,6 @@ struct VoicePoolWindow {
     struct Voice voice;
 };
 extern u8 voice_pool[];
-extern int Sound_IsPlaying(void *moby, int handle);
 
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
 
@@ -2517,19 +2509,19 @@ void stationary_ship_update(Moby *m) {
         MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
     }
 }
-extern void DefaultVtbl_DeleteMoby(void *);
-extern void update_and_draw_scrolling_overlay_layers(int, void *);
+extern void DefaultVtbl_DeleteMoby_v(void *) __asm__("func_L00_00237B70");
+
 extern char novalis_scroll_layers[];
 
 /* The moby comes in $a0 and goes on to the delete, untouched. */
 void update_and_draw_level01_scrolling_layers(void *moby) {
-    DefaultVtbl_DeleteMoby(moby);
+    DefaultVtbl_DeleteMoby_v(moby);
     update_and_draw_scrolling_overlay_layers(8, novalis_scroll_layers);
 }
 extern char novalis_bounded_scroll_layers[];
 /* Draw the two bounded Novalis scroll layers after the default moby handler. */
 void draw_two_scroll_layers(void *moby) {
-    DefaultVtbl_DeleteMoby(moby);
+    DefaultVtbl_DeleteMoby_v(moby);
     update_and_draw_scrolling_overlay_layers(2, novalis_bounded_scroll_layers);
 }
 typedef struct {
@@ -2542,9 +2534,7 @@ typedef struct {
 extern s32 novalis_scroll_bounds_initialized SDATA(novalis_scroll_bounds_initialized);
 extern BoundGroup novalis_bounded_scroll_layers_r[] __asm__("D_L01_001E3660");
 
-extern f32 IntToFloat(s32);
 extern void draw_two_scroll_layers(void *);
-void AddDrawCallback(void *fn, void *arg);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/unclassified_002b96e0.c, FUN_L01_002f6180. */
 void initialize_bounds_and_enqueue_scroll_layers(void *arg) {
@@ -2607,7 +2597,6 @@ typedef struct {
 } BeamVars;
 
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
-extern void Moby_PlaySound(int, int, int);
 
 /* Spawns a beam moby from an owner, position, direction and colour vectors. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f68a0. */
 BeamMoby *spawn_beam(void *owner, u128_t *pos, u128_t *dir, u128_t *color, int kind) {
@@ -3095,8 +3084,9 @@ typedef struct {
 extern SteamColors novalis_rising_emitter_debris_colors;
 extern SteamColors novalis_rising_emitter_puff_colors;
 
-extern void spawn_debris_moby(void *, void *, unsigned int, int, float, float, float, float, int);
-extern char *mine_debris(float f, char *a, char *b, int c, int d, int e, int g);
+extern void spawn_debris_moby_v(void *, void *, unsigned int, int, float, float, float, float,
+                                int) __asm__("func_L01_002F9908");
+extern char *mine_debris_v(float f, char *a, char *b, int c, int d, int e, int g) __asm__("func_L00_0026CD70");
 
 // Emitter update: ticks timers, occasionally bursts a smoke puff and spawns two drifting smoke particles per frame. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8c58.
 void update_rising_particle_and_debris_emitter(SteamMoby *m) {
@@ -3134,8 +3124,8 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
         pos.f[2] = 0.0f;
         FastVecAdd(&pos, &pos, &m->pos);
         pos.f[2] += v->height;
-        spawn_debris_moby(&pos, &vel, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f,
-                          0.75f, 0);
+        spawn_debris_moby_v(&pos, &vel, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C), 0.05f, 1.0f, 1.0f,
+                            0.75f, 0);
     }
     for (i = 0; i < 2; i++) {
         colors = novalis_rising_emitter_puff_colors;
@@ -3156,8 +3146,8 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
         vel.f[2] += r;
         size = random_float_between(70000.0f, 140000.0f);
         life = scale_ticks(0xB4);
-        p = (SteamParticle *)mine_debris(size, (char *)&puff, (char *)&vel, 0x0F081020, 0x00081020, life,
-                                         colors.c[random_integer_below(3)]);
+        p = (SteamParticle *)mine_debris_v(size, (char *)&puff, (char *)&vel, 0x0F081020, 0x00081020, life,
+                                           colors.c[random_integer_below(3)]);
         if (p != 0) {
             p->floor_z = m->pos.f[2] - 0.5f;
         }
@@ -3169,11 +3159,6 @@ extern float novalis_falling_rock_cam_distance SDATA(novalis_falling_rock_cam_di
 extern float novalis_falling_rock_cam_height SDATA(novalis_falling_rock_cam_height);
 extern float novalis_falling_rock_cam_eye_offset SDATA(novalis_falling_rock_cam_eye_offset);
 extern float novalis_falling_rock_cam_blend_speed SDATA(novalis_falling_rock_cam_blend_speed);
-
-extern void set_follow_camera_angle_blend_from_direction(void *a, float x, float y);
-extern void Cam_SetDistanceGoal(float x, float y, int flag);
-
-extern void Cam_SetEyeOffset(int, float, float);
 
 typedef struct {
     u8 pad_00[0x80];
@@ -3270,8 +3255,8 @@ void falling_rock_update(Moby *falling_rock) {
         pos.f[1] = FastSin(debris_spawn_angle) * debris_spawn_radius;
         pos.f[2] = 0.0f;
         FastVecAdd(&pos, &pos, &falling_rock_vars->home);
-        spawn_debris_moby(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C),
-                          0.05f, 1.0f, 1.0f, 0.75f, 0);
+        spawn_debris_moby_v(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)], rand_range(0xB4, 0x12C),
+                            0.05f, 1.0f, 1.0f, 0.75f, 0);
     }
     switch (falling_rock->state) {
         case FALLING_ROCK_STATE_INITIALIZE:
@@ -3368,7 +3353,6 @@ typedef struct {
     s32 xb4;
 } LiftVars;
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 

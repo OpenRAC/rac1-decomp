@@ -27,6 +27,20 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/l11_pokitaru/hero_idle_animation.h"
+#include "asm_functions/level_11.h"
+#include "overlays/l11_pokitaru/resort_owner_and_water.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -129,9 +143,9 @@ struct BubbleVars {
 };
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
+
 extern int GetEffectTex(int);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
+
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
 /* One radar icon: its texture, its rectangle in that texture and its hot spot. */
@@ -227,7 +241,6 @@ void *select_ship_lock_on_target(void *a0, char *a1, int a2, int a3, void *a4) {
     } while (*p++ >= 0);
     return best;
 }
-extern void project_world_point_to_screen_pixels(void *, void *, void *, int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char pokitaru_camera_matrix_row1[];
@@ -324,21 +337,19 @@ void update_ship_lock_on_target(int a, char *moby) {
         }
     }
 }
-extern void VU1_addGSregister(int, long);
+
 extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int icon, long color);
 extern void update_ship_lock_on_target(int a, char *moby);
 extern void draw_quarter_turn_textured_quads_f(float, float, float, float, unsigned char, unsigned char, unsigned char,
                                                unsigned char) __asm__("func_L11_00312510");
-extern void append_scaled_screen_triangle_strip(float, float, float, void *, int, int, long);
-extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float,
-                                       float);
+
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
 extern float normalize_angle(float);
 
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
-extern int Help_Request(int, int);
+
 typedef struct {
     unsigned short count;
     unsigned short best;
@@ -562,10 +573,9 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
                                            &((struct ShipVars *)obj)->reticle_y, 0);
 }
 extern void fast_dec_timer(int *arg0);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int spawn_ship_projectile(void *, void *, int, void *, float, int);
 extern int Moby_PlaySound_i(int, int, int) __asm__("func_0022ED80");
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern unsigned char pad_globals_base[];
@@ -721,12 +731,11 @@ extern void vec_add_313D00(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_sub_313D00(void *, void *, void *) __asm__("func_001F9BF0");
 extern void euler_matrix_313D00(void *, void *) __asm__("func_001FA1F8");
 extern void apply_313D00(void *, void *, void *) __asm__("func_001F9EC0");
-extern void func_L00_002EBE88(void *);
-extern void func_L00_002EBEE0(void *);
+
 extern float approach_313D00(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern float cosine_313D00(float) __asm__("func_001F9FA8");
 extern float sine_313D00(float) __asm__("func_001F9F90");
-extern void func_001F3140(void);
+
 extern int func_L00_001F10E0(float, void *, int, Moby *);
 extern void burst_313D00(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -734,7 +743,7 @@ extern void reflect_313D00(void *, void *, void *) __asm__("func_L00_001FF610");
 extern float angle_313D00(float, float) __asm__("func_L00_001FF860");
 extern float length_313D00(void *) __asm__("func_001F9CE8");
 extern int play_313D00(int, int) __asm__("func_L00_00203F20");
-extern void func_001F49B0(void (*)(char *), void *);
+
 extern void draw_313D00(char *) __asm__("func_L11_00313218");
 extern void exhaust_313D00(Moby *, Jet *) __asm__("func_L11_00313BC0");
 extern void wings_313D00(Moby *, Jet *, float, float) __asm__("func_L11_00313A70");
@@ -928,22 +937,12 @@ void update_player_ship_flight(void *a0, void *a1) {
     r = angle_add_313D00(o->f28, -o->f6C / 7.0f);
     wings_313D00(moby, o, r, -angle_add_313D00(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
-extern int Hero_TrySetMoveStateL11(int, int);
 
 extern int try_set_help_message(int, int);
-extern int Help_Request(int a, int b);
-extern void MusicRequestTrack(int, int);
 
 extern void update_player_ship_flight(void *, void *);
-extern int count_listed_blarg_ships_in_state_5(int);
+
 extern char *activate_listed_blarg_ship(int idx);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern int STUB_printf();
-
-extern void emit_type_74_particles_from_moby_joints(void *, void *);
-extern int Sound_IsPlaying(void *, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -1536,7 +1535,7 @@ extern void Manipulator_ApplyScale(struct Moby *, int, void *, float);
 extern float vec_distance_xy();
 extern void set_ground_height_band(struct Moby *);
 extern int truncate_float_to_s32(float);
-extern void MoveCtl_Init(void *);
+
 extern int func_001160D8(void);
 
 extern int IsPointInPolygon(void *, void *, int);
@@ -1549,8 +1548,6 @@ extern void RotateWithMoby(struct Moby *, void *, void *, void *, void *, void *
 
 extern void move_4318(struct Moby *, void *, float, float, float, int);
 extern float randf_sym(float, float);
-extern void PartType34Spawn(void *, void *, float, float);
-extern int CarriedMobyUpdate(struct Moby *, void *);
 
 /* Update for the Puffoid creature: spawns on a path or a carrier moby, wanders, chases and attacks the target, jumps
    between path points, and smokes while it dies.
@@ -2076,7 +2073,7 @@ typedef struct Data_316DD8 {
 
 extern void spawn_color_swapped_explosion_burst_r(void *, void *, int, float, float) __asm__("func_L00_00260460");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern int func_L11_0030BC00(void *);
+
 extern Hit_316DD8 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int func_L00_0025B4D0(void *, void *, void *, int, int *, float *, int, int);
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
@@ -2308,13 +2305,13 @@ int is_moby_in_bob_target_exclusion_state(struct Moby *m) {
 struct Manip;
 struct GifEntry;
 struct AnimSeq;
-extern int process_moby_suck_cannon_suction(void *, void *, void *);
+extern int process_moby_suck_cannon_suction_v(void *, void *, void *) __asm__("func_L00_002DCDA8");
 
 /* Grabbed check: while held, park the moby in state 0x14 (remembering its state) unless it cannot be grabbed; restore
    the saved state once released.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/vendor/00315968.c, FUN_L11_00316160. */
 int Moby_ParkIfGrabbed(struct Moby *moby, void *position, void *target) {
-    int r = process_moby_suck_cannon_suction(moby, position, target);
+    int r = process_moby_suck_cannon_suction_v(moby, position, target);
     if (r != 0) {
         if (moby->state == 2 || moby->state == 4 || moby->state == 5 || moby->state == 6 || moby->state == 0xE ||
             moby->state == 0xF || moby->state == 0x10 || moby->state == 0x14) {
@@ -2331,7 +2328,6 @@ int Moby_ParkIfGrabbed(struct Moby *moby, void *position, void *target) {
     return r;
 }
 
-extern void *func_L00_002DCFD0(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
@@ -2382,7 +2378,6 @@ struct L11GateVars {
 
 extern float vec_distance_xy(float *, float *);
 
-extern void Moby_PlaySound(int, int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 /* Moby update for a two-leaf gate that spawns and swings open its leaves. */
@@ -2524,7 +2519,6 @@ extern void update_oil_tanker_link_path_poses(void *);
 extern void process_oil_tanker_damage_and_destruction(void *);
 extern void update_oil_tanker_front_path_pose(char *moby);
 
-extern void Moby_PlaySound(int, int, int);
 extern s32 map_data_0015EE84 __asm__("D_0015EE84") MACRO_ADDR;
 extern float oil_tanker_path_step SDATA(oil_tanker_path_step);
 
@@ -3121,7 +3115,6 @@ void set_moby_state_two_data_and_timer(char *arg, void *src) {
     dst->timer = scale_ticks(0x3C);
 }
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int energy_sphere_spawn_spark_start_color SDATA(energy_sphere_spawn_spark_start_color);
 extern int energy_sphere_spawn_spark_end_color SDATA(energy_sphere_spawn_spark_end_color);
 extern int energy_sphere_spawn_spark_time1 SDATA(energy_sphere_spawn_spark_time1);
@@ -3156,7 +3149,8 @@ void spawn_moby_radial_spark(char *m) {
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
+extern unsigned char *PartType59Spawn_v(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s,
+                                        int mode) __asm__("func_L00_00273E08");
 extern short energy_sphere_glow_color_b, energy_sphere_glow_color_a;
 
 // Spawns four particles around the moby, each rotated a step further around the offset vector.
@@ -3178,7 +3172,7 @@ void spawn_energy_sphere_particles(char *moby) {
         unsigned char c;
         q[0] += q[4];
         c = truncate_float_to_s32_r((float)q[0]);
-        PartType59Spawn(data->glow * IntToFloat(q[8]) * 0.025f, v0, a, c, 0x35, 1, 2, 0);
+        PartType59Spawn_v(data->glow * IntToFloat(q[8]) * 0.025f, v0, a, c, 0x35, 1, 2, 0);
         q++;
         FastVecAdd(v0, v0, v1);
     }
@@ -3208,12 +3202,8 @@ void spawn_energy_sphere_spark(char *moby) {
     PartType02Spawn(moby + 0x10, v0, v1, c1, c2, energy_sphere_spark_time1, energy_sphere_spark_time2,
                     energy_sphere_spark_time3, energy_sphere_spark_texture);
 }
-extern void update_moby_hit_stats_and_state(void *);
+
 extern float randf_sym(float lo, float hi);
-extern void update_moby_trail_points(void *);
-extern void update_moby_path_transform(void *);
-extern char *spawn_moby_with_random_yaw(void *position, void *vector, int id);
-extern void Moby_PlaySound(int, int, int);
 
 extern int FastBSphereCheck(char *, float);
 
@@ -3221,7 +3211,6 @@ extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z);
 extern char flying_craft_gun_offset_a[];
 extern char flying_craft_gun_offset_b[];
 extern float flying_craft_shot_speed SDATA(flying_craft_shot_speed);
@@ -3505,7 +3494,7 @@ char *activate_listed_blarg_ship(int idx) {
     } while (*p++ >= 0);
     return 0;
 }
-extern int count_active_moby_group_members(int, int);
+
 extern void PlayBankSound(int, int, int);
 
 /* Moby update that deletes itself or shows a banner depending on its data. */
@@ -3615,8 +3604,6 @@ extern int bubble_splash_color_a SDATA(bubble_splash_color_a);
 extern int bubble_splash_color_b SDATA(bubble_splash_color_b);
 extern int rand_range(int, int);
 
-extern char *func_L00_00272770(void *, void *, void *, float, float);
-
 /* Bursts n1 sparks and n2 smoke puffs at the moby, the puffs sitting on the ground height. */
 void spawn_bubble_surface_effects(char *m, float *ground, int n1, int n2) {
     float v[4];
@@ -3683,8 +3670,6 @@ void spawn_bubble_spark(char *m) {
     PartType02Spawn(m + 0x10, v1, v2, c0, c1, c2, c3, c4, -1);
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void Moby_PlaySound(int, int, int);
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Moby update for a breakable object that plays effects when hit. */
 void Pokitaru_BreakOnHitUpdate(char *m) {

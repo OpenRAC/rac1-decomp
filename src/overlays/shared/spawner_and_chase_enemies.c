@@ -15,6 +15,11 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/random_scaled_vectors.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -668,12 +673,12 @@ extern int func_L00_00259B88(Moby *, int *, void *, void *, float);
 extern float angle_dist_2E39E0(float, float) __asm__("func_001FA850");
 extern void func_L00_0025AC00(Moby *, Moby *, int, void *, void *, float);
 extern int knock_update_2E39E0(Moby *, void *) __asm__("func_L00_0025D6F0");
-extern int func_L00_002DDEA0(Moby *, void *);
+
 extern void zero_2E39E0(void *) __asm__("func_001F9BC0");
 
 extern float angle_add_2E39E0(float, float) __asm__("func_001FA748");
 extern void vec_scale_2E39E0(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern float func_001FA888(short);
+
 extern int hazard_2E39E0(void) __asm__("func_L00_001F3958");
 extern void splash_2E39E0(Moby *, void *, int, float, float) __asm__("func_L00_00260108");
 extern void delete_2E39E0(Moby *) __asm__("func_0020D678");
@@ -1390,7 +1395,6 @@ void process_spawner_hit_record(char *moby, char *d) {
     ((unsigned char *)moby)[0xA4] = 0xFF;
     StepColorFade(moby, d + 0x60);
 }
-extern int count_active_moby_group_members(int, int);
 
 /* Counts the live level-0x75E mobys among the 20 slots at +0xB0 and returns the last slot not counted. */
 int refresh_spawner_population_and_find_free_slot(int unused, char *m) {
@@ -1423,11 +1427,11 @@ extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548
 extern float FastVecLength_r3(void *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern int rand_range_r3(int, int) __asm__("func_L00_00258BC8");
-extern void func_L09_00278690(float *, float);
+
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern float random_float_between_r5(float, float) __asm__("func_002140F8");
 extern float ProbeGroundHeight_r2(void *, int, float) __asm__("func_00214358");
-extern void func_L00_00250800(void *, int, void *);
+
 extern void func_L00_00260958(float *, float);
 extern float func_L00_0025BC48(void *, void *, void *, float, float);
 extern char *spawn_spawner_egg_r(int, void *, void *, unsigned char, unsigned char) __asm__("func_L09_0030C658");
@@ -1667,7 +1671,6 @@ extern s32 coll_line(void *, void *, s32, struct Moby *, s32);
 extern f32 vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, f32);
 
-extern s32 Moby_PlaySound(s32, s32, struct Moby *);
 extern s32 coll_sphere(f32, void *, s32, struct Moby *);
 
 extern void jet_animate(struct Moby *, f32);

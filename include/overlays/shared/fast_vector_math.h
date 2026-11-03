@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void clear_twelve_bytes(void *);
 extern float step_rotation_toward_target(float, float, float);
 
 #endif /* OVERLAYS_SHARED_FAST_VECTOR_MATH_H */

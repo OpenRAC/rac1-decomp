@@ -11,6 +11,9 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/l18_veldin2/rockets_and_platforms.h"
 extern Hero g_hero;
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
@@ -57,7 +60,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float veldin2_zero_vec[] MACRO_ADDR;
 
 extern float g_frame_time MACRO_ADDR;
-extern int Moby_PlaySound(int, int, int);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int veldin2_cinematic_mode MACRO_ADDR;
 
@@ -65,7 +68,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
 extern float g_frame_time MACRO_ADDR;
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int veldin2_frame_count MACRO_ADDR;
 
 extern int drek_boss_camera_reset_done MACRO_ADDR;
@@ -115,8 +117,6 @@ extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
 
 extern int IsFrameWithinWindow(char *, float);
-
-extern char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3);
 
 typedef struct {
     char pad0[0xC0];

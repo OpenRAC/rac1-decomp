@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/sif/reset_iop.h"
 
 /*
  * core_text object 0x11DD68-0x11DDD0. Boundaries are retail's linker fill
@@ -12,8 +13,6 @@
  * (Makefile.sn, EE29_CORE), like the prebuilt libkernl.a, which emits
  * both of its tail calls natively.
  */
-
-extern void InitTLB(void);
 
 /*
  * exit.o's kCopy: a byte copy loop returning 0. Exact under 2.9-ee, which

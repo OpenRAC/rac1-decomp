@@ -26,6 +26,15 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/l13_gemlik/scene_controller.h"
+#include "overlays/l13_gemlik/voice_position.h"
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
@@ -162,17 +171,12 @@ extern char *MobyGetHitMessage(void *, int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
-                                      float w, float pw);
-
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 
 extern float vec_distance_xy(void *, void *);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern float IntToFloat(int);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int coll_line(void *, void *, int, void *, int);
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -493,11 +497,8 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
     }
 }
 extern void update_hovering_rocket_attacker_common(unsigned char *);
-extern int create_attached_rocket(void *, int);
-extern void launch_attached_rocket(char *, char *, int, float);
 
 extern float ApproachWithVelocity(float *, float, float *, float, float, float);
-extern void Moby_PlaySound(int, int, int);
 
 extern float hovering_rocket_attacker_launch_vector_speed SDATA(hovering_rocket_attacker_launch_vector_speed);
 extern char *gemlik_scene_points MACRO_ADDR;
@@ -1047,8 +1048,6 @@ void steer_blarg_space_fighter(char *moby, char *d, float p2, float p3) {
     normalize_angle(((Moby *)moby)->rot.x);
 }
 
-extern float IntToFloat(int);
-
 // picks the entry of a ring table nearest a point, scanning outward from a start index
 int select_blarg_space_fighter_path_point_by_distance(char *pt, int *tbl, int start, float ref) {
     int best = start;
@@ -1324,7 +1323,7 @@ typedef struct Data_2C56B0 {
 } Data_2C56B0;
 
 extern int STUB_printf_d(void *, ...) __asm__("func_001E9730");
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern int Moby_PlaySound_s(int, int, int) __asm__("func_0022ED80");
 extern int update_blarg_space_fighter_path_following_r(void *, void *, int) __asm__("func_L13_002C5248");
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
@@ -1752,14 +1751,11 @@ typedef int u128z __attribute__((mode(TI)));
 typedef struct {
     unsigned char b[24];
 } Blk24;
-extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int spin, int col, float range, float f1,
-                                                                 float f2, float f3, float scale);
-extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
 
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
+
 extern float gemlik_zero_vec[] MACRO_ADDR;
 extern Blk24 forcefield_tower_debris_start_colors;
 extern Blk24 forcefield_tower_debris_end_colors;
@@ -1875,7 +1871,7 @@ typedef int Q_2cff90 __attribute__((mode(TI)));
 extern char forcefield_tower_damage_debug_format[];
 extern char forcefield_tower_hit_debug_format[];
 extern void SetDeathBits(void *, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -1987,11 +1983,8 @@ typedef int u128z_2D0298 __attribute__((mode(TI)));
 extern int g_current_level_index MACRO_ADDR;
 extern int linked_state_flags[];
 
-extern char *spawn_scaled_owned_moby(char *, void *, float);
-extern int Sound_IsPlaying(void *, int);
 #define Moby_PlaySound_s ((int (*)(int, int, int))Moby_PlaySound_r)
-extern int set_voice_position(int, const void *);
-extern void PartType05Spawn(float *, unsigned char, unsigned char, unsigned char, float, float, int);
+
 #define func_L00_0026AA10_C4748 func_L00_0026AA10
 extern int IsFrameWithinWindow(char *, float);
 extern void process_forcefield_tower_damage(char *, char *, float *);
@@ -2581,8 +2574,7 @@ extern void get_first_moby_in_group(char **, int, int, int);
 extern void get_next_moby_in_group(char **, char *, int, int);
 extern void set_moby_color(void *, int, int, int);
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
-extern void set_moby_list_state(int, int);
-extern void STUB_printf(char *, short, short, int);
+
 extern char linked_switch_group_opened_debug_format[];
 extern char linked_switch_group_hit_timeout_debug_format[];
 extern char linked_switch_group_open_timeout_debug_format[];
@@ -2953,7 +2945,6 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
     }
 }
 extern int gemlik_effect_joint_list[];
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
@@ -3703,10 +3694,8 @@ unsigned char *fire_starfighter_homing_rocket(struct Moby *firing_moby, unsigned
     }
     return spawned_rocket_moby;
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern unsigned char *spawn_mine_83_projectile(char *owner, char *pos, char *vec);
-extern void Moby_PlaySound(int, int, int);
 
 /* computes a velocity vector for a moby from the camera/player and spawns a projectile */
 unsigned char *fire_mine_83_projectile(char *a, char *b) {

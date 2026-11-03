@@ -18,6 +18,19 @@
 #include "structs/pad.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
+#include "game/ui/hud.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "core/gs/def_load_image.h"
+#include "core/gs/load_image.h"
+#include "game/render/tiefunc.h"
+#include "game/system/update.h"
+#include "game/render/shrubfunc.h"
+#include "game/ui/transition.h"
+#include "game/render/effects.h"
+#include "game/render/drawquad.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -48,7 +61,6 @@ extern DrawTextRec font_text_slots[];
 extern char *font_text_cursor SDATA(font_text_cursor);
 extern int font_text_slot_index SDATA(font_text_slot_index);
 extern char font_text_format[];
-extern int sprintf();
 
 /* Queues one text item: font_text_slots[n] = {x, y, colour, pool position},
    then sprintf(pool, "%s", str) (font_text_format is "%s") advances the
@@ -173,11 +185,8 @@ extern char camera_sample_text_name[];
 extern char camera_sample_line_format[];
 extern char camera_sample_alt_line_format[];
 
-extern void SetBackgroundColor(int, int, int);
-
 extern float vec_length_xy(void *);
 
-extern float IntToFloat(int);
 extern void UpdateViewContext(void);
 extern void UpdateFog(void);
 
@@ -934,7 +943,7 @@ int GetOcclGridFromPair(int a0, int a1, int a2, int a3, int a4, int a5, float t)
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
+
 extern int GetOcclGridFromPair(int, int, int, int, int, int, float);
 
 extern char occl_visibility[];
@@ -1036,7 +1045,6 @@ void UpdateOcclusion(void) {
 }
 
 extern int g_screen_extent[];
-extern float IntToFloat(int);
 
 /* InitViewContext: the same set-up as configure_graphics_projection for
    the display's size, fs_aa_buffer[0xA8]/[0xA9], with fixed extras. The
@@ -1134,8 +1142,6 @@ extern struct {
     s32 x;
     s32 y;
 } D_001DEAC0;
-
-extern f32 fast_arc_tan(f32, f32);
 
 #define fast_cos func_001F9F90
 
@@ -1329,8 +1335,6 @@ void UpdateViewContext(void) {
 #undef fast_cos
 #undef set_tfrag_dists
 
-extern float IntToFloat(int);
-
 /* Sets the screen size: the GS viewport record at g_screen_extent gets width,
    height, their halves and the four <<4 edges around the 0x800 centre;
    the draw context at view_context gets a2 at +0xB0, 32 and 524288 at
@@ -1424,14 +1428,6 @@ extern int display_buffer_address MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_base MACRO_ADDR;
-
-extern int wait_for_graphics_pipeline_idle(int, int);
-extern void SetupFS_AA_buffer(int, int, int, int, int, int);
-
-extern void append_gif_transfer_packet(void);
-extern void PutDispBuffer(void);
-extern int sceGsSetDefLoadImage(GsLoadImage *, s16, s16, s16, s16, s16, s16, s16);
-extern int sceGsExecLoadImage(GsLoadImage *, unsigned char *);
 
 /* Adapted from Lombyte's project (GPL-3.0): src/video/display/set_pal_mode.c, set_pal_mode. */
 void SetPalMode(void) {
@@ -1543,7 +1539,6 @@ void ResetDrawGlobals(void) {
     local_surface_region_enabled = 0;
 }
 
-extern void VU1_addGSregister(int, long);
 extern char reset_gs_regs_fixed[];
 
 /* ResetGsRegisters(void) */
@@ -1617,49 +1612,27 @@ extern char shrub_scratchpad_copy[];
 extern void ProfileMarker_End_a(void *, int) __asm__("func_001F2558");
 extern void ProfileMarker_Begin_a(void *, int) __asm__("func_001F2560");
 extern void UpdateFog_v(void) __asm__("func_001F2930");
-extern void append_gif_transfer_packet(void);
+
 extern void BuildViewMatrices(void);
 
-extern void Transition_DrawSky(void);
-extern void DrawTfrag(void);
-extern void append_dma_tag(int);
-extern void DrawTies_2(void);
-extern void DrawTies_1(void);
-extern void vu1_gs_regs_alt(void);
 extern void SetupGifPaging(int);
 extern void dispatch_callback_list_2(void);
 extern void DoGifPaging(void);
-extern void VU1_gsRegsNormal(void);
-extern void DrawShrubs(void);
+
 extern void draw_fogged_fullscreen_sprite(char *);
 extern void draw_debug_font(void);
 extern void dispatch_callback_list_3(void);
 
 extern void dispatch_callback_list_1(void);
-extern void draw_lens_flare(void);
+
 extern void draw_light_quads(void);
 
 extern void dispatch_callback_list_4(void);
-extern void append_billboard_batch(void);
-extern void render_queued_rotated_sprites(void);
-extern void AA_BlurPass(void);
-extern void DebugProfiler_Hook(void);
-extern void update_hud(void);
-extern void draw_help(void);
+
 extern void draw_letterbox_bars(void);
 extern void draw_subtitles(void);
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern void draw_screen_effect(void);
-extern void VU0_loadMicroProgram(void *);
-extern void VU1_syncChain(int mask);
-
-extern void PatchTfragGifs(void);
-extern void register_entity_render_resources(void);
-extern void copy_render_buffer_pair(void);
-
-extern void PatchTieGifs(void);
-
-extern void patch_shrub_gifs(void);
 
 /* Draws the whole frame: each world layer's DMA chain in order, then the fades and the per-layer profiler bars. Adapted from Lombyte's project (GPL-3.0) for PAL: rendering/draw_debug_profiler.c, draw_debug_profiler. */
 void DrawDebugProfiler(void) {
@@ -2183,8 +2156,6 @@ void draw_light_quads(void) {
         draw_world_quad_packet(m, 0, 0);
     }
 }
-
-extern int func_00122598(int);
 
 extern int game_frame_counter MACRO_ADDR;
 extern char second_clear_packet[];
@@ -3020,7 +2991,7 @@ struct Glyph {
 };
 extern s32 font_window_active MACRO_ADDR;
 extern s32 font_palette_colors[];
-extern f32 IntToFloat(s32);
+
 extern void emit_textured_rectangle_r(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64) __asm__("func_001F5BB8");
 void process_bgm_display_text_event(u64 color, u8 *s, f32 x, s32 n, s64 tex, struct Glyph *g, f32 y, f32 scale);
 
@@ -3143,7 +3114,6 @@ int FontPrintCenterLarge(int a, int b, int c, int d, int e) {
     return p;
 }
 
-extern void VU1_setScissor(int, int, int, int);
 struct FontWindow {
     short y_min, y_max, x_min, x_max, x_anchor, y_start;
     short out_w, out_h, line_h;
@@ -3366,8 +3336,6 @@ extern short font_depth_bias; /* SDA, gp -0x78B8 */
 extern unsigned short font_vu_program_tag NOT_SDA;
 extern char font_vu_program[];
 extern char camera_position[];
-
-extern void vu1_gs_regs_font(void);
 
 /* Build the VU1 setup packet: load microprogram 7 if another is
    resident, then a DIRECT/UNPACK chain with the two camera matrices

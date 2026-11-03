@@ -23,6 +23,17 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/walloper_and_beam_effects.h"
+#include "overlays/shared/morphoray_chicken_and_drones.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -145,7 +156,6 @@ extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
-extern void func_L00_002B2DD8(Moby *);
 extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
 extern void matrix_from_basis_rows_r(void *, void *) __asm__("func_001FA4A0");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
@@ -175,9 +185,6 @@ extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00
 extern float FastArcSin_r(float) __asm__("func_001F9FC0");
 
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern void func_L00_002B30C8(void *);
-extern void *func_L00_002B0F58(void *, void *, void *, float, float, float, float, float);
-extern float func_L00_002B1238(int);
 
 extern void start_equipped_item_animation_r(void) __asm__("func_L00_0020EB60");
 extern float FastCos_r(float) __asm__("func_001F9F90");
@@ -457,8 +464,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int spawn_visibomb_missile(void *, void *, float, float);
 
-extern int Moby_PlaySound(int, int, int);
-
 /* Per-frame update of a moby that arms a pickup-style reaction when the player state allows it. */
 void visibomb_update(char *m) {
     int *p;
@@ -654,7 +659,7 @@ extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void transform_vector_r2(void *, void *, void *) __asm__("func_001F9EE8");
-extern void func_00234C98(int, long);
+
 extern void font_queue_vu_state_r(void) __asm__("func_001F7868");
 
 /* Draws the moby's beam: orients the moby along its child's two joints, draws three quads and a ribbon of 196 points.
@@ -1044,7 +1049,6 @@ extern char g_debug_camera[];
 extern char *suck_moby_list MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
 
-extern float IntToFloat(int);
 extern int coll_line(void *, void *, int, int, int);
 extern unsigned char *GetFlaggedPvarWord(void *);
 
@@ -1220,11 +1224,11 @@ extern float FastCos_r2(float) __asm__("func_001F9F90");
 extern float FastSin_r2(float) __asm__("func_001F9FA8");
 
 extern void coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void func_L00_002CC3C0(void *, float, float, float, float, void *, void *);
+
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
-extern void func_L00_0026EBC0(void *, void *, int, int, float);
+
 extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
 
 extern void cancel_hero_item_animation_r(void) __asm__("func_L00_0020ED30");
@@ -1610,8 +1614,7 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb) {
 }
 
 extern int hero_control_mode_11_flag NOT_SDA;
-extern void select_camera_mode_by_hero_alignment_and_distance(int);
-extern void HeroEnterMoveState(int, int);
+
 extern void moby_restore_globals_state(int, int);
 
 /* Ends Visibomb control: deletes the missile, restores the camera and the hero's move state. */
@@ -1665,7 +1668,7 @@ void update_attached_moby_transform(Moby *m, unsigned char *o) {
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
-extern void spawn_glow_particle(void *, void *, void *, int, int, int, int, int, float);
+extern void spawn_glow_particle_v(void *, void *, void *, int, int, int, int, int, float) __asm__("func_L00_002ADBB0");
 extern float g_frame_time MACRO_ADDR;
 
 extern IntVec6 glow_burst_spark_colors_a;
@@ -1716,12 +1719,12 @@ void spawn_moby_particle_and_glow_burst(Moby *m, int flag) {
             } while (--i);
         }
         if (cpu_frame_load < 0.95f) {
-            spawn_glow_particle(m, &m->pos, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
-            spawn_glow_particle(m, &m->pos, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
+            spawn_glow_particle_v(m, &m->pos, n, scale_ticks(15), 0x7F, 0x7F, 0x7F, 0x20, 3.0f);
+            spawn_glow_particle_v(m, &m->pos, n, scale_ticks(24), 0x7F, 0x20, 0, 0x20, 2.0f);
         }
-        spawn_glow_particle(m, &m->pos, n, scale_ticks(20), 0x7F, 0x40, 0, 0x30, 3.0f);
-        spawn_glow_particle(m, &m->pos, n, scale_ticks(27), 0x60, 0x10, 0, 0x40, 2.0f);
-        spawn_glow_particle(m, &m->pos, n, scale_ticks(29), 0x20, 0, 0, 0x20, 1.0f);
+        spawn_glow_particle_v(m, &m->pos, n, scale_ticks(20), 0x7F, 0x40, 0, 0x30, 3.0f);
+        spawn_glow_particle_v(m, &m->pos, n, scale_ticks(27), 0x60, 0x10, 0, 0x40, 2.0f);
+        spawn_glow_particle_v(m, &m->pos, n, scale_ticks(29), 0x20, 0, 0, 0x20, 1.0f);
     }
 }
 typedef int u128_2B7430 __attribute__((mode(TI)));
@@ -1794,13 +1797,12 @@ extern float D_L00_00161578_2B7430 SDATA(D_L00_00161578);
 extern void jet_camera_mode_r(void) __asm__("func_L00_00204130");
 extern int force_help_message_r(int, int) __asm__("func_00216028");
 extern int scale_ticks_r4(int) __asm__("func_001F9850");
-extern int func_L00_002ECAF8(void *, void *);
+
 extern void Moby_RestoreGlobalsState_r(void *, int) __asm__("func_L00_002B6AE0");
 extern void update_attached_moby_transform_r(void *, void *) __asm__("func_L00_002B6E90");
 extern void terminate_visibomb_missile_r(void *, void *) __asm__("func_L00_002B6E10");
 extern void spawn_moby_particle_and_glow_burst_r(void *, int) __asm__("func_L00_002B6FF0");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern int func_L00_0028F210(int, int);
 
 extern void func_L00_0025B040(void *, float);
 extern void BuildSphericalOffset_r3(void *, float, float, float) __asm__("func_00215C00");
@@ -2138,7 +2140,6 @@ typedef struct {
     u16 last;
     u32 flags;
 } Ring;
-extern s32 Sound_IsPlaying(Moby *, s32);
 
 extern void MobyBlendAnimation_r3(Moby *, s32, s32, s32) __asm__("func_00213DE0");
 extern s32 Moby_PlaySound_r2(s32, s32, Moby *) __asm__("func_0022ED80");
@@ -2282,8 +2283,6 @@ extern short taunter_effect_alpha_g __asm__("D_L00_0016158C");
 extern short D_L00_001615A8;
 extern int fast_dec_timer(int *);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_taunter_effect_quads_b(void) __asm__("func_L00_002B8860");
 /* per-frame update of the ten slot table: spawn one, age the rest, then draw */
 void update_taunter_effect_slots(Moby *arg) {
@@ -2334,7 +2333,6 @@ void update_taunter_effect_slots(Moby *arg) {
 extern int GetEffectTex(int);
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void draw_world_quad(void *, void *, int);
@@ -2460,30 +2458,21 @@ extern char collision_hit_point[];
 extern Order_2B8AE8 gold_weapon_purchased;
 
 extern void update_pyrocitor_usage_and_cleanup(unsigned char *);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern Moby *spawn_linked_moby_from_basis(void *);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern int allocate_packed_color_point_light_slot(void *, float, float, int);
-
-extern float IntToFloat(int);
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
 
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void rand_vec(float *, float, float);
 
-extern void *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
 extern void register_pyrocitor_flame_effect();
 
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 
 extern int truncate_float_to_s32(float);
 extern void spawn_color_decaying_effect_particle(void *, void *, int);
-
-extern void euler_rotation_basis(void *, void *);
-extern void multiply_matrix3x3(void *, void *, void *);
 
 extern void update_pyrocitor_flame_effect_slots(char *);
 
@@ -2675,10 +2664,6 @@ extern unsigned char voice_pool[];
 extern unsigned char g_hero_r5[] __asm__("D_0013F450");
 extern unsigned short pyrocitor_help_shown_count NOT_SDA;
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
-void release_point_light_slot(int);
-void Sound_StopSlot(int);
-
-void Help_Request(int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b8230. */
 void update_pyrocitor_usage_and_cleanup(unsigned char *m) {
@@ -2745,8 +2730,6 @@ extern int pyrocitor_flame_particle_count SDATA(pyrocitor_flame_particle_count);
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void rand_vec(float *, float, float);
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 // Updates the effect moby's 15 slots: spawns and releases spark particles around live children.
 void update_pyrocitor_flame_effect_slots(char *m) {
@@ -2914,8 +2897,7 @@ extern void func_001F9BD8_2B9AD8(void *, void *, void *) __asm__("func_001F9BD8"
 extern void Moby_GetJointWorldPos_r3(void *, int, void *) __asm__("func_L00_00250800");
 extern void vec_scale_to_length_r5(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void initialize_tesla_claw_beam_r(void *) __asm__("func_L00_002BA608");
-extern void func_L00_002BA7C8(void *);
-extern void func_L00_002BBC78(void);
+
 extern void AddDrawCallback_r2(void (*)(void), void *) __asm__("func_001F49B0");
 extern void Sound_StopSlot_r2(int) __asm__("func_L00_0028EBF0");
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");

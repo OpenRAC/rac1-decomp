@@ -27,6 +27,11 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/l06_blarg/hero_movement.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -54,38 +59,18 @@ extern HeroItemDefView blarg_item_defs[];
 extern HeroAttackRecord blarg_attack_records[];
 extern HeroSpeedBands blarg_hero_speed_bands;
 
-extern int HeroL06_TryApplyHitKnockback(int);
-
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
-extern int get_hero_help_value(int a);
-
-extern int HeroL06_TrySetMoveState(int a, int b);
-
 extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
-extern int pad_pressed_within(int, int, int *);
-
-extern void quantize_hero_input_target_speed(void);
-
 extern int truncate_float_to_s32(float);
-extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void allocate_hero_voice_for_entry(int, int);
-
 extern void ClampVectorLength(void *a, float x);
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern void release_and_clear_hero_voice_slots(void);
 
 extern int coll_line(void *, void *, int, int, int);
 
@@ -2512,7 +2497,6 @@ void HeroL06_UpdateStateTransitions(void) {
     }
 }
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Blarg sky: three shells with particles in level 6, static shells otherwise. */
 void render_sky_with_gif_paging(void) {

@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void initialize_render_archive_transfer(void);
 extern void reveal_map_around_position(void *);
 
 #endif /* OVERLAYS_SHARED_LEVEL_RUNTIME_AND_MENUS_H */

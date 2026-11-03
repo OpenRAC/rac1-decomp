@@ -29,6 +29,10 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "overlays/l16_kalebo3/hero_idle_animation.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -57,44 +61,24 @@ extern HeroItemDefView kalebo3_item_defs[];
 extern HeroAttackRecord kalebo3_attack_records[];
 extern HeroSpeedBands kalebo3_hero_speed_bands;
 
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
-extern int get_hero_idle_animation_index(int a);
-
-extern int Hero_TryMoveState(int, int);
-
 extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
-extern int pad_pressed_within(int, int, int *);
-
 extern int truncate_float_to_s32(float);
-extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void allocate_hero_voice_for_entry(int, int);
-
 extern void ClampVectorLength(void *a, float x);
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern void apply_hero_item_slot_selection(int i);
-extern void release_and_clear_hero_voice_slots(void);
 
 extern int coll_line(void *, void *, int, int, int);
 
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
-
-extern int compute_hero_hoverboard_respawn_transform(float *, float *);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 16 build). */
 void Hero_ChooseStateTransition(void) {
@@ -2524,7 +2508,6 @@ void Hero_ChooseStateTransition(void) {
     }
 }
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the level 16 sky: shells at three rotation speeds, static shells in other levels. */
 void render_level16_sky_shells(void) {

@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/mpeg/motion_comp.h"
 
 /*
  * core_text object 0x12A2F0-0x12AC80. Boundaries are retail's linker fill
@@ -10,7 +11,6 @@
 
 extern void _Error_a(void *, void *) __asm__("func_0012C468");
 
-extern void send_ipu_command();
 extern void dispatch_mpeg_callback();
 
 /* _doCSC (libmpeg). Stack-size probe #2: a 32-byte local (two 16-byte

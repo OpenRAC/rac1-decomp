@@ -10,8 +10,11 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
-
-extern void wait_for_graphics_pipeline_idle(int, int);
+#include "game/math/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
 
 // Copies the frame buffer out in 0x4000-sized strips.
 void transfer_draw_buffer_chunks(int a, int b, int n) {
@@ -29,7 +32,7 @@ void transfer_draw_buffer_chunks(int a, int b, int n) {
         wait_for_graphics_pipeline_idle(0, 0);
     }
 }
-extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
+
 extern int *dma_packet_cursor MACRO_ADDR;
 
 /* Uploads a 64-wide image strip in 0x4000-sized chunks: each chunk is a DMA tag pair around a GS load image. */
@@ -177,18 +180,14 @@ typedef struct WalkData {
     unsigned short uEE;
 } WalkData;
 
-extern int find_nearest_animation_sequence_entry(char *a, float time);
-
 extern int walker_gait_mask(WalkAnim *a, float t);
 
 extern int truncate_float_to_s32(float);
 
 extern float vec_distance_xy(void *, void *);
 
-extern void STUB_printf();
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
-extern float IntToFloat(int);
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;
 extern int walker_state_anim_slots[];

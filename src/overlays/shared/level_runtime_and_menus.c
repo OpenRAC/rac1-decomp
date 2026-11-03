@@ -8,6 +8,11 @@
 #include "overlays/shared/map_menu_filters.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/ui/map.h"
+#include "game/ui/menu.h"
+#include "game/system/stash.h"
+#include "game/gameplay/missionfunc.h"
+#include "overlays/shared/stash_slots.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -349,10 +354,6 @@ void run_level_main_loop(void) {
 }
 extern struct DiscTable disc_table;
 
-int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
-
-extern void load_map_chunk(void *arg0, unsigned char *arg1, int arg2);
-extern void decode_map_mask(int *dst, unsigned char *src, short *offs);
 extern int map_menu_initial_value_pairs[];
 extern float map_points[];
 extern float map_coefficients[];
@@ -539,12 +540,10 @@ typedef struct {
 /* FAKEMATCH: a second view of map_menu_state. One view with casts matches, but reads worse. */
 extern RenderArchiveState map_menu_state;
 extern u8 gHaveMapOMatic NOT_SDA;
-void Profile_Mark(void);
-void update_map_icons(s32, s32);
+void Profile_Mark_v(void) __asm__("func_001E9768");
+
 void start_audio_stream_read(s32, s32, s32);
 void update_audio_stream_until_idle(s32);
-void send_dma_to_stash_slot(s32, s32, s32, s32);
-void stash_receive_data(s32, s32, s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/00245c28.c, FUN_L00_002468b8. */
 void initialize_render_archive_transfer(void) {
@@ -555,7 +554,7 @@ void initialize_render_archive_transfer(void) {
     s32 archive_index;
     RenderArchiveState *state = &map_menu_state;
 
-    Profile_Mark();
+    Profile_Mark_v();
     update_map_icons(state->archive_index, 1);
     first_base = level_menu_system.first_base;
     second_base = level_menu_system.second_base;
@@ -674,7 +673,6 @@ extern s32 map_reveal_alt_projection_flag SDATA(map_reveal_alt_projection_flag);
 extern MapFilter map_filter_range_table[19][16] NOT_SDA;
 extern MapFilterCallback map_filter_callback_table[19][8] NOT_SDA;
 extern s32 map_filter_unlocked_flags[] NOT_SDA;
-extern void map_world_to_uv(f32, f32, f32 *, f32 *, s32);
 
 void reveal_map_around_position(f32 *position) {
     s32 filters[16];

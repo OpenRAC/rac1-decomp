@@ -7,6 +7,10 @@
 #include "data/level_07.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "game/audio/music.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -51,10 +55,9 @@ struct BridgeVars {
     s32 indicator; /* 0xD8 */
 };
 
-extern void prepare_scaled_float_table_with_target_byte(void *, int, float);
-extern void AddDrawCallback(void *, void *);
+extern void prepare_scaled_float_table_with_target_byte_v(void *, int, float) __asm__("func_L02_002A5238");
+
 extern char umbris_ambient_stream_scaled_table[];
-extern char register_audio_stream_callback[];
 
 /* Umbris ambient stream moby: sets up its table, then queues the audio stream. */
 void AmbientStreamL07Update(unsigned char *moby) {
@@ -62,7 +65,7 @@ void AmbientStreamL07Update(unsigned char *moby) {
         case 0:
             moby[0x20] = 1;
             moby[0x30] = 0xFF;
-            prepare_scaled_float_table_with_target_byte(umbris_ambient_stream_scaled_table, 0x80, 1.0f);
+            prepare_scaled_float_table_with_target_byte_v(umbris_ambient_stream_scaled_table, 0x80, 1.0f);
             break;
         case 1:
             AddDrawCallback(register_audio_stream_callback, moby);
@@ -72,7 +75,6 @@ void AmbientStreamL07Update(unsigned char *moby) {
 extern int D_0015EE84_30D370 SDATA(D_0015EE84);
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 
-extern void func_L01_0026F090(int list, int state);
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern float func_001F9D48(void *, void *);
@@ -235,7 +237,6 @@ extern unsigned char saved_mission_state[];
 
 extern void vec_scale_to_length(f32, void *, void *);
 
-extern void Moby_PlaySound(s32, s32, void *);
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 
@@ -362,7 +363,6 @@ extern void FastVecScale_v(f32, void *, void *) __asm__("func_001F9C30");
 
 extern void vec_scale_to_length(f32, void *, void *);
 
-extern void Moby_PlaySound(s32, s32, void *);
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;

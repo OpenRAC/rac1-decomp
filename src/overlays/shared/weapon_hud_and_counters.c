@@ -17,6 +17,14 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/ui/hud.h"
+#include "game/audio/music.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
+#include "overlays/shared/debug_menu_and_text.h"
+#include "overlays/shared/particle_type_registry.h"
 extern char g_hero[];
 extern char item_available[];
 extern int weapon_ammo_counts[];
@@ -184,8 +192,6 @@ typedef struct {
 } HudBank;
 
 extern HudBank hud_elements[];
-extern int queue_animation_update(int, int, int, int, int, int, int);
-extern void apply_pending_animation(void *);
 
 /* The level's HUD bank reset, a shorter init_hud (src/game/ui/hud.c):
    for each of the 13 bank records at hud_elements, queue_animation_update(i,
@@ -247,7 +253,7 @@ int hud_screen_position(HudElem *rec, int *x, int *y) {
     }
     return 0;
 }
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 extern float hud_slide_ramp_timed[];
 extern float hud_slide_ramp_idle[];
@@ -569,12 +575,7 @@ void hud_update_particles(HudElem *e) {
 }
 extern int hud_screen_position(HudElem *rec, int *x, int *y);
 extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
-extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
-extern int allocate_hero_voice_for_entry(int, int);
-extern int GetIconFrame(int, int);
-
-extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern void draw_rotated_hud_sprite(int tex, int x, int y, int w, int h, int alpha);
 extern int hud_stars_width SDATA(hud_stars_width);
 extern int hud_star_height SDATA(hud_star_height);
@@ -723,10 +724,9 @@ int draw_hud_stars(HudElem *rec) {
  * neg/div chain early but its *16 and store late, which gives the
  * scale-Y chain the higher local-alloc priority ($f4) as in retail.
  */
-extern int GetIconFrame(int, int);
+
 extern void draw_rotated_hud_sprite(int, int, int, int, int, int);
 
-extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern int hud_stars_width SDATA(hud_stars_width);
 extern int hud_star_height SDATA(hud_star_height);
 extern float hud_stars_scale_x SDATA(hud_stars_scale_x);
@@ -809,14 +809,7 @@ void DefaultVtbl_DeleteMoby(void *e) {
 typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) HudPoint;
-extern int measure_text_width_regular(const char *, int);
-extern void HudSprite(int, int, int, int, int, int);
-extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
-extern int FontPrintCenter(int, int, long, void *, int);
 
-extern void *msg_string(int);
-extern int sprintf(char *, const char *, ...);
-extern void draw_framed_text(int, int, int, char *);
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int race_record_panel_end_y MACRO_ADDR;
@@ -964,8 +957,7 @@ void update_hud_counter_cap_and_visibility(HudElem *e) {
  */
 extern int hud_stars_width SDATA(hud_stars_width);
 extern int hud_star_height SDATA(hud_star_height);
-extern void draw_hud_rect_blended(int, int, int, int, long, long);
-extern int GetIconFrame(int, int);
+
 extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
 extern void draw_rotated_hud_sprite(int, int, int, int, int, int);
 
@@ -1106,7 +1098,6 @@ extern Ent_38530 **hud_selector_slot_tables_r __asm__("D_L00_0015FB78") MACRO_AD
 extern int quick_select_last_state MACRO_ADDR;
 extern int quick_select_close_frame MACRO_ADDR;
 
-extern int remove_hud_item(int);
 typedef struct {
     u8 p0[8];
     u16 h8;
@@ -1281,13 +1272,8 @@ typedef struct {
     short h46, h48;
     char pad4A[2];
 } TI_238C30;
-extern int GetIconFrame(int, int);
-extern void HudSprite(int, int, int, int, int, int);
-extern void HudFrame(char *, int, int, int, int, int);
-extern int sprintf(char *, const char *, ...);
 
-extern int FontPrintCenter(int, int, long, void *, int);
-extern void *msg_string(int);
+extern void HudFrame(char *, int, int, int, int, int);
 
 extern unsigned char screen_globals_base[];
 extern short quick_select_pulse_period;
@@ -1850,9 +1836,6 @@ extern short health_hud_icon_offsets;
 extern short health_hud_icon_offsets_8[];
 extern short health_hud_icon_offsets_5[];
 
-extern int GetIconFrame(int, int);
-extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
-extern void HudSprite(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
 
 /* Draws the health bar (and its nanotech orbs) of a HUD element; returns the element's field 0x58. */
@@ -2050,7 +2033,6 @@ typedef struct {
     void *unk80;
 } HudElem_3A788;
 extern s32 truncate_float_to_s32(f32);
-extern void draw_hud_sprite_flipped(s32, s32, s32, s32, s32, s32);
 
 extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
@@ -2067,11 +2049,9 @@ extern s32 digit_width SDATA(digit_width);
 extern char bolt_count_format[];
 extern char bolt_separator_string[];
 extern char bolt_separator_alt_string[];
-extern f32 IntToFloat(int);
 
 extern void HudFrame_r2(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
 extern int sprintf_r() __asm__("func_00116248");
-extern void font_print_right(int, int, int, char *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/002377b8.c, FUN_L00_00239df8. */
 int draw_bolt_counter_hud_panel(HudElem_3A788 *m) {
@@ -2191,9 +2171,6 @@ extern int bolt_exclamation_color_from SDATA(bolt_exclamation_color_from);
 extern int bolt_exclamation_color_to SDATA(bolt_exclamation_color_to);
 extern int bolt_exclamation_pulse_ticks SDATA(bolt_exclamation_pulse_ticks);
 extern char bolt_exclamation_format[];
-extern int sprintf(char *str, const char *fmt, ...);
-
-extern void print_text_with_texture_3(int, int, int, char *, int);
 
 /* Draw the bolt counter panel sliding in with its fade; skipped in some hero states. */
 int draw_hud_bolt_exclamation_panel(HudElem *m) {
@@ -2256,10 +2233,9 @@ int draw_hud_bolt_exclamation_panel(HudElem *m) {
     return m->w;
 }
 extern short g_hero_vehicle_triangle_cooldown NOT_SDA;
-extern int GetIconFrame(int, int);
+
 extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
 extern void draw_cropped_hud_sprite(int, int, int, int, int, int);
-extern void HudSprite(int, int, int, int, int, int);
 
 /* Draws a HUD meter: a 256 x 64 element placed from its position (+0x50,
    +0x54) by hud_screen_position and apply_hud_slide_offset, then texture 0x7558
@@ -2303,9 +2279,8 @@ extern int weapon_hud_empty_color_from SDATA(weapon_hud_empty_color_from);
 extern int weapon_hud_empty_color_to SDATA(weapon_hud_empty_color_to);
 extern int weapon_hud_text_x SDATA(weapon_hud_text_x);
 extern int weapon_hud_text_y SDATA(weapon_hud_text_y);
-extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
+
 extern void HudFrame(char *, int, int, int, int, int);
-extern int sprintf(char *, const char *, ...);
 
 /* Draws the weapon HUD tile: three-part frame, weapon icon and ammo text with shadow, faded by the slide-in timers. */
 int draw_weapon_ammo_hud_panel(char *m) {
@@ -2469,7 +2444,6 @@ int update_hud_elements(int call) {
 
 extern int weapon_hud_suspended SDATA(weapon_hud_suspended);
 extern int D_hud_pair[2] __asm__("D_L00_0015FA44") MACRO_ADDR;
-extern void Hud_SetBarValueById(int, int);
 
 extern int draw_weapon_ammo_hud_panel(char *);
 
@@ -2708,13 +2682,6 @@ extern char tie_class_slot_flags[];
 extern char shrub_class_slot_by_id[];
 extern char shrub_class_slot_records[];
 extern char shrub_class_slot_flags[];
-
-extern void register_audio_stream_callback(void);
-extern void calculate_dma_transfer_address(void);
-
-extern void UpdateViewContext(void);
-
-extern void register_part_types(void);
 
 extern void init_level_item_inventory(void);
 

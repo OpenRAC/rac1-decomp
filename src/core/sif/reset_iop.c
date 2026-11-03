@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/kernel/libkernl_glue.h"
 
 /*
  * core_text object 0x11D0D0-0x11D700. Boundaries are retail's linker fill
@@ -76,8 +77,6 @@ s32 sceSifResetIop(const char *arg, s32 mode) {
     }
     return 0;
 }
-
-extern void tty_reset_init_flag(void);
 
 int sce_sif_sync_iop(void) {
     if (sce_sif_get_reg(0x4) & 0x40000) {

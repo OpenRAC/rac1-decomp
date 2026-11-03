@@ -15,6 +15,13 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "callees.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/render/partupd.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -167,7 +174,7 @@ extern void resolve_point_path_segment_xy_clearance(s32, void *, void *, f32);
 extern void Manipulator_ApplyScale(struct Moby *, s32, void *, f32);
 extern void SpawnBreakFragment_r(struct Moby *, s32, void *, void *, s32, s32, f32, f32 *, f32 *,
                                  f32 *) __asm__("func_L00_00265050");
-extern void MoveCtl_Init(MoveCtl *);
+
 extern void process_blarg_space_commando_hits();
 extern void initialize_blarg_space_commando_beam_r(struct Moby *) __asm__("func_L06_00300530");
 
@@ -647,8 +654,6 @@ void process_blarg_space_commando_hits(char *m) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float IntToFloat(int);
 
 extern char blarg_coll_hit_normal[];
 extern float space_commando_beam_fan_degrees SDATA(space_commando_beam_fan_degrees);
@@ -681,7 +686,7 @@ void initialize_blarg_space_commando_beam(Moby *m) {
 
 extern int coll_line(void *, void *, int, void *, void *);
 extern float ApproachValue(float *, float, float);
-extern void AddDrawCallback(void *, void *);
+
 extern void DrawBeam(char *moby);
 extern void spawn_blarg_space_commando_beam_sparks(char *moby);
 extern float space_commando_beam_spread_speed SDATA(space_commando_beam_spread_speed);
@@ -798,7 +803,7 @@ extern s32 space_commando_beam_outer_color_b SDATA(space_commando_beam_outer_col
 extern s32 space_commando_beam_inner_color_a SDATA(space_commando_beam_inner_color_a);
 extern s32 space_commando_beam_inner_color_b SDATA(space_commando_beam_inner_color_b);
 extern f32 space_commando_beam_uvs[4][2];
-extern void VU1_addGSregister(s32, s64);
+
 extern u64 GetEffectTex(s32);
 
 extern void vec_scale_to_length(void *, void *, f32);
@@ -878,7 +883,7 @@ void DrawBeam(char *moby) {
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void lerp_vector(void *, void *, void *, float);
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
+
 extern short beam_spark_initial_word_gp, beam_spark_second_word_gp, space_commando_beam_spark_start_w,
     space_commando_beam_spark_end_w, space_commando_beam_spark_time_a_min, space_commando_beam_spark_time_a_max;
 extern short space_commando_beam_spark_time_b_min, space_commando_beam_spark_time_b_max,
@@ -1007,7 +1012,6 @@ extern short blarg_timer_frame_y1_offset;
 extern short blarg_timer_frame_x0_offset;
 extern short blarg_timer_frame_x1_offset;
 extern short blarg_timer_frame_alpha;
-extern void DrawUIFrame(int, int, int, int, int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1056,7 +1060,6 @@ typedef struct {
     float uv[8];
     long tag[4];
 } Pkt89B8 __attribute__((aligned(16)));
-extern void euler_rotation_basis(void *, void *);
 
 extern void draw_world_quad(void *, void *, int);
 extern char referencePosition[];
@@ -1190,8 +1193,6 @@ void draw_bot_door_lock_glow(char *o) {
     pk.uv[7] = 1.0f;
     draw_world_quad(&pk, 0, 1);
 }
-extern void Moby_PlaySound(int, int, int);
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 
 /* state transitions of a moby depending on its id at 0xA6 */
 void activate_bot_door_lock_target(unsigned char *a, unsigned char *m) {
@@ -1232,9 +1233,6 @@ extern int g_current_level_index SDATA(g_current_level_index);
 extern int level_mobys_q SDATA(level_mobys_q);
 extern int truncate_float_to_s32(float);
 
-extern void AddDrawCallback(void *, void *);
-
-extern void PartType41Spawn(void *, void *, int, unsigned int, int, int, int, float);
 /* Return color with blue placed in the blue channel. */
 static inline unsigned int or_blue_channel_p(int blue, unsigned int color) {
     return blue * 0x10000 | color;
@@ -1356,7 +1354,7 @@ void bot_door_lock_update(Moby *moby) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void spawn_proximity_gated_bolts(void *);
+
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern float blarg_zero_vec[] MACRO_ADDR;
@@ -1408,7 +1406,6 @@ void update_hit_triggered_moby_breakup(Moby *moby) {
     }
 }
 
-extern void AddDrawCallback(void *, void *);
 extern void draw_projected_fading_quad(char *);
 
 /* UpdateMoby: state 0 deletes, state 1 draws and times out */
@@ -1449,7 +1446,7 @@ void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
     }
 }
 
-extern void draw_geometry_quad_5188(void *, void *, void *, u64, int);
+extern void draw_geometry_quad_5188_v(void *, void *, void *, u64, int) __asm__("func_L02_0020BF88");
 extern s32 D_L06_001624A4_FF000 SDATA(D_L06_001624A4);
 extern s32 D_L06_001624A8_FF000 SDATA(D_L06_001624A8);
 extern s32 D_L06_001624AC_FF000 SDATA(D_L06_001624AC);
@@ -1514,7 +1511,7 @@ void draw_projected_fading_quad(char *moby) {
     corners[3] += (y + radius) << 16;
     corners[3] += x - radius;
     texture = GetEffectTex(D_L06_001624A4_FF000);
-    draw_geometry_quad_5188(corners, uvs, colors, texture, 1);
+    draw_geometry_quad_5188_v(corners, uvs, colors, texture, 1);
     VU1_addGSregister(0x47, 0x5360B);
 }
 extern char *blarg_camera_descriptors MACRO_ADDR;

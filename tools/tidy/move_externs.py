@@ -225,6 +225,14 @@ def address_of(sources, symbol):
     return found[0] if found else None
 
 
+def variant_names(sources, symbol):
+    """Every spelling of a symbol goes to one alias, or the code calls a name nothing declares."""
+    names = {symbol} | sources.aliases.get(symbol, set())
+    readable = [name for name in names if not re.match(r"(?:func|D)_", name)]
+    alias = f"{readable[0] if len(readable) == 1 else symbol}_v"
+    return {name: alias for name in names}
+
+
 def use_variant(text, sources, symbol):
     """This file's own view of a symbol, under another C name so it cannot clash with the header."""
     label = address_of(sources, symbol)
@@ -240,7 +248,7 @@ def use_variant(text, sources, symbol):
         return None
     for start, end, new in reversed(edits):
         text = text[:start] + new + text[end:]
-    return mt.rename_code(text, {name: f"{name}_v" for name in names})
+    return mt.rename_code(text, variant_names(sources, symbol))
 
 
 def edit_file(text, sources, rel, symbols, header, keep=(), variants=()):
@@ -392,7 +400,7 @@ def rename_in_fragments(sources, variants, symbols):
     for rel, mine in variants.items():
         names = {}
         for symbol in mine & symbols:
-            names.update({name: f"{name}_v" for name in {symbol} | sources.aliases.get(symbol, set())})
+            names.update(variant_names(sources, symbol))
         if not names:
             continue
         for path in fb.fragments_of(rel):

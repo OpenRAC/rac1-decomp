@@ -22,6 +22,19 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/follow_camera.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
+#include "asm_functions/level_14.h"
+#include "overlays/shared/plasmabot.h"
+#include "overlays/l14_oltanis/wind_lightning_and_taxi.h"
+#include "overlays/l14_oltanis/bolt_thief_and_path_cameras.h"
+#include "overlays/l14_oltanis/ribbon_effects.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -211,10 +224,6 @@ extern float g_frame_time MACRO_ADDR;
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern float vec_distance_xy(void *, void *);
-
-extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
-extern float IntToFloat(int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -493,7 +502,7 @@ void ease_path_mover_to_endpoint(char *moby) {
 typedef u32 u128_AD858 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 struct AnimSeq;
-extern void AddDrawCallback(void *, void *);
+extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
 
 void activate_waiting_turrets_in_group(s32 index);
 typedef struct {
@@ -545,7 +554,6 @@ typedef struct {
 extern s32 truncate_float_to_s32(f32 f);
 extern s32 FastDecTimer_r(s16 *) __asm__("func_001F9938");
 
-float FastAbsF(float input);
 extern void process_blarg_heavy_interceptor_hit_reactions_r(struct Moby *) __asm__("func_L14_002AEAF8");
 extern void initialize_blarg_heavy_interceptor_paths_r(struct Moby *) __asm__("func_L14_002AF688");
 extern void update_blarg_heavy_interceptor_patrol_aim_point_r(struct Moby *) __asm__("func_L14_002AF918");
@@ -565,10 +573,9 @@ extern u8 *GetFlaggedPvarWord(struct Moby *);
 extern void set_ground_height_band(void *);
 
 extern void lerp_vector(void *, void *, void *, float);
-extern void Profile_Mark(void *, float);
+extern void Profile_Mark_v(void *, float) __asm__("func_001E9768");
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern f32 Spring_r(f32 *pos, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025C918");
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
@@ -649,7 +656,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
     }
     if (m->state == 8) {
         update_blarg_heavy_interceptor_light_ring_alpha_r(m);
-        AddDrawCallback(draw_blarg_heavy_interceptor_group_effects_r, m);
+        AddDrawCallback_v(draw_blarg_heavy_interceptor_group_effects_r, m);
         return;
     }
     d->draw_flags = 0;
@@ -740,8 +747,8 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
             if (hit) {
                 lerp_vector(v, &d->glow_pos, &d->beam_origin, 0.5f);
                 qcopy(w, &d->glow_pos);
-                Profile_Mark(w, d->glow_size * 0.8f);
-                Profile_Mark(v, d->glow_size * 0.48f);
+                Profile_Mark_v(w, d->glow_size * 0.8f);
+                Profile_Mark_v(v, d->glow_size * 0.48f);
                 if (coll_sphere_mobys(d->glow_size * 0.48f, v, 0, 0, 0) ||
                     coll_sphere_mobys(d->glow_size * 0.9f, w, 0, 0, 0)) {
                     struct Moby *t = oltanis_coll_hit.target;
@@ -1092,7 +1099,6 @@ extern char interceptor_ring_uvs[];
 extern void draw_blarg_heavy_interceptor_camera_facing_glow_r(struct Moby *m) __asm__("func_L14_002AF2E8");
 
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
-extern void VU1_addGSregister(s32, s64);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002ada18. */
 void draw_blarg_heavy_interceptor_light_ring(char *moby) {
@@ -1184,7 +1190,6 @@ extern int interceptor_beam_a_fade SDATA(interceptor_beam_a_fade);
 extern float interceptor_quad_corners_r[4][4] __asm__("D_L14_001D8900");
 
 extern unsigned long GetEffectTex(s32);
-extern void VU1_addGSregister(s32, s64);
 
 extern float vec_length_xy(void *);
 extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
@@ -1282,7 +1287,6 @@ void draw_blarg_heavy_interceptor_spinning_beam(char *moby) {
 }
 
 u64 GetEffectTex(s32);
-extern void VU1_addGSregister(int, long);
 
 extern void draw_world_quad(void *, void *, int);
 extern char interceptor_quad_corners[];
@@ -1370,7 +1374,6 @@ extern float oltanis_glow_quad_corners[4][4];
 extern float oltanis_glow_camera_margin SDATA(oltanis_glow_camera_margin);
 extern u32 oltanis_glow_idle_color SDATA(oltanis_glow_idle_color);
 u64 GetEffectTex(s32);
-extern void VU1_addGSregister(int, long);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1592,7 +1595,6 @@ void update_blarg_heavy_interceptor_oscillation_and_patrol_heading(char *moby) {
     }
 }
 
-extern float IntToFloat(int);
 extern int FastBSphereCheck(char *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
@@ -1644,7 +1646,7 @@ int update_blarg_heavy_interceptor_aim_transforms(char *moby, int flag) {
         data->pitch = rotation_angle;
         qcopy(&data->glow_pos, &data->aim_point);
         if (flag != 0) {
-            AddDrawCallback(draw_blarg_heavy_interceptor_camera_pulled_glow, moby);
+            AddDrawCallback_v(draw_blarg_heavy_interceptor_camera_pulled_glow, moby);
             data->draw_flags |= 2;
         }
     }
@@ -1776,7 +1778,6 @@ extern void MobySetAnimation_r(void *, int, int) __asm__("func_00213D28");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int func_L00_00260D30(void *, void *, float);
-extern char *func_L14_002EE150(void *, float *, int, int);
 
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -2236,19 +2237,15 @@ extern void update_minibomber_target(char *moby);
 extern void ease_minibomber_position_and_heading(char *moby, float *target, float a, float b, float c, float d, float e,
                                                  float f, float g);
 extern void update_minibomber_oscillation(char *moby);
-extern void emit_minibomber_exhaust_puffs(char *m);
-extern int STUB_printf();
 
 extern void initialize_minibomber_path_segment_lengths(char *moby);
 extern void hide_minibomber_and_release_voice(char *moby);
 
-extern void initialize_minibomber_path_following(char *moby);
 extern int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, float *v, float *vel, float f12,
                                          float f13, float f14, float f15, float f16, float f17, float f18);
 
-extern void initialize_minibomber_path_retrace(char *moby);
 extern int IsFrameWithinWindow(void *, float);
-extern char *func_L14_00302968(int a0, float *a1, float *a2, float f, int a3);
+
 extern void emit_minibomber_bomb_release_effects(char *m, float *input, float angle);
 extern unsigned char *spawn_flying_debris(char *owner, float angle, char *posp);
 extern void func_L00_0025F4A8_2B5938(void *, void *, void *, float, float, int, int, int, float, float, float, float,
@@ -2700,8 +2697,6 @@ void ease_minibomber_position_and_heading(char *moby, float *target, float a, fl
 
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
 
-extern void spawn_two_point_effect_particle(void *, void *);
-extern void mine_camera_blast(void *, void *, int, int);
 extern float oltanis_zero_vector[] MACRO_ADDR;
 extern char minibomber_drop_blast_params[];
 
@@ -2905,8 +2900,7 @@ extern float flying_debris_gravity SDATA(flying_debris_gravity);
 extern float flying_debris_drag SDATA(flying_debris_drag);
 extern float flying_debris_min_speed SDATA(flying_debris_min_speed);
 extern char oltanis_lights[];
-extern int Sound_PlayClassSound();
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
+
 extern void remove_flying_debris(char *);
 /* Flying debris update: drift with drag, spin, smoke, glow with a point light; remove on timeout. */
 void update_flying_debris(struct Moby *m) {
@@ -3056,7 +3050,6 @@ void remove_flying_debris(char *moby) {
     DeleteMoby(moby);
 }
 
-extern f32 IntToFloat(s32);
 void func_00213DE0_D7250(MobyAnim *arg0, int arg1, int arg2, int arg3) __asm__("func_00213DE0");
 
 struct L14PathRec {
@@ -3123,8 +3116,6 @@ extern s32 level14_racer_exit_debris_path_initialization_scale_gp
 extern int fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 extern void MobySetAnimation_r3(struct Moby *, s32, s32) __asm__("func_00213D28");
 
-extern unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
-extern void spawn_path_or_ballistic_debris(struct Moby *, s32 *, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 void func_L14_002D7668_D7250(struct Moby *m) __asm__("func_L14_002D7668");
@@ -3296,7 +3287,7 @@ typedef struct {
 extern G_6570 g_hero;
 extern int find_nearest_path_point_r2(void *, void *, void *, int *, float *, int, float, float,
                                       float) __asm__("func_L00_0025EFC0");
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern void func_L00_0025E860_D7880(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002d6358.c, FUN_L14_002d6570. */
@@ -3390,14 +3381,6 @@ extern short muzzle_light_color_component_z;
 #define D_L14_00161A54 (*(float *)&D_L14_00161B24)
 #define D_L14_00161A58 (*(float *)&D_L14_00161B28)
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
-
-extern void sce_vu0_mul_matrix(void *, void *, void *);
-
-extern void quat_nlerp(void *, void *, void *, float);
-extern void register_beam_slot(struct Moby *, int, int);
-extern int set_beam_origin_transform_and_endpoint(struct Moby *, void *, void *);
-
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 /* Racer update: track the race path ahead of the hero, orient along it and fire its beam weapon. */
 void update_racer_path_and_weapon(struct Moby *m) {
@@ -3695,7 +3678,6 @@ void draw_racer_glow_quads(struct Moby *m) {
     draw_world_quad_r2(&pk, 0, 0);
 }
 extern float joint_effect_light_range SDATA(joint_effect_light_range);
-extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 extern void draw_racer_glow_quads(struct Moby *);
 
@@ -3747,7 +3729,7 @@ void update_moby_joint_visual_effects(char *m) {
         *(short *)(e + 0x16) = 3;
     }
     Moby_GetJointWorldPos(m, 6, &d->head_pos);
-    AddDrawCallback(draw_racer_glow_quads, m);
+    AddDrawCallback_v(draw_racer_glow_quads, m);
 }
 extern void update_platform_tilt_basis_m(Moby *, f32, f32) __asm__("func_L14_002DF6B8");
 extern float unused_platform_tilt_argument SDATA(unused_platform_tilt_argument);
@@ -3856,10 +3838,6 @@ void update_platform_tilt_basis(char *moby) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern void initialize_ribbon_effect_state(char *);
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
-extern void register_hero_hit_in_clip_volume(char *);
-
-extern void animate_ribbon_effect_paths(char *);
 
 /* Updates a gem-lock sentry: picks up a sound slot and fires when the player is near. */
 void update_ribbon_effect_moby(char *moby) {

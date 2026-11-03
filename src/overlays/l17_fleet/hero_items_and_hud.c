@@ -29,6 +29,10 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "overlays/l17_fleet/hero_idle_and_items.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -57,36 +61,18 @@ extern HeroItemDefView fleet_item_defs[];
 extern HeroAttackRecord fleet_attack_records[];
 extern HeroSpeedBands fleet_hero_speed_bands;
 
-extern int HeroL17_TryTakeHit(int);
-
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
-extern int HeroL17_SetMoveState(int, int);
-
 extern int func_001F9908(int *);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
-extern int pad_pressed_within(int, int, int *);
-
-extern void emit_hero_animation_voice_and_ground_particle(int a0, int a1, int a2);
-
 extern int truncate_float_to_s32(float);
-extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void allocate_hero_voice_for_entry(int, int);
-
 extern void ClampVectorLength(void *a, float x);
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern void release_and_clear_hero_voice_slots(void);
 
 extern int coll_line(void *, void *, int, int, int);
 
@@ -2863,7 +2849,6 @@ void HeroL17_UpdateStateTransitions(void) {
     }
 }
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draws the fleet sky shells and sets the GS test and depth registers. */
 void render_level_sky(void) {

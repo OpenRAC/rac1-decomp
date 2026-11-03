@@ -6,6 +6,10 @@
 #include "structs/misc.h"
 #include "game/ui/map.h"
 #include "asm_functions/executable.h"
+#include "game/render/draw.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "game/ui/menu.h"
 
 /*
  * map.cpp in the original source; text 0x205520-0x2071A8.
@@ -374,7 +378,6 @@ void compose_bitmap_from_mask(unsigned char *dst, unsigned char *a, unsigned cha
     }
 }
 
-extern void DebugEnter_Nop(void);
 extern char g_controller_state[];
 
 /* Map screen pan/zoom update: returns 1 while the pad word (g_controller_state
@@ -552,24 +555,18 @@ extern f32 map_data_0015FE50 SDATA(D_0015FE50);
 extern f32 map_data_0015FE54 SDATA(D_0015FE54);
 extern u8 D_001E8398[];
 
-extern s32 print_debug_text_centered(s32, s32, s32, u8 *);
-extern void func_001F4630(s32);
-extern void func_001F4748(void);
 extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
-extern void font_print_window_small(void *, u64, void *, s32);
+
 extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
 
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
 
-extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64);
-extern void func_00201640(s32, s32, s32, s32, u64, s32);
-extern void func_00208AB0(s32, void *);
+
 extern void world_to_map_coords_r(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
 /* EABI places floating and integer arguments in independent register banks. */
 extern void world_to_map_coords_xy_205E70(f32, f32, f32 *, f32 *, s32) __asm__("func_00208C38");
-extern void draw_map_markers(s32, s32, s32, s32);
-extern void func_00234C98(s32, s64);
+
 extern void *func_001153FC(void *, s32, u32);
 
 /* UNK_NoMapAvailable */

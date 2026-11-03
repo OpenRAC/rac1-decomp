@@ -7,6 +7,14 @@
 #include "game/moby/mobyutil.h"
 #include "game/ui/hud.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
+#include "game/audio/music.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "core/cdvd/read.h"
+#include "core/mc/memory_card.h"
+#include "core/libc/find_substring.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
@@ -18,14 +26,10 @@ typedef struct {
     char b[0x13];
 } Cfg13;
 
-extern int STUB_printf();
-
 extern unsigned char gSpecialItems[];
 
 extern void finish_audio_stream_read(int);
 extern short cd_read_state[];
-
-extern int func_0012EFE8(void);
 
 /* snd_StreamSafeCdBreak returns int (989snd.c): with the result in $v0, the
    constant goes to the register retail uses. */
@@ -46,7 +50,6 @@ extern StreamHdr stream_read_mode_template;
 extern unsigned char cd_read_spindle_speed[4] MACRO_ADDR;
 extern int cd_read_wait_frames MACRO_ADDR;
 extern int cd_read_slowdown_applied MACRO_ADDR;
-extern void sce_cd_read(int, int, int, void *);
 
 /* Start a CD stream read of arg2 sectors from arg1 into arg0 at the current spindle speed. */
 int Stream_SubmitRead(int arg0, int arg1, int arg2) {
@@ -60,7 +63,6 @@ int Stream_SubmitRead(int arg0, int arg1, int arg2) {
 }
 
 extern char load_file_start_failed_string[];
-extern int snd_StreamSafeCdRead(int, int, int, void *);
 
 /* Start a stream: refuse if one is already running (+0x8) or the length
    is zero, otherwise hand the request to snd_StreamSafeCdRead with the header
@@ -87,11 +89,6 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
     *(int *)(d + 0x10) = arg2;
     return arg2 << 11;
 }
-
-extern void sce_gs_sync_v(int);
-extern void music_Update(void);
-
-extern void snd_FlushSoundCommands(void);
 
 /*
  * Close, not exact (15/124), same size so inert. Semantics confirmed:
@@ -172,8 +169,6 @@ short update_audio_stream_until_idle(int arg0) {
     }
 }
 
-extern int snd_StreamSafeCdGetError(void);
-
 /* CD read callback: mark the music stream read finished, or done if more data is ready. */
 void finish_audio_stream_read(int callback_value) {
     struct MusicStreamState *state;
@@ -194,8 +189,6 @@ void music_channel_ready_callback(int arg0, long arg1) {
     }
 }
 
-extern void music_start_track_by_id(short, short, short);
-
 /* Stream callback: store the voice handle and advance the channel, or restart the secondary track. */
 void music_secondary_start_callback(int arg0, long arg1) {
     short *p = (short *)(int)arg1;
@@ -212,8 +205,6 @@ void music_secondary_start_callback(int arg0, long arg1) {
         music_start_track_by_id(b[0x2A], b[0x2C], b[0x2B]);
     }
 }
-
-extern void music_PreseekTrack(short, short, short);
 
 /* Stream callback: store the voice handle and advance the channel, or redo the primary preseek. */
 void music_primary_preseek_callback(int arg0, long arg1) {
@@ -381,15 +372,6 @@ extern u8 D_0013D5C8[];
 extern u8 items_acquired[];
 extern u8 gSpecialItems[];
 
-extern void noop_callback_n(s32);
-
-extern void noop_callback_o(s32);
-extern void *msg_string(s32);
-
-extern char *find_substring(char *, char *);
-extern s32 sprintf(char *, const char *, ...);
-extern void copy_text_to_shared_buffer(void *);
-
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2);
 
 /* Handle menu cursor moves and build the help text for the selected entry (arg2: cursor moved). */
@@ -512,9 +494,8 @@ void pad_resetState(void) {
 LINKER_REMNANT("asm/remnants/text", func_00217ED8);
 
 extern int pad_socket_param NOT_SDA;
-extern void sce_dbc_init(void);
-extern void sce_pad2_init(int);
-extern int sce_pad2_create_socket(void *, void *);
+
+extern void sce_pad2_init_v(int) __asm__("func_00124B88");
 
 /* Minimal layouts for init_pads: the port/slot socket parameter (NTSC name unknown)
    and the leading part of PadState from structs/pad.h, up to the fields init_pads writes. */
@@ -528,7 +509,7 @@ void init_pads(void) {
     PadSocketParam *p = (PadSocketParam *)&pad_socket_param;
 
     sce_dbc_init();
-    sce_pad2_init(0);
+    sce_pad2_init_v(0);
     pad_socket_param = 2;
     p->slot = 0;
     ((struct PadState *)g_controller_state)->socket = sce_pad2_create_socket(p, g_controller_state);

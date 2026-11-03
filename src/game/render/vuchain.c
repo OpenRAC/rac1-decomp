@@ -4,14 +4,15 @@
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
 #include "data/executable.h"
+#include "game/render/draw.h"
+#include "game/system/stub.h"
+#include "core/gs/dma_and_sync_v.h"
 
 /*
  * vuchain.cpp in the original source; text 0x2347F0-0x2352C8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern int STUB_printf();
 
 extern void VU1_addGSregister(int, long);
 
@@ -103,8 +104,6 @@ void VU1_swapChain(void) {
 extern int vu1_chain_peak_bytes MACRO_ADDR;
 extern volatile int vif_chain_flags SDATA(vif_chain_flags);
 extern char vu1_chain_overflow_msg[];
-extern int *sce_dma_get_chan(int);
-extern void sce_dma_send(int *, int);
 
 /* VU1_sendChain. vif_chain_flags is volatile, so its store stays out of the
    delay slot (reorg never moves a volatile access there). */
@@ -141,7 +140,6 @@ void VU1_sendChain(void) {
 
 extern volatile int vif_chain_flags SDATA(vif_chain_flags);
 extern char vu1_sync_timeout_msg[];
-extern void reset_graphics(void);
 
 /* VU1_syncChain(int) */
 void VU1_syncChain(int mask) {

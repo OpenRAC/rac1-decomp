@@ -7,6 +7,9 @@
 #include "overlays/shared/sky_particles.h"
 #include "asm_functions/level_01.h"
 #include "enums/level.h"
+#include "game/render/vuchain.h"
+#include "asm_functions/level_02.h"
+#include "asm_functions/level_09.h"
 
 LINKER_REMNANT("asm/overlays", func_L09_0021E3E8);
 typedef struct Strip_21E410 {
@@ -16,7 +19,7 @@ typedef struct Strip_21E410 {
     char padC[4];
 } Strip_21E410;
 extern long func_001F4868(int);
-extern void func_L02_00250C78(void *, void *, void *, void *, void *, int, float);
+
 extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern int *l09_packet_r __asm__("D_L09_00161240") MACRO_ADDR;
 extern char D_L09_0016D380[];
@@ -97,7 +100,6 @@ void func_L09_0021E410_r(int a, int b, float t) {
         g_gs_texture_allocation_cursor += 0x4000;
     }
 }
-extern void queue_level09_strip_texture_packets(int, int);
 
 extern int FastBSphereCheck(char *, float);
 
@@ -160,7 +162,6 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
 
 extern int D_0015EE84 MACRO_ADDR;
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Gaspar sky: rotating shells in level 9, static shells otherwise, then GS setup. */
 void Sky_DrawLevel09(void) {

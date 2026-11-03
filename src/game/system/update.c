@@ -7,6 +7,7 @@
 #include "data/executable.h"
 #include "game/moby/mobyutil.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/music.h"
 
 /*
  * update.cpp in the original source; text 0x238D88-0x239628.
@@ -151,7 +152,6 @@ extern s32 vendor_state_dialogue_pick;
 extern Cam resident_cheat_scale_manip;
 
 extern s32 IsFrameWithinWindow(Moby *, f32);
-extern s32 Music_ContinueStreamIfReady(void);
 
 /* Per-frame state machine of one boss-like moby: keeps a manipulator node attached while gCheats is set,
    then steps the state byte at +0x20 through its animation and timer states.

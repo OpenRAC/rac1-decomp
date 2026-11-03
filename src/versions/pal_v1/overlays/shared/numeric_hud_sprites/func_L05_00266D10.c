@@ -16,8 +16,8 @@ int draw_hud_progress_and_rank(char *e) {
                               *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
     tx = *(int *)&(rilgar_progress_label_x);
     sprintf(buf, rilgar_fmt_label, msg_string(0x523F));
-    print_text_with_texture_3(tx - 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
+    print_text_with_texture_3_v(tx - 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3_v(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     w = measure_text_width_regular(buf, -1);
     tx = tx + w;
     {
@@ -26,8 +26,8 @@ int draw_hud_progress_and_rank(char *e) {
             n = 3;
         sprintf(buf, rilgar_fmt_progress_number, n);
     }
-    print_text_with_texture_3(tx - 1, y + 2, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
+    print_text_with_texture_3_v(tx - 1, y + 2, 0x80000000L, buf, -1);
+    print_text_with_texture_3_v(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
     {
         int n = *(int *)(hd + 0x8C0);
         tx = *(int *)&(rilgar_progress_rank_right_x);
@@ -38,13 +38,13 @@ int draw_hud_progress_and_rank(char *e) {
     }
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
-    print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
+    print_text_with_texture_3_v(tx + 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3_v(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
     sprintf(buf, rilgar_fmt_rank_label, msg_string(0x5240));
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
-    print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
+    print_text_with_texture_3_v(tx + 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3_v(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     if (g_current_level_index != LEVEL_KALEBO3)
         return *(int *)(e + 0x58);
     sprintf(buf + 0x40, rilgar_fmt_number, *(unsigned char *)(hd + 0x8CE));
@@ -59,11 +59,11 @@ int draw_hud_progress_and_rank(char *e) {
     draw_stretchable_ui_frame(px - 0x18, py, *(int *)&(rilgar_counter_frame_width), 0x20, 0x60);
     w = GetIconFrame(0x7558, 2);
     HudSprite(w, px, py, 0x20, 0x20, 0x80);
-    print_text_with_texture_3(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
+    print_text_with_texture_3_v(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
     h2 = (char *)&g_hero;
     if (*(unsigned char *)(h2 + 0x8CE) != 0)
-        print_text_with_texture_3(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
+        print_text_with_texture_3_v(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
     else
-        print_text_with_texture_3(px + 0x28, py + 7, 0x80202080L, buf + 0x40, -1);
+        print_text_with_texture_3_v(px + 0x28, py + 7, 0x80202080L, buf + 0x40, -1);
     return *(int *)(e + 0x58);
 }

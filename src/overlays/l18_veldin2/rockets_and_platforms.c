@@ -23,6 +23,16 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/space_commando_and_door_lock.h"
+#include "asm_functions/level_18.h"
+#include "overlays/l18_veldin2/hero_idle_and_items.h"
 extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
@@ -208,8 +218,6 @@ extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int
 
 extern void rand_vec(float *, float, float);
 
-extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
-                                      float w, float pw);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
@@ -303,14 +311,12 @@ char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3) {
     }
     return moby;
 }
-extern float IntToFloat(int);
 
 extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_rocket_trail_effects(void *, void *);
 
 extern void spawn_rocket_explosion(void *, void *);
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_rocket_target_pulse_quad();
 extern int veldin2_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -397,8 +403,6 @@ void update_rocket_moby(char *moby) {
 }
 extern void *CreateMoby_r() __asm__("func_0020D348");
 extern float rocket_scale SDATA(rocket_scale);
-
-extern void Moby_PlaySound(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d5348. */
 char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b, int frames, int kind) {
@@ -545,7 +549,6 @@ void draw_rocket_target_pulse_quad(char *moby) {
 }
 extern short D_L18_00161A6C __asm__("D_0015EE6C");
 extern float D_L18_6C_m __asm__("D_0015EE6C") MACRO_ADDR;
-extern void update_mine_568_detonation(void *);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -661,12 +664,11 @@ extern float g_frame_time_sq MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
-extern void Moby_PlaySound(int, int, int);
 
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void Moby_PlaySound(int, int, int);
+
 /* Launches a dormant Mine moby from list idx toward p7; returns it or 0. */
 char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float *p7, int a8) {
     float v[4];
@@ -1201,7 +1203,6 @@ extern struct UsageStat help_records[];
 extern void draw_pulsing_timer_hud_r(void) __asm__("func_L18_002D9488");
 extern char voice_pool[];
 
-extern int Help_Request(int, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d7b20. */
@@ -1283,8 +1284,6 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
             break;
     }
 }
-extern int Sound_IsPlaying(void *, int);
-extern int allocate_voice_for_group_entry(int, int, void *);
 
 /* Activates a moby and starts an effect on it if none is playing. */
 void request_thruster_pack_lock_red_wait(unsigned char *arg, int value) {
@@ -1340,7 +1339,6 @@ extern short timer_frame_bottom;
 extern short timer_frame_left;
 extern short timer_frame_right;
 extern short timer_frame_color;
-extern void DrawUIFrame(int, int, int, int, int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1409,7 +1407,6 @@ typedef struct {
     int f90;
 } Obj_D96B0;
 
-extern f32 IntToFloat(s32);
 extern float veldin2_hero_fall_state_height SDATA(veldin2_hero_fall_state_height);
 extern float floating_platform_sink_acceleration_config_84_nonzero_gp
     SDATA(floating_platform_sink_acceleration_config_84_nonzero_gp);
@@ -1424,7 +1421,7 @@ extern float floating_platform_motion_scale_input_start_gp SDATA(floating_platfo
 extern float floating_platform_motion_scale_input_end_gp SDATA(floating_platform_motion_scale_input_end_gp);
 
 extern void spawn_floating_platform_sparks_r(struct Moby *) __asm__("func_L18_002D9CA8");
-extern void HeroL18_SetMoveState(int, int);
+
 extern void update_entity_matrix(void *, void *, void *, void *);
 
 extern int Moby_PlaySound_r2(int, int, struct Moby *) __asm__("func_0022ED80");
@@ -1604,7 +1601,6 @@ int request_floating_platform_tilt(unsigned char *moby, int a1, int a2) {
 }
 INCLUDE_ASM("asm/overlays", func_L18_002D9C90);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern short floating_platform_spark_start_speed;
 extern short floating_platform_spark_end_speed;
 extern short floating_platform_spark_gravity;
@@ -1688,7 +1684,7 @@ void spawn_floating_platform_sparks(char *moby) {
     }
 }
 extern void jet_animate(unsigned char *m, float s);
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
+
 extern void process_expanding_ring_collisions(char *moby);
 extern void draw_expanding_projectile_ring(void *);
 extern int ring_projectile_glow_color_a SDATA(ring_projectile_glow_color_a);
@@ -2036,7 +2032,7 @@ void process_expanding_ring_collisions(char *moby) {
 extern int FastBSphereCheck(char *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
+
 extern float expanding_ring_cull_margin SDATA(expanding_ring_cull_margin);
 extern float expanding_ring_particle_chance SDATA(expanding_ring_particle_chance);
 extern int expanding_ring_particle_color_b SDATA(expanding_ring_particle_color_b);
@@ -2244,11 +2240,6 @@ void draw_class_274_ring_effect(void *moby_v) {
     }
 }
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern int Help_Request(int a, int b);
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern int veldin2_position_transition_flag;
 extern float veldin2_screen_fade MACRO_ADDR;
@@ -2558,7 +2549,7 @@ void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
             break;
     }
 }
-extern void set_moby_list_state(char *arg, int val);
+
 /* Sets the state of every moby in list index arg to 2. */
 void set_moby_group_state_two(char *arg) {
     set_moby_list_state(arg, 0x2);
@@ -2570,7 +2561,7 @@ extern float target_effect_second_rotation_rate_degrees_gp SDATA(target_effect_s
 extern float homing_spark_bolt_jitter SDATA(homing_spark_bolt_jitter);
 extern float homing_spark_travel_speed SDATA(homing_spark_travel_speed);
 extern void spawn_explosion_burst(void *);
-extern void initialize_electric_bolt_effect_if_requested(void *);
+
 extern void update_electric_bolt_geometry_and_particles(void *);
 extern void homing_spark_draw(char *);
 extern void MobySphereHitDirectional_r(int, void *, float, int, float, float, int, int,
@@ -2796,11 +2787,9 @@ void spawn_sparks_along_target_direction(char *moby) {
         PartType02Spawn(v10, v20, v30, c1, c2, a, b, c, (*(int *)&(homing_spark_particle_texture)));
     }
 }
-extern void spawn_timed_projected_sprite_effect(void *, int, int, int);
 
 extern int truncate_float_to_s32(float);
-extern char *spawn_glow_particle(void *, void *, void *, float, int, unsigned char, unsigned char, unsigned char,
-                                 unsigned char);
+
 extern short homing_spark_particle_texture, homing_spark_burst_spark_count, homing_spark_burst_speed_min,
     homing_spark_burst_speed_max, explosion_burst_spark_initial_color_gp, explosion_burst_spark_second_color_gp;
 extern short homing_spark_burst_life, homing_spark_burst_time2, homing_spark_burst_time3,

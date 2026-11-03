@@ -18,6 +18,11 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -326,7 +331,6 @@ void sync_hero_mapped_moby_animation_frames(void) {
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
-extern int SlotTable_Insert(void *);
 
 extern int truncate_float_to_s32(float);
 extern void clear_hero_queued_animation(void);
@@ -459,7 +463,6 @@ typedef struct {
 } AnimSeq_32EF0;
 extern f32 hero_anim_blend_curves[][25];
 extern int cinematic_mode MACRO_ADDR;
-extern int Moby_PlaySound(int, int, Moby *);
 
 extern void clear_hero_mapped_moby_animation_state(void);
 
@@ -1106,7 +1109,6 @@ void set_gravity_relative_vector_length_xy(float *dst, float *src, float z) {
             break;
     }
 }
-extern float IntToFloat(int);
 
 /* The height at the top of a jump from POS with velocity VEL losing STEP
    per frame. In view mode 0 (g_hero + 0x20B3) it rises for
@@ -1215,7 +1217,6 @@ int get_ammo(int id) {
         return 1;
     return weapon_ammo_counts[id];
 }
-extern void HeroEnterMoveState(int, int);
 
 /* Records a target: POS at g_hero + 0x1640, ARG at +0x1650 and T at
    +0x164C, and unless the state (+0x2084) is already 0x65-0x67, enters
@@ -1598,7 +1599,6 @@ void HeroAttachManipulators(char *obj) {
     update_hero_slot4_and_slot5_mobys((int)obj);
 }
 
-extern void pack_pose(void *, void *, void *, int, int);
 extern char source_bone4_joints_class1b1[];
 extern char source_bone4_pose_buffer[];
 extern char source_bone4_joints_default[];
@@ -1648,10 +1648,6 @@ void try_reposition_hero_on_nearby_ground(void) {
     qcopy(&hero_base->motion.pos, &candidate_ground_position);
 }
 extern char health_hud_bank_data[];
-extern void initialize_hud_element_with_counters(void);
-extern void update_health_hud_animation_and_visibility(void);
-extern void draw_health_hud_panel(void);
-extern int func_001FFB38(int, int, void *, void *, void *, void *, int);
 
 /* Registers HUD bank 1 (queue_animation_update, id 0x7535) with the three level
    callbacks and the data at health_hud_bank_data. queue_animation_update is declared with

@@ -5,8 +5,8 @@
 #include "game/render/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
 #include "enums/level.h"
+#include "game/render/vuchain.h"
 
-extern void VU1_addGSregister(int, long);
 extern int D_0015EE84 MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
 

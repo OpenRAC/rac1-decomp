@@ -4,6 +4,7 @@
 #include "common.h"
 #include "structs/moby.h"
 #include "asm_functions/executable.h"
+#include "game/audio/sound.h"
 
 typedef struct {
     char pad[0xBC];
@@ -21,7 +22,6 @@ typedef struct {
     float angle;
 } RotorData17B68;
 
-extern int func_0022ED80(int, int, void *);
 extern float func_L00_0025CE58(float *, float, float *, float, float, float);
 /* Updates a triggered rotor: initialize its angle, wait for the target, then ease its rotation. */
 void update_triggered_moby_yaw(Moby *moby) {

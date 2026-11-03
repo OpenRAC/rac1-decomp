@@ -5,8 +5,11 @@
 
 #include "common.h"
 
+extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void adjust_hero_pose_targets_from_motion(void);
+extern int allocate_hero_voice_for_entry(int, int);
 extern void compute_hero_reference_tilt_rotation(void *, void *, void *, float, float, float);
+extern void compute_rotated_vector_angles(void *, void *);
 extern void emit_filtered_entry_sparkles(int, int);
 extern void help_queue_add(int, int, int);
 extern void hero_move_state_velocity(void);

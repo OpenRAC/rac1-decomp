@@ -28,6 +28,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/ui/hud.h"
+#include "overlays/l02_aridia/hero_movement.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern MoveUsageTable usage_stats;
@@ -39,19 +41,13 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 extern int truncate_float_to_s32(float);
-extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
 extern int aridia_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -1549,24 +1545,13 @@ extern HeroItemDefView aridia_item_defs[];
 extern HeroAttackRecord aridia_attack_records_rec[] __asm__("D_L02_0017C2A8");
 extern HeroSpeedBands aridia_hero_speed_bands;
 
-extern int HeroL02_TryKnockback(int);
-
-extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void hud_keep_visible(int, int);
-
 extern int HeroL02_SetMoveState(int a, int b);
 
 extern int func_001F9908(int *);
 
-extern int pad_pressed_within(int, int, int *);
-
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
-extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
 extern float vec_distance_xy(void *, void *);
-
-extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 

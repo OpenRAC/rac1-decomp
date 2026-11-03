@@ -18,6 +18,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -29,24 +30,16 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern int get_hero_idle_animation_index(int a);
-
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 extern int truncate_float_to_s32(float);
-extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void RippleDisturb(void *, int, int, float, float, float, float);
 
 extern int kerwan_game_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

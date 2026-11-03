@@ -15,6 +15,9 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 extern char gHeroPos[];
 extern Hero g_hero;
 extern char g_hero_body_center[];
@@ -79,8 +82,6 @@ unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int
 typedef struct {
     float f[4];
 } Q __attribute__((aligned(16)));
-
-extern float IntToFloat(int);
 
 /* Per-frame update of a type 0x2C particle: fade colour, move and rotate its velocity.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271450. */
@@ -957,7 +958,7 @@ void update_moving_hero_relative_alpha_fade_particle(struct PartBase *m) {
     a = IntToFloat(m->timer - 1);
     m->color = FastTweenColor(col, m->color, a / IntToFloat(m->timer));
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern unsigned char *part_type61_textures;
 extern float g_debug_camera[];
@@ -1155,7 +1156,7 @@ s32 random_integer_below(s32 arg0);
 extern unsigned char *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *a, void *b, int c, int d,
                                                                                         float f, int n, int e, int g,
                                                                                         int h);
-extern unsigned char *mine_debris(void *a, void *b, int c, int d, float f, int n, int k);
+
 extern int DefaultVtbl_DeleteMoby_r(int, int, float) __asm__("func_L00_00237B70");
 extern u32 floor_burst_bounce_chance SDATA(floor_burst_bounce_chance);
 extern f32 g_frame_time MACRO_ADDR;
@@ -1466,8 +1467,6 @@ void update_mode_controlled_orbiting_trail_particle(char *m) {
     r->unk14 = FastAddRots(e, u);
 }
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 /* part type 68 update: follows its owner, scaling velocity until the owner goes away */
@@ -1775,7 +1774,6 @@ void update_gravity_ground_culled_particle(struct PartBase *o) {
     FastVecAdd(vel, &tmp, vel);
     vel->f[3] = h + particle_clearance;
 }
-extern int DefaultVtbl_DeleteMoby(float, int, int);
 
 /* Update a particle following a parent moby with a scaled offset. */
 void update_damped_moby_relative_color_size_tween_particle(struct PartBase *m) {

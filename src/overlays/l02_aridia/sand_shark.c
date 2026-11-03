@@ -26,6 +26,17 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "game/render/partupd.h"
+#include "overlays/l02_aridia/hero_idle_and_item_input.h"
+#include "overlays/l02_aridia/background_ship_and_skid.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -95,14 +106,13 @@ struct SharkEggVars {
     char *child; /* 0x60 */
 };
 
-extern void prepare_scaled_table_with_byte_128(void *);
+extern void prepare_scaled_table_with_byte_128_v(void *) __asm__("func_L02_002A52B0");
 
 /* Prepares the scaled table on a scratch buffer. */
 void prepare_scaled_table_on_stack(void) {
     char scratch[0x40];
-    prepare_scaled_table_with_byte_128(scratch);
+    prepare_scaled_table_with_byte_128_v(scratch);
 }
-extern void build_interpolated_dma_packet(void *);
 
 extern char aridia_spr_upload_block[];
 
@@ -126,8 +136,6 @@ void begin_animated_frame_rendering(int a, int b, int c, int d, float x, float y
     write_spr_dma_channel(aridia_spr_upload_block, 0x70002800, 0xF8);
 }
 typedef int u128b __attribute__((mode(TI)));
-
-extern float IntToFloat(int);
 
 extern char *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
@@ -224,8 +232,7 @@ extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 
 extern void set_ground_height_band(void *);
 extern void handle_sand_shark_damage_and_targeting(unsigned char *moby);
-extern void STUB_printf(char *, ...);
-extern void MoveCtl_Init(char *p);
+
 extern int func_001160D8(void);
 
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
@@ -242,7 +249,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern void emit_sand_shark_radial_particles(void *pos, int n);
-extern int Moby_PlaySound(int, int, int);
+
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
@@ -983,7 +990,6 @@ void extend_group_sand_shark_timers(char *arg) {
     }
 }
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int sand_shark_particle_emission_throttle_input MACRO_ADDR;
 extern short sand_shark_burst_rise_min, sand_shark_burst_rise_max, sand_shark_burst_end_rise_min,
     sand_shark_burst_end_rise_max;
@@ -1344,8 +1350,7 @@ extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 extern void set_ground_height_band(void *);
 extern void handle_level02_bot_damage_and_retargeting(void *);
 extern int func_001160D8(void);
-extern void MoveCtl_Init(char *p);
-extern void reset_shot_tracking(char *moby);
+
 /* The angle before the pointer: argument moves follow the parameter order, and retail loads $f12 before $a1 in state
    11. */
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
@@ -1353,12 +1358,10 @@ extern void ClampVectorLength(void *a, float x);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
-extern void collect_mobies_around_tracked_objects(char **slots, int a, int b);
+
 extern int mine_fall(void *, void *);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -1879,10 +1882,7 @@ extern float aridia_elevator_max_speed SDATA(aridia_elevator_max_speed);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
-extern int Sound_IsPlaying(void *, int);
 
-extern int Moby_PlaySound(int, int, int);
-extern void AddDrawCallback(void *, void *);
 extern void DrawRotatingQuadRing(char *);
 
 /* Moves the elevator between two heights above its joint, with a particle while it moves. */
@@ -2517,17 +2517,6 @@ extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
 extern void SamplePathAt(void *, int, void *, void *, int, float);
 
-extern void Help_Request(int, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
-
-extern void PartType41Spawn(void *, void *, int, int, int, int, int, float);
-extern void HeroL02_SetMoveState(int, int);
-extern void enter_hero_idle_or_stop(void);
-extern void set_vendor_camera_mode(int, int);
-
 #define G(i) ((char *)D_L02_00160058 + ((i) << 8))
 #define HP ((float *)gHeroPos)
 /* Transport pod state machine: boarding, rail moves, ride camera and disembarking. */
@@ -2948,7 +2937,6 @@ void snap_transport_pod_rails_to_offsets(char *moby) {
     moby_build_matrix(d->rail_b);
 }
 extern float aridia_crane_anim_speed SDATA(aridia_crane_anim_speed);
-extern int Moby_PlaySound(int, int, int);
 
 /* State machine for a moby that picks a new animation each time the previous one finishes. */
 void crane_update(unsigned char *moby) {
@@ -3032,7 +3020,6 @@ extern int rocket_launcher_glow_end_color SDATA(rocket_launcher_glow_end_color);
 extern void play_rocket_launcher_delayed_shot_sounds(char *moby);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern void vec_scale_to_length(void *, void *, float);
-extern char *spawn_projectile_moby(char *src, void *pos, float *dir);
 
 typedef struct SwivelTurretVars {
     f32 yaw_vel; /* 0x00 */
@@ -3120,7 +3107,7 @@ void rocket_launcher_update(unsigned char *m) {
             break;
     }
 }
-extern int Sound_SetPitchBend(int, int);
+
 extern float rocket_launcher_sound_wave_speed SDATA(rocket_launcher_sound_wave_speed);
 extern float rocket_launcher_near_sound_start SDATA(rocket_launcher_near_sound_start);
 extern float rocket_launcher_near_sound_end SDATA(rocket_launcher_near_sound_end);
@@ -3356,7 +3343,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
+
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
 

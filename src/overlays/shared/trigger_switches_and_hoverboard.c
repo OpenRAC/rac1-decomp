@@ -19,6 +19,15 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/l05_rilgar/hero_idle_and_items.h"
+#include "overlays/l05_rilgar/electric_gate.h"
+#include "asm_functions/level_05.h"
 extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
@@ -316,10 +325,6 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
         moby->glow_color = rilgar_faucet_rest_color;
     }
 }
-extern void Hero_TryMoveStateL05(int, int);
-extern int Help_Request(int a, int b);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -540,8 +545,6 @@ void add_moby_frames_for_group_proximity(char *moby) {
         }
     }
 }
-
-extern void AddDrawCallback(void *, void *);
 
 extern void draw_moby_wobble_quads(unsigned char *m);
 
@@ -835,9 +838,7 @@ void initialize_moby_launch_motion(Moby *m, int b, void *v1, void *v2, int a) {
     d->s[1] = random_float_between(-(g_frame_time * 4.1887903f), g_frame_time * 4.1887903f);
     d->s[2] = random_float_between(-(g_frame_time * 4.1887903f), g_frame_time * 4.1887903f);
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 
 extern char rilgar_coll_hit[];
@@ -910,7 +911,6 @@ void blarg_gun_update(Moby *moby) {
     }
 }
 extern char *FindMobyByDataId(void *, int);
-extern void PickNearestTargetSlot(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b3840.c, FUN_L05_00319510. */
 void reset_selected_moby_to_current_placement(void *moby_v) {
@@ -1044,8 +1044,7 @@ void transform_moby_vector_table_to_world_space(Moby *a) {
     }
 }
 extern int FastBSphereCheck(char *, float);
-extern unsigned char *spawn_mode_controlled_orbiting_trail_particle(float f0, float f1, int a0, void *pos, int timer,
-                                                                    int flag, int col, float *vel);
+
 extern char rilgar_zero_vec[] MACRO_ADDR;
 
 // Moby update: wakes up, then bursts particles when the player is near.
@@ -1110,17 +1109,13 @@ extern f32 rilgar_glow_debris_forward_speed SDATA(rilgar_glow_debris_forward_spe
 extern f32 rilgar_glow_debris_up_speed SDATA(rilgar_glow_debris_up_speed);
 extern f32 frame_scale MACRO_ADDR;
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern f32 IntToFloat(s32);
+
 extern s32 truncate_float_to_s32(f32);
 extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001F49B0");
 extern char *MobyGetHitMessage(struct Moby *, s32, s32);
 
-extern void Moby_PlaySound(s32, s32, struct Moby *);
-
 extern struct Moby *SpawnBreakFragment(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *, void *);
-extern void spawn_proximity_gated_bolts(struct Moby *);
 
-extern void PartType53Spawn(void *, s32, f32, f32, s32, s32, s32, void *, f32);
 extern struct Spark_c8e0 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, s32);
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
@@ -1931,8 +1926,6 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     vec_cross_32B1F8(&m->side, &m->up, &m->fwd);
 }
 extern char *rilgar_camera_init_source;
-
-extern void reset_hero_follow_camera_from_preset(void *);
 
 /* Copies the matrix at rilgar_camera_init_source into out and finishes with reset_hero_follow_camera_from_preset. */
 void reset_camera_from_source_transform(char *out) {

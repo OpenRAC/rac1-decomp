@@ -30,6 +30,19 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
+#include "overlays/shared/moby_context_table.h"
+#include "overlays/shared/visibomb_and_pyrocitor.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -293,13 +306,11 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern int Moby_PlaySound(int, int, int);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern void spawn_particle_alt_9768(void *, void *, int, int, int, float);
-extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
+
 extern void spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int, int,
                                                                               int, int);
 
@@ -558,7 +569,6 @@ extern s32 coll_line(void *, void *, s32, void *, s32);
 extern s32 coll_sphere(f32, void *, s32, void *);
 
 extern s32 rand_range(s32, s32);
-extern void spawn_effect_particle_with_target_scalar(void *, void *, s32, s32, f32, s32);
 
 /* Debris update: falls and spins, bounces off what it hits with a random kick, bursts into 40 sparks once it comes to
    rest (or its unk10 timer runs out), or fades out over unk28 frames when unk20 is set.
@@ -671,8 +681,6 @@ void attach_cutscene_fixed_scale_manipulator(void) {
     }
 }
 
-extern void set_camera_position();
-extern void set_camera_rotation();
 extern void attach_cutscene_fixed_scale_manipulator_m(char *) __asm__("func_L01_002FC890");
 extern char cutscene_trigger_error_fmt[];
 extern LevelState novalis_checkpoint_level_state_s __asm__("D_L01_001BB9C0");
@@ -681,8 +689,6 @@ extern char *camera_points_c __asm__("D_L01_0016016C") MACRO_ADDR;
 extern int g_current_level_index_c __asm__("D_0015EE84") MACRO_ADDR;
 extern char help_stats_base_c[] __asm__("D_0014171B");
 extern int STUB_printf_c(void *, int, int) __asm__("func_001E9730");
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
 
@@ -800,13 +806,8 @@ void attach_cutscene_big_head_manipulator(char *a) {
 }
 extern void attach_cutscene_big_head_manipulator(char *);
 extern void set_ground_height_band(void *);
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
 
 extern void unlock_planet(int);
-
-extern void record_moby_context_bytes(char *, int, char *, int, void *);
-extern int memcard_Save(int, int);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -1093,7 +1094,6 @@ typedef struct {
 extern SE_303810p g_screen_extent;
 extern long GetEffectTex(int);
 extern int truncate_float_to_s32(float);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
 /* Draws the visibomb's tiled screen overlay when outside its zone. */
 void draw_visibomb_outside_zone_overlay(char *moby) {
@@ -1141,8 +1141,6 @@ extern char *novalis_moby_list MACRO_ADDR;
 extern int visibomb_outside_zone_overlay_enabled SDATA(visibomb_outside_zone_overlay_enabled);
 extern void draw_visibomb_outside_zone_overlay(char *);
 extern int IsPointInPolygon(void *, void *, int);
-extern void AddDrawCallback(void (*)(char *), char *);
-extern void terminate_visibomb_missile(void *, void *);
 
 typedef struct {
     int zone;
@@ -1486,7 +1484,6 @@ extern int gold_bolt_ring_color_b SDATA(gold_bolt_ring_color_b);
 extern int gold_bolt_ring_blend_flag SDATA(gold_bolt_ring_blend_flag);
 extern int gold_bolt_ring_texture SDATA(gold_bolt_ring_texture);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float MobyGetFrameValue_m(void *) __asm__("func_0020D830");
 
 extern void vec_scale_to_length(void *, void *, float);
@@ -1494,7 +1491,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int fast_dec_timer(void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 
 /* Draws the moby's four pulsing glow rings between it and the camera, fading with distance. */
 void update_gold_bolt_glow_rings(char *m) {
@@ -1546,9 +1542,6 @@ void update_gold_bolt_glow_rings(char *m) {
 }
 
 extern void lerp_vector(void *, void *, void *, float);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern char *camera_points MACRO_ADDR;
 
@@ -1604,9 +1597,7 @@ extern float gold_bolt_trail_spread_max SDATA(gold_bolt_trail_spread_max);
 extern int gold_bolt_trail_color SDATA(gold_bolt_trail_color);
 extern float gold_bolt_trail_size SDATA(gold_bolt_trail_size);
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void rand_vec(float *, float, float);
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
 
 /* builds three jittered offsets and fires the same effect at each accumulated point */
 void spawn_gold_bolt_particles(char *m) {
@@ -1636,7 +1627,7 @@ void spawn_gold_bolt_particles(char *m) {
                                                        random_integer_below(0xFF) & 0xFF, 0, gold_bolt_trail_size);
     }
 }
-extern void set_moby_list_state(char *arg, int val);
+
 extern unsigned char help_stats_base[] NOT_SDA;
 
 // marks the moby's flag bit in two bitsets and starts its state change
@@ -1668,14 +1659,11 @@ extern void hide_teleporter_and_children(struct Moby *);
 extern void try_set_teleporter_help_message(char *);
 
 extern void draw_moby_radius_ring(char *);
-extern int Moby_PlaySound(int, int, int);
 
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void MusicRequestTrack(int, int);
 
 /* Teleporter pad update: activation check, then per state: spawn rings, wait for the player, charge, teleport, cool
    down. */
@@ -2034,8 +2022,6 @@ void show_teleporter_and_children(char *a) {
     }
 }
 typedef int OvlQuad_c9 __attribute__((mode(TI)));
-
-extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 
 extern char novalis_point_light_slots[];
 
@@ -2640,7 +2626,6 @@ void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars *p) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern void spawn_type_74_particle(void *, void *, void *, void *, int);
 extern char sandmouse_trail_particle_cfg_a, sandmouse_trail_particle_cfg_b, sandmouse_trail_particle_cfg_c;
 
 // If the moby's flag byte is set, builds a vector and runs three manipulator calls.
@@ -2669,7 +2654,6 @@ void draw_sandmouse_billboard_quads(char *moby) {
         entry += 0x10;
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Attach two effect entries and register their update callback. */
 void update_sandmouse_billboard_quads(char *moby) {
@@ -2724,19 +2708,15 @@ extern f32 sandmouse_dust_size_max SDATA(sandmouse_dust_size_max);
 extern int sandmouse_dust_alpha SDATA(sandmouse_dust_alpha);
 extern f32 sandmouse_dust_accel SDATA(sandmouse_dust_accel);
 
-extern void MoveCtl_Init(void *);
-
 extern void MobySpringTurn(void *, f32, void *, f32, f32, f32);
 extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void jet_animate(void *, f32);
-extern void compute_sand_mouse_approach_target(void *, void *);
-extern int Hero_SetMoveState(int, int);
+
 extern void set_hero_animation_v(f32, int, int) __asm__("func_L00_00232C10");
 
 extern void add_random_offset_to_vector_xyz(void *, f32);
 extern int func_001160D8(void);
-extern void *PartType53Spawn(void *, int, f32, f32, int, int, int, void *, f32);
-extern int STUB_printf();
+
 extern Moby *sandmouse_grab_moby;
 extern int g_current_level_index MACRO_ADDR;
 extern char *novalis_camera_moby;
@@ -3369,7 +3349,7 @@ extern Path *novalis_paths_r3[] __asm__("D_L01_001B0C30");
 extern float novalis_camera_up_axis[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
-extern float Cam_InterpValues(float a, float b, float *p, float c, float d, float e);
+extern float Cam_InterpValues_v(float a, float b, float *p, float c, float d, float e) __asm__("func_001EC120");
 
 /* Update function of camera 3: follows a path beside the hero's and turns toward a look-at point on it.
    The four `= 0` initialisers in the mode 2 block are dead and leave no code: they make up for the insns
@@ -3412,9 +3392,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
         FastVecSub(v50, &path->nodes[seg + 1], &path->nodes[seg]);
         vec_scale_to_length(v40, v50, dist);
         FastVecAdd(v60, &path->nodes[seg], v40);
-        cam->pos[0] = Cam_InterpValues(cam->pos[0], v60[0], &d->vel[0], k, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues(cam->pos[1], v60[1], &d->vel[1], k, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues(cam->pos[2], v60[2], &d->vel[2], k, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v60[0], &d->vel[0], k, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v60[1], &d->vel[1], k, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v60[2], &d->vel[2], k, 0.175f, 0.0f);
     } else if (mode == 2) {
         Path *pathA = novalis_paths_r3[pi];
         Path *pathD = novalis_rails[p->f24].f10;
@@ -3485,9 +3465,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
         } else {
             d->f10 = d->f10 - 0.00015f;
         }
-        cam->pos[0] = Cam_InterpValues(cam->pos[0], v40[0], &d->vel[0], d->f10, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues(cam->pos[1], v40[1], &d->vel[1], d->f10, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues(cam->pos[2], v40[2], &d->vel[2], d->f10, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v40[0], &d->vel[0], d->f10, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v40[1], &d->vel[1], d->f10, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v40[2], &d->vel[2], d->f10, 0.175f, 0.0f);
     } else {
         Path *path = novalis_paths_r3[pi];
 
@@ -3511,9 +3491,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
             Spline_AdvanceByDistance((Path *)g_hero.rail_spline, v30, &hseg, &hfrac, p->f38, 1);
             find_nearest_path_point(path, v30, v0, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         }
-        cam->pos[0] = Cam_InterpValues(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
-        cam->pos[1] = Cam_InterpValues(cam->pos[1], v0[1], &d->vel[1], k, 0.175f, 0.0f);
-        cam->pos[2] = Cam_InterpValues(cam->pos[2], v0[2], &d->vel[2], k, 0.175f, 0.0f);
+        cam->pos[0] = Cam_InterpValues_v(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
+        cam->pos[1] = Cam_InterpValues_v(cam->pos[1], v0[1], &d->vel[1], k, 0.175f, 0.0f);
+        cam->pos[2] = Cam_InterpValues_v(cam->pos[2], v0[2], &d->vel[2], k, 0.175f, 0.0f);
     }
     if (p->f24 < 0) {
         Path *path = novalis_paths_r3[p->f20];
@@ -3634,7 +3614,6 @@ void update_camera_mode_from_preset(Camera *o) {
         o->control.mode = 3;
     }
 }
-extern char *find_camera_record_by_id(int);
 
 // Stores two floats into the record at 0xE0 of the data of the moby a global points at, or of moby 5.
 void set_camera_5_track_acceleration_yz(float a, float b) {

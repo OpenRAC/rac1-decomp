@@ -21,6 +21,14 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "core/libc/sprintf.h"
 extern Hero g_hero;
 extern int g_screen_extent[];
 extern char help_records[];
@@ -50,8 +58,6 @@ extern unsigned char gSpecialItems_1[];
 extern char pokitaru_pickup_message_buffer[];
 extern char pokitaru_raritanium_acquired_text[];
 extern int proximity_removal_frame_count MACRO_ADDR;
-
-extern int sprintf(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8830.c, FUN_L11_002cb790. */
 void remove_moby_when_near_hero(char *a0) {
@@ -167,7 +173,7 @@ extern char *pokitaru_mobys MACRO_ADDR;
 extern char pokitaru_coll_hit_normal[];
 extern int truncate_float_to_s32(float);
 
-extern void Profile_Mark(void *, void *);
+extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 
 extern void initialize_hit_descriptor(float, void *, struct Moby *, int);
 extern int coll_line(void *, void *, int, void *, void *);
@@ -230,7 +236,7 @@ void update_homing_missile(struct Moby *moby) {
             }
             moby->rot.y = FastAddRots(moby->rot.y, pitch_off);
             BuildSphericalOffset(vars, speed, moby->rot.z, -moby->rot.y);
-            Profile_Mark(&moby->pos, &vars->target->pos);
+            Profile_Mark_v(&moby->pos, &vars->target->pos);
         } else {
             vars->target = 0;
         }
@@ -307,8 +313,6 @@ extern char pokitaru_coll_hit_normal[];
 extern float g_frame_time_e __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern void rand_vec(float *, float, float);
-
-extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
 
 extern int coll_line(void *, void *, int, void *, void *);
 
@@ -394,9 +398,9 @@ typedef struct {
 } Missile;
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
+
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern char pokitaru_particle_textures_ptr_base[];
@@ -512,10 +516,8 @@ typedef struct {
     float f228, f22C;
 } Fog;
 
-extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 
-extern float IntToFloat(int);
 extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
 extern void draw_world_quad(void *, void *, int);
 
@@ -901,8 +903,7 @@ extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern LvState D_L11_001BBF40;
 extern LvState D_L11_001BB2E0;
 extern unsigned char D_L11_0015FD08[];
-extern void func_0022ED80(int, int, void *);
-extern int func_L00_00203F20(int a, int b);
+
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 
@@ -1202,9 +1203,8 @@ void project_world_point_to_screen_pixels(void *pt, int *outx, int *outy, int yo
 }
 typedef int u128_312780 __attribute__((mode(TI)));
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern void spawn_type_74_particle(void *, float *, float *, void *, int);
+
 extern float g_frame_time MACRO_ADDR;
 extern float joint_trail_reference_speed SDATA(joint_trail_reference_speed);
 extern short joint_trail_particle_cfg_a;

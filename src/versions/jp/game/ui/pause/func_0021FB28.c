@@ -53,16 +53,16 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     }
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x1D);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F50), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F50), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x36);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F51), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F51), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x54);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F52), -1);
-    font_print_right(0xC8, 0x1D, 0x80FFA888L, msg_string_r3(0x4F50), -1);
-    font_print_right(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F51), -1);
-    font_print_right(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F52), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F52), -1);
+    font_print_right_v(0xC8, 0x1D, 0x80FFA888L, msg_string_r3(0x4F50), -1);
+    font_print_right_v(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F51), -1);
+    font_print_right_v(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F52), -1);
     collected_count = count_nonzero_entries_up_to_40();
     sprintf(text_buffer, fmt_decimal, collected_count);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D),

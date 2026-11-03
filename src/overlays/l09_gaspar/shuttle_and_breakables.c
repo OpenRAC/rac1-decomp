@@ -12,6 +12,8 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
 
 /* Store in dst the angle scale of the way from a toward b, wrapped. */
 void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
@@ -54,7 +56,6 @@ extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern float vec_distance_xy(void *, void *);
 
 extern void add_random_offset_to_vector_xyz(void *, f32);
-extern void spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 
 /* Flies the moby along its path toward the current node, turning and banking toward it, steps the node at each arrival
    and now and then drops a puff. Returns nonzero once it has run off the end of the path.
@@ -118,8 +119,6 @@ int advance_shuttle_along_path(struct Moby *moby) {
     return done;
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void Moby_PlaySound(int, int, int);
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL09_Update(char *m) {

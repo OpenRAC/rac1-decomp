@@ -16,6 +16,10 @@
 #include "game/render/draw.h"
 #include "game/system/space.h"
 #include "enums/level.h"
+#include "game/math/fastfunc.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "core/libc/sprintf.h"
 
 /*
  * freeze.cpp in the original source; text 0x1FBC80-0x1FDF10.
@@ -26,10 +30,6 @@
 extern int space_load_in_progress MACRO_ADDR;
 
 extern int GetEffectTex(int);
-
-extern void snd_PauseAllSoundsInGroup(int);
-extern void music_Pause(int);
-extern int msg_string(int);
 
 extern int g_game_mode MACRO_ADDR;
 extern int memory_card_request;
@@ -192,22 +192,10 @@ extern struct TextRegionP freeze_choice_text_region;
 
 extern char g_hero[];
 extern char g_screen_extent[];
-extern void emit_rgba_draw_packet(s32, s32, s32, s32);
 
-extern void draw_outlined_rect(s32, s32, s32, s32, s32);
-extern s32 FontPrintCenter(s32, s32, s64, char *, s32);
-extern void font_print_window_regular(struct TextRegionP *, long, char *, s32);
-
-extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
 
-extern s32 GetIconFrame(s32, s32);
-
-extern void HudSprite(s32, s32, s32, s32, s32, s32);
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
-extern void VU1_addGSregister(s32, s64);
-
-extern s32 sprintf(char *, const char *, ...);
 
 /* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */
 static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, struct TextRegionP box) {
@@ -679,15 +667,7 @@ extern char memory_card_state[];
 extern char g_controller_state[];
 extern char D_00141150[];
 
-extern void memcard_Save(int, int);
-extern void Profile_Mark(void);
-extern void noop_callback_k(void *, void *, int, int);
-
-extern void Hud_SetBarValueById(int, int);
-
-extern void Music_QueueTrack(int, int);
-
-extern int snd_FlushSoundCommands(void);
+extern void Profile_Mark_v(void) __asm__("func_001E9768");
 
 #define R (*(Freeze *)D_00193400)
 #define PAD (D_0013CBE4[0])
@@ -761,7 +741,7 @@ void update_mode_freeze(void) {
                 m[0x31] = 0;
                 *(int *)(m + 0x94) = 0;
                 *(unsigned short *)(m + 0x34) |= 1;
-                Profile_Mark();
+                Profile_Mark_v();
                 noop_callback_k(((struct Hero *)h1)->saved_pos_rot, h1 + 0x1D10, 0, 1);
                 g_game_mode = 0;
             } else if (p1 & 0x40) {

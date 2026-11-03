@@ -10,6 +10,9 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "asm_functions/level_12.h"
 
 /* Blarg commander shot (Blarg Commander): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
@@ -19,10 +22,7 @@ struct CommanderShotVars {
     u8 mine_state[0x10]; /* 0x20: mine_fall state */
 };
 
-extern void VU1_addGSregister(int, long);
-
 extern int FastBSphereCheck(char *, float);
-extern void compute_reflection_env_uvs(int, int, int, int);
 
 extern int *hoven_dma_packet_cursor MACRO_ADDR;
 extern char hoven_effect_list_setup_packet[];
@@ -120,7 +120,6 @@ char *create_blarg_commander_moby_from_source(char *a0) {
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
-extern void Moby_PlaySound(int, int, void *);
 extern int truncate_float_to_s32(float);
 
 extern void HeadingFromVector(void *, float *, void *, void *);

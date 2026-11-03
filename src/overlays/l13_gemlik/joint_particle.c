@@ -5,9 +5,10 @@
 #include "structs/moby.h"
 #include "include_asm.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 extern int func_001FA898(float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern unsigned char *gemlik_part_type68_textures;
 
 /* Allocates and fills a particle-process record attached to a moby. */

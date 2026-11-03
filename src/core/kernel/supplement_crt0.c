@@ -2,6 +2,10 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/sif/reset_iop.h"
+#include "core/kernel/threads_deci2.h"
+#include "core/kernel/alarm.h"
+#include "core/kernel/exec_patch.h"
 
 /*
  * core_text object 0x11D960-0x11DBE8. Boundaries are retail's linker fill
@@ -104,10 +108,6 @@ ASM_FUNC("asm/handwritten/core_text", func_0011DB98);
 
 extern void supplement_crt0(void);
 extern void InitSystemCallTableAddress(void);
-extern void InitAlarm(void);
-extern void InitThread(void);
-extern void InitExecPS2(void);
-extern void InitTLBFunctions(void);
 
 /* _InitSys (libkernl.a:initsys.o): the kernel's one-shot startup sequence,
    run once from the crt0 supplement. Chains six sub-system initialisers;

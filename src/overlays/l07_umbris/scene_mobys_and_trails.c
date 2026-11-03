@@ -12,6 +12,12 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -39,8 +45,6 @@ extern s32 umbris_indicator_states[];
 extern struct Moby *level_mobys MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern int Moby_PlaySound(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/0030cd20.c, FUN_L07_0031a9e8. */
 void update_moby_offset_motion(struct Moby *moby) {
@@ -184,7 +188,6 @@ typedef struct {
     EaseData1C7C0 *data;
     char pad3[0x84];
 } EaseMoby1C7C0;
-extern int Moby_PlaySound(int, int, int);
 
 extern float g_frame_time MACRO_ADDR;
 extern EaseMoby1C7C0 *level_mobys_ease __asm__("D_L07_00160058") MACRO_ADDR;
@@ -293,15 +296,14 @@ typedef struct {
     char pad10[0x8];
 } Ent;
 
-extern float func_001FA888(int);
 extern int func_001FA898(float);
 
 extern int func_L00_0025E860(void *, void *, int *, float *, float, int);
 extern float func_001F9D48(void *, void *);
 extern int func_00120778_31E6B0(float) __asm__("func_00120778");
-extern char *func_L00_002C6608(void *, int, int, int);
+
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern void func_001E9730(char *, ...);
+
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern char D_L07_00211DE0[];
 extern char D_L07_00211E20[];
@@ -421,8 +423,6 @@ typedef struct {
     int arr[8];
 } L07SparkState;
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
 extern char *func_L00_0026DEA0(void *, int, void *, int, float, float, float, float);
 extern int umbris_scene_state MACRO_ADDR;
 extern char umbris_cutscene_state_c[] __asm__("D_L07_0016C960");
@@ -488,7 +488,7 @@ void update_scene_moby_effect_bursts(struct Moby *m) {
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern void spawn_proximity_gated_bolts(void *);
+
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 /* Level moby state machine: wait, detect proximity, then emit effects, spawn a replacement and delete itself. */

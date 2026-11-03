@@ -18,6 +18,18 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "callees.h"
+#include "game/audio/music.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/radial_particle_burst.h"
+#include "overlays/shared/type_31_particle.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -79,11 +91,6 @@ struct FallingMobyVars {
     s32 fade_timer; /* 0x24: ticks left */
 };
 
-extern void build_interpolated_dma_packet(char *);
-
-extern void textured_grid_transform_cells(char *);
-extern void textured_grid_build_gif_packet(char *);
-extern void restore_view_after_textured_grid(char *);
 extern char kerwan_spr_upload_block[];
 
 /* Draw the textured grid moby: build and upload its DMA packet, draw, then restore the view. */
@@ -97,8 +104,6 @@ void draw_textured_grid(char *moby) {
 LINKER_REMNANT("asm/overlays", func_L03_00292B18);
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -151,7 +156,6 @@ extern char *kerwan_mobys_p __asm__("D_L03_00160058") MACRO_ADDR;
 extern char *D_L03_00160064 MACRO_ADDR;
 extern int D_L03_0015F6B0 MACRO_ADDR;
 extern char spawner_revive_failed_fmt[];
-extern int STUB_printf();
 
 extern float *func_L00_0025D390(void *);
 
@@ -353,7 +357,6 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void libc_memset(void *, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1534,8 +1537,6 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
     }
 }
 
-extern int Moby_PlaySound(int, int, int);
-
 /* Moby update: advance a timer from a collision query, switch state, aim head angles. */
 void handle_blarg_helicopter_hits(char *m) {
     int st;
@@ -1580,7 +1581,7 @@ void handle_blarg_helicopter_hits(char *m) {
     ((Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, &d->color_fade);
 }
-extern void spawn_proximity_gated_bolts(void *);
+
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 /* Statue update: wait for a hit, then play a sound, drop bolts, break into three pieces and delete. */
 void statue_update(Moby *m) {
@@ -1642,15 +1643,9 @@ extern void FindNearestTargetMoby(void *, void *, float);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
-extern int Sound_IsPlaying(void *, int);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern char *PartType27Spawn(void *pos, void *vel, int c, int d, float f);
-
-extern void create_type_31_part(void *, void *, void *, void *, int);
 extern int coll_line(void *, void *, int, void *, void *);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
@@ -1895,7 +1890,7 @@ void fred_1_update(Moby *m) {
 extern void func_L01_002FC890(char *);
 extern f32 FastVecDist_r2(void *, void *) __asm__("func_001F9D10");
 extern int is_point_inside_clip_volume_r2(void *arg0, int arg1) __asm__("func_00215570");
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern f32 vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -2034,9 +2029,7 @@ void qwark_rilgar_update(char *m) {
     EaseManipulatorOffsets(m, (char *)watch_data, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     EaseManipulatorOffsets(m, (char *)watch_data + 0x80, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
-extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
-extern void AddDrawCallback(void (*)(void), void *);
-extern void register_audio_stream_callback(void);
+
 extern char kerwan_ambient_stream_scaled_table[];
 
 /* moby update: state 0 plays a sound and arms state 1, state 1 registers a draw callback */
@@ -2089,7 +2082,6 @@ void garage_door_update(struct Moby *m) {
 INCLUDE_ASM("asm/overlays", func_L03_002DDE28);
 INCLUDE_ASM("asm/overlays", func_L03_002DDED8);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int fast_dec_timer(int *arg0);
 
@@ -2112,7 +2104,6 @@ void update_falling_moby(Moby *moby) {
     }
 }
 extern int kerwan_camera_descriptors MACRO_ADDR;
-extern void raise_kernel_trap(void);
 
 typedef struct {
     char pad0[0x40];
@@ -2167,8 +2158,6 @@ extern float gHeroPos[];
 extern float kerwan_camera_view_up_axis[];
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void rotate_vector_by_scaled_angle_between_vectors(float, float *, float *, float *, int);
 
 /* smooths a direction and rebuilds its orthogonal matrix axes */
 void smooth_transform_orientation_toward_hero(char *m) {

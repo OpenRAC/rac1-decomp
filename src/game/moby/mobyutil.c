@@ -9,6 +9,9 @@
 #include "structs/anim.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/ui/hud.h"
+#include "game/ui/help.h"
+#include "game/ui/vendor.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -17,8 +20,6 @@
  */
 
 extern float shadow_light_dir[] NOT_SDA;
-
-extern float FastAbsF(float arg0);
 
 ASM_FUNC("asm/handwritten/text", func_00213A78);
 
@@ -62,7 +63,6 @@ void assign_moby_class_data(int id) {
 
 LINKER_REMNANT("asm/remnants/text", func_00213C70);
 
-extern void refresh_moby_spatial_bounds(void *);
 extern void *visible_moby_list MACRO_ADDR;
 
 void update_visible_resident_objects(void) {
@@ -128,8 +128,6 @@ void MobySetAnimation(MobyAnim *m, int seq, int frame) {
     m->unk5C = *m->frameData;
     m->unk70 &= ~2;
 }
-
-extern float IntToFloat(int arg0);
 
 extern char moby_blend_slot_poses[];
 
@@ -290,7 +288,7 @@ LINKER_REMNANT("asm/remnants/text", func_002143D0);
 extern int occl_cell_count MACRO_ADDR;
 extern int local_surface_region_enabled MACRO_ADDR;
 extern float local_surface_region_center_x[4] MACRO_ADDR;
-extern int sample_surface_height_map(float *, void *, float, float, float);
+
 extern float vec_distance_xy(void *, void *);
 
 /* Ground height under pos: sample_surface_height_map's answer when occl_cell_count is on
@@ -328,8 +326,6 @@ float resolve_camera_surface_height(float *pos, void *out) {
 LINKER_REMNANT("asm/remnants/text", func_00214538);
 
 extern char coll_output[];
-
-extern float min_float(float, float);
 
 /* Shadow range probe: cast a ray down (8 units) from the moby position
    shifted against the light direction shadow_light_dir by its size, then a
@@ -1187,8 +1183,6 @@ void SamplePathAt(Path *path, int wrap, void *pos, float *rot, int flags, float 
 
 LINKER_REMNANT("asm/remnants/text", func_00215F20);
 
-extern int msg_string(int);
-extern void copy_text_to_shared_buffer(int);
 extern int help_message_keepalive MACRO_ADDR;
 extern int help_message_owner MACRO_ADDR;
 extern int help_message_id MACRO_ADDR;

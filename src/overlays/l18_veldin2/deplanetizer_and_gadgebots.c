@@ -13,6 +13,14 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/walloper_and_beam_effects.h"
+#include "asm_functions/level_18.h"
+#include "overlays/l18_veldin2/bone_glow_quads.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -116,21 +124,20 @@ extern short deplanetizer_burst_local_spawn_offset_x_gp;
 extern float deplanetizer_burst_velocity_scale_gp SDATA(deplanetizer_burst_velocity_scale_gp);
 extern float deplanetizer_burst_particle_size_gp SDATA(deplanetizer_burst_particle_size_gp);
 extern int scale_ticks(int);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void clear_u64_value(void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
-extern void AddDrawCallback(void *, void *);
+
 extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, float f1);
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_length_xy(void *);
-extern void update_beam_ring_rail_and_pulse_effects(void *);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 
@@ -138,7 +145,6 @@ extern char *PartType23Spawn_c(void *, int, void *, float, float, float, float, 
 extern void draw_three_scaled_camera_facing_quads(void);
 extern void draw_moby_two_tint_glow_quads(struct Moby *m);
 extern void draw_moby_three_scaled_two_tint_quads_r(void *) __asm__("func_L18_002FB318");
-extern void draw_moby_color_cycling_bone_glows(void);
 
 /* Class 1563 update: a cutscene director that times its effects (part flashes, fades, bursts) off the level script
    state. */
@@ -534,7 +540,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     draw_world_quad(&pk, 0, 0);
 }
 extern int scale_ticks(int);
-extern float IntToFloat(int);
+
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
 
@@ -568,7 +574,7 @@ extern int deplanetizer_glow_tint_b SDATA(deplanetizer_glow_tint_b);
 extern float veldin2_deplanetizer_quad_corners[4][4];
 extern char veldin2_camera_pos[];
 extern unsigned long GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
@@ -884,7 +890,7 @@ void mark_class_0630_moby_and_child_for_removal(Moby *moby) {
         DeleteMoby(moby);
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float veldin2_joint_trail_offset SDATA(veldin2_joint_trail_offset);
@@ -941,7 +947,6 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVd058;
 
-extern int CarriedMobyUpdate(void *, void *);
 extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
@@ -953,8 +958,7 @@ extern int mine_fall(void *, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void AddDrawCallback(void *, void *);
-extern void draw_gadgebot_launch_glow_quad(void);
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char gadgebot_params_block;
@@ -1460,7 +1464,7 @@ void draw_group_gadgebot_1906_joint_glows(unsigned char *moby) {
         }
     }
 }
-extern int func_L00_002DCDA8(void *, void *, void *, float);
+
 /* Runs process_moby_suck_cannon_suction on the moby and switches state 7 accordingly; returns its result. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as

@@ -23,6 +23,22 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "game/render/framebuf.h"
+#include "overlays/l02_aridia/hero_idle_and_item_input.h"
+#include "asm_functions/level_02.h"
+#include "overlays/shared/geometry_quad_packet.h"
+#include "overlays/shared/camera_update_callbacks.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -172,7 +188,7 @@ extern void BuildViewMatrices_r(void) __asm__("func_001F2608");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void VU1_addDataRef_r(void *, int) __asm__("func_00234B48");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void func_L02_00250C78(void *, void *, void *, void *, void *, int, float);
+
 extern char aridia_view_params_r[] __asm__("D_L02_0016D0C0");
 extern int D_L02_0015F558 MACRO_ADDR;
 extern float textured_grid_saved_fog_near_distance_r __asm__("D_L02_00161378") MACRO_ADDR;
@@ -330,10 +346,7 @@ void build_interpolated_dma_packet(Arg *arg) {
     l02_packet_r = (int *)(c + 4);
     g_gs_texture_allocation_cursor += 0x4000;
 }
-extern void vu1_add_vif_code(int);
-extern void UpdateViewContext(void);
-extern void BuildViewMatrices(void);
-extern void AA_BlurPass(void);
+
 extern float textured_grid_saved_fog_near_distance MACRO_ADDR;
 extern float textured_grid_saved_fog_far_distance MACRO_ADDR;
 extern float textured_grid_saved_fog_near_intensity MACRO_ADDR;
@@ -377,7 +390,7 @@ void trackdrive_left_update(struct Moby *moby) {
         moby->flags |= 0x40;
     }
 }
-extern int func_L00_002DCDA8(void *, void *, void *, float);
+
 /* Calls process_moby_suck_cannon_suction(a) and sets state 9 from its result; returns the result. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
@@ -451,7 +464,6 @@ typedef struct {
 } Idle;
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int func_L02_0022BE40(int, int);
 
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern void align_hero_to_tresspasser_pad_r(Moby *) __asm__("func_L02_002DA728");
@@ -677,7 +689,6 @@ extern void ClampVectorLength(void *a, float x);
 
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 // Steer the camera yaw toward a target angle, clamped to a per-frame limit.
 void align_hero_to_tresspasser_pad(struct Moby *moby) {
@@ -706,7 +717,6 @@ extern void draw_tresspasser_puzzle_ring_arc(int, u32, float, float, float, floa
 extern int GetEffectTex(int);
 extern void draw_tresspasser_puzzle_arrow(int, int, int, float, float);
 extern void draw_tresspasser_puzzle_radial_strip(void *, f32, f32, f32, s32);
-extern void VU1_addGSregister(int, u64);
 
 extern int tresspasser_third_ring_arc_second_boundary_radius_gp
     SDATA(tresspasser_third_ring_arc_second_boundary_radius_gp);
@@ -1071,7 +1081,6 @@ void draw_tresspasser_puzzle(char *moby) {
 extern short trespasser_arc_uv_0, trespasser_arc_uv_1, trespasser_arc_uv_2, trespasser_arc_uv_3;
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
 
 /* Draws an elliptical arc from angle a to b (radii rx, ry, around the screen centre) as five sprite
  * segments in colour col. */
@@ -1512,8 +1521,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
-
 struct VersatargetPvars {
     u8 pad_00[0x30];
     s32 unk30; /* 0x30: row index into the flag table help_stats_base, -1 when free */
@@ -1632,15 +1639,9 @@ extern void initialize_collectible_sprite_state(char *moby);
 extern void update_collectible_sprite_effect(char *m);
 extern float vec_distance_xy(void *, void *);
 
-extern int Help_Request(int, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
-extern int memcard_Save(int, int);
-
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
 
 typedef int u128_002EB648 __attribute__((mode(TI)));
@@ -1824,10 +1825,9 @@ typedef struct {
 } L02SpriteData;
 
 extern int fast_dec_timer(int *);
-extern float IntToFloat(int);
+
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 
 /* Animates a moby's four sprite layers (emit_moby_sprite_effect_particles lifted by 0.5 instead of 0.1). */
 void update_collectible_sprite_effect(char *m) {
@@ -1885,8 +1885,6 @@ void draw_background_ship_1_joint_billboards(char *self) {
         get_next_moby_in_group((int *)&cur, (int)cur, 0, 0);
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void AddDrawCallback(void (*)(void), void *);
 
 /* Refreshes a moby's three sub-objects, packs its colour bytes, and queues a redraw when the global changed. */
 void prepare_background_ship_1_joint_billboards(char *moby) {
@@ -1924,9 +1922,7 @@ void prepare_background_ship_1_joint_billboards(char *moby) {
 }
 
 extern char *MobyGetHitMessage(void *, int, int);
-extern int STUB_printf();
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r_r(int, int, int) __asm__("func_0022ED80");
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern void spawn_background_ship_1_joint_sparks(char *m, void *arg1);
@@ -2088,7 +2084,7 @@ void background_ship_1_update(char *moby) {
 extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
+
 extern float background_ship_1_spark_start_vel_scale SDATA(background_ship_1_spark_start_vel_scale);
 extern float background_ship_1_spark_end_vel_scale SDATA(background_ship_1_spark_end_vel_scale);
 extern float background_ship_1_spark_jitter SDATA(background_ship_1_spark_jitter);
@@ -2445,8 +2441,6 @@ void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
         }
     }
 }
-extern void Moby_PlaySound(int, int, int);
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Update for a moby that waits for a float flag on a nearby object then runs a delete sequence. */
 void white_flower_update(char *m) {
@@ -2532,7 +2526,6 @@ void initialize_camera_offset_effect_state(void) {
 extern float camera_offset_effect_strength;
 extern void Cam_SetEyeOffset(int, float, float);
 extern void update_camera_offset_effect_state(void);
-extern void register_camera_update_callback(void (*)(void));
 
 /* Start the timed effect while its duration is nonzero. */
 void apply_camera_offset_effect(void) {

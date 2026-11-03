@@ -26,6 +26,19 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
+#include "asm_functions/level_07.h"
+#include "overlays/shared/projectile_expiry_particles.h"
+#include "overlays/l07_umbris/white_particles.h"
+#include "overlays/l07_umbris/snagglebeast_sphere_draw.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -122,8 +135,6 @@ struct SnagglebeastVars {
     Vec4 scale_manip; /* 0x2A0 */
 };
 
-extern void draw_snagglebeast_sphere_quad_strips(char *, int, float, float, float, float, float);
-
 /* Starts the effect with an angle ramped from the moby's timer, capped at pi. */
 void draw_snagglebeast_sphere_effect(char *moby) {
     struct SnagglebeastVars *data = (struct SnagglebeastVars *)((Moby *)moby)->pvars;
@@ -154,7 +165,7 @@ struct GeometryQuad {
     u64 primitive; /* 0x88 */
 };
 extern s32 umbris_frame_count MACRO_ADDR;
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 
 extern u64 GetEffectTex(int);
@@ -469,21 +480,20 @@ void add_random_xy_offset(float *out, float value) {
     out[1] += random_float_between(neg, value);
 }
 extern void *collect_snagglebeast_navigation_ids(void *, void *, void *);
-extern int follow_path(void *, void *, int, float, void *, void *, void *);
-extern int select_point_index_by_distance(void *, void *, float);
+extern int follow_path_v(void *, void *, int, float, void *, void *, void *) __asm__("func_L01_00277FD8");
 
 /* Finds where a path leaves the object's current segment and copies the point out. */
 void select_snagglebeast_chase_waypoint(char *m, char *a, void *b, void *c) {
     float v[8];
     void *r = collect_snagglebeast_navigation_ids(m, a, v);
-    if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos, b, c))
+    if (follow_path_v(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos, b, c))
         return;
     {
         int i = select_point_index_by_distance(b, umbris_paths[*(int *)(a + 0x290)], 0.0f);
         int j = select_point_index_by_distance(umbris_paths[*(int *)(a + 0x290)] + (i * 16 + 0x10),
                                                umbris_paths[*(int *)(a + 0x188)], 0.0f);
-        if (follow_path(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos,
-                        umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c))
+        if (follow_path_v(v, r, *(int *)(a + 0x188), 0.0f, &((Moby *)m)->pos,
+                          umbris_paths[*(int *)(a + 0x188)] + (j * 16 + 0x10), c))
             return;
         i = select_point_index_by_distance(&((Moby *)m)->pos, umbris_paths[*(int *)(a + 0x188)], 0.0f);
         qcopy(c, umbris_paths[*(int *)(a + 0x188)] + i * 16 + 0x10);
@@ -664,45 +674,34 @@ extern void detach_snagglebeast_rope_particles(int arg0);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 
 extern void set_ground_height_band(void *);
-extern void process_snagglebeast_damage(void *, void *, void *);
+
 extern void FindNearestTargetMoby(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
-extern void suck_beam_queue_draw(int);
-extern int Moby_PlaySound(int, int, int);
 
-extern void AddDrawCallback(void (*)(), void *);
-extern int queue_animation_update(int, int, int, int, int, int, int);
+extern void AddDrawCallback_v(void (*)(), void *) __asm__("func_001F49B0");
 
-extern void suck_reset(void *);
 extern int func_001160D8(void);
 extern int fast_dec_timer(int *);
 
-extern void spawn_moby_point_offset_particle(char *, int, float, float);
 extern int start_snagglebeast_turn_toward_target(unsigned char *, unsigned char *, float *, int, int);
 extern int update_alternating_joint_emission_burst(void *, char *, float *);
 extern int IsFrameWithinWindow(void *, float);
 extern unsigned char *spawn_moby_class_1046(int, void *, int, float, float, float, float, float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern void func_L07_00313298(void *, void *, int, void *, short, unsigned int, int, float);
 
-extern void spawn_white_particle_with_payload(void *, void *);
 extern void rumble_by_distance(char *);
 
-extern void update_snagglebeast_chase_speed(void *, void *, float, float, float);
-
-extern float IntToFloat(int);
-extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 extern void RerollEffectCounter(void *, short *);
-extern void set_moby_dialogue_record_value(void *, int);
+
 extern void SetDeathBits(void *, int, int);
 
 extern float update_snagglebeast_rope(void *, void *);
-extern void HeroEnterMoveState(int, int);
+
 extern void rand_vec(float *, float, float);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern float jump_speed_4318(void *, void *, void *, float, float);
-extern char *spawn_on_path(void *, int, int, int);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -712,8 +711,6 @@ extern void update_timed_point_light_color(char *);
 
 extern void draw_collision_clipped_moby_beam();
 extern void draw_and_probe_snagglebeast_rope_attack();
-
-extern void Hud_UpdateCounter();
 
 extern char debris_far_point[];
 extern float frame_scale MACRO_ADDR;
@@ -935,7 +932,7 @@ void snagglebeast_update(unsigned char *m) {
             d->sphere_t = 0.0f;
     }
     if (d->sphere_t > 0.0f)
-        AddDrawCallback(draw_snagglebeast_sphere_effect, m);
+        AddDrawCallback_v(draw_snagglebeast_sphere_effect, m);
     update_snagglebeast_target_joint_animation((char *)m, (char *)((unsigned char *)d), (float *)(g_hero + 0x80));
     if (((Moby *)m)->state != 0 && ((Moby *)m)->state != 0xA && ((Moby *)m)->state != 0x10) {
         d->hud_anim = queue_animation_update(0x16, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
@@ -1184,7 +1181,7 @@ void snagglebeast_update(unsigned char *m) {
                 } else {
                     if (d->phase_timer < scale_ticks(0x3C)) {
                         FastVecAdd(d->attach_pos, d->attach_pos, &d->rope_dir);
-                        AddDrawCallback(draw_collision_clipped_moby_beam, m);
+                        AddDrawCallback_v(draw_collision_clipped_moby_beam, m);
                         d->phase = 2;
                     } else {
                         d->phase = 0;
@@ -1788,7 +1785,7 @@ void snagglebeast_update(unsigned char *m) {
                         d->phase = 4;
                     if (fast_dec_timer(&d->phase_timer))
                         d->phase_timer = scale_ticks(0x14);
-                    AddDrawCallback(draw_and_probe_snagglebeast_rope_attack, m);
+                    AddDrawCallback_v(draw_and_probe_snagglebeast_rope_attack, m);
                     break;
                 }
                 case 4:
@@ -1801,7 +1798,7 @@ void snagglebeast_update(unsigned char *m) {
                         if (fast_dec_timer(&d->phase_timer))
                             d->phase = 5;
                     }
-                    AddDrawCallback(draw_and_probe_snagglebeast_rope_attack, m);
+                    AddDrawCallback_v(draw_and_probe_snagglebeast_rope_attack, m);
                     break;
                 case 5:
                     ((Moby *)m)->anim_speed = 1.0f;
@@ -1871,7 +1868,7 @@ void snagglebeast_update(unsigned char *m) {
 extern s32 depth_buffer_address MACRO_ADDR;
 typedef float RopeVec[4] __attribute__((aligned(16)));
 extern u64 GetEffectTex(int);
-extern void VU1_addGSregister(int, u64);
+
 extern void draw_world_quad(void *, int, int);
 extern float scroll_phase SDATA(scroll_phase);
 extern float row_start_phase SDATA(row_start_phase);
@@ -2058,7 +2055,7 @@ typedef struct {
 } RopePuff;
 
 extern void lerp_vector(void *, void *, void *, float);
-extern float select_segment_point_near_sphere_surface(void *, void *, void *, void *, void *, float);
+
 extern RopePuff *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
 extern RopeVec_319080 rope_previous_points_prev_base[];
@@ -2230,7 +2227,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
             norm_319080(v10, vC0, 2.8f);
         }
     }
-    AddDrawCallback(draw_rope_strips, moby);
+    AddDrawCallback_v(draw_rope_strips, moby);
     {
         int nspawn;
         int nfly;
@@ -2355,10 +2352,8 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     }
     return best;
 }
-extern int Moby_PlaySound(int, int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void suck_beam_queue_draw(int arg0);
 
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");
@@ -2424,7 +2419,7 @@ extern int ComputeHitResponse(struct Moby *, char *, void *, int, int *, int, in
 #define snd_p func_L00_002584A8
 #define scale_ticks_p func_001F9850
 #define add_rot_p func_001FA748
-extern void set_moby_list_state(int, int);
+
 #define voice_p func_L01_0026F090
 #define anim_p func_00213DE0
 #define tick_p func_001F9908
@@ -2453,8 +2448,8 @@ typedef struct {
     int bob_timer;
 } Mine_p;
 
-void homing_mine_update(struct Moby *moby);
-#define func_L07_0031A410_r func_L07_0031A410
+void homing_mine_update_v(struct Moby *moby) __asm__("func_L07_0031A410");
+#define func_L07_0031A410_r homing_mine_update_v
 /* Moby update for a homing mine. */
 void func_L07_0031A410_r(struct Moby *moby) {
     Mine_p *vars;

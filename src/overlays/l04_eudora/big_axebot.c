@@ -20,6 +20,15 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/system/stub.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/radial_particle_burst.h"
+#include "overlays/l04_eudora/polygon_edge_collision.h"
+#include "overlays/l04_eudora/snow_plow_and_woodcut_bot.h"
+#include "asm_functions/level_04.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -169,11 +178,9 @@ struct PMoby {
 };
 
 extern void *libc_memset(void *, int, unsigned int);
-extern float IntToFloat(int);
 
 extern float vec_distance_xy(float *, float *);
 
-extern void update_moby_movement_with_sphere_collision(f32, struct PMoby *, void *, void *);
 extern struct Path5BD0 *eudora_paths[];
 extern f32 eudora_swarm_steer_params[8];
 extern int eudora_swarm_initialized SDATA(eudora_swarm_initialized);
@@ -370,7 +377,6 @@ void set_big_axebot_and_axe_animation_speed(char *arg, float f) {
     }
 }
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
@@ -527,19 +533,17 @@ extern float vec_distance_xy(float *, float *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
-extern int Moby_PlaySound(int, int, char *);
+
 extern void set_big_axebot_and_axe_animation_speed(char *, float);
 
 extern void InitKnockback(float, void *, void *, int, int, int);
-extern void trooper_set_knockback(float *p, float a, float b);
+
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void SetDeathBits(void *, int, int);
 
 extern void *libc_memset(void *, int, unsigned int);
 
 extern float SpringTurn(float cur, float target, float *vel, float k, float d, float max);
-
-extern void leg_walker_update(void *, void *, float, float, float);
 
 extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
 
@@ -548,8 +552,6 @@ extern int mine_fall(void *, void *);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void StepColorFade(void *, void *);
 extern void fast_dec_timer(int *arg0);
-
-extern void *spawn_axe_moby(void *, void *);
 
 extern float eudora_camera_pos[4];
 extern int eudora_game_mode MACRO_ADDR;
@@ -1224,7 +1226,6 @@ void func_L04_002C2F00_r(struct Moby *m) {
 
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern int Moby_PlaySound(int, int, char *);
 
 typedef struct {
     u8 pad_000[0x238];
@@ -1531,25 +1532,17 @@ typedef struct {
     int f18;
 } G_35F0;
 
-extern void update_circular_saw_engine_sound(void *);
 extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
 
-extern void MoveCtl_Init(char *p);
-
 extern float compute_circular_saw_flock_steering(void *, void *, float);
 
 extern void MobySpringTurn_b(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
-extern int CarriedMobyUpdate(void *, void *);
-
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32(float);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 extern float eudora_camera_pos[4];
 extern float g_frame_time MACRO_ADDR;
@@ -2114,7 +2107,6 @@ void circular_saw_enemy_update(M_35F0 *moby) {
     StepColorFade(moby, data->fB0);
 }
 
-extern int Moby_PlaySound(int, int, char *);
 /* Run the suck cannon hit check; set state 9 while caught, back to 1 when released. */
 int process_moby_hit_state_and_voice(char *m, int a, int b, float f) {
     char *h = get_moby_suck_cannon_record(m);
@@ -2252,7 +2244,7 @@ struct Shot5BD0 {
 };
 
 extern int truncate_float_to_s32(float);
-extern int STUB_printf();
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
@@ -2261,7 +2253,6 @@ extern int MoveKeepingOverGround_o(void *, void *, void *, float, float, float, 
                                    int) __asm__("func_L00_002594C8");
 
 extern float vec_length_xy(void *);
-extern void spawn_class_b8_projectile(void *, void *, void *, int);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -2989,7 +2980,7 @@ typedef struct {
     f32 rate; /* 0x30 */
 } LeverVars;
 extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
-extern int Sound_IsPlaying(void *, int);
+
 extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 extern struct Moby *eudora_mobys_r2 __asm__("D_L04_00160058") MACRO_ADDR;
 extern u8 voice_pool[];

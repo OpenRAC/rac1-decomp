@@ -8,6 +8,21 @@
 #include "game/audio/music.h"
 #include "game/audio/sound.h"
 #include "asm_functions/executable.h"
+#include "game/render/draw.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
+#include "core/sound/989snd.h"
+#include "game/render/framebuf.h"
+#include "core/gs/put_draw_env.h"
+#include "core/cdvd/callbacks.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "game/system/space.h"
+#include "core/gs/dma_and_sync_v.h"
+#include "game/movie/movie.h"
+#include "game/ui/transition.h"
+#include "game/system/initonce.h"
+#include "game/gameplay/actuator.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -32,17 +47,6 @@ extern Globals137C80 disc_table_g __asm__("D_00137C80");
 extern char voice_pool[];
 extern char memory_card_state[];
 extern char level_resource_buffers[];
-
-extern void FadeToBlack(int);
-extern void snd_StreamSafeCdSync(int);
-
-extern void Movie_Play(int, int, int, int, int);
-extern void sce_cd_sync_s(int);
-extern void sce_gs_sync_v(int);
-extern void wait_for_graphics_pipeline_idle(int, int);
-
-extern void sceGsSyncVCallback(void (*)(void));
-extern void Hud_sendTexture(int, int, int, int, int, int);
 
 /* Start level `level`: pick its two load parameters from the level
    table in disc_table (the alternate set while pal_mode is set), stop
@@ -145,42 +149,28 @@ extern u8 D_0016044C[] MACRO_ADDR;
 extern s32 D_0015F6E4 MACRO_ADDR;
 extern u8 D_0013E130[];
 
-extern void func_00201E88(void);
-extern void func_001E94A8(void);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern void DMAC_VIF1_Enable_r(void) __asm__("func_00235018");
-extern void func_001F0F30(void);
+
 extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
-extern void func_001FB470(void);
-extern void func_001F3C10(void);
-extern void func_001F3D00(void);
+
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
 extern void flush_cache_r(s32) __asm__("func_00118D80");
 
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
-extern void func_001FB530(void);
-extern void func_00201AF0(s32);
-extern void func_001F7680(s32);
-extern void func_00234C98(s32, u64);
-extern void func_001F55C0(s32, s32, s32, s32);
+
 extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
-extern void func_001FB8A8(void);
+
 extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
-extern void func_00234AC8(s32);
-extern s32 func_00209BB8(void);
+
 extern void UpdatePad_r(void) __asm__("func_00218908");
 extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
 extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
-extern void func_001E9730(char *, ...);
-extern s32 func_0022EA20(s32);
-extern void func_0012E2E8(void);
-extern s32 func_001EBB48(void);
+
 extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
 extern void sceGsResetGraph_r(s16, s16, s16, s16) __asm__("func_00121B78");
-extern void func_001F3890(void);
-extern void func_00233308(void);
 
 /* Start-up sequence before the first level: clears the level bss, shows the intro and
    loading images of the chosen language (PAL fades each in over eight frames) until they end

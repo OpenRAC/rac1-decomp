@@ -25,6 +25,20 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/music_track_requests.h"
+#include "asm_functions/level_06.h"
+#include "overlays/l06_blarg/hero_idle_and_items.h"
+#include "overlays/shared/hero_update_ledge_grab.h"
+#include "overlays/l06_blarg/fred_and_commando.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -389,7 +403,6 @@ INCLUDE_ASM("asm/overlays", func_L06_002EB348);
 extern float toxic_gas_vent_near_d50_value SDATA(toxic_gas_vent_near_d50_value);
 extern float toxic_gas_vent_near_anim_time SDATA(toxic_gas_vent_near_anim_time);
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 extern void emit_toxic_gas_vent_sparks(char *);
@@ -480,7 +493,6 @@ extern float spark_spread SDATA(spark_spread);
 extern int FastBSphereCheck(char *, float);
 
 extern void rand_vec(float *, float, float);
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Level 6 moby update: aims a vector at its target, runs the chain of distance and angle helpers, and hands the result
    to PartType02Spawn. */
@@ -691,7 +703,6 @@ void set_moby_list_state_4(int idx) {
         moby[0x20] = 4;
     } while (*p++ >= 0);
 }
-extern void Moby_PlaySound(int, int, int);
 
 // Marks a moby as done when in state 2: sets state 4, clears two fields and puts its 7 children into state 5.
 void set_moby_and_links_to_states_4_and_5(char *moby) {
@@ -828,7 +839,6 @@ extern void enter_hero_idle_state_for_current_vehicle_mode_r(void) __asm__("func
 extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern int Help_Request_r(int, int) __asm__("func_L00_00203F20");
 extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
-extern int func_0020BFC8(int, int);
 
 /* Level 6 drawbridge (class 1028): spawns its two rows of deck pieces, waits for the hero's switch, then
    lowers through three hinge stages (drawbridge_slide/0C/10) while the camera follows the path nodes. */
@@ -1109,14 +1119,8 @@ extern float ApproachValue(float *, float, float);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 
 extern void record_moby_hit(void *, void *);
-extern void AddDrawCallback(void *, void *);
+
 extern char *MobyGetHitMessage(void *, int, int);
-extern int Help_Request(int, int);
-
-extern void sce_vu0_mul_matrix(void *, void *, void *);
-
-extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *, char *, int, unsigned char, unsigned char,
-                                                                     int, float);
 
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
@@ -1380,12 +1384,10 @@ void update_beam_barrier(char *m) {
 #undef FLD
 typedef u32 u128_F8200 __attribute__((mode(TI), aligned(16)));
 
-extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern unsigned int FastTweenColor_r(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
-extern void blarg_draw_strand_strip(int *, float *);
+
 extern float beam_barrier_draw_scale SDATA(beam_barrier_draw_scale);
 extern int beam_barrier_blend_a SDATA(beam_barrier_blend_a);
 extern int beam_barrier_blend_b SDATA(beam_barrier_blend_b);
@@ -1479,7 +1481,6 @@ extern f32 D_L06_00161E94_F8430 SDATA(D_L06_00161E94);
 extern int beam_barrier_strand_timers[4] MACRO_ADDR;
 extern Vec4 beam_barrier_strand_points[4][30];
 extern Vec4 beam_barrier_strand_drift[4][30];
-extern void set_vec_to_origin_point(void *);
 
 /* Spins the moby and animates four 30-point strands: a strand whose timer ran out is rebuilt with a smoothed random
    drift (each point averages three jitters) and its timer reset; otherwise every inner point moves by its drift.
@@ -1597,7 +1598,7 @@ typedef struct {
 extern void update_alien_snapper_hit_response_and_targeting_r(Moby *) __asm__("func_L06_002FA618");
 extern void Manipulator_ApplyScale_r(float, Moby *, int, void *) __asm__("func_L00_00264B40");
 extern void set_ground_height_band_r(Moby *) __asm__("func_L00_0025B178");
-extern void func_L01_0026E8E0(void *);
+
 extern void MobyBlendAnimation_r(Moby *, int, int, int) __asm__("func_00213DE0");
 extern void transition_moby_group_state_1_to_2_r(Moby *) __asm__("func_L06_002FAAC8");
 extern float func_L00_0025BC48(void *, void *, void *, float, float);
@@ -2321,9 +2322,7 @@ extern void start_alien_queen_intro_q(void *) __asm__("func_L06_002FC578");
 extern float FastAbsF_q(float) __asm__("func_001F9B88");
 extern int update_alien_queen_intro_camera_q(void *) __asm__("func_L06_002FC6D8");
 extern void finish_alien_queen_intro_q(void *) __asm__("func_L06_002FC8E0");
-extern void finish_alien_queen_first_recovery(void *);
-extern void finish_alien_queen_second_recovery(void *);
-extern int update_alien_queen_second_recovery_camera(void *);
+
 extern void activate_listed_state_15_mobys_at_raised_positions_q(void *) __asm__("func_L06_002FC4C0");
 extern int update_alien_queen_first_recovery_camera_q(void *) __asm__("func_L06_002FCA98");
 extern void clear_moby_list_state_18_q(int) __asm__("func_L06_002FADE0");
@@ -2744,13 +2743,8 @@ extern void SetDeathBits(void *, int, int);
 
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
-extern float IntToFloat(int);
-extern void euler_rotation_basis(void *, void *);
 
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void start_alien_queen_first_recovery(char *);
-extern void start_alien_queen_second_recovery(char *);
 
 /* Boss-style moby update: applies hit damage, handles recovery and death states. */
 void update_alien_queen_hit_response_and_recovery(void *moby_) {
@@ -2925,12 +2919,9 @@ void activate_listed_state_15_mobys_at_raised_positions(char *moby) {
         } while (*p++ >= 0);
     }
 }
-extern void Hero_ResetToPosition(void *, void *, int, int);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 // sets up a camera-like aim from a moby toward its orbit point and releases the slot
 void start_alien_queen_intro(char *moby) {
@@ -2956,8 +2947,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void lerp_vector(void *, void *, void *, float);
 
 extern float vec_distance_xy(void *, void *);
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern short g_frame_time_sq_s __asm__("D_0015EE70");
 /* Aims the camera at a moby, blending toward its orbit; returns nonzero when finished. */
@@ -2994,7 +2983,6 @@ int update_alien_queen_intro_camera(char *moby) {
         return 1;
     return 0;
 }
-extern void HeroL06_TrySetMoveState(int, int);
 
 /* Ends the moby's script. */
 void finish_alien_queen_intro(char *arg) {
@@ -3106,8 +3094,6 @@ typedef u32 u128_FD3E0 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-
-extern void set_moby_list_state(int, int);
 
 extern float blarg_slide_pair_open_a SDATA(blarg_slide_pair_open_a);
 extern float blarg_slide_pair_open_b SDATA(blarg_slide_pair_open_b);
@@ -3343,11 +3329,6 @@ typedef struct {
     unsigned char f20;
 } Flags;
 extern int try_set_help_message(int, int);
-extern void FadeToBlack(int);
-extern void restore_hero_from_vehicle_mode(void);
-extern void MusicRequestTrack(int, int);
-
-extern void enter_hero_vehicle_mode_and_set_moby(int, int, int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
@@ -3575,10 +3556,6 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
     FastVecAdd(&v0, &v0, &moby->pos);
     update_entity_matrix(d->f20, &v0, &v10, &moby->rot);
 }
-extern void AddDrawCallback(void *, void *);
-extern void draw_dual_texture_50_quad_mesh(void);
-extern void draw_dual_texture_58_quad_mesh(void);
-extern void draw_dual_texture_864_quad_mesh(void);
 
 /* Registers the moby's draw callbacks, choosing by its four slot ids. */
 void enqueue_moby_draw_callbacks_by_clip_volume(char *moby) {

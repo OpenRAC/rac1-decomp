@@ -22,20 +22,19 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/shot_tracking.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
-extern void initialize_moby_grounding(char *);
-extern int DialogRequest_Init(void *, void *);
-
-extern int Npc_TryStartDialog(void *, void *);
-
 extern int fast_dec_timer(void *);
 
-extern void MusicRequestTrack(int, int);
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern int memcard_Save(int, int);
 extern float vec_distance_xy(float *, float *);
 
 extern int truncate_float_to_s32(float);
@@ -438,7 +437,6 @@ typedef struct Items {
 
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-extern int func_L00_00203F20(int, int);
 
 extern unsigned char D_0013D5E7[];
 extern int D_0015EFA4 MACRO_ADDR;
@@ -638,9 +636,8 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
             break;
     }
 }
-extern float IntToFloat(int);
+
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
@@ -926,7 +923,7 @@ extern PadState D_0013CA40;
 extern int func_L00_002E9870(char *);
 extern void func_L00_002E9838(char *);
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void func_L02_002F79D0(float, float, float);
+
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern void func_L00_002E9E20(void *, float, float);
 extern void func_L00_002E9900(int, float, float);

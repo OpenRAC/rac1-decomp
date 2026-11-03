@@ -23,6 +23,22 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/follow_camera.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
+#include "overlays/shared/collision_queries.h"
+#include "game/ui/vendor.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -215,8 +231,6 @@ extern float nanotech_spark_size_b SDATA(nanotech_spark_size_b);
 
 extern void build_look_at_matrix_v(void *, void *, float, void *) __asm__("func_002156E0");
 
-extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
-
 /* Build a direction to the target, scale it and emit two effect pieces from the moby's position. */
 void spawn_nanotech_ball_collection_effect_pair(Moby *m) {
     Vx a;
@@ -268,11 +282,7 @@ extern f32 nanotech_ring_heights SDATA(nanotech_ring_heights);
 
 void vec_scale_to_length(void *, void *, f32);
 
-f32 IntToFloat(s32);
 s32 truncate_float_to_s32(f32);
-f32 FastAbsF(f32);
-
-u8 *PartType59Spawn(void *, s32, u8, s32, s32, s32, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002d8510. */
 s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
@@ -456,14 +466,14 @@ extern void AddDrawCallback_r(void (*)(void), int) __asm__("func_001F49B0");
 extern void draw_nanotech_ball_r(void) __asm__("func_L00_002DACC0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void compute_nanotech_ball_slot_position_r(void *, void *, int) __asm__("func_L00_002D9D00");
-extern Part *func_L00_002745A8(void *, int, int);
+
 extern void spawn_nanotech_ball_collection_effect_pair_r(void *) __asm__("func_L00_002D98C8");
 extern int update_nanotech_ball_collection_effects_r(void *) __asm__("func_L00_002D99C0");
 extern void update_nanotech_ball_grounding_and_fall_r(void *) __asm__("func_L00_002D9668");
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern void KillPart_r(void *) __asm__("func_L00_002688A8");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern int func_L00_0028EF68(int, int, void *, int);
+
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 
 /* Nanotech ball update: spawns, homes in on its target, hits or fizzles; kills itself when its owner goes. */
@@ -1059,7 +1069,6 @@ int invoke_optional_moby_callback_or_return_one(char *a, void *b) {
     }
     return 1;
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern char player_camera[];
 
@@ -1335,9 +1344,6 @@ extern float frame_scale40 SDATA(D_0015EE60);
 extern char fire_tuning40[1] SDATA(D_L00_00161C00);
 /* Retail registers the copy at 0x238128, one of several identical delete callbacks. */
 
-extern void update_hud_counter_cap_and_visibility(void);
-extern void hud_draw_gauge_frame(void);
-extern int queue_animation_update(int, int, int, int, int, int, int);
 extern void suck_beam_queue_draw(int);
 extern void refresh_suck_cannon_slots(void);
 
@@ -1345,16 +1351,10 @@ extern void reset_suck40(M40 *) __asm__("func_L00_002DF150");
 
 extern int is_suck_cannon_suction_blocked_by_hero_state(void);
 
-extern int Moby_PlaySound(int, int, int);
-
 extern void stop_suck_cannon_suction_effect(int);
 extern void update_suck_cannon_suction(u8 *, void *);
-extern void HeroEnterMoveState(int, int);
 
 extern int coll_line(void *, void *, int, int, int);
-extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern float vec_length_xy(void *);
 typedef struct {
@@ -1830,7 +1830,7 @@ fail:
 }
 extern short suck_cannon_stored_rot_offset;
 extern char *get_moby_suck_cannon_record(char *);
-extern int Moby_PlaySound(int, int, int);
+
 extern void SetDeathBits(void *, int, int);
 
 /* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
@@ -1862,7 +1862,6 @@ extern char *get_moby_suck_cannon_record(char *);
 
 extern char *GetFlaggedPvarWord(void *);
 extern float vec_distance_xy(void *, void *);
-extern int Moby_PlaySound(int, int, int);
 
 /* starts a moby's animation from a data moby and sets up its effect state */
 int launch_suck_cannon_projectile(Moby *m, float *pos, char *other, float f) {
@@ -1983,7 +1982,7 @@ typedef struct {
 } Cam;
 extern Cam player_camera_r __asm__("D_L00_00166D80");
 
-extern char *mine_camera_blast(char *, char *, int, char *);
+extern char *mine_camera_blast_v(char *, char *, int, char *) __asm__("func_L00_002D4CE8");
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 /* Explosion burst for a moby: debris sprays, sparks, coloured flashes, camera shake and an optional damage area. */
@@ -2128,7 +2127,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     }
     player_camera_r.f160 = (f23 < 20.0f) ? 0.4f - f23 * 0.0175f : 0.050000012f;
     player_camera_r.i168 = scale_ticks(25);
-    mine_camera_blast((char *)&blk, (char *)&((Moby *)self)->pos, 0, 0);
+    mine_camera_blast_v((char *)&blk, (char *)&((Moby *)self)->pos, 0, 0);
     if (gold_weapon_purchased[9]) {
         k = coll_sphere_mobys_r(3.0f, &((Moby *)self)->pos, 0x10, self, 0);
         *(u128_DD3D8 *)e = *(u128_DD3D8 *)&((Moby *)self)->pos;
@@ -2279,7 +2278,7 @@ extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-extern void func_L00_0026D270(void *, void *);
+
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
 extern void STUB_printf_r(void *) __asm__("func_001E9730");
@@ -2587,7 +2586,6 @@ extern char suck_beam_ring_vertices_base[];
 extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
-extern void VU1_addGSregister(int, long);
 
 typedef struct {
     float q[4][4];
@@ -2807,7 +2805,6 @@ typedef struct {
     char *p;
 } E04_pt3;
 extern E04_pt3 suck_beam_particles[];
-extern void AddDrawCallback();
 
 extern V41 suck_beam_ring_unit_offsets[];
 extern float suck_beam_segment_turn_angles[];
@@ -3080,7 +3077,6 @@ void suck_beam_update(void *moby, void *position) {
     }
 }
 extern void suck_beam_draw_mesh(void);
-extern void AddDrawCallback(void (*)(void), int);
 
 /* Fades the suck beam segments and queues the beam draw while it is visible. */
 void suck_beam_queue_draw(int arg0) {
@@ -3126,9 +3122,6 @@ void stop_suck_cannon_suction_effect(int arg0) {
     }
     suck_beam_queue_draw(arg0);
 }
-
-extern void begin_bolt_attraction(void *, int, float, float);
-extern void try_collect_ammo_pickup(void *);
 
 /* Scatter a moby away from nearby positions in the hazard table. */
 void scatter_moby_from_hazards(Moby *m) {
@@ -3243,7 +3236,7 @@ void red_orb_update(char *m) {
             break;
     }
 }
-extern void update_instance_attachment_points_and_lengths(void *);
+
 /* Resets the quad moby's blend values when flagged, then updates its attachment points. */
 void quad_moby_update(Moby *a) {
     if (a->anim_flags & 2) {
@@ -3337,21 +3330,19 @@ extern float D_L00_0015F4FC MACRO_ADDR;
 extern float D_L00_00161C84 MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern char g_debug_camera_r3[] __asm__("D_L00_00166EC0");
-extern void func_L00_002E1660(Moby *);
+
 extern int Moby_PlaySound_r2(int, int, Moby *) __asm__("func_0022ED80");
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
-extern int func_L00_00267BA8(int, int, int);
-extern int func_L00_002E1790(Moby *);
+
 extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern void func_L00_002E17F0(Moby *);
+
 extern float func_00214D28(float *, float, float);
 extern float func_00214D88(float *, float *, float, float, float, float);
-extern void func_L00_002EBE88(void *);
-extern void func_L00_002EBEE0(void *);
+
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
 extern float FastSubRots_r2(float, float) __asm__("func_001FA790");

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "core/cdvd/read.h"
 
 /*
  * core_text object 0x122200-0x1224B0. Boundaries are retail's linker fill
@@ -10,9 +11,6 @@
  * graph006.o (sceGsSetDefDrawEnv, sce_gs_set_def_draw_env), back to back. Built with
  * Sony's 2.9-ee (Makefile.sn, EE29_CORE).
  */
-
-
-extern void *sceGsGetGParam(void);
 
 /*
  * sceGszbufaddr-style size: fbw = (w + 63) / 64 pages across; fbh =

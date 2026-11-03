@@ -24,6 +24,19 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "callees.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/trigger_switches_and_hoverboard.h"
+#include "overlays/l05_rilgar/electric_gate.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -232,11 +245,6 @@ extern int fast_dec_timer(int *arg0);
 
 extern float vec_distance_xy(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
-extern void euler_rotation_basis(void *, void *);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void Moby_PlaySound(int, int, int);
 
 extern void spawn_sharkigator_surface_effects(char *moby);
 extern void spawn_sharkigator_splash_effects(int unused, char *p);
@@ -454,8 +462,6 @@ state_three: {
 }
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 
-extern unsigned char *spawn_splash(void *, void *, void *, float, float);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float rilgar_water_surface_z_m __asm__("D_L05_001613A8") MACRO_ADDR;
 extern char rilgar_water_surface_z[] MACRO_ADDR;
@@ -491,7 +497,6 @@ void spawn_sharkigator_surface_effects(char *moby) {
         }
     }
 }
-extern char *spawn_burst_moby(void *, float);
 
 extern void rand_vec(float *, float, float);
 
@@ -552,9 +557,7 @@ void draw_group_moby_glow_quads(unsigned char *moby) {
         get_next_moby_in_group((int *)&it, (int)it, 0, 0);
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern int rilgar_frame_count MACRO_ADDR;
 
 // Updates a moby's pulsing colour and its draw hook.
@@ -596,7 +599,7 @@ extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern void advance_scenery_ship_along_path_r(char *moby, int *path) __asm__("func_L05_002D8AD8");
-extern int func_L00_0028EB98(void *, int);
+
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 extern void FastVecAdd_r(float *, float *, float *) __asm__("func_001F9BD8");
@@ -817,7 +820,7 @@ typedef struct {
 } L05GlowPacket;
 
 extern u64 GetEffectTex(int);
-extern float IntToFloat(int);
+
 extern void libc_memset(void *, int, int);
 extern int FastBSphereCheck(void *, float);
 extern void draw_world_quad(void *, int, int);
@@ -914,7 +917,6 @@ extern char hero_globals_base[];
 extern void handle_amoeboid_hits(unsigned char *m);
 extern void spawn_amoeboid_particles(unsigned char *moby);
 
-extern void MoveCtl_Init(char *p);
 extern int truncate_float_to_s32(float);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -980,7 +982,6 @@ void amoeboid_update(unsigned char *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_amoeboid_hit_sparks(void *, void *);
-extern void Moby_PlaySound(int, int, int);
 
 // Sets up a moby from a found neighbour and adds a random bonus to a counter when the neighbour has no owner.
 void handle_amoeboid_hits(unsigned char *m) {
@@ -1040,8 +1041,6 @@ void spawn_amoeboid_particles(unsigned char *moby) {
 }
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-
 /* Explosion debris: 20 bursts thrown out along dir with random spread, each trailing 10 smoke puffs. */
 void spawn_amoeboid_hit_sparks(void *m, void *dir) {
     float p[4];
@@ -1100,7 +1099,6 @@ extern void set_ground_height_band(void *);
 void handle_extermibot_hits_and_update_targeting(Moby *m);
 void move_extermibot_along_path(struct Moby *m, s32 node, f32 side);
 
-extern s32 follow_path(void *, s32, s32, void *, s32, void *, f32);
 extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);
 
 extern f32 ApproachValue(f32 *, f32, f32);
@@ -1794,7 +1792,6 @@ typedef struct {
     s32 stuck_timer; /* 0x2D4 */
 } PathWalkerVars;
 extern float sharkigator_scale SDATA(sharkigator_scale);
-extern s32 follow_path(void *, s32, s32, void *, s32, void *, f32);
 
 extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 SteerAngleWithVelocity_r(f32 *angle, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025CE58");
@@ -2303,7 +2300,7 @@ typedef struct {
     char _pad00[0x10];
     unsigned char nframes; /* 0x10 */
 } AnimSeq_065D0;
-extern void *select_candidate_by_max_float_2c(void *, void *, void *, int);
+
 extern void ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void SetDeathBits(void *, int, int);
@@ -2512,7 +2509,7 @@ void copy_racer_path_node(char *moby, int idx, float *out) {
     out[0] = out[0] + FastCos(a) * 0.0f;
     out[1] = out[1] + FastSin(a) * 0.0f;
 }
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern int offset_path_index(char *, int, int, int);
 
 extern void copy_racer_path_node(char *moby, int idx, float *out);
@@ -2711,7 +2708,7 @@ void update_racer_jump_animations(unsigned char *moby) {
     }
 }
 extern void set_ground_height_band(void *);
-extern void add_moby_frames_for_group_proximity(char *moby);
+
 extern float ApproachValue(float *, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
@@ -3150,15 +3147,9 @@ extern int rilgar_flood_checkpoint_reached SDATA(rilgar_flood_checkpoint_reached
 extern float rilgar_water_gate_accel SDATA(rilgar_water_gate_accel);
 extern float rilgar_water_gate_max_speed SDATA(rilgar_water_gate_max_speed);
 
-extern void RescaleFloatTable(float);
-extern void RipplePatch_ToFixedPoint(float *, int *);
-extern void record_grid_entry_neighbor_indices(int);
-extern void set_moby_list_state(int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void synchronize_group_water_heights(char *);
-extern void RippleDisturb(void *, int, int, float, float, float, float);
-extern int check_scaled_vector_bsphere(char *, float);
-extern void RippleSimClock(char *, int);
+
 extern void DrawRipplePatches(void);
 
 /* Update of the level 05 water mobys: sets up the 48-record water chain, moves the surface by state and keeps its

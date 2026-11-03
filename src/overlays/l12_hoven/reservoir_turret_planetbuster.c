@@ -30,6 +30,14 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/smoke_puff_projectiles.h"
+#include "overlays/l12_hoven/jittered_quad_layers.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -123,7 +131,7 @@ extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
+
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern void draw_water_reservoir_r(char *) __asm__("func_L12_002EDE40");
 
@@ -430,10 +438,8 @@ void HovenShotUpdate(struct Moby *moby) {
 extern unsigned char gHaveHeliPack_e[] __asm__("D_0013D5CA") NOT_SDA;
 extern int pad_globals_base_e[] __asm__("D_0013A5E0") NOT_SDA;
 extern int gameplay_event_frame_count_e __asm__("D_0015EFA4") MACRO_ADDR;
-extern int count_active_moby_group_members(int, int);
-extern void PlayBankSound(int, int, int);
 
-extern void Help_Request(int, int);
+extern void PlayBankSound(int, int, int);
 
 /* Hoven challenge tracker: unlocks the area once, records the time and run flags for two skill points and
  * awards them (one for staying airborne long enough). */
@@ -622,7 +628,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
 extern int fast_dec_timer(int *);
 
 extern void rand_vec(float *, float, float);
-extern void AddDrawCallback(void *, void *);
+
 extern float electric_arc_tex_scroll SDATA(electric_arc_tex_scroll);
 extern float electric_arc_tex_scroll_speed SDATA(electric_arc_tex_scroll_speed);
 extern float electric_arc_jitter SDATA(electric_arc_jitter);
@@ -806,11 +812,8 @@ void update_oscillating_target_link(Moby *moby) {
             break;
     }
 }
-extern void set_level_state_flag_88(void *);
+extern void set_level_state_flag_88_v(void *) __asm__("func_L08_00315068");
 
-extern void set_camera_position(void *);
-
-extern void set_camera_rotation(void *);
 extern char hoven_turret_camera_offset;
 
 // Builds a rotated/translated matrix from a moby and its data, then sets a rotation from an angle.
@@ -822,7 +825,7 @@ struct UpdateHovenTurretCameraVars {
 void update_hoven_turret_camera(char *moby) {
     float m[8];
     struct UpdateHovenTurretCameraVars *data = (struct UpdateHovenTurretCameraVars *)((Moby *)moby)->pvars;
-    set_level_state_flag_88(moby);
+    set_level_state_flag_88_v(moby);
     matrix_mul_vec3(m, &hoven_turret_camera_offset, moby + 0xC0);
     FastVecAdd(m, m, moby + 0x10);
     set_camera_position(m);
@@ -969,29 +972,19 @@ extern float hoven_turret_destruction_view_offset_distance_min SDATA(hoven_turre
 extern float hoven_turret_destruction_view_offset_distance_max SDATA(hoven_turret_destruction_view_offset_distance_max);
 extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void Moby_PlaySound(int, int, int);
-
-extern void AddDrawCallback(void *, void *);
 extern void update_hoven_turret_target_alignment_timer(void *);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage(void *, int, int);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachValue(float *, float, float);
 
-extern void create_moby_with_particles(void *, void *, void *, int);
-
 extern void vec_scale_to_length(void *, void *, float);
-
-extern char *PartType27Spawn(void *, void *, int, int, float);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
-extern int func_0020BFC8(int, int);
 extern void draw_hoven_turret_hud();
 extern void draw_hoven_turret_destruction_fade();
 
@@ -1251,12 +1244,12 @@ void hoven_turret_update(Moby *moby) {
             break;
     }
 }
-extern void VU1_addGSregister(int, long);
+
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern float IntToFloat_r3(int) __asm__("func_001FA888");
-extern void func_L02_0020BF88(void *, void *, void *, long, int);
+extern void draw_geometry_quad_5188_v(void *, void *, void *, long, int) __asm__("func_L02_0020BF88");
 extern int hoven_turret_hud_frame_color SDATA(hoven_turret_hud_frame_color);
 extern int hoven_turret_hud_frame_vertex_3_uv SDATA(hoven_turret_hud_frame_vertex_3_uv);
 extern int hoven_turret_hud_frame_vertex_0_uv SDATA(hoven_turret_hud_frame_vertex_0_uv);
@@ -1350,7 +1343,7 @@ void draw_hoven_turret_hud(Moby *moby) {
         xy[2] += (truncate_float_to_s32_r(hoven_turret_gauge_center_x) << 4) + 0x8000;
         xy[3] += (u32)((truncate_float_to_s32_r(hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
         xy[3] += (truncate_float_to_s32_r(hoven_turret_gauge_center_x) << 4) + 0x8000;
-        draw_geometry_quad_5188(xy, uv, col, tex, 1);
+        draw_geometry_quad_5188_v(xy, uv, col, tex, 1);
     }
     tex = GetEffectTex_r2(6);
     uv[0] = hoven_turret_hud_health_dial_vertex_0_uv;
@@ -1398,7 +1391,7 @@ void draw_hoven_turret_hud(Moby *moby) {
         xy[2] += (truncate_float_to_s32_r(hoven_turret_gauge_center_x + (float)x0) << 4) + 0x8000;
         xy[3] += (u32)((truncate_float_to_s32_r(hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
         xy[3] += (truncate_float_to_s32_r(hoven_turret_gauge_center_x) << 4) + 0x8000;
-        draw_geometry_quad_5188(xy, uv, col, tex, 1);
+        draw_geometry_quad_5188_v(xy, uv, col, tex, 1);
     }
     if (scale_ticks(0xF) < d->f88) {
         c = FastTweenColor(0x5000FFFF, 0x500000FF, IntToFloat_r3(d->f88 - scale_ticks(0xF)) / (float)scale_ticks(0xF));
@@ -1433,7 +1426,7 @@ void draw_hoven_turret_hud(Moby *moby) {
     xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[3] += truncate_float_to_s32_r(FastCos(a) * hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    draw_geometry_quad_5188(xy, uv, col, GetEffectTex(hoven_turret_hud_yaw_indicator_texture_index), 1);
+    draw_geometry_quad_5188_v(xy, uv, col, GetEffectTex(hoven_turret_hud_yaw_indicator_texture_index), 1);
     xy[3] = 0xFFFFF000000000L;
     xy[2] = 0xFFFFF000000000L;
     xy[1] = 0xFFFFF000000000L;
@@ -1454,14 +1447,12 @@ void draw_hoven_turret_hud(Moby *moby) {
     xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
                    (int)0x80000000);
     xy[3] += truncate_float_to_s32_r(FastCos(a) * hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
-    draw_geometry_quad_5188(xy, uv, col, GetEffectTex(hoven_turret_hud_pitch_indicator_texture_index), 1);
+    draw_geometry_quad_5188_v(xy, uv, col, GetEffectTex(hoven_turret_hud_pitch_indicator_texture_index), 1);
 }
 typedef struct {
     char pad0[0xAC];
     short value;
 } Level12VendorCounterData;
-
-extern void emit_rgba_draw_packet(int, int, int, int);
 
 /* Scale and play the vendor cue while its counter is below the limit. */
 void draw_hoven_turret_destruction_fade(Moby *moby) {
@@ -1620,9 +1611,6 @@ extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern void *spawn_class_b8_projectile(void *, void *, void *, int);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int slot);
 extern void update_planetbuster_maximus_detached_parts(char *);
@@ -2042,7 +2030,6 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
 }
 extern int hoven_frame_count MACRO_ADDR;
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
 
 /* Moby update that pulses a glow tint on 18 linked mobys. */
 void update_planetbuster_maximus_glow_color(char *moby) {
@@ -2111,8 +2098,6 @@ extern float planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_
 extern float planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees
     SDATA(planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees);
 extern float planetbuster_sway_amplitude SDATA(planetbuster_sway_amplitude);
-
-extern void apply_linked_moby_relative_transforms(char *, char *, int);
 
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
@@ -2515,11 +2500,9 @@ void update_homing_mine_spawner_target(char *m) {
 }
 
 extern s32 g_current_level_index SDATA(g_current_level_index);
-extern int check_scaled_vector_bsphere(void *, float);
+
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern unsigned char *hoven_mobys MACRO_ADDR;
-
-extern void draw_hoven_jittered_quad_layers(void);
 
 /* Pvars: d[0] is the moby to watch, d[1] the voice slot held for this moby.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_003081b0. */
@@ -2642,8 +2625,6 @@ void emit_phase_selected_moby_effects(Moby *moby) {
             break;
     }
 }
-extern void Moby_PlaySound(int, int, int);
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Moby update for a breakable. */
 void BreakableUpdate(char *m) {

@@ -25,6 +25,18 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "callees.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "game/ui/help.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "game/system/update.h"
+#include "game/render/lights.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -36,8 +48,6 @@ extern s32 weapon_ammo_counts[];
 extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
-
-extern void relocateObjectPointers(char *arg0, int idx);
 
 // load a table of 16 offsets relative to the base pointer and register each entry
 void decompress_and_relocate_vendor_moby_assets(void) {
@@ -236,22 +246,7 @@ extern char hero_globals_base[];
 extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
 extern s32 vendor_auxiliary_moby_load_pending MACRO_ADDR;
 
-extern void snd_PauseAllSoundsInGroup(s32);
-extern void music_Pause(s32);
-extern int snd_FlushSoundCommands(void);
 extern void build_vendor_menu_rows(s32);
-
-extern s32 queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
-
-extern void initialize_numeric_hud_timer_and_base_dimensions(void);
-extern void Hud_UpdateCounter(void);
-extern void draw_weapon_ammo_hud_panel(void);
-extern s32 Moby_PlaySound(s32, s32, void *);
-
-extern s32 HeroEnterMoveState(s32, s32);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 
 extern short vendor_camera_eye_local_offset;
 extern f32 vendor_camera_eye_local_offset_z MACRO_ADDR;
@@ -378,13 +373,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     vendor_auxiliary_moby_active = 0;
     vendor_auxiliary_moby_load_pending = 0;
 }
-extern void Hud_SetBarValueById(int, int);
 
-extern int HeroEnterMoveState(int, int);
-
-extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode SDATA(cinematic_mode);
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
@@ -457,7 +446,7 @@ extern s32 skip_frame MACRO_ADDR;
 extern s32 lvl_vu_chain_buffer_size MACRO_ADDR;
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero;
-extern void sound_update(void);
+
 typedef struct {
     char pad[0x30];
     int x30;
@@ -473,8 +462,7 @@ typedef struct {
 extern C_298840 cutscene_state;
 
 extern s32 gFadeLvl MACRO_ADDR;
-void VU1_syncChain(s32);
-void calculate_dma_transfer_address(void);
+
 typedef struct {
     s32 item;
     s32 selected;
@@ -527,11 +515,6 @@ struct T_29ad08 {
 extern struct T_29ad08 item_defs_r[] __asm__("D_L00_00179BC0");
 
 extern float ProbeGroundHeight_v(float, void *, s32) __asm__("func_00214358");
-
-extern void euler_rotation_basis(void *, void *);
-
-extern void Music_ContinueStreamIfReady(void);
-extern void sce_gs_sync_v(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_0029ad08. */
 void start_vendor_exit_cutscene(void) {
@@ -864,9 +847,6 @@ extern int vendor_quantity_adjustable SDATA(vendor_quantity_adjustable);
 extern s32 vendor_quantity_decrease_hold_frames MACRO_ADDR;
 extern s32 vendor_quantity_increase_hold_frames MACRO_ADDR;
 extern char level_render_state_base[];
-
-extern s32 msg_string();
-extern void set_scrolling_status_message();
 
 /* vendor buy dialog: quantity selection with held-button repeat, confirm and purchase */
 void update_vendor_purchase(void) {
@@ -1227,45 +1207,22 @@ extern s32 vendor_opening_countdown_frames MACRO_ADDR;
 extern s32 pal_mode MACRO_ADDR;
 extern f32 render_view_tan_half_fov NOT_SDA;
 
-extern void reset_frame_counters();
-extern void update_game_frame_and_idle_counters();
-
-extern void enqueue_voice_request();
-extern void Profile_Mark();
-extern void coordinate_hero_frame_update();
-
-extern s32 Moby_PlaySound();
-
 extern void start_vendor_exit_cutscene();
 extern void close_vendor_menu();
-extern void update_hud_elements();
-extern void AddDrawCallback();
+
 extern void draw_vendor_inset_quads();
-extern void set_camera_position();
-extern void set_camera_rotation();
-extern void UpdateAllPointLights();
+
 extern void decompress_and_relocate_vendor_moby_assets();
 extern void handle_vendor_auxiliary_moby_event();
 
 extern void update_resident_dialogue_animation_state();
 
-extern s32 msg_string();
-extern void set_scrolling_status_message();
-extern s32 queue_animation_update();
 extern void update_vendor_purchase();
-extern void calculate_dma_transfer_address();
-extern void initialize_vendor_selected_item_mobys();
-extern void UpdateViewContext();
-extern void restore_hero_after_vendor_exit_cutscene();
-extern void sceVu0UnitMatrix();
-extern void sceVu0RotMatrixX();
-extern void sceVu0RotMatrixY();
-extern void sceVu0RotMatrixZ();
-extern f32 IntToFloat();
 
-extern void initialize_numeric_hud_timer_and_base_dimensions();
-extern void Hud_UpdateCounter();
-extern void draw_weapon_ammo_hud_panel();
+extern void initialize_vendor_selected_item_mobys();
+
+extern void restore_hero_after_vendor_exit_cutscene();
+
 #define vendor_menu_r (*(VMenuD *)&D_L00_001CA7C0)
 #define pad_state D_0013CA40
 #define upd_d D_L00_0016C158

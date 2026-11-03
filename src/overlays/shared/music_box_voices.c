@@ -7,6 +7,9 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/sound_playback.h"
 #include "asm_functions/executable.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/requested_state_changes.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -36,12 +39,11 @@ extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
-extern int func_0022DA10(void *, float, float, float);
+
 extern int func_001F9908(int *arg0);
 extern int play_voice_r(int, int, void *, int) __asm__("func_L00_0028F0B0");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int func_L00_0028F210(int, int);
 
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char camera_pos_r[] __asm__("D_L01_001672C0");
@@ -128,9 +130,7 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
     }
 }
 
-extern float IntToFloat(int);
 extern int func_001FA898(float);
-extern void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e);
 
 /* reverb box sound update: starts or stops the sound as the listener enters or leaves the box */
 void update_requested_state_from_box_position(char *moby) {
@@ -179,8 +179,6 @@ void update_listener_following_voice(int a0) {
         }
     }
 }
-
-extern void MusicRequestTrack(int, int);
 
 /* sound instance update: fade/stop test against a listener distance */
 void update_music_box_exit_trigger(int *moby) {

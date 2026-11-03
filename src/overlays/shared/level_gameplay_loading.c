@@ -20,6 +20,21 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
+#include "game/system/loaders.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "core/gs/load_image.h"
+#include "overlays/shared/debug_menu_and_text.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/map_menu_filters.h"
+#include "overlays/shared/light_header_loading.h"
+#include "overlays/shared/level_camera_setup.h"
+#include "overlays/shared/help_message_removal.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -63,10 +78,9 @@ extern int D_L00_00160628_240398 __asm__("D_L00_00160628") MACRO_ADDR;
 extern int D_L00_00160624_240398 __asm__("D_L00_00160624") MACRO_ADDR;
 extern int D_L00_0016062C_240398 __asm__("D_L00_0016062C") MACRO_ADDR;
 extern void FastMemCopy_r(void *, void *, int) __asm__("func_001F9A98");
-extern int func_00122630(void *, short, short, short, short, short, short, short);
+
 extern void flush_cache_r(int) __asm__("func_00118D80");
-extern int func_00122958(void *, void *);
-extern int func_00120858(int, unsigned short);
+
 extern void register_moby_class_r(void *, void *, void *, int) __asm__("func_00203E78");
 
 /* Loads a level's four packed images through the GS loader and registers the image records and their data blocks. */
@@ -225,10 +239,9 @@ void resolve_level_asset_block_pointers(char *p) {
         }
     }
 }
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
-extern int func_00120778(float);
-extern int STUB_printf();
+
 extern char moby_class_size_format[];
 
 struct SortEnt {
@@ -453,30 +466,11 @@ typedef struct {
 
 extern void Load_r(void *, int, int) __asm__("func_002176C8");
 
-extern void UpdateFog();
-
-extern void VU0_loadMicroProgram(void *);
-extern int STUB_printf();
 extern void copy_memory_by_alignment_v(void *, void *, int) __asm__("func_L00_001FF040");
 
 extern void scale_vector(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
-
-extern void resolve_lookup_record(short *);
-extern int find_or_assign_bolt_source_slot(int, int);
-
-extern void store_current_level_table_value(int, int);
-
-extern void initialize_moby_state_record(char *);
-
-extern void Level_ResetGameplayGlobals(void);
-extern void initialize_hero(void);
-extern void reset_hero_to_idle(void);
-extern void setup_level_cameras(void);
-
-extern void update_moby_proximity_interaction();
 
 extern Lvl173F00_422D8 lvl_resource_buffers;
 extern int pal_mode MACRO_ADDR;
@@ -1886,30 +1880,15 @@ extern u8 mission_state[] MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 extern UpdD244 active_scene_trigger;
 
-extern void Profile_Mark(void *, s32);
+extern void Profile_Mark_v(void *, s32) __asm__("func_001E9768");
 
 extern void copy_memory_by_alignment_v(void *, void *, s32) __asm__("func_L00_001FF040");
 
-extern void ParseParticleTexs(void *, char *, void *, s32);
-extern void unpack_point_records(void *, s32);
-extern void relocate_sky_definition(char *);
-extern void LoadHudBanks(void);
-extern void upload_texture_images(void *, s32, void *);
-extern void relocateObjectPointers(Class244110 *, s32);
-extern void register_moby_class(char *, void *, void *, s32);
-extern void register_object_render_class(char *, void *, void *, s32);
-extern void register_shrub_render_class(char *, void *, void *, void *, s32);
-extern void initialize_tfrag_render_data(char *, void *);
-
-extern void load_two_int_two_float_header(char *);
-extern void relocate_counted_pointer_table(char *);
 extern char *load_level_texture_bank(char *, s32 *);
 extern void resolve_level_asset_block_pointers(char *);
 extern void print_moby_class_sizes(int *, int);
 extern char *load_level_gameplay(s32);
-extern void restore_or_clear_level_state(void);
-extern f32 IntToFloat(s32);
-extern void link_and_update_all_mobys(UpdD244 *);
+
 /* level archive load state; the shared header pointer at +4 is level_root */
 extern struct {
     u16 stage;
@@ -2034,7 +2013,7 @@ s32 load_level_archive_resources(s32 full, s32 keep) {
         }
         for (i = 0, q2 = (char *)h + h->v[9]; i < h->v[8]; i++, q2 += 0x20)
             register_object_render_class(base + *(s32 *)q2, (char *)h + h->v[0x11], q2 + 0x10, *(s32 *)(q2 + 4));
-        Profile_Mark((char *)h + h->v[9], h->v[8]);
+        Profile_Mark_v((char *)h + h->v[9], h->v[8]);
         for (i = 0, q2 = (char *)h + h->v[0xB]; i < h->v[0xA]; i++, q2 += 0x30)
             register_shrub_render_class(base + *(s32 *)q2, (char *)h + h->v[0x13], q2 + 0x10, q2 + 0x20,
                                         *(s32 *)(q2 + 4));
@@ -2311,7 +2290,6 @@ typedef struct {
 extern Load cutscene_state;
 extern void start_audio_stream_read(int, int, int);
 extern void update_audio_stream_until_idle(int);
-extern void FadeToBlack(int);
 
 /* Reads a level's packed data from disc and builds its chunk pointer table. */
 void load_scene_chunks_with_fade(int arg) {
@@ -2341,7 +2319,7 @@ void load_scene_chunks_with_fade(int arg) {
 extern s32 pal_mode MACRO_ADDR;
 void func_00217628_45FE0(void *, s32, s32) __asm__("func_00217628");
 void update_audio_stream_until_idle(s32);
-void FadeToBlack(s32);
+
 typedef struct {
     s32 a, b;
 } P2_245610;

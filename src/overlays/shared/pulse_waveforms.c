@@ -3,8 +3,8 @@
 #include "common.h"
 #include "include_asm.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 
 typedef struct {

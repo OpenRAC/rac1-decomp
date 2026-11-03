@@ -9,6 +9,26 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "game/render/vuchain.h"
+#include "game/ui/hud.h"
+#include "game/system/stub.h"
+#include "core/sound/989snd.h"
+#include "game/system/loaders.h"
+#include "game/render/framebuf.h"
+#include "core/gs/put_draw_env.h"
+#include "game/ui/pause.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "game/ui/menu.h"
+#include "core/gs/load_image.h"
+#include "game/render/tiefunc.h"
+#include "game/system/stash.h"
+#include "game/render/tfragfunc.h"
+#include "game/render/shrubfunc.h"
+#include "game/system/bmain.h"
+#include "game/gameplay/freeze.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -34,9 +54,6 @@
  * questions" in docs/reference/DECOMP_PROGRESS.md.
  */
 
-extern void SkyLevelGeneric___maybe(void);
-
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 
 /* VU1_addGSregister is (int, long) and depth_buffer_address MACRO_ADDR; the older
@@ -152,21 +169,9 @@ typedef struct {
     unsigned char *x4;
 } S160E9EC8;
 
-extern void FastMemZero16(void *, int);
-
-extern void STUB_printf(char *);
-
-extern int UpdateFog();
-extern void SetBackgroundColor(int, int, int);
-extern int VU0_loadMicroProgram();
-
 extern void scale_vector(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
-extern void ResetDrawGlobals(void);
-
-extern void Font_EnableColorCodes(void);
 
 extern int pal_mode MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -690,32 +695,23 @@ extern u8 D_001B6C00[];
 extern s32 D_001D8840[];
 extern s32 D_001E0C00[];
 extern s32 D_001E2900[];
-extern void func_002348B8(void);
+
 extern void FastMemSet_r(void *, s32, s32) __asm__("func_001F99B0");
 extern void flush_cache_r(s32) __asm__("func_00118D80");
 extern void queue_dma_transfer_r(s32) __asm__("func_001EB300");
-extern void func_00120858(s32, s32);
+
 extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
 extern void InitViewContext_r(void) __asm__("func_001F3008");
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
 
 extern void InitMemSlots_r(void) __asm__("func_00201E10");
-extern void func_00202F00(u8 *, u8 *, u8 *, s32);
-extern void func_00203038(u8 *, s32);
-extern void func_00203118(u8 *);
-extern void func_00203958(u8 *, s32, u8 *);
-extern void func_00203E78(u8 *, u8 *, u8 *, s32);
-extern void func_00203F68(u8 *, u8 *, u8 *, s32);
-extern void func_00204340(u8 *, u8 *, u8 *, u8 *, s32);
-extern void func_00204918(u8 *, u8 *);
+
 extern void parse_space_scene_chunk_r(s32) __asm__("func_00205220");
 
 extern void func_00217628(u8 *, s32, s32);
 extern unsigned int Load_r(s32, s32, s32) __asm__("func_002176C8");
 extern void func_00217748(s32);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
-extern s32 func_00122630(void *, s16, s16, s16, s16, s16, s16, s16);
-extern s32 func_00122958(void *, u8 *);
 
 /* Loads the space-transition wad to 0x1400000 and unpacks it at the level arena: textures and
    their tables, the three kinds of moby classes, sound and help text tables, the loading image;
@@ -912,7 +908,6 @@ void queue_dma_transfer(int arg0) {
 extern char render_sequence[];
 extern float view_tan_half_fov;
 extern char camera_position[];
-extern void UpdateViewContext(void);
 
 /* Transition_UpdateMovieCamera: the current keyframe (0x20 bytes: position,
    a flag byte at +0xC, then X/Y/Z angles) sets the camera position and
@@ -1106,37 +1101,15 @@ extern u8 occl_visibility[];
 extern u8 shrub_scratchpad_copy[];
 extern u8 tfrag_dma_block[];
 extern u8 tie_light_data[];
-extern s32 append_dma_tag();
 
 extern s32 Transition_DrawSky_r() __asm__("func_001E9E70");
 extern s32 Transition_UpdateMovieCamera_r2() __asm__("func_001EB338");
-extern s32 BuildViewMatrices();
-extern s32 UpdateFog();
-extern void ResetGsRegisters();
-extern s32 SetupGifPaging();
-extern s32 DoGifPaging();
+
 extern u64 GetEffectTex();
-extern s32 dispatch_callback_list_1();
-extern s32 emit_rgba_draw_packet();
-extern void DrawTexturedQuad();
+
 extern s32 truncate_float_to_s32(f32);
-extern s32 append_gif_transfer_packet();
-extern s32 AA_BlurPass();
-extern s32 draw_freeze_message_box();
 
-extern void render_level_effects_and_screen_sprites();
-extern s32 patch_shrub_gifs();
-extern void DrawShrubs();
-
-extern s32 PatchTfragGifs();
-extern void DrawTfrag();
-extern s32 VU0_loadMicroProgram();
-extern s32 VU1_syncChain();
 extern s32 VU1_addGSregister_r() __asm__("func_00234C98");
-extern void vu1_gs_regs_alt();
-
-extern s32 PatchTieGifs();
-extern void DrawTies_1();
 
 void Transition_DefaultDraw(s32 *arg0);
 
@@ -1294,37 +1267,31 @@ extern s32 D_0015F538 MACRO_ADDR;
 extern void load_and_init_BB48(void) __asm__("func_00209DC0");
 extern void transition_load_wad_BB48(void) __asm__("func_001EABE8");
 extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
-extern void func_001FFA90(void);
-extern void func_00233FF8(void);
-extern void func_00234018(void);
-extern void func_001FF6B8(void);
-extern void func_002032D0(void);
-extern s32 func_00122598(s32);
+
 extern s32 scale_frames_BB48(s32) __asm__("func_001F98C0");
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
-extern s32 func_0012DDC0(void);
+
 extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
 extern void vu1_send_chain_BB48(void) __asm__("func_002349B8");
 extern void swap_chain_BB48(void) __asm__("func_00234948");
 extern void put_draw_small_BB48(void) __asm__("func_001FB598");
-extern void func_001FB8A8(void);
+
 extern void put_draw_large_BB48(void) __asm__("func_001FB498");
 extern s32 memcard_update_BB48(void) __asm__("func_00209E68");
-extern s32 func_00209070(void);
+
 extern void update_pad_BB48(void) __asm__("func_00218908");
 extern void queue_dma_BB48(s32) __asm__("func_001EB300");
 extern s32 is_active_BB48(s32, s32) __asm__("func_001EBAF0");
-extern s32 func_0022EEB8(s32, s32, s32);
-extern void func_0022EAB0(s32);
+
 extern void update_gameplay_BB48(void) __asm__("func_001EB458");
 extern void default_draw_BB48(void) __asm__("func_001EB7C0");
-extern void func_001E9808(s32);
+
 extern void parse_space_scene_BB48(s32) __asm__("func_00205220");
 extern void vu1_init_chain_BB48(void) __asm__("func_002348E8");
 extern void fade_to_black_BB48(s32) __asm__("func_001F4E08");
 extern s32 reset_vif1_gif_BB48(void) __asm__("func_001207B8");
 extern void reset_graph_BB48(s16, s16, s16, s16) __asm__("func_00121B78");
-extern void func_001F3890(void);
+
 extern void vu1_sync_chain_BB48(s32) __asm__("func_00234AC8");
 
 /* Adapted from Lombyte's project (GPL-3.0): src/gameplay/state/transition_do_transition.c, transition_do_transition. */

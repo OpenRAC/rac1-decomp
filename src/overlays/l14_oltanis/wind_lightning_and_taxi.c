@@ -28,6 +28,18 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/follow_camera.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "asm_functions/level_14.h"
+#include "overlays/shared/tracked_moby_show.h"
+#include "overlays/l14_oltanis/bolt_thief_and_path_cameras.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -134,7 +146,6 @@ typedef struct L14BoltVars {
     s32 solid; /* 0x24 */
 } L14BoltVars;
 
-extern void VU1_addGSregister(int, long);
 extern void draw_ribbon_effect_path(void *, void *, int, int, int);
 extern float frame_scale MACRO_ADDR;
 
@@ -164,8 +175,6 @@ typedef struct {
     long r88;
 } Q_E0910;
 extern int GetEffectTex(int);
-
-extern float IntToFloat(int);
 
 extern void draw_world_quad(void *, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -399,13 +408,7 @@ extern s32 path_lift_leave_time MACRO_ADDR;
 extern f32 path_lift_hero_pull_speed SDATA(path_lift_hero_pull_speed);
 extern float g_frame_time MACRO_ADDR;
 
-extern void STUB_printf(const char *, short);
-
-extern void gunship_follow_path(void *);
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, void *);
+extern void STUB_printf_v(const char *, short) __asm__("func_001E9730");
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -455,7 +458,7 @@ void PathLiftUpdate(struct Moby *m) {
         d->h206 = 0;
         AttachManipulator(m, 0, d->manip);
         if (d->rider == -1) {
-            STUB_printf(path_lift_no_rider_msg, m->save_id);
+            STUB_printf_v(path_lift_no_rider_msg, m->save_id);
             DeleteMoby(m);
             return;
         }
@@ -723,9 +726,6 @@ typedef struct {
     int i504;
 } Spk_k_EC9C8;
 
-extern float IntToFloat(int);
-
-extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);
 extern int wind_spark_max_alpha SDATA(wind_spark_max_alpha);
 extern int wind_spark_fade_ticks SDATA(wind_spark_fade_ticks);
 struct L14SparkTarget {
@@ -821,7 +821,6 @@ extern int wind_spark_color SDATA(wind_spark_color);
 
 extern float wind_spark_quad_corners[4][4];
 extern unsigned long GetEffectTex_r(s32) __asm__("func_001F4868");
-extern void VU1_addGSregister(s32, s64);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -905,13 +904,13 @@ extern char looping_path_empty_path_msg[];
 extern f32 looping_path_moby_speed SDATA(looping_path_moby_speed);
 extern f32 looping_path_moby_pulse_speed SDATA(looping_path_moby_pulse_speed);
 extern f32 g_frame_time MACRO_ADDR;
-extern void STUB_printf(const char *, short);
+extern void STUB_printf_v(const char *, short) __asm__("func_001E9730");
 
 extern int Spline_AdvanceByDistance_r(void *, float *, int *, float *, int, float) __asm__("func_L00_0025E860");
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern L14MineHit *MobyGetHitMessage(void *, int, int);
 extern s32 ComputeHitResponse(struct Moby *, void *, f32 *, s32, s32 *, s32, s32, s32);
-extern int Moby_PlaySound(int, int, void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 
@@ -932,13 +931,13 @@ void update_looping_path_moby(struct Moby *m) {
     switch (m->state) {
         case 0:
             if (d->path == -1) {
-                STUB_printf(looping_path_no_path_msg, m->save_id);
+                STUB_printf_v(looping_path_no_path_msg, m->save_id);
                 DeleteMoby(m);
                 return;
             }
             path = oltanis_paths_r[d->path];
             if (path->count == 0) {
-                STUB_printf(looping_path_empty_path_msg, m->save_id);
+                STUB_printf_v(looping_path_empty_path_msg, m->save_id);
                 DeleteMoby(m);
                 return;
             }
@@ -1038,7 +1037,6 @@ extern void vec_scale_to_length(void *, void *, f32);
 extern int coll_line(void *, void *, int, void *, void *);
 extern void InitDirectionalHitQuery_v(void *, struct Moby *, s32, void *, f32) __asm__("func_L00_0025A8C0");
 
-extern char *PartType27Spawn(char *, char *, int c, int d, float f);
 extern struct {
     u8 pad0[0x18];
     struct Moby *moby;
@@ -1142,7 +1140,6 @@ extern int lightning_arc_remaining_frames MACRO_ADDR;
 extern float lightning_arc_start_pos[] MACRO_ADDR;
 extern float lightning_arc_end_pos[] MACRO_ADDR;
 
-extern void show_tracked_moby(void);
 extern int fast_dec_timer(void *);
 extern int FastBSphereCheck(void *, float);
 
@@ -1227,7 +1224,7 @@ extern float lightning_arc_inverse_fade_duration MACRO_ADDR;
 extern int lightning_arc_sound_pending MACRO_ADDR;
 extern int lightning_branch_starts[] MACRO_ADDR;
 extern void lerp_vector(void *, void *, void *, float);
-extern void allocate_voice_for_group_entry(int, int, void *);
+
 void spawn_lightning_arc_particle_pairs(float *pos, int n);
 void draw_branched_lightning_arc();
 /* Lightning arc between the camera points: builds the bolt and its branches once, then ages and fades them. DB2 is an
@@ -1397,7 +1394,7 @@ typedef struct {
     long r88;
 } Q_2EF078;
 extern int GetEffectTex(int);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void draw_world_quad(void *, void *, int);
@@ -1621,8 +1618,6 @@ void draw_branched_lightning_arc(void) {
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
 
-extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel,
-                                      float f2);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float lightning_spark_speed_min SDATA(lightning_spark_speed_min);
 extern float lightning_spark_speed_max SDATA(lightning_spark_speed_max);
@@ -1672,7 +1667,7 @@ extern int is_point_inside_clip_volume_r2(void *, int) __asm__("func_00215570");
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern int func_L00_0028F210(int, int);
+
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int advance_elevator_along_path_r(char *) __asm__("func_L14_002F05D8");
@@ -2153,19 +2148,16 @@ typedef struct Data_2F19C0 {
     int vol[3];
 } Data_2F19C0;
 
-extern void set_moby_dialogue_record_value(void *, int);
 extern void initialize_taxi_stop_from_position(char *);
 extern void prepare_taxi_route(char *);
 extern void request_taxi_stop_prompt(char *);
 extern Moby *find_group_moby_by_tag(char *, int);
 
-extern void Cam_SetDistanceGoal(float x, float y, int flag);
 extern float func_00214D88(float, float, float, float, float *, float *);
 extern void SamplePathAt_r(int *, int, void *, float *, int, float) __asm__("func_00215CA8");
 extern void SamplePathAt_r2(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
 extern void lerp_vector(void *, void *, void *, float);
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -2577,13 +2569,8 @@ void request_taxi_stop_prompt(char *moby) {
 }
 
 extern void set_ground_height_band(void *);
-extern int DialogRequest_Init(void *, void *);
-
-extern int Npc_TryStartDialog(void *, void *);
 
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
-extern void mark_elevator_collected(void *);
-extern int memcard_Save(int, int);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -3490,7 +3477,7 @@ extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
 extern void func_L00_0025F4A8_2FF040(void *, void *, void *, float, float, int, int, int, float, float, float, int,
                                      float, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_IsPlaying_r4(void *, int) __asm__("func_L00_0028EB98");
-extern void func_L14_002FF358(struct Moby *);
+
 extern int Moby_PlaySound_r5(int, int, int) __asm__("func_0022ED80");
 extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
 extern s32 scale_ticks_r4(s32) __asm__("func_001F9850");

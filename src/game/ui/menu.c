@@ -7,6 +7,7 @@
 #include "structs/memcard.h"
 #include "asm_functions/executable.h"
 #include "game/ui/hud.h"
+#include "game/ui/help.h"
 
 /*
  * menu.cpp in the original source; text 0x2071A8-0x209A60.
@@ -886,7 +887,6 @@ void downsample_map_coverage(void *arg0) {
     dst[0] = (dst[0] & 0xFE) | 2;
 }
 
-extern void *func_001FE540(int);
 extern char menu_item_price_fmt[]; /* "%d" */
 extern char menu_token_error_text[]; /* "error" */
 extern char vendor_item_prices[];
@@ -993,7 +993,6 @@ typedef struct {
 extern int marker_half_size MACRO_ADDR;
 
 extern char D_0019A4E8[];
-extern void draw_hud_rect_blended(int, int, int, int, long, int);
 
 /* Draw the level's map markers inside the given screen rectangle, scaled by map zoom. */
 void draw_map_markers(int left, int top, int right, int bottom) {

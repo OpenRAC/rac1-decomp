@@ -25,6 +25,12 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/visibomb_and_pyrocitor.h"
+#include "overlays/shared/hero_water_and_ground_motion.h"
 extern u8 gHeroPos[];
 extern char g_hero_pos_z[];
 extern char g_hero_rot[];
@@ -572,12 +578,8 @@ int HeroAnimLookup_Part3(void) {
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern float frame_scale MACRO_ADDR;
 extern int select_hero_condition_animation_id(int);
-extern float IntToFloat(int);
-extern void *allocate_moby_animation_slot(void *, int);
+
 extern float ApproachValue(float *, float, float);
-extern void release_moby_animation_slot(void *, void *);
-extern void initialize_moby_animation_blend(int, void *, int, int, int, int);
-extern void advance_moby_animation_blend(void *, unsigned char *);
 
 // Picks the hero's current animation id and speed from its state and starts or updates the animation slot. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020da68.
 void update_hero_condition_animation(void) {
@@ -908,9 +910,6 @@ typedef struct {
 extern Rec item_defs[] __attribute__((section(".data")));
 extern char hero_globals_base[];
 extern short hero_item_slot_anim_ids;
-extern void *allocate_moby_animation_slot(void *, int);
-
-extern void initialize_moby_animation_blend(int, void *, int, int, int, int);
 
 /* Spawn the one or two help markers for the current help target, in free slots. */
 void create_missing_hero_item_slot_animations(int a, int b) {
@@ -1014,7 +1013,6 @@ void start_equipped_item_animation(void) {
         }
     }
 }
-extern int hero_idle_sequence(int);
 
 /* Handles the pending flag at g_hero + 0x20A8, then clears it. */
 void cancel_hero_item_animation(void) {
@@ -1033,8 +1031,6 @@ void cancel_hero_item_animation(void) {
         g_hero[0x20AA] = 0;
     }
 }
-
-extern void euler_rotation_basis(void *, void *);
 
 #define HB(o) (*(unsigned char *)(g + (o)))
 
@@ -1161,8 +1157,6 @@ extern char help_stats_base[] NOT_SDA;
 extern int rendered_frame_count MACRO_ADDR;
 extern int g_game_language[] MACRO_ADDR;
 extern unsigned char gHaveMapOMatic[] NOT_SDA;
-
-extern void spawn_indexed_class_a7_moby(int);
 
 /* HeroItemsCreate: spawns the mobys for the hero's equipped item slots. */
 void spawn_hero_item_mobies(void) {
@@ -1501,8 +1495,6 @@ extern u8 hero_item_28_29_joints_slot1[];
 extern u8 hero_item_28_29_pose_buffer_slot1[];
 extern u8 D_L00_0017AA60[];
 
-extern void pack_pose(void *, void *, s32, s32, s32);
-
 extern s32 truncate_float_to_s32(f32);
 
 void update_hero_item_mobys(void) {
@@ -1773,8 +1765,6 @@ int Hero_CanUseGadget(void) {
     return 0;
 }
 extern int hero_is_in_special_state();
-
-extern int allocate_hero_voice_for_entry(int, int);
 
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
@@ -2121,7 +2111,7 @@ void hero_switch_item(int i) {
 }
 #define SLOT(i) ((struct Hero *)((char *)&g_hero_r + (i) * sizeof(struct HeroItemSlot)))
 extern void hero_switch_item(int);
-extern void update_hero_easing_record(void *);
+
 extern void clear_hero_item_slot(int, int);
 
 /* Per-frame update of the hero's seven item slots. */
@@ -2203,11 +2193,7 @@ void update_hero_equipped_items(void) {
 }
 extern void cancel_hero_item_animation(void);
 
-extern void release_and_clear_hero_voice_slots();
-
 extern void update_hero_collision_capsule_dimensions();
-
-extern void HeroEnterMoveState(int, int);
 
 /* sets up the player/object state for a new mode (a0 = mode, a1 = id, a2 = object) */
 void enter_hero_vehicle_mode(int mode, int id, char *obj) {
@@ -2250,7 +2236,6 @@ void enter_hero_vehicle_mode(int mode, int id, char *obj) {
     HeroEnterMoveState(id, 1);
 }
 
-extern void release_and_clear_hero_voice_slots(void);
 #define B ((char *)D_0013E633 + 0xE1D)
 
 /* Resets the help state: frees its markers, restores the camera target and closes the prompt. */
@@ -2344,12 +2329,10 @@ extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
-void release_and_clear_hero_voice_slots(void);
+
 void func_001F9BF0_113A0(void *, void *, void *) __asm__("func_001F9BF0");
 
-void HeroEnterMoveState(s32, s32);
 void func_L00_00217570_113A0(s32, s32) __asm__("func_L00_00217570");
-void remove_tracked_class_5f3_moby(void);
 
 void func_L00_00211338_113A0(void *, s32, f32, f32) __asm__("func_L00_00211338");
 
@@ -2513,7 +2496,6 @@ extern s32 level_hero_death_counts[];
 extern s32 level_mission_death_counts[][16];
 extern s32 mission_death_counts[];
 extern s32 level_15_mine_77_respawn_flag MACRO_ADDR;
-extern void clear_help_record_high_bits(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00211250. */
 void Hero_OnKilled(void) {
@@ -2626,12 +2608,10 @@ extern struct PadState D_0013CA40;
 
 extern float get_capped_hero_stick_magnitude_a(void) __asm__("func_L00_00211EE8");
 extern float vec_length_xy_a(void *) __asm__("func_001F9CE8");
-extern void func_L00_002180F8(void);
+
 extern void euler_to_matrix_a(void *, void *) __asm__("func_001FA218");
 
 extern void update_hero_collision_capsule_dimensions_a(void) __asm__("func_L00_00211A38");
-extern void func_L00_00221A98(void);
-extern void func_L00_00221D50(void);
 
 /* Hero per-frame input update: the stick axes from the pad (the d-pad bits stand in below 0.25), the
    voice and input history rings, then the hero's matrices. */
@@ -3116,14 +3096,10 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
 
-void sceVu0Normalize(void *, void *);
-
 void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
 
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
-f32 FastAbsF(f32);
 extern Hero D_0013F450_12E70 __asm__("D_0013F450");
 extern struct CollisionHit coll_hit_result_r2 __asm__("D_L00_00173F40");
 
@@ -3829,8 +3805,6 @@ void steer_hero_planar_velocity(float step) {
         }
     }
 }
-
-extern float vec_length(float);
 
 typedef struct {
     float f;

@@ -24,6 +24,16 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/ui/hud.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
+#include "overlays/shared/collision_queries.h"
+#include "overlays/shared/glint_effects.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -90,7 +100,6 @@ LINKER_REMNANT("asm/overlays", func_L00_002A5138);
 /* Pokes a round ripple into the level water height grids: each 0x1190-byte patch holds
  * two 23x16 height buffers (current/previous frame, indices water_grid_cur_index / water_grid_prev_index);
  * rows 16-22 mirror the eight neighbours' edges, so border cells are copied out to them. */
-extern float vec_length(float);
 
 extern float water_ripple_grid_params[];
 extern short water_grid_cur_index;
@@ -218,8 +227,6 @@ void RippleDisturb(WaterPatch *g, int count, int mode, float x, float y, float r
 #undef WATER_CUR
 #undef WATER_OTH
 LINKER_REMNANT("asm/overlays", func_L00_002A5AC0);
-
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -486,7 +493,6 @@ extern float light_beam_corner_uvs[][2];
 extern int light_beam_corner_colors[];
 extern int light_beam_quad_corner_indices[][4];
 
-extern void euler_rotation_basis(void *, void *);
 extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
@@ -648,7 +654,6 @@ void draw_vendor_effects(char *m) {
 
 extern float vec_distance_xy(void *, void *);
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern void axis_rotation_2d48(void *, int, float);
 
 extern int try_set_help_message(int, int);
@@ -895,7 +900,6 @@ extern void func_001F9C08(void *, void *, void *, float);
 extern int begin_bolt_attraction_r(void *, void *, float, float) __asm__("func_L00_002A84B0");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
-extern int func_L00_001FE940(void *, int, float);
 
 extern void func_L00_002607A8(void *, float);
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
@@ -1195,7 +1199,6 @@ extern BoltSourceStats bolt_source_stats[][64];
 extern s32 current_moby_mission_complete MACRO_ADDR;
 extern void *level_mobys_end SDATA(level_mobys_end);
 
-extern void queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
 extern void rand_vec(void *, f32, f32);
 
 extern u8 *PartType53Spawn_r(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel,
@@ -1362,7 +1365,6 @@ void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
 }
 extern short bolt_attract_sound_frame;
 extern short bolt_attract_max_spin_deg;
-extern int Moby_PlaySound(int, int, int);
 
 // Starts the moby's tumble: picks default spin rates, builds its basis and launches it.
 int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
@@ -1732,7 +1734,7 @@ int should_trigger_wrench_hit_reaction(void) {
     return 0;
 }
 
-extern void PartType53Spawn(void *, int, int, int, int, void *, float, float, float);
+extern void PartType53Spawn_v(void *, int, int, int, int, void *, float, float, float) __asm__("func_L00_00272F00");
 
 /* Emits N pairs of particles at POS with a random velocity, jittering POS each time. */
 void emit_randomized_sparkle_pairs(float *pos, int n) {
@@ -1754,9 +1756,9 @@ void emit_randomized_sparkle_pairs(float *pos, int n) {
         pos[0] += randf_sym(0.0f, 0.15f);
         pos[1] += randf_sym(0.0f, 0.15f);
         pos[2] += randf_sym(0.0f, 0.15f);
-        PartType53Spawn(pos, scale_ticks(30), 0x7F207F7F, 0, k, v, speed * 0.1f, speed, 0.0030f);
+        PartType53Spawn_v(pos, scale_ticks(30), 0x7F207F7F, 0, k, v, speed * 0.1f, speed, 0.0030f);
         k = -k;
-        PartType53Spawn(pos, scale_ticks(30), 0x7F7F7F7F, 1, k, v, speed * 0.07f, speed * 0.7f, 0.0030f);
+        PartType53Spawn_v(pos, scale_ticks(30), 0x7F7F7F7F, 1, k, v, speed * 0.07f, speed * 0.7f, 0.0030f);
     }
 }
 typedef float V[4] __attribute__((aligned(16)));
@@ -1765,7 +1767,6 @@ extern V g_debug_camera;
 extern int coll_hit_result[];
 extern float vec_length_xy(void *);
 
-extern void spawn_two_point_effect_particle(void *, void *);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 /* Spawns a burst of particles around collision_hit_point aimed along the line from g_debug_camera. */
@@ -1804,8 +1805,6 @@ void spawn_wrench_impact_effects(char *m) {
 extern char *suck_moby_list MACRO_ADDR;
 
 extern int begin_bolt_attraction(void *, int, float, float);
-
-extern int try_collect_ammo_pickup(void *);
 
 /* Walk the moby list and trigger the first nearby one that accepts it. */
 void process_mobies_near_returning_wrench(char *a) {
@@ -1969,21 +1968,17 @@ extern Wrench48 *coll_sphere_moby_hits[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time_cube MACRO_ADDR;
 extern unsigned char voice_pool[];
-extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
+
 extern void draw_wrench_swing_effect(void *);
 extern int coll_line(void *, void *, int, int, int);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_set_length_xy(void *, void *, float);
 
 extern int func_L00_001F2BE8(void *, float, int, void *, void *);
-extern int HeroEnterMoveState(int, int);
 
 extern int fast_dec_timer(int *);
 
 extern float ApproachValue(float *, float, float);
-
-extern int allocate_hero_voice_for_entry(int, int);
 
 extern int is_moby_in_class_range_500_to_540(int);
 
@@ -2470,7 +2465,7 @@ void *spawn_class_593_moby(int unused, void *pos, int c, float scale, float a, f
 }
 LINKER_REMNANT("asm/overlays", func_L00_002AAD28);
 typedef int u128 __attribute__((mode(TI)));
-extern int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color);
+
 extern int level_screen_fade_on MACRO_ADDR;
 extern int level_screen_overlay_on MACRO_ADDR;
 extern short tracked_class_5f3_moby;
@@ -2564,8 +2559,6 @@ typedef struct {
 extern int cinematic_mode MACRO_ADDR;
 extern float impact_marker_euler SDATA(impact_marker_euler);
 extern float impact_marker_euler_v[] __asm__("D_L00_001614B0") MACRO_ADDR;
-
-extern float IntToFloat(int);
 
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);

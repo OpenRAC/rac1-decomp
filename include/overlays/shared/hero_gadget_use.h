@@ -5,6 +5,8 @@
 
 #include "common.h"
 
+extern void apply_hero_item_slot_selection(int);
+extern int compute_hero_hoverboard_respawn_transform(void *, void *);
 extern int hero_pick_help_mode(void);
 extern int hero_select_anim_id_by_flags(void);
 extern int process_hero_primary_item_input(void);

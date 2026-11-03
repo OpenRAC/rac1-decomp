@@ -105,7 +105,7 @@ char *PartType41Spawn(float scale, void *pos, int a, int idx, int b, unsigned ch
     return r;
 }
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
+
 extern unsigned char *novalis_part_type52_textures;
 
 /* spawns a type-0x34 particle at a with colour b, links c, lifetime d, scale f and drag g */

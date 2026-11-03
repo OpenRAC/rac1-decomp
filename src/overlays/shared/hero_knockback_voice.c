@@ -12,6 +12,9 @@
 #include "structs/hit_message.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/l08_batalia/hero_idle_and_items.h"
 
 typedef int Q_8 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -22,10 +25,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-void release_and_clear_hero_voice_slots(void);
-
-void Hero_TryMoveStateL08(s32, s32);
-void allocate_hero_voice_for_entry(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00222800.c, FUN_L08_00222800. */
 s32 handle_hero_hit(s32 arg) {

@@ -4,6 +4,7 @@
 #include "core/mpeg/motion_comp.h"
 #include "core/mpeg/demux.h"
 #include "asm_functions/executable.h"
+#include "core/mpeg/csc.h"
 
 /*
  * core_text object 0x125630-0x12A2F0. Boundaries are retail's linker fill
@@ -2052,7 +2053,7 @@ long _getPtsDtsFlags(void *arg0, void *arg1, void *arg2, void *arg3, void *arg4)
 
 extern long _getPtsDtsFlags(void *s, void *t, void *o1, void *o3, void *o4);
 extern unsigned int mpeg_display_field_count_table[];
-extern void _csc_storeRefImage(void *arg0, void *arg1);
+
 void _dispRefImage(char *s_arg, char *t_arg) {
     struct MpegDecoder *s = (struct MpegDecoder *)s_arg;
     struct MpegRefImage *t = (struct MpegRefImage *)t_arg;
@@ -2086,7 +2087,6 @@ void _dispRefImage(char *s_arg, char *t_arg) {
 }
 
 extern long _getPtsDtsFlags(void *s, void *t, void *o1, void *o3, void *o4);
-extern void _csc_storeRefImage(void *arg0, void *arg1);
 
 /* Transcribed from the assembly. Two calls to _getPtsDtsFlags (one for each record,
    with the flag at +0x88 set to 1 for the second), a third that copies fields of

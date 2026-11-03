@@ -12,6 +12,13 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/ui/hud.h"
+#include "core/sound/989snd.h"
+#include "core/cdvd/callbacks.h"
+#include "core/cdvd/read.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "core/gs/load_image.h"
 
 /*
  * loaders.cpp in the original source; text 0x202AA8-0x205520.
@@ -56,10 +63,6 @@ typedef struct {
 /* As loaders.c declares them further down (sceGsSetDefLoadImage, sceGsExecLoadImage, FlushCache,
  * sceGsSyncPath). */
 extern int g_gs_texture_allocation_cursor MACRO_ADDR; /* gs texture allocation cursor */
-
-extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
-extern int sceGsExecLoadImage(void *, void *);
-extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 /* Uploads a texture and its mip levels to GS memory (with the palette for the 4/8-bit formats
    0x14/0x13) and writes the matching GS register words to regs. */
@@ -370,10 +373,6 @@ extern HudArena hud_state_arena __asm__("D_0019A4E8");
 extern char *Hud_HeapAlloc_d(int, int, char *, int) __asm__("func_001FFAB8");
 extern void LoadCompressedHudBank(int idx, int size);
 
-extern void Hud_SendResidentBank(int, void *, int);
-
-extern void LinkHudBank(int bank, int addr);
-
 extern int level_resource_buffers[];
 extern int hud_bank_sizes[];
 extern char hud_bank_alloc_file[];
@@ -641,9 +640,6 @@ extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 /* libgraph: sceGsSetDefLoadImage, sceGsExecLoadImage, sceGsSyncPath;
    flush_cache is the kernel's FlushCache. */
-extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
-extern int sceGsExecLoadImage(void *, void *);
-extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 typedef struct {
     int type; /* GS pixel format: 0x13 PSMT8, 2 PSMCT16, 0 PSMCT32 */
@@ -1518,15 +1514,11 @@ extern s32 D_0015EFBC MACRO_ADDR;
 extern s32 D_0015EFC0 MACRO_ADDR;
 extern u8 D_1FF8000_04C60[] __asm__("D_1FF8000");
 extern void func_0022F090();
-extern s32 func_0012DDC0();
-extern void func_0012E1C8(s32, s32, u64);
-extern void func_0012E2E8();
-extern s32 func_0012E318(s32);
+
 extern void func_0012E4F8();
 extern s32 Stream_SubmitRead_r(void *, u32, u32) __asm__("func_002175C8");
-extern s32 func_001219C8();
+
 extern s32 sce_cd_get_error_r() __asm__("func_00121930");
-extern s32 func_00120F30(s32);
 
 /* One step of the level archive load: waits for the disc, steps back a stage on a read
    error or a 720-frame stall, then by stage reads the shared, level and sound archives

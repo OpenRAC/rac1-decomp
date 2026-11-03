@@ -21,6 +21,16 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/l16_kalebo3/test_dummies_and_conveyors.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -58,17 +68,11 @@ struct RepositionCycleVars {
     s32 timer; /* 0x0C */
 };
 
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
 extern void set_ground_height_band(void *);
 
 extern void restore_gadgetron_ceo_non_challenge_environment(char *);
 extern void activate_gadgetron_ceo_challenge_environment(char *);
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
-extern int Help_Request(int, int);
-
-extern int memcard_Save(int, int);
 extern int PlayBankSound(int, int, int);
 
 extern float vec_distance_xy(void *, void *);
@@ -342,8 +346,6 @@ void gadgetron_ceo_update(Moby *m) {
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }
 
-extern void challenge_set_layout_param(float f);
-extern void MusicRequestTrack(int, int);
 extern float kalebo3_hero_fall_state_height MACRO_ADDR;
 
 // Sets up the flags of two rows of sub-objects, then a global and a call.
@@ -364,7 +366,6 @@ void activate_gadgetron_ceo_challenge_environment(char *moby) {
     challenge_set_layout_param(76.0f);
     MusicRequestTrack(2, 6);
 }
-extern void challenge_set_layout_param(float);
 
 // Resets the moby's two arrays of handles, then starts the follow-up effect.
 void restore_gadgetron_ceo_non_challenge_environment(char *moby) {
@@ -414,8 +415,6 @@ void update_two_region_trigger_latch(char *moby) {
         }
     }
 }
-extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 
 extern void initialize_path_walker_group(unsigned char *);
 extern void emit_path_walker_particle(unsigned char *, void *);
@@ -550,8 +549,6 @@ extern float path_walker_particle_target_scalar_scale SDATA(path_walker_particle
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void func_L00_0026DD70(void *, void *, int, int, float, int);
-
 /* Emits a particle near an active moby when the target is close. */
 void emit_path_walker_particle(unsigned char *m, void *v) {
     float input[4];
@@ -582,7 +579,6 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
                                              path_walker_particle_color_end, final_size, scale_ticks(0x23));
 }
 
-extern float IntToFloat(int);
 extern short *kalebo3_moby_groups[];
 extern char *kalebo3_moby_array MACRO_ADDR;
 extern float path_walker_initial_scale_multiplier SDATA(path_walker_initial_scale_multiplier);
@@ -647,7 +643,6 @@ void initialize_path_walker_group(unsigned char *m) {
 }
 extern int kalebo3_game_mode;
 extern char kalebo3_cutscene_state[];
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 typedef float W[4] __attribute__((aligned(16)));
 
@@ -703,7 +698,6 @@ extern short elevator_max_speed;
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 
-extern void AddDrawCallback(void *, void *);
 extern void DrawRingStack(char *);
 
 /* Moves the platform between two heights above its joint, with a particle while it moves. */
@@ -971,11 +965,7 @@ void gadgetron_sign_update(unsigned char *moby_bytes) {
     }
 }
 extern char *find_group_morphoray_chicken_moby_in_state_6(int);
-extern void request_target_reposition(void *);
 
-extern int get_target_reposition_status(void *);
-
-extern void reposition_moby_with_collision_check(void *, void *);
 /* Repositions a target at random intervals while the hero is in the clip volume. */
 void update_target_reposition_cycle(char *moby) {
     char *g = &g_hero.motion.pos;
@@ -1024,7 +1014,6 @@ void update_target_reposition_cycle(char *moby) {
             break;
     }
 }
-extern int is_moby_in_state_6(void *);
 
 // Finds the first moby of type 0x10E in a level's id list that passes the check.
 char *find_group_morphoray_chicken_moby_in_state_6(int idx) {
@@ -1083,7 +1072,6 @@ extern int envmap_a_color_bufs SDATA(envmap_a_color_bufs);
 extern char envmap_a_bounding_spheres[][16];
 extern char envmap_a_uvs[];
 extern int GetEffectTex(int);
-extern void VU1_addGSregister(int, long);
 
 /* Sets up the draw state, then draws the three entries of the level's table. */
 void env_map_a_draw(void) {

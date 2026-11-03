@@ -12,14 +12,15 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "game/render/draw.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/space.h"
+#include "overlays/l00_veldin1/sky_particles.h"
 
-extern void VU1_addGSregister(int, long);
 extern int D_0015EE84 MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
 
-extern void draw_sky_shells_with_particles_and_rotating_shell(void);
-
-extern void SkyShellsEntryUpdate(void);
 extern void b8f8_a(void) __asm__("func_L00_0028B8F8");
 extern void b8f8_b(void) __asm__("func_L00_0028B8F8");
 /* Draws the sky shells for the current level. */
@@ -109,14 +110,9 @@ typedef struct {
     Moby *unk188;
 } VeldinLevelState;
 
-extern void AddDrawCallback(void *, void *);
+extern void spawn_effect_particle_with_target_scalar_v(void *, void *, int, int, int,
+                                                       float) __asm__("func_L00_0026DD70");
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
-
-extern void render_environment_mapped_object();
-extern void glow_quads_draw();
 extern float g_frame_time MACRO_ADDR;
 extern VeldinLevelState cutscene_state;
 
@@ -161,8 +157,8 @@ void apply_level_specific_cutscene_moby_effects(void) {
                 b = random_angle_radians();
                 BuildSphericalOffset(v, random_float_between(g_frame_time * 0.7f, g_frame_time * 2.2f), a, b);
                 r = scale_ticks(0xC);
-                spawn_effect_particle_with_target_scalar(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)),
-                                                         147000.0f);
+                spawn_effect_particle_with_target_scalar_v(buf, v, 0x80808080, 0x808080,
+                                                           rand_range(r, scale_ticks(0x23)), 147000.0f);
             }
         }
     }

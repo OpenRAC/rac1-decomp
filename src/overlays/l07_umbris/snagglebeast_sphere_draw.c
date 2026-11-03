@@ -11,6 +11,9 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
 
 /* Snagglebeast sphere effect: only the draw state is read here. */
 struct SnaggleSphereVars {
@@ -18,11 +21,9 @@ struct SnaggleSphereVars {
     u8 brightness;                  /* 0x1C6 */
 };
 
-extern void VU1_addGSregister(int, u64);
 extern u64 GetEffectTex(int);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void draw_world_quad(void *, int, int);
 extern s32 depth_buffer_address;

@@ -4,6 +4,9 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
+#include "core/mc/memory_card.h"
+#include "core/input/vib_profile.h"
 
 /*
  * pad.cpp in the original source; text 0x217F68-0x218928.
@@ -13,10 +16,6 @@
 
 extern char g_controller_state[];
 
-extern int sce_pad2_get_state(int);
-extern int sce_pad2_get_button_profile(int, void *);
-extern int sce_vib_get_profile(int, void *);
-extern int scePad2Read(int, void *);
 extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
 
 /* UpdatePad(PAD &): latches a few per-frame fields, then asks
@@ -146,7 +145,6 @@ extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 extern float func_001F9CE8(float *);
 extern float fast_arc_tan_r(float, float) __asm__("func_001FA058");
 extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
-extern float func_001FA888(s32);
 
 void func_002181F0_r(PadState *p, u8 *buf, s32 len) __asm__("func_002181F0");
 

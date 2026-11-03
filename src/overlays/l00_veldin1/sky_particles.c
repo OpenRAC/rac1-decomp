@@ -5,17 +5,14 @@
 #include "structs/vector.h"
 #include "asm_functions/shared_levels.h"
 #include "asm_functions/executable.h"
+#include "game/render/vuchain.h"
+#include "game/render/skyfunc.h"
+#include "overlays/shared/sky_particles.h"
 
-void VU1_addGSregister(s32 a0, s64 a1);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern char *sky_data MACRO_ADDR;
 extern char sky_shell_matrix[];
 extern int level_frame_counter MACRO_ADDR;
-
-extern void sky_particles_init(int, int);
-extern void sky_particles_update(void);
-
-void SkyDrawShell(s32 arg0);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l00/unclassified_0023d968.c, FUN_L00_00289330. */
 void draw_sky_shells_with_particles_and_rotating_shell(void) {

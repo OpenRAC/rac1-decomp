@@ -6,6 +6,7 @@
 #include "data/executable.h"
 #include "structs/level_records.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 /*
  * effects.cpp in the original source; text 0x1EDFF8-0x1EE9F8.
@@ -45,7 +46,7 @@ extern s32 truncate_float_to_s32(f32) __asm__("func_001FA898");
 extern float AbsoluteFloat(float input) __asm__("func_001F9B88");
 extern void project_to_screen_r(f32 *, void *) __asm__("func_001F2418");
 extern s64 get_effect_texture(s32) __asm__("func_001F4868");
-extern void func_001F5800(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
+
 /* Lens flare: projects the flare moby to the screen and fills the per-element alpha, texture, colour, distance and scale tables. Adapted from Lombyte's project (GPL-3.0) for PAL: rendering/effects/fun_001edc50.c, FUN_001edc50. */
 void draw_lens_flare(void) {
     f32 scr[4];
@@ -209,7 +210,6 @@ typedef struct {
 extern GlowQueue rotated_sprite_queue;
 
 extern int g_screen_extent[];
-extern float IntToFloat(int);
 
 extern void spawn_particle_burst(void *, float, float);
 

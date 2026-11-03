@@ -5,6 +5,10 @@
 
 #include "common.h"
 
+extern void RescaleFloatTable(float);
+extern void RippleSimClock(void *, int);
+extern void compute_sand_mouse_approach_target(void *, void *);
+extern void gunship_follow_path(void *);
 extern void render_water_grids(char *, int);
 extern int reserve_expired_frame_slot(int *, int, int);
 

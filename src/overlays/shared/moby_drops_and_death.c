@@ -9,6 +9,7 @@
 #include "game/moby/mobyutil.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
 extern int level_moby_killed[][64];
 
 ASM_FUNC("asm/overlays", func_L00_00251A78);
@@ -140,7 +141,7 @@ extern unsigned char mission_state[];
 extern unsigned char death_bits_moby_debug_format[];
 extern unsigned char death_bits_bolt_amount_debug_format[];
 extern Hero g_hero;
-extern void STUB_printf(void *, ...);
+
 extern int truncate_float_to_s32(float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00250df8.c, FUN_L00_00257470. */

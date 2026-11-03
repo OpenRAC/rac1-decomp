@@ -1,6 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "core/newlib_types.h"
+#include "core/startup/crt0.h"
 
 /*
  * core_text object 0x1138B8-0x113A70. Boundaries are retail's linker fill
@@ -15,8 +16,6 @@
 
 /* _impure_ptr, typed; the declaration in scope above is `void *`. */
 extern struct _reent_nl *_impure_ptr_r __asm__("D_0012F86C") NOT_SDA;
-
-extern void func_0012DA28(int);  /* _exit (crt0) */
 
 /* exit, newlib's text: run the atexit handlers (LIFO), the reent's
    cleanup hook (_cleanup_r), then _exit, as a tail jump. */

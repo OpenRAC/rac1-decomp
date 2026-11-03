@@ -17,6 +17,15 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "game/render/vuchain.h"
+#include "game/system/stub.h"
+#include "overlays/shared/sound_playback.h"
+#include "game/render/partupd.h"
+#include "asm_functions/level_14.h"
+#include "overlays/shared/vendor_beam.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -119,12 +128,11 @@ extern float plasmabot_beam_length SDATA(plasmabot_beam_length);
 extern float plasmabot_beam_origin_offset SDATA(plasmabot_beam_origin_offset);
 
 extern void Manipulator_ApplyScale(float, char *, int, char *);
-extern int release_beam_slot_by_id(char *);
+
 extern void SetDeathBits(void *, int, int);
 void process_plasmabot_hit_reaction(char *m);
 void update_plasmabot_target(char *moby);
 void update_plasmabot_target_range(struct Moby *m);
-extern void STUB_printf(char *, ...);
 
 void initialize_plasmabot_path_state(char *moby);
 extern int truncate_float_to_s32(float);
@@ -147,18 +155,15 @@ void scale_and_apply_plasmabot_planar_velocity(char *moby);
 float update_plasmabot_aim_quaternion(char *moby, int flag, float x);
 void update_plasmabot_aim_joint_rotation(char *a, float x);
 int count_listed_plasmabots_preparing_or_sweeping_beam(int index);
-extern int register_beam_slot(void *, int, int);
 
 void Group_ResetClass28Timers(int idx);
-
-extern float IntToFloat(int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int coll_line(void *, void *, int, void *, void *);
-extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
+
 extern int mine_fall(void *, void *);
-extern void Moby_GetJointWorldPos(char *, int, void *);
+
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
 extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                             float, int, int, int, int);
@@ -851,7 +856,6 @@ extern float plasmabot_knockback_lift_factor SDATA(plasmabot_knockback_lift_fact
 extern void StepColorFade(void *, void *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern int release_beam_slot_by_id(char *);
 
 extern void func_L00_0025D5B0(void *, void *, float, int, int, int);
 extern int truncate_float_to_s32(float);
@@ -1178,7 +1182,6 @@ extern float plasmabot_glow_camera_pull SDATA(plasmabot_glow_camera_pull);
 extern float plasmabot_glow_camera_margin SDATA(plasmabot_glow_camera_margin);
 extern u32 plasmabot_glow_color SDATA(plasmabot_glow_color);
 u64 GetEffectTex(s32);
-extern void VU1_addGSregister(int, long);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1338,8 +1341,6 @@ extern f32 g_frame_scale_sq MACRO_ADDR;
 extern float spinning_debris_drag_min_speed SDATA(spinning_debris_drag_min_speed);
 extern float spinning_debris_drag SDATA(spinning_debris_drag);
 extern float spinning_debris_gravity SDATA(spinning_debris_gravity);
-extern void draw_spinning_debris(struct MobyDf *);
-extern void AddDrawCallback(void (*)(void), void *);
 
 extern int fast_dec_timer(void *);
 
@@ -1471,7 +1472,6 @@ extern void spawn_explosion_r(struct Moby *, void *, void *, f32, f32, s32, s32,
                               s32, s32, s32) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
-extern int Sound_PlayClassSound(int, int, struct Moby *, int);
 typedef struct {
     u8 pad0[0x10];
     void *points;
@@ -1908,11 +1908,10 @@ extern float floating_mine_glow_phase_step_gp SDATA(floating_mine_glow_phase_ste
 extern float ProbeGroundHeight_v(float, void *, int) __asm__("func_00214358");
 extern void Spring_r(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
 extern MobyHit *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
-extern void FastMemZero16(void *, int);
+
 extern int ComputeHitResponse_r(struct Moby *, MobyHit *, HitInfo *, int, int *, int, int,
                                 int) __asm__("func_L00_0025B4D0");
 
-extern int Moby_PlaySound(int, int, struct Moby *);
 extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                             float, int, int, int, int);
 
@@ -2062,8 +2061,6 @@ extern void start_vendor_beam_pulse(char *);
 
 extern void apply_vendor_beam_damage(char *);
 extern void update_vendor_beam_animation(char *);
-extern void draw_vendor_beam(char *);
-extern void AddDrawCallback(void (*)(void), void *);
 
 /* Moby update for a timed effect that triggers when the hero is near. */
 void update_vendor_beam(unsigned char *m) {
@@ -2146,14 +2143,11 @@ typedef struct Vq {
     float x, y, z, w;
 } __attribute__((aligned(16))) Vq;
 
-extern float IntToFloat(int);
-
 extern void rand_vec(void *, float, float);
 
 extern int truncate_float_to_s32(float);
 extern float vec_distance_xy(void *, void *);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern char *oltanis_clip_volumes MACRO_ADDR;
 extern float g_frame_time;
 extern int vendor_beam_min_ticks SDATA(vendor_beam_min_ticks);

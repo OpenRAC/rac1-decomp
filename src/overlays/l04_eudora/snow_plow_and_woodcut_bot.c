@@ -20,6 +20,16 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "overlays/shared/draw_buffers_and_walker_gait.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -134,7 +144,6 @@ struct LeafVars {
 
 #define MOBYS ((VehicleMoby *)D_L04_00160058)
 extern char *eudora_mobys MACRO_ADDR;
-extern void Moby_PlaySound(int, int, int);
 
 typedef int VehicleWide_2CB800 __attribute__((mode(TI)));
 typedef union {
@@ -227,8 +236,6 @@ typedef struct {
 extern VehicleCamera eudora_camera;
 
 extern s32 truncate_float_to_s32(float);
-extern s32 STUB_printf();
-extern void gunship_follow_path(VehicleMoby *);
 
 extern void MobySpringTurn(void *, void *, float, float, float, float);
 extern float vec_distance_xy(void *, void *);
@@ -241,7 +248,6 @@ extern s32 PlayBankSound(s32, s32, s32);
 extern void coll_sphere_mobys(void *, float, s32, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32, float, float, float, float, s32, float,
                             s32, s32, s32, s32);
-extern void Moby_GetJointWorldPos(void *, s32, void *);
 
 extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
 extern s32 fast_dec_timer(s32 *);
@@ -667,8 +673,6 @@ void transport_ship_update(void *m) {
 }
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern void initialize_leg_rig_angle_defaults(void *, char *);
-extern void initialize_leg_rig(void *, char *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/002ca420.c, FUN_L04_002d1418. */
 void initialize_woodcut_bot_movement_data(void *m) {
@@ -725,7 +729,6 @@ void initialize_woodcut_bot_movement_data(void *m) {
     initialize_leg_rig(m, p);
 }
 
-extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -762,8 +765,6 @@ extern void InitKnockback(float, void *, void *, int, int, int);
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, void *);
 
-extern void reset_walker_gait_helpers(void *);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void coll_line(void *, void *, int, void *, void *);
@@ -774,10 +775,6 @@ extern void initialize_woodcut_bot_movement_data(void *);
 extern void *libc_memset(void *, int, int);
 
 extern int IsFrameWithinWindow(void *, float);
-
-extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
-
-extern int leg_walker_update(void *, void *, float, float, float);
 
 extern float SpringTurn(float, float, void *, float, float, float);
 extern int mine_fall(void *, void *);
@@ -1436,7 +1433,6 @@ void update_moby_translation_delta_matrix(char *m) {
     }
 }
 extern char *eudora_mobys MACRO_ADDR;
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1674,10 +1670,10 @@ typedef struct {
     unsigned short id;
     char pad5[0x4c];
 } CollectMoby2BB8;
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
+
 extern float riser_rise_speed(char *);
 extern int fast_dec_timer_i(int *arg0) __asm__("func_001F9908");
-extern void Moby_PlaySound(int, int, int);
+
 extern int g_current_level_index MACRO_ADDR;
 extern int level_moby_killed[][64] NOT_SDA;
 typedef struct {
@@ -1824,7 +1820,6 @@ typedef struct {
 } L10SpriteData;
 extern int fast_dec_timer(int *);
 
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 extern int eudora_game_mode MACRO_ADDR;
 
@@ -1862,11 +1857,6 @@ void update_suck_cannon_particles(char *m) {
     }
 }
 
-extern int DialogRequest_Init(void *, void *);
-
-extern int Npc_TryStartDialog(void *, void *);
-
-extern int memcard_Save(int, int);
 extern char eudora_lieutenant_respawn_point[];
 extern unsigned char saved_mission_state[];
 
@@ -1968,8 +1958,6 @@ typedef struct {
     unsigned short time;
     unsigned int mask;
 } Help_2E57F8;
-
-extern int Help_Request(int a, int b);
 
 extern unsigned char discount_purchase_pricing[];
 extern int eudora_help_popup_state[] NOT_SDA;
@@ -2322,7 +2310,6 @@ void dispatch_mode_selected_slot(struct Moby *m) {
             break;
     }
 }
-extern void spawn_proximity_gated_bolts(void *);
 
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL04_Update(char *m) {

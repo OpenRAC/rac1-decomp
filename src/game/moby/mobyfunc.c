@@ -7,6 +7,10 @@
 #include "game/render/vuchain.h"
 #include "data/executable.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
+#include "game/audio/sound.h"
+#include "game/system/stub.h"
+#include "game/ui/pause.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -15,8 +19,6 @@
  */
 
 extern char voice_pool[];
-
-extern int STUB_printf();
 
 /* A moby instance: 0x100 bytes, in one array from moby_instance_end to
    moby_instance_perm_end. state 0xFE is a free slot and 0xFF marks the free tail
@@ -266,9 +268,6 @@ void update_moby_animation_state(Moby *m) {
     m->prev_frame_data = (void *)(((MobySeq *)m->pclass->seqs[m->prev_seq])->frames[m->prev_frame]);
 }
 
-extern void sound_KillChannel(int);
-extern int Moby_PlaySound(int, int, int);
-
 /* Drop this moby's sound handle (byte 0x7D) when its sound slot no longer
    belongs to it or plays another sound than the wanted one (byte 0x7C);
    with no handle, start the wanted one. Re-reading s[0x7D] inside the
@@ -291,8 +290,6 @@ void update_moby_voice(unsigned char *s) {
 }
 
 LINKER_REMNANT("asm/remnants/text", func_0020D828);
-
-extern float IntToFloat(int);
 
 /* Animation-frame value of a moby (the short at +4 of its frame data,
    1/16 units): the current frame's (the previous one's when no sequence
@@ -570,8 +567,6 @@ extern int graphics_setup_tag_slot MACRO_ADDR;
 extern char graphics_setup_profile_label[];
 extern char graphics_setup_command_stream[];
 
-extern void submit_graphics_setup_command_stream(void *);
-
 /* The same splice as DmaMobyTextures, around build_shadow_command_stream/submit_graphics_setup_command_stream,
    at the tag slot graphics_setup_tag_slot; with graphics_setup_dma_chain_enabled clear the slot becomes a
    plain "cnt" tag (0x10000000) instead. The write pointer goes through
@@ -640,9 +635,6 @@ void StashMobyClassDists(void) {
 void RestoreMobyClassDists(void) {
     FastMemCopy((void *)0x70003A00, moby_backup_buffer, 0x380);
 }
-
-extern void VU0_loadMicroProgram(void *);
-extern void VU1_addGSregister(int, long);
 
 extern unsigned short moby_vu1_data_qwc NOT_SDA;
 

@@ -6,5 +6,6 @@
 #include "common.h"
 
 extern void InitMemSlots(void);
+extern void InitOnce(void);
 
 #endif /* GAME_SYSTEM_INITONCE_H */

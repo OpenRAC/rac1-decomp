@@ -5,10 +5,10 @@
 #include "game/render/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
 #include "enums/level.h"
+#include "game/render/vuchain.h"
 
 extern int D_0015EE84 MACRO_ADDR;
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Orxon sky: phase-rotated shells in level 10, static shells otherwise. */
 void SkyFrameDraw(void) {

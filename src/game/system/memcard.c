@@ -9,6 +9,9 @@
 #include "game/ui/menu.h"
 #include "data/executable.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
+#include "game/ui/help.h"
+#include "core/gs/put_draw_env.h"
 
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
@@ -55,10 +58,6 @@ void memcard_get_name(void *arg0) {
     libc_strncpy(memcard_slot_path_format, memcard_save_dir_name, 0xD);
 }
 
-extern int sce_mc_get_info(int, int, int *, int *, int *);
-
-extern void sce_gs_sync_v(int);
-extern int sce_mc_get_dir(int, int, char *, int, int, void *);
 extern char memcard_save_dir_name[];
 extern int memory_card_state_i[] __asm__("D_0013D390");
 
@@ -92,7 +91,7 @@ extern int mc_gamedata[];
 extern int mc_leveldata[];
 extern int memcard_GetDataSize(int *p);
 extern int memcard_RestoreData(void *src, int i, int *table);
-extern int STUB_printf();
+
 extern char memcard_restore_size_mismatch_msg[];
 
 /* The counterpart of memcard_MakeWholeSave below: both descriptor sizes are
@@ -122,7 +121,7 @@ void memcard_RestoreGame(int arg0) {
 }
 
 extern int disc_table[];
-extern void calculate_ring_buffer_bounds(int, void *, void *);
+
 extern void update_audio_stream_until_idle(int);
 
 extern void memcard_RestoreGame(int);
@@ -1366,14 +1365,13 @@ void memcard_MakeWholeSave(char *out) {
     }
 }
 
-extern int sce_mc_init(void);
 /* Unprototyped deliberately: this is the varargs function, so callers
    legitimately pass different argument counts/types, and two agents
    declared it incompatibly. Both callers are byte-exact and must not
    be edited; an unprototyped declaration satisfies all call sites
    with identical codegen. (Only varargs *definitions* need stdarg.h;
    calling one is fine.) */
-extern int STUB_printf();
+
 extern char memcard_error_message[];
 
 /* memcard_Init */
@@ -1563,7 +1561,6 @@ typedef struct {
 } RestoreCardState;
 extern RestoreCardState memory_card_state_c __asm__("D_0013D390");
 extern int memcard_restore_mismatch_count SDATA(memcard_restore_mismatch_count); /* mismatch count */
-extern int libc_memcmp(const void *, const void *, int); /* memcmp */
 
 /* memcard_RestoreData: unpack the save blocks after buf's 8-byte header
    into the table entries with the same id (slot selects the element),

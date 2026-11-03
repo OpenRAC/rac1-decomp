@@ -14,6 +14,11 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
 extern char usage_stats[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -21,9 +26,6 @@ extern char help_records[];
 
 extern int cinematic_mode MACRO_ADDR;
 extern char help_stats_base[];
-
-extern int DialogRequest_Init(void *, void *);
-extern int Npc_TryStartDialog(void *, void *);
 
 typedef struct {
     char pad0[0x20];
@@ -101,7 +103,6 @@ void clank_cutscene_trigger_update(M *m) {
 }
 extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
 extern char *moby_array_start MACRO_ADDR;
-extern int Help_Request(int a, int b);
 
 typedef unsigned short Ent[4];
 typedef struct HelpMoby {
@@ -278,11 +279,9 @@ extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_distance_xy(void *, void *);
-extern int register_beam_slot(void *, int, int);
 
 extern int coll_line(void *, void *, int, int, int);
-extern int release_beam_slot_by_id(void *);
-extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
+
 extern int mine_fall(void *, void *);
 
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
@@ -698,10 +697,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         }
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern float IntToFloat(int);
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_veldin_robot_effect_quad_r(void) __asm__("func_L00_002E3128");
 
 // spawns a spark: steps the moby's position and emits one fast particle and three slow tails

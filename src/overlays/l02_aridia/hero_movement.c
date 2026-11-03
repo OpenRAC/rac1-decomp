@@ -31,13 +31,13 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/audio/sound.h"
+#include "overlays/l02_aridia/hero_idle_and_item_input.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-
-extern void HeroL02_SetMoveState(int, int);
 
 // Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021b698.
 void process_hero_ground_material_effects(void) {
@@ -162,9 +162,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-void release_and_clear_hero_voice_slots(void);
-
-void HeroL02_SetMoveState(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021ff70. */
 s32 HeroL02_TryKnockback(s32 arg) {
@@ -313,12 +310,8 @@ f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
 
-void sceVu0Normalize(void *, void *);
-
 void vec_scale_to_length(void *, void *, f32);
-void compute_rotated_vector_angles(void *, void *);
 
-f32 FastAbsF(f32);
 extern Hero g_hero;
 extern struct CollisionHit aridia_coll_hit;
 
@@ -623,10 +616,6 @@ extern float aridia_hero_anim_frame_speeds[];
 
 extern int fast_dec_timer(int *);
 
-extern int get_hero_idle_animation_index(int);
-extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
-extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 
@@ -641,9 +630,6 @@ extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern void update_hero_target_heading(float, float, float);
-
-extern void allocate_hero_voice_for_entry(int, int);
 
 struct UpdateHeroStateMotionVars {};
 

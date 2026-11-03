@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "core/cdvd/read.h"
 
 /*
  * core_text object 0x123168-0x1236F0. Boundaries are retail's linker fill
@@ -15,8 +16,6 @@
  */
 
 extern void scePrintf();
-
-extern void *sceGsGetGParam(void);
 
 /*
  * libgraph's sceGsSyncVCallback: install (or, called with arg0 == 0,

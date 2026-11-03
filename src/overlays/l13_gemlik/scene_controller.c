@@ -15,6 +15,13 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
+#include "overlays/shared/moby_path_advance.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -87,12 +94,9 @@ extern unsigned char D_001414F5[] NOT_SDA;
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern void func_L00_00217718(void *, void *, int, int);
-extern void func_L00_002664B0(int, int);
+
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
-extern void func_L00_0028FB78(void *);
-extern int func_0020BFC8(int, int);
 
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
 void update_gemlik_scene_controller(Moby *moby) {
@@ -256,8 +260,6 @@ void update_gemlik_scene_controller(Moby *moby) {
 
 extern int gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-
-extern int compute_advanced_moby_path_position(void *, void *, void *, int, int, float);
 
 /* Follows its target moby along a path: snaps to the nearest path point, then walks the path segments. */
 void update_moby_path_follower(char *m) {
@@ -514,9 +516,6 @@ extern float moby_spark_first_batch_vertical_acceleration_base_gp
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern int func_001FA898(float);
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-
-extern float IntToFloat(int);
 
 extern int coll_line(void *, void *, int, int, int);
 

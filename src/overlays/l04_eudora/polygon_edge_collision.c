@@ -10,6 +10,8 @@
 #include "data/level_04.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/render/vuchain.h"
+#include "overlays/l04_eudora/polygon_segment_xy.h"
 
 extern float vec_distance_xy(void *, void *);
 
@@ -76,7 +78,6 @@ extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0"
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern int func_001FA898(float);
 extern int find_nearest_point_index_xy_r(Moby *, void *, int) __asm__("func_L04_001F2F68");
-extern int func_L04_0024D790(void *, void *, void *, int);
 
 /* Steering for a moby: pulls it along its path (c->path) and toward its target, pushes it away from the
  * listed mobys (and the hero's), and keeps it off the ground; f holds the gains. */
@@ -319,7 +320,6 @@ void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float
 
 extern int D_0015EE84 MACRO_ADDR;
 
-extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Eudora sky shells (rotating in level 4, static elsewhere) and restore GS test and Z. */
 void DrawEudoraSky(void) {

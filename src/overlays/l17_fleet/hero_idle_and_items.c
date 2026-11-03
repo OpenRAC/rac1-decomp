@@ -22,6 +22,8 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/bolts_and_wrench.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -37,20 +39,13 @@ extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
-extern int allocate_hero_voice_for_entry(int, int);
-
 extern int truncate_float_to_s32(float);
-extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern int Moby_PlaySound(int, int, int);
-extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern int fleet_game_mode MACRO_ADDR;
 extern int fleet_water_patches MACRO_ADDR;

@@ -4,6 +4,7 @@
 #include "structs/misc.h"
 #include "game/render/lights.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
 
 /*
  * lights.cpp in the original source; text 0x202260-0x202AA8.
@@ -240,7 +241,6 @@ extern u8 *ties MACRO_ADDR;
 extern u8 str_bad_point_light_tie[];
 extern u8 str_bad_point_light_tfrag[];
 extern u8 str_bad_point_light_shrub[];
-extern s32 STUB_printf();
 
 /* Remove one point light from three packed attachment lists. Each 16-bit
    reference stores up to four light IDs in nibbles; deleting one shifts

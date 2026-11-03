@@ -1,6 +1,8 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "core/libc/fvwrite_fwalk.h"
+#include "core/libc/findfp.h"
 
 /*
  * core_text object 0x116FA0-0x1188C8. Boundaries are retail's linker fill
@@ -12,10 +14,7 @@
  * each function compiles to retail under it.
  */
 
-
 extern void *_impure_ptr NOT_SDA;
-
-extern int __sfvwrite(int, void *);
 
 /* newlib's stdio types (sys/reent.h, 1999-2000), under local names. */
 struct __sbuf {
@@ -107,7 +106,6 @@ int vfprintf_sbprintf(FILE *fp, const char *fmt, void *ap) {
     return (ret);
 }
 
-extern void __sinit(void *);
 extern int func_00117118_i(struct _reent *, FILE *, const char *, void *) __asm__("func_00117118");
 
 /*

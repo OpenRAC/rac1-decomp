@@ -95,11 +95,6 @@ extern int gBolts MACRO_ADDR;
 extern int bolt_hud_item SDATA(bolt_hud_item);
 extern s32 DialogRequest_Init(void *p, u8 *out_p);
 
-extern int hud_keep_visible(int, int);
-extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
-
-extern void DefaultVtbl_DeleteMoby(void);
-
 extern char race_gates_base[];
 extern s32 level_frame_counter MACRO_ADDR;
 /* Start an NPC's dialog when the hero is close and facing it; returns nonzero if it started. */

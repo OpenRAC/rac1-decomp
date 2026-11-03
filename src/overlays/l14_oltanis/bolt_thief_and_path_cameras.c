@@ -25,6 +25,15 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "game/audio/music.h"
+#include "overlays/shared/blarg_commander.h"
+#include "overlays/l14_oltanis/heavy_interceptor_and_turrets.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -331,8 +340,6 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void InitKnockback(void *, void *, int, int, int, float);
 extern void SetDeathBits(void *, int, int);
 
-extern int STUB_printf();
-
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 
 extern int update_bolt_thief_path_movement(char *);
@@ -547,11 +554,6 @@ int update_bolt_thief_path_movement(char *moby) {
     return r;
 }
 
-extern int DialogRequest_Init(void *, void *);
-
-extern int Npc_TryStartDialog(void *, void *);
-
-extern int memcard_Save(int, int);
 extern float vec_distance_xy(void *, void *);
 
 extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
@@ -736,11 +738,8 @@ extern float spark_first_bounce_horizontal_speed_gp SDATA(spark_first_bounce_hor
 extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(int *);
 
-extern float IntToFloat(int);
 extern int coll_line(void *, void *, int, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
-
-extern int Moby_PlaySound();
 
 extern int truncate_float_to_s32(float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -934,9 +933,6 @@ char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
     return (char *)moby;
 }
 extern char oltanis_scaled_float_table[];
-extern void register_audio_stream_callback(void);
-extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
-extern void AddDrawCallback(void (*)(void), void *);
 
 /* Moby update: init once, then draw each frame. */
 void update_moby_draw_registration(unsigned char *moby) {
@@ -958,7 +954,7 @@ typedef struct {
 } L14LevelState;
 extern L14LevelState oltanis_collected_flags_base;
 extern s32 level_moby_killed[][64];
-extern float IntToFloat(int);
+
 extern int fast_dec_timer(int *);
 
 extern void save_and_lower_unlock_sequence_mobys_r(struct Moby *) __asm__("func_L14_00306A88");
@@ -1028,7 +1024,6 @@ void save_and_lower_unlock_sequence_mobys(char *moby) {
         } while (*(short *)p++ >= 0);
     }
 }
-extern float IntToFloat(int);
 
 /* Per-frame update: slides each listed part toward a rest height by a factor from the moby's animation value.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00305680. */
@@ -1169,9 +1164,9 @@ void initialize_morphoray_private_state(char *moby) {
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
-extern float IntToFloat(int);
 
-extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
+extern unsigned char *PartType59Spawn_v(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s,
+                                        int mode) __asm__("func_L00_00273E08");
 
 typedef struct {
     float pad[2];
@@ -1216,7 +1211,7 @@ void update_morphoray_particles(char *p) {
         g = g / (float)scale_ticks(255);
         c = FastTweenColor(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - g));
         k = truncate_float_to_s32_r(*a++);
-        PartType59Spawn(m->c[j], v, c, k, 0x35, 1, 2, 0);
+        PartType59Spawn_v(m->c[j], v, c, k, 0x35, 1, 2, 0);
         j++;
         FastVecAdd(v, v, &v[4]);
     }
@@ -1246,7 +1241,7 @@ extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern int func_L00_0028EF68(int i, int a1, Moby *v, int k);
+
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern float interpolate_angle_r(float, float, float) __asm__("func_L00_0025C7A8");
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
@@ -1407,7 +1402,6 @@ extern L14LevelState_08000 oltanis_collected_flags_base_r2 __asm__("D_L14_001BBC
 extern u8 saved_mission_state[];
 
 extern s32 truncate_float_to_s32(f32);
-extern s32 Moby_PlaySound();
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00306b78. */
 void StepOnSwitchUpdate(struct Moby *moby) {
@@ -1889,7 +1883,7 @@ int update_flying_car_path_motion(struct Moby *moby) {
     }
     return 1;
 }
-extern void draw_textured_effect_list(void *, int, int, int);
+
 extern char oltanis_textured_effect_list[];
 extern int GetEffectTex(int);
 /* Draw callback for the 0x13-entry effect at oltanis_textured_effect_list. */
@@ -1977,7 +1971,6 @@ typedef struct {
     char *p184;
 } Cam;
 extern Cam D_L14_00167480;
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 typedef struct {
     char pad0[0xB0];
@@ -2159,10 +2152,6 @@ extern VendorView_5290 oltanis_view_params;
 extern int Spline_AdvanceByDistance_r2(char *path, float *out, void *seg, void *t, int dir,
                                        float step) __asm__("func_L00_0025E860");
 
-extern void UpdateViewContext(void);
-
-extern void reset_racer_group_to_hero_path_position(struct Moby *m);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00315290. */
 void update_path_camera(struct UpdateCam *cam) {
     float dir[4];
@@ -2284,7 +2273,6 @@ void update_path_camera(struct UpdateCam *cam) {
     vec_scale_to_length(&cam->m1, &cam->m1, 1.0f);
     FastVecCross(&cam->m2, &cam->m1, &cam->m0);
 }
-extern int check_descriptor_hero_trigger(void *);
 
 typedef struct CameraRule {
     u8 pad00[0x38];
@@ -2541,8 +2529,7 @@ extern float oltanis_key_cam_moby_step_progress[][3];
 extern CamKey171D0 oltanis_path_camera_keys[];
 extern char oltanis_lean_state[];
 
-extern float Cam_InterpValues(void *, float, float, float, float, float);
-extern void compute_position_from_spherical_offset(void *, void *, void *);
+extern float Cam_InterpValues_v(void *, float, float, float, float, float) __asm__("func_001EC120");
 
 /* Camera 21 update (level 14): follows keyed angles along the hero's path progress, triggers three mobys, builds the
    camera matrix. */
@@ -2708,10 +2695,10 @@ void update_path_key_camera(char *cam) {
                           oltanis_path_camera_keys[st->idx + 1].a4 * 0.017453292f, t);
     cur->f4 = Camera_SmoothAngle(vel + 1, cur->f4, x, k, 0.2f, 0.0f);
     cur->f8 =
-        Cam_InterpValues(vel + 2, cur->f8,
-                         oltanis_path_camera_keys[st->idx].a8 +
-                             (oltanis_path_camera_keys[st->idx + 1].a8 - oltanis_path_camera_keys[st->idx].a8) * t,
-                         path_key_camera_placement_distance_spring_gain, 0.2f, 0.0f);
+        Cam_InterpValues_v(vel + 2, cur->f8,
+                           oltanis_path_camera_keys[st->idx].a8 +
+                               (oltanis_path_camera_keys[st->idx + 1].a8 - oltanis_path_camera_keys[st->idx].a8) * t,
+                           path_key_camera_placement_distance_spring_gain, 0.2f, 0.0f);
     k = path_key_camera_lateral_axis_rotation_spring_gain;
     x = interpolate_angle(oltanis_path_camera_keys[st->idx].aC * 0.017453292f,
                           oltanis_path_camera_keys[st->idx + 1].aC * 0.017453292f, t);

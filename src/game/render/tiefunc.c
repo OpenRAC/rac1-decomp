@@ -6,14 +6,13 @@
 #include "game/render/vuchain.h"
 #include "asm_functions/executable.h"
 #include "data/executable.h"
+#include "game/system/stub.h"
 
 /*
  * tiefunc.cpp in the original source; text 0x236958-0x236F00.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern int STUB_printf();
 
 extern int g_render_packet_cursor MACRO_ADDR;
 extern int tie_tex_dma_tag_slot MACRO_ADDR;

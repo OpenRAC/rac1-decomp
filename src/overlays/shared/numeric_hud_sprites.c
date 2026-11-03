@@ -6,6 +6,11 @@
 #include "asm_functions/executable.h"
 #include "game/ui/hud.h"
 #include "enums/level.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -17,7 +22,6 @@ typedef struct {
     s32 unk7C;
 } HudElemX;
 
-extern void initialize_numeric_hud_values_and_dimensions(void *);
 extern s32 trick_combo_recent3 MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/00262ae8.c, FUN_L05_00262ae8. */
@@ -178,14 +182,9 @@ void update_trick_combo_hud(char *a) {
     }
 }
 extern int sprintf_r(char *, const char *, ...) __asm__("func_00116248");
-extern float IntToFloat(int);
 
 extern int FontPrintCenterLarge_x(int, int, u64, int, int) __asm__("func_001F6FD8");
 extern char *msg_string_r(int) __asm__("func_001FE540");
-extern void draw_framed_text(int, int, int, int);
-extern int hud_screen_position(void *rec, int *x, int *y);
-
-extern void draw_cropped_hud_sprite(int, int, int, int, int, int);
 
 extern char rilgar_fmt_number[];
 extern char rilgar_fmt_count_and_word[];
@@ -397,10 +396,7 @@ extern char rilgar_fmt_label[];
 extern char rilgar_fmt_progress_number[];
 extern char rilgar_fmt_rank_label[];
 
-extern char *msg_string(int);
-extern int sprintf(char *, char *, ...);
-extern void print_text_with_texture_3(int, int, long, char *, int);
-extern int measure_text_width_regular(char *, int);
+extern void print_text_with_texture_3_v(int, int, long, char *, int) __asm__("func_L00_001FB7F8");
 
 /* Screen-bottom offset minus a HUD element's Y, using the PAL or NTSC margin. */
 static inline int hud_sub_66D10(int d, int pal, short *p) {
@@ -437,8 +433,8 @@ int draw_hud_progress_and_rank(char *e) {
                               *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
     tx = *(int *)&(rilgar_progress_label_x);
     sprintf(buf, rilgar_fmt_label, msg_string(0x5244));
-    print_text_with_texture_3(tx - 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
+    print_text_with_texture_3_v(tx - 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3_v(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     w = measure_text_width_regular(buf, -1);
     tx = tx + w;
     {
@@ -447,8 +443,8 @@ int draw_hud_progress_and_rank(char *e) {
             n = 3;
         sprintf(buf, rilgar_fmt_progress_number, n);
     }
-    print_text_with_texture_3(tx - 1, y + 2, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
+    print_text_with_texture_3_v(tx - 1, y + 2, 0x80000000L, buf, -1);
+    print_text_with_texture_3_v(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
     {
         int n = hd->race_position;
         tx = *(int *)&(rilgar_progress_rank_right_x);
@@ -459,13 +455,13 @@ int draw_hud_progress_and_rank(char *e) {
     }
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
-    print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
+    print_text_with_texture_3_v(tx + 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3_v(tx, y, *(int *)&(rilgar_progress_value_color), buf, -1);
     sprintf(buf, rilgar_fmt_rank_label, msg_string(0x5245));
     w = measure_text_width_regular(buf, -1);
     tx = tx - w;
-    print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
-    print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
+    print_text_with_texture_3_v(tx + 1, y1, 0x80000000L, buf, -1);
+    print_text_with_texture_3_v(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
     if (g_current_level_index != LEVEL_KALEBO3)
         return *(int *)(e + 0x58);
     sprintf(buf + 0x40, rilgar_fmt_number, hd->race_ammo);
@@ -480,12 +476,12 @@ int draw_hud_progress_and_rank(char *e) {
     draw_stretchable_ui_frame(px - 0x18, py, *(int *)&(rilgar_counter_frame_width), 0x20, 0x60);
     w = GetIconFrame(0x7558, 2);
     HudSprite(w, px, py, 0x20, 0x20, 0x80);
-    print_text_with_texture_3(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
+    print_text_with_texture_3_v(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
     h2 = (char *)&g_hero;
     if (*(unsigned char *)(h2 + 0x8CE) != 0)
-        print_text_with_texture_3(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
+        print_text_with_texture_3_v(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
     else
-        print_text_with_texture_3(px + 0x28, py + 7, 0x80202080L, buf + 0x40, -1);
+        print_text_with_texture_3_v(px + 0x28, py + 7, 0x80202080L, buf + 0x40, -1);
     return *(int *)(e + 0x58);
 }
 typedef struct {

@@ -12,6 +12,16 @@
 #include "game/render/framebuf.h"
 #include "game/ui/hud.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/follow_camera.h"
+#include "game/ui/help.h"
+#include "core/libc/sprintf.h"
+#include "core/gs/put_draw_env.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/draw_buffers_and_walker_gait.h"
+#include "overlays/shared/pause_menu.h"
+#include "game/gameplay/freeze.h"
+#include "overlays/shared/global_state_pointer.h"
 extern Hero g_hero;
 extern int frame_size;
 extern char gold_weapon_purchased[];
@@ -37,7 +47,7 @@ void flush_debug_text_queue(void) {
     (debug_text_queue_count) = 0;
     (debug_text_queue_cursor) = debug_text_queue_buffer;
 }
-extern void VU1_addGSregister(int, long);
+
 extern int *dma_packet_cursor MACRO_ADDR;
 extern long debug_font_pif_header MACRO_ADDR;
 extern int debug_font_glyph_uvs[];
@@ -130,7 +140,7 @@ extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern char D_L00_001670E0[];
 extern char D_L00_001670F0[];
 extern char D_L00_00166ED0[];
-extern void func_L00_001EBDA0(void);
+
 extern void func_L00_001FF4B0(void *, void *, float);
 
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -142,7 +152,6 @@ extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540"
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
-extern void func_L00_002E80A8(void *);
 
 /* Free-camera controls (debug camera): pad buttons move the camera (in the free-look matrix when the hero's
    camera mode is 2, else on the ground plane), turn it about three axes with eased speeds, and when the camera
@@ -499,10 +508,6 @@ extern s32 sound_update(void);
 
 extern float vec_length_xy(void *);
 
-extern float IntToFloat(s32);
-extern void UpdateViewContext(void);
-extern void UpdateFog(void);
-extern s32 sprintf(char *, const char *, ...);
 extern double func_00120778(float);
 extern s32 sceOpen(char *, s32, ...);
 
@@ -951,11 +956,9 @@ typedef struct {
 extern u8 help_stats_base[];
 extern s32 skip_frame MACRO_ADDR;
 extern volatile s32 debug_text_flush_wait_flag MACRO_ADDR;
-extern void append_gif_transfer_packet(void);
+
 extern void flush_debug_text_queue(void);
-extern int print_debug_text_centered(int, int, int, char *);
-extern void print_debug_text(int, int, int, char *);
-extern int sprintf(char *, const char *, ...);
+
 extern double promote_float60(float) __asm__("func_00120778");
 extern char debug_menu_title[];
 extern char debug_menu_title_underline[];
@@ -1359,9 +1362,6 @@ void draw_debug_profiler_if_enabled(void) {
         DrawDebugProfiler();
     }
 }
-extern int get_global_state_pointer(void);
-extern void draw_pause_menu_pages(int);
-extern void draw_freeze_message_box(void);
 
 /* Debug-overlay render hook: in overlay mode 0 sets up the large font and draws the profiler, in mode 3 draws the
    pause-menu pages; draw_freeze_message_box runs either way. Nothing while skip_frame (loading) is set. */
@@ -1389,13 +1389,10 @@ typedef struct {
 extern int slideshow[4] MACRO_ADDR;
 extern float gFadeLvl MACRO_ADDR;
 extern DbgRec timed_text_records[];
-extern void queue_framebuffer_upload(int);
+
 extern int truncate_float_to_s32(float);
-extern void emit_rgba_draw_packet(int, int, int, int);
-extern void ResetGsRegisters(void);
-extern void SetupGifPaging(int);
+
 extern void draw_timed_text(void *, int);
-extern void DoGifPaging(void);
 
 /* Fade and debug-rectangle render hook: uploads the GS state, draws a black full-screen quad with alpha from gFadeLvl
    (clamped to 1.0), then every timed_text_records record with key >= 0 through draw_timed_text inside a GIF paging
@@ -1428,10 +1425,7 @@ void draw_framebuffer_with_timed_text(void) {
 }
 extern int rendered_frame_count MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
-extern void VU1_syncChain(int);
-extern int sce_gs_sync_v(int);
 
-extern void transfer_draw_buffer_chunks(void *, int, int);
 /* Grabs the current frame buffer into A: syncs VU1, counts the grab in rendered_frame_count and downloads frame buffer
    draw_buffer_address (its height from screen_globals_base + 0x4AA, in 2 KB rows). */
 void capture_draw_buffer(void *a) {
@@ -1451,10 +1445,8 @@ void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
 
     FontPrint(a, b, c, d, e, mode, effect3_font_metrics);
 }
-extern int measure_text_width_regular(unsigned char *, int);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void func_001F68E8(int, int, long, void *, int);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* draw a two-layer shadowed text label at x,y with alignment mode */
 void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale, float alpha) {
@@ -1483,7 +1475,6 @@ void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale,
     Font_EnableColorCodes();
 }
 typedef void (*LabelFn)(int, int, int, float, float, unsigned char *);
-extern unsigned char *msg_string(int);
 
 /* Draws a line-wrapped text entry with fade-in/out at its scroll edges (newline codes become " - " or start a new
    row). */

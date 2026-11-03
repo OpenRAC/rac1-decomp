@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern int HeroL17_TryTakeHit(int);
 extern int select_hero_help_value(int);
 
 #endif /* OVERLAYS_L17_FLEET_HERO_VOICE_AND_KNOCKBACK_H */

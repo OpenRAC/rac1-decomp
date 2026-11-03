@@ -16,6 +16,11 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
@@ -46,9 +51,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int fast_dec_timer(int *);
 
-extern float IntToFloat(int);
-
-extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 extern char orxon_camera_pos[];
 
@@ -139,11 +141,8 @@ extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern float SpringTurn(float, float, float, float, float, float *);
 extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00215C00");
 
-extern int Moby_PlaySound(int, int, void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage_v(float, int, void *, int, void *, void *) __asm__("func_L00_0025AC00");
-
-extern void Sound_PlayClassSound(int, int, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
 void rocket_819_update(Moby *m) {
@@ -275,7 +274,6 @@ void spawn_type_52_particle_near_moby(char *moby) {
     spawn_type_52_particle(v, c, d, g, h, e);
 }
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_moby_animated_quad_layers(unsigned char *);
 extern unsigned char D_0014171B[] NOT_SDA;
 
@@ -474,7 +472,7 @@ struct CamK_72D8 {
     short ids[8];
     float vals[9];
 };
-extern void HeroEnterMoveState(int, int);
+
 extern char *orxon_camera_descriptors MACRO_ADDR;
 extern char *orxon_paths[];
 extern char orxon_view_params[];
@@ -655,11 +653,9 @@ extern float orxon_player_camera_fade_rate;
 extern char orxon_view_params[];
 extern float orxon_player_camera_matrix[];
 
-extern void UpdateViewContext(void);
-extern void HeroEnterMoveState(int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 
-extern void Profile_Mark(void *, void *);
+extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 
 /* Camera 19 update: advances the blend state and aims the camera each frame. */
 void Camera19_Update(char *moby) {
@@ -831,8 +827,8 @@ void Camera19_Update(char *moby) {
             ia = 0;
             ib = 0.0f;
             Spline_AdvanceByDistance(h, v2, &ia, &ib, d, 0);
-            ((void (*)(void *, float))Profile_Mark)(v2, 0.2f);
-            Profile_Mark(h + 0x10, h + (*(int *)h << 4));
+            ((void (*)(void *, float))Profile_Mark_v)(v2, 0.2f);
+            Profile_Mark_v(h + 0x10, h + (*(int *)h << 4));
             FastVecSub(v1, v2, (moby + 0x30));
         }
         FastVecScale(v2, &((struct Hero *)g_hero)->gravity_dir, -1.0f);

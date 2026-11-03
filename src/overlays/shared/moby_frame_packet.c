@@ -5,6 +5,7 @@
 #include "include_asm.h"
 #include "game/moby/mobyfunc.h"
 #include "asm_functions/executable.h"
+#include "game/system/stub.h"
 extern char cd_read_state[];
 extern char voice_pool[];
 
@@ -370,8 +371,6 @@ void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
 extern int environment_sample_count MACRO_ADDR;
 extern char *environment_samples MACRO_ADDR;
 extern char no_environment_sample_msg[];
-
-extern void STUB_printf();
 
 /* Finds the table entry nearest the object's position (within 8 units) and applies its fields to the object and
    globals. */

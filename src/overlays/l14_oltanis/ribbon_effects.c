@@ -10,12 +10,11 @@
 #include "structs/moby.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
-
-extern float IntToFloat(int);
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "overlays/l14_oltanis/wind_lightning_and_taxi.h"
 
 struct Moby;
-extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);
-void draw_ribbon_effect(char *m);
 
 typedef struct RibbonPoint {
     f32 x;                              /* 0x00 */

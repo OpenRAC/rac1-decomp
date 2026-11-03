@@ -29,6 +29,15 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "game/system/stub.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/music_track_requests.h"
+#include "overlays/l13_gemlik/qwark_starfighter_and_forcefield.h"
+#include "overlays/l13_gemlik/moby_group_switches.h"
+#include "overlays/l13_gemlik/joint_particle.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -112,9 +121,6 @@ struct FighterJetHudVars {
     s32 tex_index; /* 0x104 */
 };
 
-extern int STUB_printf();
-
-extern void set_moby_list_state(int list, int state);
 extern unsigned char hero_globals_base[];
 extern char *D_L13_00160058 MACRO_ADDR;
 extern char volume_trigger_bad_target_msg[];
@@ -284,13 +290,6 @@ void update_moby_volume_trigger(Moby *moby) {
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w);
-
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
-extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
-
-extern int HeroEnterMoveState(int, int);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -650,10 +649,9 @@ void blarg_turret_update(Moby *m) {
         data->gun = 0;
     }
 }
-extern void Moby_GetJointWorldPos(void *, int, void *);
+
 extern float vec_distance_xy(void *, void *);
 
-extern char *spawn_gemlik_projectile(float, float *, float *, void *);
 extern int gemlik_frame_count MACRO_ADDR;
 extern int gemlik_turret_fire_interval SDATA(gemlik_turret_fire_interval);
 extern float gemlik_turret_shot_speed SDATA(gemlik_turret_shot_speed);
@@ -861,7 +859,6 @@ void blarg_gunner_update(unsigned char *raw) {
             break;
     }
 }
-extern void *create_moby_joint_particle(void *, int, int, float, float, int, float, int);
 
 /* Robosquawker: keep its joint particle alive while flagged visible, kill it otherwise. */
 void update_robosquawker_particle(unsigned char *moby, char *data) {
@@ -924,8 +921,7 @@ extern void set_ground_height_band(void *);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern int func_001160D8(void);
 extern void InitKnockback(float, void *, void *, int, int, int);
-extern void MoveCtl_Init(char *p);
-extern int select_point_index_by_distance(void *, void *, float);
+
 extern float vec_length_xy(void *);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
@@ -941,11 +937,9 @@ extern int mine_fall(void *, void *);
 extern int move_w(void *, void *, void *, void *, float);
 
 extern void PostHitMessage(void *, int, int, void *, void *, float);
-extern int CarriedMobyUpdate(void *, void *);
 
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void vec_scale_to_length(void *, void *, float);
-extern float IntToFloat(int);
 
 extern int gemlik_game_mode MACRO_ADDR;
 
@@ -1890,7 +1884,7 @@ void append_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, uns
 }
 typedef int u128 __attribute__((mode(TI)));
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern void spawn_type_74_particle(void *, float *, float *, void *, int);
+
 extern short jet_exhaust_particle_a;
 extern short jet_exhaust_particle_b;
 extern short jet_exhaust_particle_c;
@@ -1947,7 +1941,6 @@ void spawn_fighter_jet_joint_particles(void *moby, char *obj) {
     }
 }
 
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern int frame_size;
 typedef struct {
     short tex;
@@ -2422,7 +2415,6 @@ void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
     FastVecAdd(d, a, moby + 0x10);
     project_world_point_to_screen_pixels(d, obj + 0xE0, obj + 0xE4, 0);
 }
-extern int spawn_ship_rocket(void *, void *, float, int, void *, int);
 
 /* Fires a timed burst from a moby while a pad button is held and ammo remains. */
 void fire_fighter_jet_rocket(char *moby, char *obj) {
@@ -2459,9 +2451,6 @@ extern char jet_camera_mode_warning_msg[];
 extern float gemlik_view_tan_half_fov;
 extern float Spring(float *, float *, float, float, float, float);
 extern float SpringAngle(char *, char *, int, float, float, float, float);
-
-extern void UpdateViewContext(void);
-extern void AddDrawCallback(void *, void *);
 
 typedef float W4_3E8[4] __attribute__((aligned(16)));
 
@@ -2865,17 +2854,11 @@ extern int jet_palette_ready47 SDATA(D_L13_00161454);
 extern int *jet_palette47 SDATA(D_L13_00161450);
 extern short jet_boarding_group_ids_b;
 
-extern void jet_group_switch(short *, int, int, int);
-extern void jet_group_flag(int, int);
-
 extern int try_set_help_message(int, int);
-extern int HeroEnterMoveState(int, int);
+
 extern void jet_animate(unsigned char *, float);
-extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void PlayerFighterFlight(void *, void *);
-
-extern void MusicRequestTrack(int, int);
 
 /* Handles fighter entry, flight, damage, exit, palette setup and audio cleanup. */
 void JetFighterUpdateL13(Jet47 *m) {

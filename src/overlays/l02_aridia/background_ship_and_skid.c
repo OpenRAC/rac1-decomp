@@ -21,6 +21,19 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/shot_tracking.h"
+#include "asm_functions/level_02.h"
+#include "overlays/l02_aridia/hud_frame_and_sky_shells.h"
+#include "overlays/l02_aridia/sand_shark.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -72,28 +85,16 @@ struct ProjectileVars {
     s32 life; /* 0x10 */
 };
 
-extern int DialogRequest_Init(void *, void *);
-extern void initialize_moby_grounding(void *);
-
-extern int Npc_TryStartDialog(void *, void *);
-
 extern float vec_distance_xy(void *, void *);
-
-extern int Help_Request(int a, int b);
 
 extern int truncate_float_to_s32(float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int memcard_Save(int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
-extern void set_camera_position(void *);
-extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
-
-extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");
@@ -518,12 +519,6 @@ void SkidMcMarxAridiaUpdate(char *m) {
 extern char gHeroPos[];
 extern char *aridia_mobys MACRO_ADDR;
 
-extern void Hero_ResetToPosition(void *, void *, int, int);
-extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
-extern void initialize_numeric_hud_timer_and_base_dimensions(void);
-extern void update_hud_counter_transition(void);
-extern void draw_hud_counter(void);
-
 /* Three-state controller (data+0x180): 0 waits for its trigger, 1 runs timed effects until released, then moves the
    moby to its spawn point, sets the two linked mobys' flags and enters state 2.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/entities/002e0dc0.c, FUN_L02_002e1fb8. */
@@ -622,8 +617,6 @@ extern unsigned char saved_mission_state[][16];
 extern char voice_pool[];
 
 extern float vec_distance_xy(void *a, void *b);
-
-extern int Moby_PlaySound(int, int, void *);
 
 extern void update_entity_matrix(void *, void *, void *, void *);
 
@@ -743,7 +736,7 @@ extern char aridia_ocean_zone1_part2[];
 extern char aridia_ocean_zone1_part3[];
 extern char aridia_ocean_zone1_part4[];
 extern char aridia_ocean_frame_state[];
-extern void func_L02_002A59F8(float, float, float, float, int, int, int, int, int, int, void *);
+
 extern void prepare_scaled_table_on_stack_r(void) __asm__("func_L02_002A59D8");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void RefreshPointLight_r(void *) __asm__("func_00202790");
@@ -773,9 +766,6 @@ void func_L02_002EB480_r(Moby *m) {
     }
     prepare_scaled_table_on_stack_r();
 }
-extern void prepare_scaled_table_on_stack(float);
-extern void draw_aridia_ocean_parts(void);
-extern void AddDrawCallback(void (*)(void), void *);
 
 /* Aridia ocean update: sets the ocean speed once, then queues its draw callback each frame. */
 void ocean_aridia_update(unsigned char *moby) {
@@ -817,7 +807,7 @@ extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern void fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-extern u8 *func_L00_00272158(void *, void *, s32, s32, s32, s32, f32, f32, f32, f32, f32);
+
 extern void rand_vec_r(void *, f32, f32) __asm__("func_L00_00258DB0");
 
 /* Shard debris update: drifts along its velocity, sheds particle trails and expires when its timer runs out.
@@ -1205,7 +1195,6 @@ extern void rand_vec_r2(void *, float, float) __asm__("func_L00_00258DB0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 
-extern void *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 
@@ -1405,7 +1394,7 @@ extern struct Hero g_hero_r __asm__("D_0013F450");
 struct Manip_F9E50;
 struct GifEntry_F9E50;
 struct AnimSeq_F9E50;
-extern void func_L00_001ED9B0(void *, void *, void *);
+
 extern char D_L02_00167300[];
 
 /* Sets the vendor camera mode; mode 3 also aims it from the hero's position.

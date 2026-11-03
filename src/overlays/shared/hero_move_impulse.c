@@ -11,6 +11,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
 extern Hero g_hero;
 
 extern char hoven_item_defs[];
@@ -61,7 +62,6 @@ extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void allocate_hero_voice_for_entry(int, int);
 extern int g_current_level_index MACRO_ADDR;
 
 /* Hopping player movement update by state. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00227f10.c, FUN_L12_00235c08. */

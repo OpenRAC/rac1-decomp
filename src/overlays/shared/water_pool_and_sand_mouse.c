@@ -29,6 +29,18 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/audio/sound.h"
+#include "game/system/stub.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "game/system/memcard.h"
+#include "game/render/partupd.h"
+#include "game/render/framebuf.h"
+#include "overlays/shared/gold_bolts_and_teleporters.h"
+#include "overlays/l01_novalis/hero_idle_and_items.h"
+#include "asm_functions/level_01.h"
+#include "overlays/shared/moby_context_table.h"
+#include "overlays/shared/rig_probe_setup.h"
+#include "overlays/shared/vendor_screen_init.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -152,8 +164,6 @@ void RescaleFloatTable(float s) {
 }
 extern int ripple_cur_buffer SDATA(ripple_cur_buffer);
 extern int ripple_prev_buffer SDATA(ripple_prev_buffer);
-extern void ripple_heights_to_scratchpad(char *a, char *b);
-extern void ripple_patch_step(char *a, int i, int c, char *base);
 
 // steps the ripple simulation for each active entry, then swaps the two buffer indices
 void step_pool_wave_simulation(char *base, int n) {
@@ -174,7 +184,7 @@ void step_pool_wave_simulation(char *base, int n) {
     }
 }
 extern void step_pool_wave_simulation_r(char *, int) __asm__("func_L01_002B90E8");
-extern void ripple_lerp_buffers(char *, char *, char *, float);
+
 extern float pool_light[];
 extern int ripple_draw_buffer SDATA(ripple_draw_buffer);
 extern float ripple_sim_phase SDATA(ripple_sim_phase);
@@ -272,8 +282,6 @@ void build_height_grid_positions(float *pos) {
     }
 }
 extern f32 pool_light[];
-
-extern void ripple_emit_sub_block(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b8cb0. */
 void cull_and_submit_water_grid_tile(f32 *pos, s32 index, s32 mode) {
@@ -386,9 +394,6 @@ extern union PacketCursor l01_packet MACRO_ADDR;
 
 typedef int u128_2BA150 __attribute__((mode(TI)));
 
-extern void sce_vu0_mul_matrix(void *, void *, void *);
-extern void AA_BlurPass(void);
-
 extern int novalis_font_vu_state MACRO_ADDR;
 extern unsigned short font_vu_program_tag NOT_SDA;
 extern char font_vu_program[];
@@ -477,7 +482,7 @@ extern unsigned water_last_alpha2 SDATA(water_last_alpha2);
 extern unsigned water_last_alpha1 SDATA(water_last_alpha1);
 void build_water_render_setup_packet(void);
 extern void ripple_heights_to_scratchpad_r(void *, void *) __asm__("func_L01_00262BC0");
-extern void ripple_shade_vertices(f32 *);
+
 extern void update_animated_offset_pairs(f32 *);
 extern u64 GetEffectTex(s32);
 
@@ -632,9 +637,7 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern float vec_distance_xy(void *, void *);
 
-extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
-extern float IntToFloat(int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -817,8 +820,6 @@ void novalis_elevator_update(unsigned char *moby) {
 LINKER_REMNANT("asm/overlays", func_L01_002C05B8);
 extern float vec_length_xy(void *);
 
-extern void spawn_two_point_effect_particle(char *, char *);
-
 extern char *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern char novalis_coll_hit_point[];
 extern float novalis_coll_hit[];
@@ -857,12 +858,11 @@ typedef int OvlQuad __attribute__((mode(TI)));
 extern s32 truncate_float_to_s32(f32);
 void spawn_collision_particle_bursts(void);
 extern int fast_dec_timer(void *);
-extern int noop_callback_l(void *);
+
 extern int coll_sphere_mobys(float, void *, int, int, void *);
 extern void PostHitMessage_v(float, void *, void *, int, void *, void *) __asm__("func_L00_0025AC00");
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void spawn_type_14_particle(int, void *);
 
 extern s32 novalis_shot_trail_mode SDATA(novalis_shot_trail_mode);
 extern f32 novalis_shot_hit_radius SDATA(novalis_shot_hit_radius);
@@ -955,22 +955,13 @@ extern char *camera_points MACRO_ADDR;
 extern unsigned char saved_mission_state[][16];
 extern float bolt_crank_pull_spring_vel SDATA(bolt_crank_pull_spring_vel);
 
-extern int pad_pressed_within(int, int, int);
-extern int Hero_SetMoveState(int, int);
-
-extern void set_camera_rotation(void *);
-extern void set_camera_position(void *);
-extern void set_camera_5_track_acceleration_yz(float, float);
 extern float ApproachValue(float *, float, float);
-extern void record_moby_context_bytes(void *, int, void *, int, void *);
 
 extern void divide_vector_xyz(void *, void *, float);
 
 extern void Spring(float *, float *, float, float, float, float);
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 
-extern void FastMemZero16(void *, int);
-extern void Moby_PlaySound(int, int, char *);
 extern void set_novalis_bolt_crank_completion_flags(char *);
 
 static inline char *hero_p(void) {
@@ -1289,10 +1280,7 @@ extern s32 gold_weapon_case_items[];
 extern u8 gold_weapon_purchased[];
 extern ItemPrice novalis_item_price_table[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern s32 DialogRequest_Init(struct Moby *, SaleVars *);
-extern s32 Npc_TryStartDialog(struct Moby *, SaleVars *);
-extern void initialize_vendor_screen(struct Moby *, s32, ItemPrice *);
-extern s32 memcard_Save(s32, s32);
+
 struct Moby;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002e1ac0. */
@@ -1465,7 +1453,7 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
 }
 extern void *GetFlaggedPvarWord(void *);
 extern void *select_sand_mouse_spawn_target(void *, void *, void *, float, float, float, float, float, float);
-extern void spawn_sandmouse_projectile(void *, void *, float, float, float, float);
+
 extern float sand_mouse_target_range SDATA(sand_mouse_target_range);
 extern float sand_mouse_target_yaw_fov SDATA(sand_mouse_target_yaw_fov);
 extern float sand_mouse_target_pitch_fov SDATA(sand_mouse_target_pitch_fov);
@@ -1731,14 +1719,10 @@ extern float sand_mouse_fade_particle_random_float_range_end_gp
 extern int sand_mouse_fade_particle_color_alpha_gp SDATA(sand_mouse_fade_particle_color_alpha_gp);
 extern float sand_mouse_fade_particle_time_squared_coefficient_gp
     SDATA(sand_mouse_fade_particle_time_squared_coefficient_gp);
-extern int STUB_printf();
 
-extern void MoveCtl_Init(char *p);
-extern void rig_probe_setup(void *, int, int *, float *, float *, int *);
 extern int func_001160D8(void);
 extern void MobySpringTurn_r(void *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
-extern int Hero_SetMoveState(int, int);
 
 extern int func_L00_0025A060(void *m, void *p, float *pos, float *v);
 extern int fast_dec_timer(void *);
@@ -2106,18 +2090,16 @@ extern void set_ground_height_band(void *);
 extern void process_amoeboid_hits_and_update_targeting(char *);
 extern void spawn_amoeboid_movement_particles(unsigned char *);
 extern void spawn_amoeboid_burst_sparks(unsigned char *, float *);
-extern int follow_path(int *, int, int, float, void *, void *, void *);
+extern int follow_path_v(int *, int, int, float, void *, void *, void *) __asm__("func_L01_00277FD8");
 extern void MoveCtl_Init_r(void *) __asm__("func_L01_0026E8E0");
 extern void move_w(void *, void *, void *, void *, float);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int mine_fall(void *, void *);
 
 extern void PostHitMessage_r(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
-extern int CarriedMobyUpdate(void *, void *);
+
 extern void SetDeathBits(void *, int, int);
 extern int IsFrameWithinWindow(float, void *);
-
-extern void Moby_PlaySound(int, int, char *);
 
 extern int truncate_float_to_s32(float);
 
@@ -2212,8 +2194,8 @@ void large_amoeboid_update(unsigned char *moby) {
         case 1:
             if (data->mode != 2) {
                 if (random_integer_below(4) == 0) {
-                    path_hit = follow_path(&data->path_state, 1, data->path_idx, data->size * 0.8f,
-                                           &((Moby *)moby)->pos, &target->pos, move);
+                    path_hit = follow_path_v(&data->path_state, 1, data->path_idx, data->size * 0.8f,
+                                             &((Moby *)moby)->pos, &target->pos, move);
                     if (path_hit != 0) {
                         ((Moby *)moby)->state = 4;
                         if (((Moby *)moby)->prev_seq != 1)
@@ -2246,8 +2228,8 @@ void large_amoeboid_update(unsigned char *moby) {
             move_w(moby, &data->move_ctl, move, &data->stun_state, 1.0f);
             result = data->mode;
             if (result != 2 && random_integer_below(4) == 0) {
-                path_hit = follow_path(&data->path_state, 1, data->path_idx, data->size * 0.8f, &((Moby *)moby)->pos,
-                                       &target->pos, hit);
+                path_hit = follow_path_v(&data->path_state, 1, data->path_idx, data->size * 0.8f, &((Moby *)moby)->pos,
+                                         &target->pos, hit);
                 if (path_hit != 0) {
                     ((Moby *)moby)->state = 3;
                     if (((Moby *)moby)->prev_seq != 0)
@@ -2312,12 +2294,12 @@ void large_amoeboid_update(unsigned char *moby) {
                     MobyBlendAnimation(moby, 2, 0, scale_ticks(10));
                 return;
             } else {
-                if (follow_path(&data->path_state, 1, data->path_idx, data->size * 0.8f, &((Moby *)moby)->pos,
-                                target_position, hit) != 0)
+                if (follow_path_v(&data->path_state, 1, data->path_idx, data->size * 0.8f, &((Moby *)moby)->pos,
+                                  target_position, hit) != 0)
                     path_hit = 1;
                 else
-                    path_hit = follow_path(&data->path_state, 1, data->path_idx, 0.0f, &((Moby *)moby)->pos,
-                                           target_position, hit) != 0;
+                    path_hit = follow_path_v(&data->path_state, 1, data->path_idx, 0.0f, &((Moby *)moby)->pos,
+                                             target_position, hit) != 0;
                 if (path_hit != 0) {
                     angle = fast_atan2(hit[0] - ((Moby *)moby)->pos.x, hit[1] - ((Moby *)moby)->pos.y);
                     angle = FastAddRots(angle, data->wander_angle);
@@ -2390,12 +2372,12 @@ void large_amoeboid_update(unsigned char *moby) {
             if (distance < 1.0f) {
                 ((Moby *)moby)->state = 1;
             } else {
-                if (follow_path(&data->path_state, 1, data->path_idx, data->size * 0.8f, &((Moby *)moby)->pos,
-                                target_position, hit) != 0)
+                if (follow_path_v(&data->path_state, 1, data->path_idx, data->size * 0.8f, &((Moby *)moby)->pos,
+                                  target_position, hit) != 0)
                     blocked = 1;
                 else
-                    blocked = follow_path(&data->path_state, 1, data->path_idx, 0.0f, target_position, target_position,
-                                          hit) != 0;
+                    blocked = follow_path_v(&data->path_state, 1, data->path_idx, 0.0f, target_position,
+                                            target_position, hit) != 0;
             }
             if (blocked != 0) {
                 angle = fast_atan2(hit[0] - ((Moby *)moby)->pos.x, hit[1] - ((Moby *)moby)->pos.y);
@@ -2417,8 +2399,8 @@ void large_amoeboid_update(unsigned char *moby) {
         case 8:
             result = mine_fall(moby, &data->carry_state);
             if (result & 1) {
-                path_hit = follow_path(&data->path_state, 1, data->path_idx, data->size * 0.8f, &((Moby *)moby)->pos,
-                                       &data->target_pos, move);
+                path_hit = follow_path_v(&data->path_state, 1, data->path_idx, data->size * 0.8f, &((Moby *)moby)->pos,
+                                         &data->target_pos, move);
                 if (path_hit != 0) {
                     Moby_PlaySound(4, 0, (char *)moby);
                     data->turn_rate = data->turn_speed * g_frame_time;
@@ -2864,7 +2846,6 @@ extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern int FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
 extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
-extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002ef770. */
 void spawn_amoeboid_burst_sparks(unsigned char *moby, f32 *mode) {
@@ -2936,7 +2917,7 @@ int process_amoeboid_suck_cannon_suction(Moby *moby, void *pos, void *target) {
     }
     return value;
 }
-extern int func_L00_002DCFD0(void *, void *, void *, float);
+
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
@@ -2997,8 +2978,6 @@ int moby_hold_state_if_grabbed(char *a, void *pos, void *target, float h) {
     }
     return r;
 }
-
-extern void Moby_PlaySound(int, int, char *);
 
 /* runs the moby update and sets its state byte */
 int launch_suck_cannon_projectile_and_sync_moby_state(char *m, int a, int b, float f) {
@@ -3333,19 +3312,9 @@ extern char *novalis_mobys MACRO_ADDR;
 extern char gunship_missing_path_message_fmt[];
 extern void *gunship_follow_path_fn_ptr MACRO_ADDR;
 
-extern s32 check_scaled_vector_bsphere(struct Moby *, f32);
 extern s32 get_first_moby_in_group(struct Moby **, s32, s32, s32);
 extern s32 get_next_moby_in_group(struct Moby **, struct Moby *, s32, s32);
-extern void initialize_path_descriptor(PathCursor *);
-extern s32 select_point_index_by_distance(void *, PathNodes *, f32);
-extern void compute_path_node_tangent(QVec *, PathCursor *, s32, f32, f32);
-extern f32 compute_sampled_spline_path_lengths(f32, f32, PathCursor *, s32, struct Moby *);
-extern void Moby_GetJointWorldPos(struct Moby *, s32, QVec *);
-extern s32 advance_path_node_index(PathCursor *);
-extern s32 resolve_path_node_index(PathCursor *, s32);
-extern void evaluate_cubic_hermite_segment(f32, QVec *, QVec *, QVec *, QVec *, QVec *);
 
-extern void spawn_type_10_particle(QVec *, QVec *);
 extern void spawn_explosion(struct Moby *, QVec *, QVec *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
                             s32, s32, s32);
 

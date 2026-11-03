@@ -14,8 +14,7 @@
  */
 
 extern short cd_read_state[];
-extern int snd_InitVAGStreamingEx(int, int, int, int);
-extern int snd_FlushSoundCommands(void);
+
 extern void register_audio_stream_callback(void);
 
 /* Music init: resets the music state at cd_read_state (+0x30 = 0x20, the
@@ -90,7 +89,6 @@ extern int disc_table[];
 extern short cd_read_state[];
 extern int g_game_language MACRO_ADDR;
 extern void music_secondary_start_callback(int, long);
-extern void snd_PlayVAGStreamByLocEx_CB(int, int, int, int, short, int, int, int, int, void (*)(int, long), long);
 
 /* Plays sound arg0 in 60000..: the other play functions below differ
    only in their table. */
@@ -397,7 +395,6 @@ void music_start_track_by_id(int track, int track_flags, int volume) {
 }
 
 extern short cd_read_state[];
-extern void snd_ContinueVAGStream(void *);
 
 /* Resume the secondary stream once its channel is ready; return 1 if it was resumed. */
 int Music_ContinueStreamIfReady(void) {
@@ -641,9 +638,6 @@ void Music_QueueTrack(int arg0, int arg1) {
     }
 }
 
-extern void snd_StopAllStreams(void);
-extern void snd_StreamSafeCheckCDIdle(int);
-
 /* music_Stop: waits (snd_FlushSoundCommands, snd_FlushSoundCommands) while each
    of the three playing records at +0x34, +0x6C and +0x50 is still
    starting (state 0xFFFFFFFF), stops the streams (snd_StopAllStreams), flushes
@@ -742,12 +736,6 @@ typedef struct {
     short fadeT;         /* 0x0E */
 } MusicPlaying;
 
-extern void snd_stop_sound(int);
-extern void snd_PauseVAGStream(int);
-
-extern void snd_GetVAGStreamTimeRemaining_CB(int, void (*)(int, long), long);
-extern void snd_SoundIsStillPlaying_CB(int, void (*)(int, long), long);
-extern void snd_IsVAGStreamBuffered_CB(int, void (*)(int, long), long);
 extern void music_remaining_time_callback(int, long);
 extern void set_sound_handle_id(int, long);
 extern void music_channel_ready_callback(int, long);
@@ -839,10 +827,9 @@ struct MusicStreamState {
     struct MusicStreamChannel transition; /* 0x6C */
 };
 extern struct MusicStreamState cd_read_state_r __asm__("D_001517D0");
-extern void snd_set_sound_params_cb(s32, s32, s32, s32, s32, s32, void (*)(u32, s64), s64);
+
 extern void set_sound_handle_id_r(u32, s64) __asm__("func_00217A08");
 extern void snd_ContinueVAGStream_r(s32) __asm__("func_0012EDE0");
-extern s32 snd_StreamSafeCdSync(s32);
 
 extern s32 fast_dec_timer(void *);
 extern void music_start_track_by_id(s32, s32, s32);

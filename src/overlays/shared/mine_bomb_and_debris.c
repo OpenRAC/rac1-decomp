@@ -23,6 +23,13 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "game/audio/sound.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "game/render/partupd.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
+#include "overlays/shared/trespasser_and_throwing_gloves.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -193,19 +200,10 @@ extern unsigned char *part_type_textures[];
 
 extern unsigned char *GetFlaggedPvarWord(unsigned char *);
 extern unsigned char *moby_get_ride_transform(unsigned char *);
-extern int predict_mine_impact(W910 *, M910 *, int);
 
 extern float resolve_camera_surface_height(float *, void *);
 
-extern int PartType34Spawn(void *, void *, float, float);
-
-extern float IntToFloat(int);
-
 extern int coll_line(void *, void *, int, int, int);
-
-extern void RippleDisturb(int, int, int, float, float, float, float);
-
-extern char *spawn_burst_moby(void *, float);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
 
@@ -213,8 +211,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
 
-extern int Sound_IsPlaying(void *, int);
-extern int Moby_PlaySound(int, int, int);
 extern int fast_dec_timer(int *);
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
@@ -226,17 +222,14 @@ extern f32 vec_distance_xy(void *, void *);
 extern int MoveKeepingOverGround_v(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
 
-extern void spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
-extern int DefaultVtbl_DeleteMoby(int, int, float);
+extern int DefaultVtbl_DeleteMoby_v(int, int, float) __asm__("func_L00_00237B70");
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern int truncate_float_to_s32(float);
-extern char *mine_debris(char *, char *, int, int, float, int, int);
 
-extern char *mine_camera_blast(char *a, char *b, int c, char *d);
 extern void jet_animate(unsigned char *, float);
 
 /* Mine (moby Mine) update: falls and bounces, sticks to what it hits, homes on a nearby target and explodes. */
@@ -800,10 +793,10 @@ void mine_update(M910 *m) {
                                 (0x16 << 24) | (cb << 16) | (cg << 8) | cr, (cb << 16) | (cg << 8) | cr, 1);
                         }
                         for (l = 0; l < 20; l++) {
-                            int c1 = DefaultVtbl_DeleteMoby(0x7F000000, (0x7F << 24) | (cb << 16) | (cg << 8) | cr,
-                                                            random_float_between(0.25f, 1.0f));
-                            int c2 = DefaultVtbl_DeleteMoby(0, ((cb / 2) << 16) | ((cg / 2) << 8) | (cr / 2),
-                                                            random_float_between(0.5f, 1.0f));
+                            int c1 = DefaultVtbl_DeleteMoby_v(0x7F000000, (0x7F << 24) | (cb << 16) | (cg << 8) | cr,
+                                                              random_float_between(0.25f, 1.0f));
+                            int c2 = DefaultVtbl_DeleteMoby_v(0, ((cb / 2) << 16) | ((cg / 2) << 8) | (cr / 2),
+                                                              random_float_between(0.5f, 1.0f));
                             float sz;
                             int life;
 
@@ -887,9 +880,9 @@ void mine_update(M910 *m) {
                                     break;
                                 }
                                 case 3: {
-                                    int c1 = DefaultVtbl_DeleteMoby(0x7F000000, 0x7F182030,
-                                                                    random_float_between(0.25f, 1.0f));
-                                    int c2 = DefaultVtbl_DeleteMoby(0, 0x5F5F5F, random_float_between(0.5f, 1.0f));
+                                    int c1 = DefaultVtbl_DeleteMoby_v(0x7F000000, 0x7F182030,
+                                                                      random_float_between(0.25f, 1.0f));
+                                    int c2 = DefaultVtbl_DeleteMoby_v(0, 0x5F5F5F, random_float_between(0.5f, 1.0f));
                                     float sz;
                                     int life;
 
@@ -930,8 +923,6 @@ void mine_update(M910 *m) {
 }
 typedef int q_2adbb0 __attribute__((mode(TI)));
 
-extern float IntToFloat(int);
-
 /* Spawns a spinning shard (type 0x70) at pos with velocity vel, tinted r/g/b, fading out over life. */
 char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int life, unsigned char r, unsigned char g,
                           unsigned char b, unsigned char a) {
@@ -967,7 +958,6 @@ char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int li
     }
     return m;
 }
-extern float IntToFloat(int);
 
 typedef struct V_d {
     char pad0[0x14];
@@ -1010,8 +1000,6 @@ void update_glow_particle(M_d *m) {
 }
 
 extern int cinematic_mode MACRO_ADDR;
-
-extern float IntToFloat(int);
 
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
@@ -1156,8 +1144,6 @@ extern char collision_hit_point[];
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void aim_throw_arc(float *, float *, float *, float, float, float);
-
 typedef struct BombVars {
     Vec4 vel; /* 0x00 */
     u8 pad_10[0x30];
@@ -1293,7 +1279,7 @@ typedef struct {
     char *last_hit;
     int hit_count;
 } Land;
-extern void AddDrawCallback(void *, void *);
+
 extern unsigned char screen_globals_base[];
 extern void draw_bomb_landing_marker(char *moby);
 
@@ -1519,11 +1505,7 @@ extern int bomb_trail_spark_texture SDATA(bomb_trail_spark_texture);
 extern int predict_throw_landing(void *, void *, int);
 extern void rand_vec(float *, float, float);
 
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-
-extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 
 /* Update of moby class 121, a thrown bomb: it flies and spins, bounces once on the ground, explodes on a hit or when
    its timer runs out, then its blast ring grows for 15 frames. */
@@ -1916,10 +1898,10 @@ void bomb_update(M_2aedd0 *m) {
                                 (0x16 << 24) | (cb << 16) | (cg << 8) | cr, (cb << 16) | (cg << 8) | cr, 1);
                         }
                         for (j = 0; j < 20; j++) {
-                            int c0 = DefaultVtbl_DeleteMoby(0x7F << 24, (0x7F << 24) | (cb << 16) | (cg << 8) | cr,
-                                                            random_float_between(0.25f, 1.0f));
-                            int c1 = DefaultVtbl_DeleteMoby(0, ((cb / 2) << 16) | ((cg / 2) << 8) | (cr / 2),
-                                                            random_float_between(0.5f, 1.0f));
+                            int c0 = DefaultVtbl_DeleteMoby_v(0x7F << 24, (0x7F << 24) | (cb << 16) | (cg << 8) | cr,
+                                                              random_float_between(0.25f, 1.0f));
+                            int c1 = DefaultVtbl_DeleteMoby_v(0, ((cb / 2) << 16) | ((cg / 2) << 8) | (cr / 2),
+                                                              random_float_between(0.5f, 1.0f));
                             float sz;
                             int life;
 
@@ -2297,7 +2279,6 @@ typedef struct {
 extern E gold_weapon_purchased;
 extern s32 coll_hit_result[0x1C];
 
-extern f32 IntToFloat(s32);
 extern s32 coll_line_r(void *, void *, s32, char *, void *) __asm__("func_L00_001EFFF0");
 extern s32 GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 
@@ -2930,7 +2911,6 @@ typedef struct {
 float random_float_between(float, float);
 void vec_scale_to_length(void *, void *, float);
 
-void PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern V_2b1af0_B30C8 hero_basis_2;
 void build_look_at_matrix(void *, void *, void *, float);

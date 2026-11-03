@@ -24,6 +24,20 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/system/stub.h"
+#include "game/audio/music.h"
+#include "game/render/partupd.h"
+#include "core/gs/put_draw_env.h"
+#include "core/cdvd/callbacks.h"
+#include "game/render/skyfunc.h"
+#include "game/ui/pause.h"
+#include "core/gs/vif1_gif_reset.h"
+#include "core/gs/def_load_image.h"
+#include "game/ui/menu.h"
+#include "core/gs/load_image.h"
+#include "core/gs/dma_and_sync_v.h"
+#include "game/movie/movie.h"
+#include "core/storage/wad.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -33,11 +47,7 @@
 
 extern char voice_pool[];
 
-extern void append_gif_transfer_packet(void);
-
 extern int GetEffectTex(int);
-
-extern void UpdateViewContext(void);
 
 extern int render_sequence NOT_SDA;
 
@@ -45,28 +55,13 @@ extern int current_vu_chain MACRO_ADDR;
 
 extern short g_current_level_index;
 
-extern int STUB_printf();
-
 extern int g_hero_moby NOT_SDA;
 
 extern int func_001160D8(void);
 
-extern void sce_gs_sync_v(int);
-
-extern void snd_FlushSoundCommands(void);
-
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
-
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
-
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
 extern char camera_position[];
-
-extern void sce_cd_sync_s(int);
-
-extern void snd_ResolveBankXREFS(void);
 
 extern char render_sequence_c[] __asm__("D_0018CC20");
 extern float view_tan_half_fov;
@@ -594,14 +589,6 @@ extern f32 sky_shell_base_rot_z_by_mode[] NOT_SDA;
 extern f32 cam_mode_min_fov[] NOT_SDA;
 extern u8 level_available[20] NOT_SDA;
 
-extern void noop_callback_i(void);
-extern void noop_callback_h(void);
-extern void snd_play_sound_vol_pan_pmpb(s32, s32, s32, s32, s32, s32, s32, void *);
-
-extern void refresh_moby_spatial_bounds(void *);
-
-extern float IntToFloat(int);
-
 void update_level_gameplay_frame(void) {
     LevelFrame_V4 first_position;
     LevelFrame_V4 second_position;
@@ -815,25 +802,18 @@ extern struct LevelRenderState_305A0 level_render_state_r2 __asm__("D_0013E130")
 extern s32 game_frame_counter MACRO_ADDR;
 extern s32 D_0015F704_305A0 SDATA(D_0015F704);
 extern s32 render_sequence_time[];
-extern void append_dma_tag(u32);
-extern void BuildViewMatrices();
-extern void UpdateViewContext();
-extern void ResetGsRegisters();
-extern void SetupGifPaging(s32);
-extern void DoGifPaging();
+
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
-extern void emit_rgba_draw_packet(s32, s32, s32, s32);
-extern void DrawTexturedQuad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
+
 extern s32 func_001FA898(f32);
-extern void append_gif_transfer_packet();
+
 extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
 
-extern void draw_sky_shells();
 extern void build_resident_indexed_texture_warp_meshes(s32);
 extern void draw_resident_textured_quad();
 extern void draw_resident_textured_banner(s32);
 extern void render_environment_mapped_object_r(s32) __asm__("func_00233AB8");
-extern void VU1_syncChain(s32);
+
 extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
 extern struct LevelDisplayState g_screen_extent_r __asm__("D_0013E600");
 
@@ -909,8 +889,6 @@ void render_level_frame(void) {
 
 extern float flare_spark_offsets[][6][4];
 extern float g_frame_time MACRO_ADDR;
-
-extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Spawns six particles around a moby: random velocity and a position taken from the flare corner table, transformed by the moby's matrices. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/effects/fun_0022f5b0.c, FUN_0022f5b0. */
 void emit_six_spark_effects(char *m, float z) {
@@ -1768,7 +1746,7 @@ void update_resident_gameplay_state(void) {
 }
 
 extern int ship_substate;
-extern void prepare_debug_profiler_render(void);
+
 extern void render_level_frame(void);
 
 /* A switch on ship_substate, whose jump table is linked into the data
@@ -1909,19 +1887,7 @@ extern u8 level_init_cleared_block[];
 extern u8 level_init_cleared_block2[];
 
 extern s32 Stream_SubmitRead(void *buf, u32 lsn, u32 sectors);
-extern void FadeToBlack(s32 n);
 
-extern void upload_texture_images(s32 arg0, s32 count, s32 p);
-
-extern void relocate_sky_definition(s32 f);
-extern void register_moby_class(s32 moby, s32 arg1, s32 arg2, s32 oclass);
-extern void unpack_point_records(s32 src, s32 count);
-extern void ParseParticleTexs(s32 hdr, s32 base, s32 src, s32 count);
-extern s32 upload_mip_texture(s32, void *);
-extern void FastMemZero16(void *, s32);
-extern void ResetDrawGlobals(void);
-
-extern void snd_BankLoadFromEE_CB(s32 cmd, void *arg, s64 data);
 extern void SoundBank_StoreHandle();
 #define sequence (*(f32 *)&D_0015F53C)
 #define D_001413D0 ((s32 *)&D_001414D0)
@@ -2140,11 +2106,6 @@ extern DiscTable disc_table_t __asm__("D_00137C80");
 extern int pal_mode MACRO_ADDR;
 extern int g_game_language MACRO_ADDR;
 extern int level_resource_buffer_base;
-extern int Movie_Play(int, int, int, int, int);
-extern void wait_for_graphics_pipeline_idle(int, int);
-extern void sceGsSyncVCallback(void *);
-
-extern void FadeToBlack(int);
 
 /* Plays movie id, taking its {sector, size} from the WAD table of
    contents (from the second table when pal_mode is set). */
@@ -2237,9 +2198,7 @@ struct CommonArchiveMemory {
 };
 
 extern s32 sce_cd_sync_s_r(s32 a0) __asm__("func_00120F30");
-extern s32 sceGsExecLoadImage(sceGsLoadImage *load_image, s32 image_address);
-extern s32 sceGsSetDefLoadImage(sceGsLoadImage *load_image, s32 block_offset, s32 buffer_width,
-                                s32 pixel_storage_format, s32 x, s32 y, s32 width, s32 height);
+
 extern s32 wait_for_graphics_pipeline_idle_r(s32 a0, s32 a1) __asm__("func_00120858");
 
 extern s32 Stream_SubmitRead(void *a0, u32 a1, u32 a2);
@@ -2348,21 +2307,13 @@ extern ScreenOfs g_screen_extent_r2 __asm__("D_0013E600");
 extern s16 level_archive_load_state_r[] __asm__("D_0015EF48") MACRO_ADDR;
 extern s16 level_archive_load_busy_r[] __asm__("D_0015EF4A") MACRO_ADDR;
 extern void read_file_entry_with_retry_r(s32) __asm__("func_0012F4A8");
-extern void ResetGsRegisters(void);
-extern void ResetGsRegistersPr(void);
-extern void FadeToBlack(s32);
-extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, u64, u64) __asm__("func_001F5800");
-extern f32 IntToFloat(s32);
 
-extern s32 service_level_archive_load(void);
-extern void Menu_RunStateHandler(void);
+extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, u64, u64) __asm__("func_001F5800");
 
 extern void append_scrolling_textured_quad_r(s32, s32, s32, s32, u64, u64, f32, f32, f32, f32) __asm__("func_00232A00");
 extern void prepare_loading_slide_textures(s32, s32, s32, u64 *, u64 *, u64 *);
 
-extern void VU1_syncChain(s32);
 extern void VU1_addGSregister_r2(s32, u64) __asm__("func_00234C98");
-extern void sce_gs_sync_v(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/play_level_loading_slides.c, play_level_loading_slides. */
 void play_level_loading_slides(s32 language_index, s32 first_slide, s32 second_slide, s32 duration_ticks,
@@ -2496,25 +2447,13 @@ extern short D_0015EF48_m SDATA(D_0015EF48);
 extern int level_archive_load_busy_i __asm__("D_0015EF4A") MACRO_ADDR;
 extern char unloaded_sound_bank_format[];
 extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
-extern int func_0012EF48(int);
+
 extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
-
-extern void snd_set_reverb_ex(int, int, int, int, int);
-
-extern void music_Stop(void);
-extern void snd_UnloadBank(int);
-extern void SetBackgroundColor(int, int, int);
-extern int load_level_chunk_from_disc(void);
 
 extern void play_level_loading_slides(int, int, int, int, int);
 extern void initialize_level_runtime(void);
-extern int read_file_entry_with_retry(int);
-extern void append_palette_transfer_packet(void);
 
 extern void update_resident_gameplay_state(void);
-extern void tick_space_transition(void);
-extern int service_level_archive_load(void);
-extern void VU1_syncChain(int);
 
 /* DoSpaceTransition: plays the level-to-level transition (dialogue screens, loading loop) and waits for the load. Adapted from Lombyte's project (GPL-3.0) for PAL: src/gameplay/state/do_space_transition.c, do_space_transition. */
 void DoSpaceTransition(void) {
@@ -2709,8 +2648,6 @@ extern float env_map_uvs[][2];
 extern float env_map_saved_uvs[][2];
 extern u64 GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void fast_dec_timer(s32 *);
-
-extern float IntToFloat(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/render_environment_mapped_object.c, render_environment_mapped_object. */
 void render_environment_mapped_object(EnvironmentMappedObject *object) {
