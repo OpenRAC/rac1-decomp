@@ -92,3 +92,5 @@ src/overlays/shared/water_pool_and_sand_mouse.c	activate_smaller_amoeboid	marked
 src/overlays/shared/water_pool_and_sand_mouse.c	gunship_follow_path	marked	duplicating the reset preserves retail's voice-call argument scheduling
 src/overlays/shared/water_pool_and_sand_mouse.c	gunship_follow_path	marked	the never-taken call keeps gcse from propagating &off[1] into the call, so dir
 src/overlays/shared/weapon_hud_and_counters.c	select_moby_context	marked	without volatile, only this store moves, from here to near the end
+src/versions/pal_v1/overlays/shared/walloper_and_beam_effects/func_L00_002BA7C8.c	build_beam_and_arc_points	marked	a never-taken branch (cprop proves dead == 0, then jump deletes it). Retail
+src/versions/us/overlays/shared/walloper_and_beam_effects/func_L00_002BA7C8.c	build_beam_and_arc_points	marked	a never-taken branch (cprop proves dead == 0, then jump deletes it). Retail

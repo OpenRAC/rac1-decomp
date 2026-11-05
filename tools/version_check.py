@@ -394,6 +394,9 @@ def relocate(obj, name, ctx, pal_addr, xlate, x_gp, theirs=None, x_base=None):
         if sym["st_info"]["type"] == "STT_SECTION" or (isinstance(sym["st_shndx"], int) and not conv):
             if sec == ".text":
                 return ("text", sym["st_value"])
+            if sec and sec.startswith(".rodata.jtbl_") and sec[len(".rodata."):] in version_jtbl(xlate.v):
+                # a table the translation misses: an earlier table has another length here
+                return ("direct", version_jtbl(xlate.v)[sec[len(".rodata."):]] + sym["st_value"])
             if sec and sec.startswith(".rodata.jtbl_"):
                 return ("abs", named(sec[len(".rodata."):], near) + sym["st_value"])
             raise Mask()
@@ -687,6 +690,16 @@ def version_sources(v):
     """{name: file} of the version-specific C in src/versions/<K>/ (tools/version_src.py)."""
     import version_src
     return {n: str(p.relative_to(ROOT)) for n, p in version_src.overrides(v).items()}
+
+
+@functools.lru_cache(None)
+def version_jtbl(v):
+    """{primary's jump table: its address here}, config/versions/<K>/jtbl.tsv."""
+    path = v.config / "jtbl.tsv"
+    if not path.exists():
+        return {}
+    rows = [l.split("\t") for l in path.read_text().splitlines() if l and not l.startswith("#")]
+    return {name: int(addr, 16) for name, addr in rows}
 
 
 def version_remnants(v):
