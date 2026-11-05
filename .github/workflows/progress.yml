@@ -57,7 +57,7 @@ jobs:
           else
             rm -f build/progress/fuzzy_scores.json
           fi
-          python3 scripts/gen_progress_report.py
+          python3 scripts/progress-report.py
 
       - name: Validate the reports with objdiff
         run: |
