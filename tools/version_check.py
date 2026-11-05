@@ -235,6 +235,10 @@ class Table:
             k -= 1
         if k >= 0:
             pa, size, xa = lst[k]
+            # copies with the same fingerprint share a primary address: take the one callers use
+            copies = [r for r in lst[k:k + 8] if r[0] == pa]
+            if len(copies) > 1:
+                _, size, xa = max(copies, key=lambda r: (self.obs[sp][(pa, r[2])], -r[2]))
             if pa <= addr < pa + max(size, 4):
                 return xa + (addr - pa)
         return None
