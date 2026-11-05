@@ -2559,7 +2559,7 @@ extern void SteerAngleWithVelocity_v(float *, float, float *, float, float, floa
 
 extern void resolve_point_path_segment_xy_clearance_v(int, void *, void *, float) __asm__("func_L00_00262DF0");
 
-extern void initialize_gemlik_trail_v(char *m) __asm__("func_L13_0030A828");
+extern void initialize_gemlik_trail(char *m);
 extern void InitDirectionalHitQuery_r(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern char gemlik_camera_pos[];
 extern float D_L13_00161EE8_309330 SDATA(D_L13_00161EE8);
@@ -2640,7 +2640,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
         case 2:
             if (moby->anim_flags & 2) {
                 moby->state = 3;
-                initialize_gemlik_trail_v((char *)moby);
+                initialize_gemlik_trail((char *)moby);
                 if (moby->prev_seq != 5) {
                     MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
                 }
@@ -2669,7 +2669,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
                                      g_frame_time * 3.1415927f);
             if (fast_dec_timer(&vars->timer) != 0) {
                 moby->state = 3;
-                initialize_gemlik_trail_v((char *)moby);
+                initialize_gemlik_trail((char *)moby);
                 if (moby->prev_seq != 5) {
                     MobyBlendAnimation(moby, 5, 0, scale_ticks(5));
                 }
@@ -3057,7 +3057,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
 
 extern char gemlik_coll_hit_normal[];
 extern short gemlik_trail_arc_degrees, gemlik_trail_ticks;
-/* initializes a sixteen-point curved trail around a moby */ void initialize_gemlik_trail_v(char *m) {
+/* initializes a sixteen-point curved trail around a moby */
+void initialize_gemlik_trail(char *m) {
     float v[4];
     int i;
     struct GemlikTrailVars *d = (struct GemlikTrailVars *)((Moby *)m)->pvars;
