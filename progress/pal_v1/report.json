@@ -1,16 +1,16 @@
 {
  "measures": {
-  "fuzzy_match_percent": 98.73134102073172,
+  "fuzzy_match_percent": 99.01734429552877,
   "total_code": "3693664",
-  "matched_code": "3646804",
-  "matched_code_percent": 98.73134102073172,
+  "matched_code": "3657368",
+  "matched_code_percent": 99.01734429552877,
   "total_functions": 5082,
-  "matched_functions": 5073,
-  "matched_functions_percent": 99.82290436835892,
-  "complete_code": "2176032",
-  "complete_code_percent": 58.912559453160874,
+  "matched_functions": 5075,
+  "matched_functions_percent": 99.86225895316804,
+  "complete_code": "2185140",
+  "complete_code_percent": 59.15914387448344,
   "total_units": 140,
-  "complete_units": 133
+  "complete_units": 134
  },
  "units": [
   {
@@ -10165,13 +10165,13 @@
   {
    "name": "game/freeze",
    "measures": {
-    "fuzzy_match_percent": 5.743243243243243,
+    "fuzzy_match_percent": 68.58108108108108,
     "total_code": "7104",
-    "matched_code": "408",
-    "matched_code_percent": 5.743243243243243,
+    "matched_code": "4872",
+    "matched_code_percent": 68.58108108108108,
     "total_functions": 3,
-    "matched_functions": 1,
-    "matched_functions_percent": 33.333333333333336,
+    "matched_functions": 2,
+    "matched_functions_percent": 66.66666666666667,
     "complete_code": "0",
     "complete_code_percent": 0.0,
     "total_units": 1,
@@ -10190,7 +10190,7 @@
     {
      "name": "func_001FBE80",
      "size": "4464",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "408",
      "metadata": {
       "virtual_address": "2078592"
@@ -12127,17 +12127,17 @@
   {
    "name": "game/memcard",
    "measures": {
-    "fuzzy_match_percent": 33.025911286780854,
+    "fuzzy_match_percent": 100.0,
     "total_code": "9108",
-    "matched_code": "3008",
-    "matched_code_percent": 33.025911286780854,
+    "matched_code": "9108",
+    "matched_code_percent": 100.0,
     "total_functions": 14,
-    "matched_functions": 13,
-    "matched_functions_percent": 92.85714285714286,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 14,
+    "matched_functions_percent": 100.0,
+    "complete_code": "9108",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -12179,7 +12179,7 @@
     {
      "name": "func_00209E68",
      "size": "6100",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "976",
      "metadata": {
       "virtual_address": "2133712"
@@ -12268,7 +12268,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/game/system/memcard.c",
     "progress_categories": [
      "executable",
@@ -49417,15 +49417,15 @@
    "id": "executable",
    "name": "Executable",
    "measures": {
-    "fuzzy_match_percent": 96.83545403977193,
+    "fuzzy_match_percent": 99.13085801696565,
     "total_code": "460224",
-    "matched_code": "445660",
-    "matched_code_percent": 96.83545403977193,
+    "matched_code": "456224",
+    "matched_code_percent": 99.13085801696565,
     "total_functions": 1691,
-    "matched_functions": 1687,
-    "matched_functions_percent": 99.76345357776464,
-    "complete_code": "441612",
-    "complete_code_percent": 95.95588235294117
+    "matched_functions": 1689,
+    "matched_functions_percent": 99.88172678888232,
+    "complete_code": "450720",
+    "complete_code_percent": 97.93491864831039
    }
   },
   {
@@ -49447,15 +49447,15 @@
    "id": "game",
    "name": "Executable game code",
    "measures": {
-    "fuzzy_match_percent": 96.7628074043779,
+    "fuzzy_match_percent": 99.11090563152374,
     "total_code": "449896",
-    "matched_code": "435332",
-    "matched_code_percent": 96.7628074043779,
+    "matched_code": "445896",
+    "matched_code_percent": 99.11090563152374,
     "total_functions": 1658,
-    "matched_functions": 1654,
-    "matched_functions_percent": 99.75874547647769,
-    "complete_code": "431284",
-    "complete_code_percent": 95.86304390347992
+    "matched_functions": 1656,
+    "matched_functions_percent": 99.87937273823884,
+    "complete_code": "440392",
+    "complete_code_percent": 97.88751178050038
    }
   },
   {
