@@ -103,8 +103,8 @@ extern int grouped_voice_definition_base_index MACRO_ADDR;
 /* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
    level-specific table row, the same shape as allocate_voice_for_bank_entry. */
 int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
-    int idx =
-        l00_grouped_voice_definition_offsets_by_level[g_current_level_index_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
+    int idx = l00_grouped_voice_definition_offsets_by_level[g_current_level_index_m] + a0 * 4 + a1 * 2 + a2 +
+              grouped_voice_definition_base_index;
     int h;
 
     if (idx >= level_sound_slot_count) {

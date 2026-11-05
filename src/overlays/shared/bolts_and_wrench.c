@@ -1054,7 +1054,8 @@ void bolt_update(Moby *m) {
                     d->f57--;
                 }
                 if (d->h6C >= 0) {
-                    transform_vector_by_basis(u.s.a, l00_bolt_glint_local_offsets_by_class[m->oclass], ((float *)&m->rot_row0));
+                    transform_vector_by_basis(u.s.a, l00_bolt_glint_local_offsets_by_class[m->oclass],
+                                              ((float *)&m->rot_row0));
                     FastVecAdd(glints[d->h6C].pos, u.s.a, ((float *)&m->pos));
                     if (glints[d->h6C].h14 != m - moby_array_start) {
                         d->h6C = -1;
@@ -1063,7 +1064,8 @@ void bolt_update(Moby *m) {
                     d->h6E--;
                     if (d->h6E <= 0) {
                         int lo;
-                        transform_vector_by_basis(u.s.a, l00_bolt_glint_local_offsets_by_class[m->oclass], ((float *)&m->rot_row0));
+                        transform_vector_by_basis(u.s.a, l00_bolt_glint_local_offsets_by_class[m->oclass],
+                                                  ((float *)&m->rot_row0));
                         FastVecAdd(u.s.a, u.s.a, ((float *)&m->pos));
                         d->h6C = allocate_glint_slot(u.s.a, m - moby_array_start, 1.4f);
                         lo = scale_ticks(0x12C);

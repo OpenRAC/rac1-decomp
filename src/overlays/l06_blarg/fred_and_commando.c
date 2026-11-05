@@ -135,7 +135,8 @@ void draw_dual_texture_50_quad_mesh(void) {
     matrix_ptr = matrix;
     set_identity_matrix(matrix);
     first.color[0] = first.color[1] = first.color[2] = first.color[3] = (l06_dual_texture_mesh_first_pass_vertex_color);
-    second.color[0] = second.color[1] = second.color[2] = second.color[3] = (dual_texture_mesh_second_pass_vertex_color_gp);
+    second.color[0] = second.color[1] = second.color[2] = second.color[3] =
+        (dual_texture_mesh_second_pass_vertex_color_gp);
     i = 0;
     do {
         FastVecScale(vec1, dual_mesh50_centers[i], (dual_texture_mesh_position_scale_gp));
@@ -719,7 +720,8 @@ void draw_backdrop_mesh(void) {
         e = &l06_backdrop_mesh_quad_corner_index_pairs[i * 4];
         for (j = 0; j < 4; j++) {
             k = e->uv;
-            FastVecScale(&quad.corner[j], &l06_backdrop_mesh_vertex_positions[e->v], (backdrop_mesh_vertex_position_scale_gp));
+            FastVecScale(&quad.corner[j], &l06_backdrop_mesh_vertex_positions[e->v],
+                         (backdrop_mesh_vertex_position_scale_gp));
             e++;
             quad.uv[j].u = l06_backdrop_mesh_texture_coordinates[k].u;
             quad.uv[j].v = l06_backdrop_mesh_texture_coordinates[k].v;
@@ -1433,7 +1435,8 @@ void ShuttleUpdate(Moby *moby) {
         class_076a_moby_spawn_requested_gp = 0;
         *(u128_3039B8 *)b = *(u128_3039B8 *)&g_hero.motion.body_center.i[0];
         spawn_timed_projected_sprite_effect((char *)b, scale_ticks(class_076a_moby_rate_input_frames_gp),
-                                            l06_shuttle_projected_sprite_start_color, l06_shuttle_projected_sprite_end_color);
+                                            l06_shuttle_projected_sprite_start_color,
+                                            l06_shuttle_projected_sprite_end_color);
     }
     switch (moby->state) {
         case 0:
@@ -1553,8 +1556,8 @@ void ShuttleUpdate(Moby *moby) {
                 set_selected_object_float_triplets(0.001f, 1.0f, 1.0f, 0.001f, 1.0f, 1.0f);
                 set_camera_position(a);
                 set_camera_rotation(rot);
-                func_L00_00217718(blarg_scene_points + (d->cut << 7) + 0x30,
-                                     blarg_scene_points + (d->cut << 7) + 0x70, 0x72, 0);
+                func_L00_00217718(blarg_scene_points + (d->cut << 7) + 0x30, blarg_scene_points + (d->cut << 7) + 0x70,
+                                  0x72, 0);
                 Moby_PlaySound(2, 0, moby);
             }
             break;
@@ -1896,27 +1899,41 @@ void spawn_shuttle_explosion_effect(float f, struct Moby *a0, void *a1, void *a2
             func_L00_00258DB0(v1, 0.0f, 0.9f);
             FastVecAdd(v1, v1, a2);
             FastVecScale(v2, v1,
-                         random_float_between(l06_shuttle_explosion_spark_velocity_scale_random_bound_a, l06_shuttle_explosion_spark_velocity_scale_random_bound_b) * g_frame_time);
+                         random_float_between(l06_shuttle_explosion_spark_velocity_scale_random_bound_a,
+                                              l06_shuttle_explosion_spark_velocity_scale_random_bound_b) *
+                             g_frame_time);
             func_L00_00258DB0(v1, 0.0f, 0.9f);
             FastVecAdd(v1, v1, a2);
             FastVecScale(v3, v1,
-                         random_float_between(l06_shuttle_explosion_spark_acceleration_scale_random_bound_a, l06_shuttle_explosion_spark_acceleration_scale_random_bound_b) * g_frame_time);
-            t1 = random_float_between(l06_shuttle_explosion_spark_velocity_w_random_bound_a, l06_shuttle_explosion_spark_velocity_w_random_bound_b) * f;
+                         random_float_between(l06_shuttle_explosion_spark_acceleration_scale_random_bound_a,
+                                              l06_shuttle_explosion_spark_acceleration_scale_random_bound_b) *
+                             g_frame_time);
+            t1 = random_float_between(l06_shuttle_explosion_spark_velocity_w_random_bound_a,
+                                      l06_shuttle_explosion_spark_velocity_w_random_bound_b) *
+                 f;
             v2[3] = t1;
-            t2 = random_float_between(l06_shuttle_explosion_spark_acceleration_w_random_bound_a, l06_shuttle_explosion_spark_acceleration_w_random_bound_b) * f;
+            t2 = random_float_between(l06_shuttle_explosion_spark_acceleration_w_random_bound_a,
+                                      l06_shuttle_explosion_spark_acceleration_w_random_bound_b) *
+                 f;
             v3[3] = t2;
             q3 = random_float_between(0.0f, 1.0f);
-            g1 = FastTweenColor(l06_shuttle_explosion_spark_first_color_blend_a, l06_shuttle_explosion_spark_first_color_blend_b, q3);
+            g1 = FastTweenColor(l06_shuttle_explosion_spark_first_color_blend_a,
+                                l06_shuttle_explosion_spark_first_color_blend_b, q3);
             q5 = random_float_between(0.0f, 1.0f);
-            g2 = FastTweenColor(l06_shuttle_explosion_spark_second_color_blend_a, l06_shuttle_explosion_spark_second_color_blend_b, q5);
-            q7 = random_float_between((float)l06_shuttle_explosion_spark_timing_random_min_frames, (float)(l06_shuttle_explosion_spark_timing_random_min_frames * 2));
+            g2 = FastTweenColor(l06_shuttle_explosion_spark_second_color_blend_a,
+                                l06_shuttle_explosion_spark_second_color_blend_b, q5);
+            q7 = random_float_between((float)l06_shuttle_explosion_spark_timing_random_min_frames,
+                                      (float)(l06_shuttle_explosion_spark_timing_random_min_frames * 2));
             x1 = truncate_float_to_s32(multiply_global_factor(q7));
-            q8 = random_float_between((float)l06_shuttle_explosion_spark_timing_base_a_frames, (float)l06_shuttle_explosion_spark_timing_base_a_frames * 1.2f);
+            q8 = random_float_between((float)l06_shuttle_explosion_spark_timing_base_a_frames,
+                                      (float)l06_shuttle_explosion_spark_timing_base_a_frames * 1.2f);
             x2 = truncate_float_to_s32(multiply_global_factor(q8));
-            q3 = random_float_between((float)l06_shuttle_explosion_spark_timing_base_b_frames * 0.8f, (float)l06_shuttle_explosion_spark_timing_base_b_frames);
+            q3 = random_float_between((float)l06_shuttle_explosion_spark_timing_base_b_frames * 0.8f,
+                                      (float)l06_shuttle_explosion_spark_timing_base_b_frames);
             x3 = truncate_float_to_s32(multiply_global_factor(q3));
             PartType02Spawn(v4, v2, v3, g1, g2, x1, x2, x3,
-                            l06_shuttle_explosion_spark_table_index + (l06_shuttle_explosion_spark_alternate_mode_flag << 16));
+                            l06_shuttle_explosion_spark_table_index +
+                                (l06_shuttle_explosion_spark_alternate_mode_flag << 16));
         }
     }
 }
@@ -2462,7 +2479,7 @@ void switchable_beam_barrier_update(char *moby) {
                     s = truncate_float_to_s32(random_float_between((float)vector_stream_burst_min_lifetime_frames_gp,
                                                                    (float)vector_stream_burst_max_lifetime_frames_gp));
                     func_L00_00258DB0(u.m.vel, vector_stream_burst_velocity_random_scale_bound_a_gp * g_frame_time,
-                             vector_stream_burst_velocity_random_scale_bound_b_gp * g_frame_time);
+                                      vector_stream_burst_velocity_random_scale_bound_b_gp * g_frame_time);
                     life = scale_ticks(s);
                     spawn_moving_hero_relative_alpha_fade_particle(u.m.pos, u.m.vel, color, scale, life,
                                                                    (unsigned char)random_integer_below(0xFF), 0);
@@ -2540,9 +2557,10 @@ void draw_moby_vector_streams(char *m) {
     VU1_addGSregister(6, GetEffectTex(0xE));
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(8, 0);
-    VU1_addGSregister(0x42, (long)vector_stream_blend_color_a_selector_gp | ((long)vector_stream_blend_color_b_selector_gp << 2) |
-                                ((long)vector_stream_blend_alpha_c_selector_gp << 4) | ((long)vector_stream_blend_color_d_selector_gp << 6) |
-                                0x8000000000L);
+    VU1_addGSregister(0x42, (long)vector_stream_blend_color_a_selector_gp |
+                                ((long)vector_stream_blend_color_b_selector_gp << 2) |
+                                ((long)vector_stream_blend_alpha_c_selector_gp << 4) |
+                                ((long)vector_stream_blend_color_d_selector_gp << 6) | 0x8000000000L);
     font_queue_vu_state();
     m0 = mat[0];
     sp = s;

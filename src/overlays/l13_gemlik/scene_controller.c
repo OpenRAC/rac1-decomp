@@ -565,8 +565,9 @@ void poison_vessel_fragment_update(char *moby) {
             t = random_float_between(moby_spark_first_batch_third_frame_count_base_gp,
                                      moby_spark_first_batch_third_frame_count_base_gp * 1.20000005f);
             third_spark_frame_count = truncate_float_to_s32(multiply_global_factor(t));
-            PartType02Spawn(&position, &velocity, &acceleration, moby_spark_first_batch_initial_word_gp, moby_spark_first_batch_second_word_gp,
-                            spark_frame_count, second_spark_frame_count, third_spark_frame_count, -1);
+            PartType02Spawn(&position, &velocity, &acceleration, moby_spark_first_batch_initial_word_gp,
+                            moby_spark_first_batch_second_word_gp, spark_frame_count, second_spark_frame_count,
+                            third_spark_frame_count, -1);
         }
         velocity.f[3] = moby_spark_second_batch_discarded_velocity_w_initializer_gp;
         acceleration.f[3] = moby_spark_second_batch_acceleration_w_initializer_gp;
@@ -604,8 +605,9 @@ void poison_vessel_fragment_update(char *moby) {
             r = random_float_between(moby_spark_second_batch_third_frame_count_base_gp,
                                      moby_spark_second_batch_third_frame_count_base_gp * 1.20000005f);
             third_spark_frame_count = truncate_float_to_s32(multiply_global_factor(r));
-            PartType02Spawn(&second_pos, &velocity, &acceleration, moby_spark_second_batch_initial_word_gp, moby_spark_second_batch_second_word_gp,
-                            spark_frame_count, second_spark_frame_count, third_spark_frame_count, -1);
+            PartType02Spawn(&second_pos, &velocity, &acceleration, moby_spark_second_batch_initial_word_gp,
+                            moby_spark_second_batch_second_word_gp, spark_frame_count, second_spark_frame_count,
+                            third_spark_frame_count, -1);
         }
     }
 
@@ -655,8 +657,7 @@ void blarg_ship_1805_update(void *moby) {
     float tmp[4];
     int k, n;
 
-    if ((D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) &
-        1) {
+    if ((D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) & 1) {
         DeleteMoby(moby);
         return;
     }
@@ -697,8 +698,7 @@ void blarg_ship_1805_update(void *moby) {
             }
             Moby_PlaySound(0, 0, (int)moby);
             spawn_proximity_gated_bolts(moby);
-            D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |=
-                1 << (((Moby *)m)->save_id & 0x1F);
+            D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
             blarg_ship_destroyed_save_id_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
             for (n = 0; n < 2; n++) {
                 for (k = 0x709; k < 0x70D; k++) {

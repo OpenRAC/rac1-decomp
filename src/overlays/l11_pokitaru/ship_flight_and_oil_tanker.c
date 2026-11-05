@@ -546,7 +546,8 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
     char c[16];
     char d[16];
 
-    build_spherical_offset((f32 *)a, *(float *)&ship_shot_direction_base_scale_gp * *(float *)&ship_speed_scale_d, p2, p3);
+    build_spherical_offset((f32 *)a, *(float *)&ship_shot_direction_base_scale_gp * *(float *)&ship_speed_scale_d, p2,
+                           p3);
     FastVecAdd(a, a, obj);
     if (fast_dec_timer(obj + 0x80) && (*(int *)(pad_globals_base_r + 0x2610) & 0x84)) {
         vec_scale_to_length(c, a, 2.2f);
@@ -585,7 +586,7 @@ void try_fire_ship_projectile(char *moby, struct ShipVars *d) {
             if (d->target != 0 && !(500 < d->target_timer))
                 t = d->target;
             if (spawn_ship_rocket(moby, a, t, moby + 0x40, ship_projectile_base_scale_gp * ship_speed_scale,
-                                      scale_ticks(300))) {
+                                  scale_ticks(300))) {
                 Moby_PlaySound(2, 0, (int)moby);
                 g->ship_ammo -= 1;
                 d->fire_cooldown = l11_ship_projectile_cooldown_frames;
@@ -798,7 +799,7 @@ void update_player_ship_flight(void *a0, void *a1) {
         Spring(&o->f6C, &o->f90, pv[0], D_L11_0016212C_313D00, D_L11_00162130_313D00, h20);
         Spring(&o->f70, &o->f94, pv[1], D_L11_0016213C_313D00, D_L11_00162140_313D00, h21);
         spring_angle(&o->f30, o->f6C * D_L11_0016210C_313D00, &o->f98, 0, D_L11_0016214C_313D00, D_L11_00162150_313D00,
-                    D_L11_00162154_313D00);
+                     D_L11_00162154_313D00);
         {
             float p = FastSubRots(o->f34, o->f70 * D_L11_001620A4_313D00);
             o->f34 = p;
@@ -885,7 +886,8 @@ void update_player_ship_flight(void *a0, void *a1) {
                 if (o->tDC == 0) {
                     ((Hero *)g_hero)->ship_hp = ((Hero *)g_hero)->ship_hp - D_L11_001620E0_313D00;
                     if (((Hero *)g_hero)->ship_hp < 0.0f) {
-                        FastVecSub(dir.f, jet_fighter_collision_query_result.a.f, jet_fighter_collision_query_result.b.f);
+                        FastVecSub(dir.f, jet_fighter_collision_query_result.a.f,
+                                   jet_fighter_collision_query_result.b.f);
                         vec_scale_to_length(dir.f, dir.f, 1.0f);
                         reflect_vector(back.f, ofs.f, jet_fighter_collision_query_result.dir.f);
                         vec_scale_to_length(back.f, back.f, g_frame_time_r + g_frame_time_r);
@@ -2899,8 +2901,9 @@ void oil_tanker_link_update(Moby *m) {
     float r[4];
     switch (m->state) {
         case 0:
-            if (fast_dec_timer(&d->bubble_timer) == 0 && random_integer_below(oil_tanker_link_effect_spawn_random_limit_gp) == 0 &&
-                m->visible != 0 && pokitaru_available_moby_slot_count >= 0x47) {
+            if (fast_dec_timer(&d->bubble_timer) == 0 &&
+                random_integer_below(oil_tanker_link_effect_spawn_random_limit_gp) == 0 && m->visible != 0 &&
+                pokitaru_available_moby_slot_count >= 0x47) {
                 transform_vector_by_basis(v, &oil_tanker_link_effect_local_spawn_offset_gp, &m->rot_row0);
                 FastVecAdd(v, v, &m->pos);
                 func_L00_00258DB0(r, 0.0f, oil_tanker_link_effect_random_motion_radius_scale_gp * g_frame_time);
@@ -2909,7 +2912,8 @@ void oil_tanker_link_update(Moby *m) {
                 FastVecAdd(w, w, r);
                 spawn_class_5f4_moby_with_random_rotation_5(
                     v, w, pokitaru_ocean_height, 0,
-                    random_float_between(oil_tanker_link_effect_scale_range_start_gp, oil_tanker_link_effect_scale_range_end_gp));
+                    random_float_between(oil_tanker_link_effect_scale_range_start_gp,
+                                         oil_tanker_link_effect_scale_range_end_gp));
             }
             qcopy(&d->prev_pos, &m->pos);
             break;
@@ -2963,7 +2967,8 @@ void energy_sphere_1297_update(unsigned char *moby) {
                 float b = (*(float **)&((struct Moby *)moby)->pclass)[9] / n;
                 p = &data->glow;
                 ApproachValue(&((struct Moby *)moby)->scale, a, b);
-                ApproachValue(p, energy_sphere_particle_scale_target_gp, energy_sphere_particle_scale_target_gp / (float)scale_ticks(0x14));
+                ApproachValue(p, energy_sphere_particle_scale_target_gp,
+                              energy_sphere_particle_scale_target_gp / (float)scale_ticks(0x14));
             }
             if (fast_dec_timer(&data->life)) {
                 DeleteMoby(moby);
@@ -3067,8 +3072,8 @@ void spawn_moby_radial_spark(char *m) {
     v3[3] = moby_radial_spark_first_vector_w_gp;
     v4[3] = moby_radial_spark_second_vector_w_gp;
     PartType02Spawn(v0, v3, v4, moby_radial_spark_initial_word_gp, moby_radial_spark_second_word_gp,
-                    moby_radial_spark_frame_count_gp, moby_radial_spark_second_frame_count_gp, moby_radial_spark_third_frame_count_gp,
-                    spark_lookup_index_and_flags_gp);
+                    moby_radial_spark_frame_count_gp, moby_radial_spark_second_frame_count_gp,
+                    moby_radial_spark_third_frame_count_gp, spark_lookup_index_and_flags_gp);
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -3090,8 +3095,8 @@ void spawn_energy_sphere_particles(char *moby) {
     vec_scale_to_length(v1, v0, 0.1f);
     FastVecAdd(v0, v0, p);
     for (i = 0; i < 4; i++) {
-        int a =
-            FastTweenColor(*(int *)&energy_sphere_particle_color_start_gp, *(int *)&energy_sphere_particle_color_end_gp, (float)i * 0.333f);
+        int a = FastTweenColor(*(int *)&energy_sphere_particle_color_start_gp,
+                               *(int *)&energy_sphere_particle_color_end_gp, (float)i * 0.333f);
         unsigned char c;
         q[0] += q[4];
         c = truncate_float_to_s32_r((float)q[0]);
@@ -3116,14 +3121,19 @@ void spawn_energy_sphere_spark(char *moby) {
     float v1[4];
     int c1;
     int c2;
-    func_L00_00258DB0(v0, energy_sphere_spark_radial_range_start_gp * g_frame_time, energy_sphere_spark_radial_range_end_gp * g_frame_time);
-    func_L00_00258DB0(v1, energy_sphere_spark_radial_range_start_gp * g_frame_time, energy_sphere_spark_radial_range_end_gp * g_frame_time);
+    func_L00_00258DB0(v0, energy_sphere_spark_radial_range_start_gp * g_frame_time,
+                      energy_sphere_spark_radial_range_end_gp * g_frame_time);
+    func_L00_00258DB0(v1, energy_sphere_spark_radial_range_start_gp * g_frame_time,
+                      energy_sphere_spark_radial_range_end_gp * g_frame_time);
     v0[3] = energy_sphere_spark_first_vector_w_gp;
     v1[3] = energy_sphere_spark_second_vector_w_gp;
-    c1 = FastTweenColor(energy_sphere_spark_color_range_start_gp, energy_sphere_spark_color_range_end_gp, random_float_between(0.0f, 1.0f));
-    c2 = FastTweenColor(energy_sphere_spark_color_range_start_gp, energy_sphere_spark_color_range_end_gp, random_float_between(0.0f, 1.0f));
-    PartType02Spawn(moby + 0x10, v0, v1, c1, c2, energy_sphere_spark_frame_count_gp, energy_sphere_spark_second_frame_count_gp,
-                    energy_sphere_spark_third_frame_count_gp, spark_lookup_index_and_flags_gp);
+    c1 = FastTweenColor(energy_sphere_spark_color_range_start_gp, energy_sphere_spark_color_range_end_gp,
+                        random_float_between(0.0f, 1.0f));
+    c2 = FastTweenColor(energy_sphere_spark_color_range_start_gp, energy_sphere_spark_color_range_end_gp,
+                        random_float_between(0.0f, 1.0f));
+    PartType02Spawn(moby + 0x10, v0, v1, c1, c2, energy_sphere_spark_frame_count_gp,
+                    energy_sphere_spark_second_frame_count_gp, energy_sphere_spark_third_frame_count_gp,
+                    spark_lookup_index_and_flags_gp);
 }
 
 extern char blarg_ship_positive_y_local_shot_offset[];
@@ -3306,9 +3316,11 @@ void FlyingCraftUpdate(unsigned char *moby) {
                     vec_scale_to_length(sB0, hero_position_delta, moby_vars->lead);
                     FastVecAdd(sB0, sB0, hero_position);
                     if (level_frame % 20 == 0) {
-                        transform_vector_by_basis(sA0, blarg_ship_positive_y_local_shot_offset, &((Moby *)moby)->rot_row0);
+                        transform_vector_by_basis(sA0, blarg_ship_positive_y_local_shot_offset,
+                                                  &((Moby *)moby)->rot_row0);
                     } else {
-                        transform_vector_by_basis(sA0, blarg_ship_negative_y_local_shot_offset, &((Moby *)moby)->rot_row0);
+                        transform_vector_by_basis(sA0, blarg_ship_negative_y_local_shot_offset,
+                                                  &((Moby *)moby)->rot_row0);
                     }
                     FastVecAdd(sA0, sA0, (float *)&((Moby *)moby)->pos);
                     FastVecSub(shot_displacement, sB0, sA0);
@@ -3473,11 +3485,12 @@ void bubble_update(char *m) {
                 spawn_bubble_surface_effects(m, bubble_vars->surface, 0, 1);
                 func_L00_00258DB0(randomized_effect_vector, 0.0f, g_frame_time);
                 randomized_effect_vector[2] = absolute_float(randomized_effect_vector[2]);
-                spawned_effect = PartType34Spawn_p(&bubble_moby->pos, randomized_effect_vector, l11_bubble_shrink_effect_randomization_scale,
-                                                   *bubble_vars->surface);
+                spawned_effect = PartType34Spawn_p(&bubble_moby->pos, randomized_effect_vector,
+                                                   l11_bubble_shrink_effect_randomization_scale, *bubble_vars->surface);
                 if (spawned_effect != 0) {
                     *(int *)(spawned_effect + 4) =
-                        FastTweenColor(bubble_shrink_effect_color_range_start_gp, bubble_shrink_effect_color_range_end_gp, random_float_between(0.0f, 1.0f));
+                        FastTweenColor(bubble_shrink_effect_color_range_start_gp,
+                                       bubble_shrink_effect_color_range_end_gp, random_float_between(0.0f, 1.0f));
                 }
             }
             ApproachValue(&bubble_moby->scale, 0.0f, rate);
@@ -3538,7 +3551,8 @@ void spawn_bubble_surface_effects(char *m, float *ground, int n1, int n2) {
             e[9] = truncate_float_to_s32_r(4.0f) + 0x40;
             *(short *)(e + 0xA) = truncate_float_to_s32_r(multiply_global_factor(random_float_between(30.0f, 90.0f)));
             *(int *)(e + 4) =
-                FastTweenColor(bubble_surface_effect_color_range_start_gp, bubble_surface_effect_color_range_end_gp, random_float_between(0.0f, 1.0f));
+                FastTweenColor(bubble_surface_effect_color_range_start_gp, bubble_surface_effect_color_range_end_gp,
+                               random_float_between(0.0f, 1.0f));
         }
     }
 }
@@ -3566,17 +3580,20 @@ void spawn_bubble_spark(char *m) {
     func_L00_00258DB0(v1, 0.0f, bubble_spark_random_velocity_radius_gp * g_frame_time);
     FastVecAdd(v1, v1, d);
     clear_u64_value(v2);
-    v2[2] = random_float_between(bubble_spark_vertical_range_start_gp, bubble_spark_vertical_range_end_gp) * g_frame_time;
+    v2[2] =
+        random_float_between(bubble_spark_vertical_range_start_gp, bubble_spark_vertical_range_end_gp) * g_frame_time;
     v1[3] = bubble_spark_first_vector_w_gp;
     v2[3] = bubble_spark_second_vector_w_gp;
-    c0 = FastTweenColor(bubble_spark_initial_color_range_start_gp, bubble_spark_initial_color_range_end_gp, random_float_between(0.0f, 1.0f));
-    c1 = FastTweenColor(bubble_spark_second_color_range_start_gp, bubble_spark_second_color_range_end_gp, random_float_between(0.0f, 1.0f));
-    c2 = truncate_float_to_s32_r(multiply_global_factor(
-        random_float_between((float)bubble_spark_base_frame_count_gp * 0.8f, (float)bubble_spark_base_frame_count_gp * 1.2f)));
-    c3 = truncate_float_to_s32_r(multiply_global_factor(
-        random_float_between((float)bubble_spark_base_second_frame_count_gp * 0.8f, (float)bubble_spark_base_second_frame_count_gp * 1.2f)));
-    c4 = truncate_float_to_s32_r(multiply_global_factor(
-        random_float_between((float)bubble_spark_base_third_frame_count_gp * 0.8f, (float)bubble_spark_base_third_frame_count_gp * 1.2f)));
+    c0 = FastTweenColor(bubble_spark_initial_color_range_start_gp, bubble_spark_initial_color_range_end_gp,
+                        random_float_between(0.0f, 1.0f));
+    c1 = FastTweenColor(bubble_spark_second_color_range_start_gp, bubble_spark_second_color_range_end_gp,
+                        random_float_between(0.0f, 1.0f));
+    c2 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(
+        (float)bubble_spark_base_frame_count_gp * 0.8f, (float)bubble_spark_base_frame_count_gp * 1.2f)));
+    c3 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(
+        (float)bubble_spark_base_second_frame_count_gp * 0.8f, (float)bubble_spark_base_second_frame_count_gp * 1.2f)));
+    c4 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(
+        (float)bubble_spark_base_third_frame_count_gp * 0.8f, (float)bubble_spark_base_third_frame_count_gp * 1.2f)));
     PartType02Spawn(m + 0x10, v1, v2, c0, c1, c2, c3, c4, -1);
 }
 
@@ -3618,7 +3635,8 @@ void emit_level11_layered_effect_batches_with_pair_offset(int arg) {
     int *d = (int *)&pokitaru_layered_mesh_colors;
     int i;
     for (i = 0; i < 4; i++) {
-        add_uv_scroll_offset(layered_effect_offset_pairs_scratch, c[i], a[i], (char *)pokitaru_layered_uv_scroll + arg * 8);
+        add_uv_scroll_offset(layered_effect_offset_pairs_scratch, c[i], a[i],
+                             (char *)pokitaru_layered_uv_scroll + arg * 8);
         draw_env_overlay_mesh(a[i], b[i], d[i], layered_effect_offset_pairs_scratch, 1);
     }
 }

@@ -1472,7 +1472,7 @@ void update_shrinking_effect_particle_with_secondary_spawns(struct PartBase *par
             FastVecAdd(spawn_velocity, spawn_velocity, &s->vel);
             FastVecScale(spawn_velocity, spawn_velocity, random_float_between(0.75f, 0.95f));
             spawn_burst(particle_position, spawn_velocity, particle->color, s->color_end,
-                            scale_ticks(func_L00_00258BC8(15, 20)), 0, particle->size);
+                        scale_ticks(func_L00_00258BC8(15, 20)), 0, particle->size);
         } else {
             FastVecScale(&s->vel, &s->vel, 0.96f);
         }

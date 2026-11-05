@@ -149,7 +149,7 @@ void hero_update_hop_movement(void) {
             x = g_hero.motion.rot.f[2];
             g_hero.motion.yaw_error =
                 spring_angle(&x, g_hero.motion.move_yaw, &g_hero.motion.yaw_rate, 0, g_frame_scale_sq * 0.018f,
-                            g_frame_scale_sq * 0.2f, g_frame_time * 7.330383f);
+                             g_frame_scale_sq * 0.2f, g_frame_time * 7.330383f);
             a = FastSubRots(x, g_hero.motion.rot.f[2]);
             rotate_hero_about_fixed_local_pivot(0.0f, 0.0f, a);
         } else {

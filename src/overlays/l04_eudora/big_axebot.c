@@ -916,8 +916,9 @@ void big_axebot_update(M_B7B0 *moby) {
             }
             break;
         case 7:
-            if (moby->f52 == moby->f53 && compute_interpolated_record_value(moby) >= 17.0f && compute_interpolated_record_value(moby) < 20.0f &&
-                absolute_float(moby->pos[2] - tg.pos[2]) < 2.0f && vec_distance_xy(moby->pos, (float *)&tg) < 4.5f) {
+            if (moby->f52 == moby->f53 && compute_interpolated_record_value(moby) >= 17.0f &&
+                compute_interpolated_record_value(moby) < 20.0f && absolute_float(moby->pos[2] - tg.pos[2]) < 2.0f &&
+                vec_distance_xy(moby->pos, (float *)&tg) < 4.5f) {
                 float p[4];
 
                 v[0] = FastCos(ang) * 0.2f;
@@ -2070,9 +2071,9 @@ void circular_saw_enemy_update(M_35F0 *moby) {
             alt = random_integer_below(100) & 1;
             moby_point_position(moby, 0, a);
             transform_vector_by_basis(b, b, moby->fC0);
-            spawn_effect_particle_with_target_scalar(a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727,
-                                                     random_float_between(75000.0f, 100000.0f),
-                                                     scale_ticks(alt ? func_L00_00258BC8(10, 15) : func_L00_00258BC8(20, 30)));
+            spawn_effect_particle_with_target_scalar(
+                a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(75000.0f, 100000.0f),
+                scale_ticks(alt ? func_L00_00258BC8(10, 15) : func_L00_00258BC8(20, 30)));
         }
     }
     StepColorFade(moby, data->fB0);
@@ -2297,7 +2298,8 @@ void BlargTrooperUpdate(char *moby) {
     }
     e0 = data->path_a;
     if (e0 == -1 || (e4 = data->path_b, e4 == -1)) {
-        STUB_printf(blarg_trooper_missing_path_fields_format, truncate_float_to_s32((float)((moby - eudora_mobys) >> 8)));
+        STUB_printf(blarg_trooper_missing_path_fields_format,
+                    truncate_float_to_s32((float)((moby - eudora_mobys) >> 8)));
         destroy_blarg_trooper(moby);
         return;
     }
@@ -2661,7 +2663,7 @@ void BlargTrooperUpdate(char *moby) {
                 }
                 Moby_PlaySound(7, 0, moby);
                 spawn_blarg_trooper_projectile(moby, st.w.p.v70, st.w.p.v80,
-                                          truncate_float_to_s32(14.0f / (g_frame_time * 10.0f)));
+                                               truncate_float_to_s32(14.0f / (g_frame_time * 10.0f)));
                 fast_subtract_rotations_cf(&data->yaw_a);
             } else if ((((Moby *)moby)->anim_flags & 2) && data->attack_timer == 0 && data->yaw_a == 0) {
                 data->attack_timer = scale_ticks(0xB4);

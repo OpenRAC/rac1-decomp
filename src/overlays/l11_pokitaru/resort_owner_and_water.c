@@ -472,7 +472,8 @@ void update_resort_owner_state_actions(char *m) {
         case 9: {
             int k = (unsigned int)d->railSelect > 0;
             char *o = (char *)(pokitaru_mobys_d + (d->rail[k] << 8));
-            transform_attachment_pose(m, o, &l11_resort_owner_gate_attachment_local_x_offset, &l11_resort_owner_gate_attachment_rotation, m + 0x10, m + 0x40);
+            transform_attachment_pose(m, o, &l11_resort_owner_gate_attachment_local_x_offset,
+                                      &l11_resort_owner_gate_attachment_rotation, m + 0x10, m + 0x40);
             if (try_activate_pokitaru_gate((unsigned char *)o) && boss->prev_seq != 5) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(0x14));
             }
@@ -971,7 +972,7 @@ int classify_resort_owner_target_proximity(char *moby) {
                                                            !is_moby_in_bob_target_exclusion_state((char *)other))) {
                         found = 1;
                         if (fast_vec_dist(&((struct Moby *)moby)->pos,
-                                        &((struct Moby *)(pokitaru_mobys_d + offset))->pos) < 10.0f)
+                                          &((struct Moby *)(pokitaru_mobys_d + offset))->pos) < 10.0f)
                             return 2;
                     }
                 } while (*group_moby_entry++ >= 0);
@@ -1203,7 +1204,8 @@ void fred_pokitaru_update(char *m) {
             }
             if (saved_mission_state[moby->mission + (g_current_level_index << 4)] != 0xFF) {
                 char *h = &g_hero.motion.pos;
-                if (fast_vec_dist(h, (char *)&moby->pos) < 4.0f && absolute_float(((Vec4f *)h)->z - moby->pos.z) < 4.0f) {
+                if (fast_vec_dist(h, (char *)&moby->pos) < 4.0f &&
+                    absolute_float(((Vec4f *)h)->z - moby->pos.z) < 4.0f) {
                     char *t;
                     jet_clear_persistent(moby->mission);
                     t = path_points_14b0_r2 + (moby_vars->slot << 7);
@@ -1468,8 +1470,8 @@ typedef struct {
     float uv[8];
     long g[4];
 } Quad;
-extern short l11_teleporter_ring_blend_a_selector, l11_teleporter_ring_blend_b_selector, l11_teleporter_ring_blend_c_selector,
-    D_L11_001619BC, D_L11_001619C0, D_L11_001619C4;
+extern short l11_teleporter_ring_blend_a_selector, l11_teleporter_ring_blend_b_selector,
+    l11_teleporter_ring_blend_c_selector, D_L11_001619BC, D_L11_001619C0, D_L11_001619C4;
 extern float pokitaru_teleporter_ring_height SDATA(pokitaru_teleporter_ring_height);
 extern float teleporter_ring_quad_uvs[];
 extern unsigned char g_hero_field_20a5_r __asm__("D_001414F5") NOT_SDA;
@@ -1487,7 +1489,8 @@ void draw_teleporter_ring(char *moby) {
     copy_matrix_rotation(m, moby + 0xC0);
     qcopy(pos, moby + 0x10);
     q.g[1] = GetEffectTex(*(int *)&l11_teleporter_ring_effect_texture_index);
-    q.g[3] = (long)*(int *)&l11_teleporter_ring_blend_a_selector | ((long)*(int *)&l11_teleporter_ring_blend_b_selector << 2) |
+    q.g[3] = (long)*(int *)&l11_teleporter_ring_blend_a_selector |
+             ((long)*(int *)&l11_teleporter_ring_blend_b_selector << 2) |
              ((long)*(int *)&l11_teleporter_ring_blend_c_selector << 4) |
              ((long)*(int *)&l11_teleporter_ring_blend_d_selector << 6) | (0x8000L << 24);
     q.g[2] = 0xFF9000000260UL;
@@ -2117,12 +2120,12 @@ void child_sets_controller_update(Moby *moby) {
                 clear_u64_value(b);
                 b[2] = fast_atan2(moby->pos.x - a[0], moby->pos.y - a[1]);
                 func_L00_00217718(a, b, 0x72, 1);
-                jet_mount(D_L11_0016016C + (data->f4 << 7) + 0x30, D_L11_0016016C + (data->f8 << 7) + 0x70, 1, 0,
-                             0);
+                jet_mount(D_L11_0016016C + (data->f4 << 7) + 0x30, D_L11_0016016C + (data->f8 << 7) + 0x70, 1, 0, 0);
                 for (m = 0; m < 6; m++) {
                     l11_three_per_side_child_mobys[m]->flags &= ~1;
                     l11_three_per_side_child_mobys[m]->visible = 1;
-                    l11_three_per_side_child_mobys[m]->collision = ((Anim *)l11_three_per_side_child_mobys[m]->pclass)->f10;
+                    l11_three_per_side_child_mobys[m]->collision =
+                        ((Anim *)l11_three_per_side_child_mobys[m]->pclass)->f10;
                 }
                 for (n = 0; n < 4; n++) {
                     pokitaru_class_481_mobys[n]->flags &= ~1;
@@ -2144,34 +2147,39 @@ void child_sets_controller_update(Moby *moby) {
             break;
         case 3:
             if (l11_child_set_fold_rotation_x_progress < 1.0f) {
-                ApproachWithVelocity_f(&l11_child_set_fold_rotation_x_progress, &l11_child_set_fold_rotation_x_progress_step, 1.0f, g_frame_time_sq,
+                ApproachWithVelocity_f(&l11_child_set_fold_rotation_x_progress,
+                                       &l11_child_set_fold_rotation_x_progress_step, 1.0f, g_frame_time_sq,
                                        g_frame_time_sq, g_frame_time);
             }
             if (l11_child_set_fold_rotation_x_progress > 0.9f && child_sets_left_swing_progress == 0.0f) {
                 Moby_PlaySound_u(1, 0, moby);
             }
             if (l11_child_set_fold_rotation_x_progress > 0.9f && child_sets_left_swing_progress < 1.0f) {
-                ApproachWithVelocity_f(&child_sets_left_swing_progress, &l11_odd_source_child_rotation_x_progress_step, 1.0f,
-                                       g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
+                ApproachWithVelocity_f(&child_sets_left_swing_progress, &l11_odd_source_child_rotation_x_progress_step,
+                                       1.0f, g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
             }
             if (child_sets_left_swing_progress > 0.5f && l11_even_source_child_rotation_x_progress == 0.0f) {
                 Moby_PlaySound_u(1, 0, moby);
             }
             if (child_sets_left_swing_progress > 0.5f && l11_even_source_child_rotation_x_progress < 1.0f) {
-                ApproachWithVelocity_f(&l11_even_source_child_rotation_x_progress, &l11_even_source_child_rotation_x_progress_step, 1.0f,
-                                       g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
+                ApproachWithVelocity_f(&l11_even_source_child_rotation_x_progress,
+                                       &l11_even_source_child_rotation_x_progress_step, 1.0f, g_frame_time_sq * 2.0f,
+                                       g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
             }
             if (child_sets_left_swing_progress >= 1.0f && child_sets_odd_turn_progress < 1.0f) {
-                ApproachWithVelocity_f(&child_sets_odd_turn_progress, &l11_odd_attached_child_rotation_y_progress_step, 1.0f,
-                                       g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
+                ApproachWithVelocity_f(&child_sets_odd_turn_progress, &l11_odd_attached_child_rotation_y_progress_step,
+                                       1.0f, g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
             }
-            if (l11_even_source_child_rotation_x_progress >= 1.0f && l11_even_attached_child_rotation_y_progress < 1.0f) {
-                ApproachWithVelocity_f(&l11_even_attached_child_rotation_y_progress, &l11_even_attached_child_rotation_y_progress_step, 1.0f,
-                                       g_frame_time_sq * 2.0f, g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
+            if (l11_even_source_child_rotation_x_progress >= 1.0f &&
+                l11_even_attached_child_rotation_y_progress < 1.0f) {
+                ApproachWithVelocity_f(&l11_even_attached_child_rotation_y_progress,
+                                       &l11_even_attached_child_rotation_y_progress_step, 1.0f, g_frame_time_sq * 2.0f,
+                                       g_frame_time_sq * 2.0f, g_frame_time * 2.0f);
             }
             if (l11_even_attached_child_rotation_y_progress > 0.9f && l11_final_child_axis0_spacing_progress < 1.0f) {
-                ApproachWithVelocity_f(&l11_final_child_axis0_spacing_progress, &l11_final_child_axis0_spacing_progress_step, 1.0f,
-                                       g_frame_time_sq * 2.0f, g_frame_time_sq * 4.0f, g_frame_time * 2.0f);
+                ApproachWithVelocity_f(&l11_final_child_axis0_spacing_progress,
+                                       &l11_final_child_axis0_spacing_progress_step, 1.0f, g_frame_time_sq * 2.0f,
+                                       g_frame_time_sq * 4.0f, g_frame_time * 2.0f);
             }
             update_child_set_poses(moby);
             if (((Flags *)gSpecialItems)->f56 != 0 && *(int *)(&pad0_pressed) != 0) {
@@ -2183,8 +2191,9 @@ void child_sets_controller_update(Moby *moby) {
                 ApproachValue(&data->fC, 1.0f, g_frame_time * 4.0f);
             }
             pokitaru_fade_level = data->fC;
-            ApproachWithVelocity_f(&l11_child_sets_camera_pose_blend_progress, &l11_child_sets_camera_pose_blend_progress_step, 1.0f,
-                                   g_frame_time_sq * 0.2f, g_frame_time_sq * 0.2f, g_frame_time * 0.2f);
+            ApproachWithVelocity_f(&l11_child_sets_camera_pose_blend_progress,
+                                   &l11_child_sets_camera_pose_blend_progress_step, 1.0f, g_frame_time_sq * 0.2f,
+                                   g_frame_time_sq * 0.2f, g_frame_time * 0.2f);
             lerp_vector(a, D_L11_0016016C + (data->f4 << 7) + 0x30, D_L11_0016016C + (data->f8 << 7) + 0x30,
                         l11_child_sets_camera_pose_blend_progress);
             lerp_vector(b, D_L11_0016016C + (data->f4 << 7) + 0x70, D_L11_0016016C + (data->f8 << 7) + 0x70,

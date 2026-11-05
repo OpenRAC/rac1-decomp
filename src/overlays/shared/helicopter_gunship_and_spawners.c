@@ -1687,10 +1687,12 @@ void helicopter_spark_update(Moby *moby) {
                         FastVecAdd(&vF0, &vB0, &vF0);
                         vec_scale_to_length(&vF0, &vF0,
                                             random_float_between(g_frame_time * 5.0f, g_frame_time * 15.0f));
-                        PartType27Spawn(&vA0, &vF0, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)), 50000.0f);
+                        PartType27Spawn(&vA0, &vF0, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)),
+                                        50000.0f);
                     }
                     vec_scale_to_length(&vB0, &vB0, g_frame_time * 0.5f);
-                    PartType27Spawn(&vA0, &vB0, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)), 400000.0f);
+                    PartType27Spawn(&vA0, &vB0, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)),
+                                    400000.0f);
                     FastVecScale(&v100, d, multiply_global_factor(6.0f));
                     FastVecAdd(&v100, &v100, &moby->pos);
                     FastVecSub(&v100, &v100, &vD0);
@@ -1715,8 +1717,8 @@ void helicopter_spark_update(Moby *moby) {
                             FastVecAdd(&v100, &v100, &vF0);
                             vec_scale_to_length(&v100, &v100,
                                                 random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                            PartType27Spawn(&vA0, &v100, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(0xF), scale_ticks(0x14)),
-                                            30000.0f);
+                            PartType27Spawn(&vA0, &v100, 0x7F2F4F6F,
+                                            func_L00_00258BC8(scale_ticks(0xF), scale_ticks(0x14)), 30000.0f);
                         }
                         vec_scale_to_length(&vB0, &vB0, -1.0f);
                         FastVecAdd(&vC0, &vA0, &vB0);
@@ -2097,7 +2099,7 @@ void smooth_transform_orientation_toward_hero(char *m) {
     vec_scale_to_length(direction, direction, 1.0f);
     angle = FastArcSin(FastVecDot(direction, m));
     t = rope_spring_turn(data, 0.0f, 1.57079637f - angle, *(float *)(data + 4), *(float *)(data + 8),
-                           *(float *)(data + 12));
+                         *(float *)(data + 12));
     rotate_vector_by_scaled_angle_between_vectors(t, (float *)m, (float *)result, direction, 1);
     vec_scale_to_length(result, m, 1.0f);
     qcopy(m, result);

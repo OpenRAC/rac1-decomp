@@ -148,7 +148,8 @@ void HeroL05_ProcessContactType(void) {
     {
         char *g = g_hero;
         if (GB(0x12EC) != 0 && GW(0x2084) != 0x7F) {
-            if (absolute_float(GF(0x2F0) - (GF(0x88) + 0.25f)) < 1.0f && GF(0x2F0) - GF(0x88) > 0.0f && GF(0x108) < 0.0f) {
+            if (absolute_float(GF(0x2F0) - (GF(0x88) + 0.25f)) < 1.0f && GF(0x2F0) - GF(0x88) > 0.0f &&
+                GF(0x108) < 0.0f) {
                 exit_hero_vehicle_mode_if_mode_three();
                 Hero_TryMoveStateL05(HERO_STATE_SINK, 1);
                 return;
@@ -174,7 +175,8 @@ void HeroL05_ProcessContactType(void) {
     {
         char *g = g_hero;
         if (GB(0x12EB) != 0 && GW(0x2084) != 0x7B) {
-            if (absolute_float(GF(0x2F4) - (GF(0x88) + 0.25f)) < 1.0f && GF(0x2F4) - GF(0x88) > 0.0f && GF(0x108) < 0.0f) {
+            if (absolute_float(GF(0x2F4) - (GF(0x88) + 0.25f)) < 1.0f && GF(0x2F4) - GF(0x88) > 0.0f &&
+                GF(0x108) < 0.0f) {
                 if ((unsigned)(GB(0x20A4) - 1) < 2) {
                     hero_respawn();
                     return;

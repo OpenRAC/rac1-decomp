@@ -2389,7 +2389,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
                 int ticks = func_L00_00258BC8(scale_ticks(10), scale_ticks(13));
 
                 spawn_effect(impact, spray, hoverboard_dummy_spray_initial_color, hoverboard_dummy_spray_final_color,
-                                ticks, 15, 15, 1);
+                             ticks, 15, 15, 1);
             } else {
                 int ticks;
 
@@ -2398,7 +2398,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
                 spawn_effect(impact, dust, 0x5032F0D2, hoverboard_dummy_spray_final_color, ticks, 30, 20, 1);
                 ticks = func_L00_00258BC8(scale_ticks(8), scale_ticks(17));
                 spawn_burst(impact, spray, hoverboard_dummy_spray_initial_color, hoverboard_dummy_spray_final_color,
-                                ticks, 1, 15000.0f);
+                            ticks, 1, 15000.0f);
             }
             break;
     }
@@ -2646,7 +2646,7 @@ void test_dummy_challenge_update(char *m) {
             moby->flags &= 0xFFFE;
             jet_end_mount(3);
             func_L00_00217718(kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x30,
-                                 kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x70, 0, 1);
+                              kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x70, 0, 1);
             MobySphereHitDirectional((int)m, 5.0f, kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x30, 0x10000,
                                      50.0f, 1.0f, 0, 1, 0);
             ((L16ObjectiveEntry *)(gSpecialItems + scene_data->objective))->complete = 1;
@@ -3535,7 +3535,8 @@ void transform_moby_table_entry_vectors(char *a) {
             int i;
             struct Hero *g;
             for (i = 0; i < 7; i++) {
-                transform_vector_by_basis(p + 0x10 + i * 16, table_entry_source_vectors + i * 16, &((Moby *)a)->rot_row0);
+                transform_vector_by_basis(p + 0x10 + i * 16, table_entry_source_vectors + i * 16,
+                                          &((Moby *)a)->rot_row0);
                 FastVecAdd(p + 0x10 + i * 16, p + 0x10 + i * 16, &((Moby *)a)->pos);
             }
             g = (struct Hero *)g_hero;
@@ -3617,8 +3618,9 @@ void local_bounds_command_trigger_update(unsigned char *m) {
     float glow_cycle_phase;
     int period = scale_ticks(30);
     glow_cycle_phase = IntToFloat(kalebo3_frame_count % period) / IntToFloat(period);
-    trigger_moby->glow_color = FastTweenColor_v(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
-                                                l16_local_bounds_trigger_dim_glow_color, l16_local_bounds_trigger_bright_glow_color);
+    trigger_moby->glow_color =
+        FastTweenColor_v(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
+                         l16_local_bounds_trigger_dim_glow_color, l16_local_bounds_trigger_bright_glow_color);
     switch (trigger_moby->state) {
         case GRINDRAIL_TRIGGER_INITIALIZE:
             trigger_moby->state = 1;
@@ -3680,7 +3682,7 @@ void grindrail_button_update(unsigned char *m) {
                     base = g - 0x80;
                     if (*(int *)(base + 0x2084) == 0x28 && *(int *)(base + 0x5A8) != -1) {
                         transform_vector_by_basis(button_offset_from_hero, &grindrail_button_local_offset,
-                                        &button_moby->rot_row0);
+                                                  &button_moby->rot_row0);
                         FastVecAdd(button_offset_from_hero, button_offset_from_hero, &button_moby->pos);
                         FastVecSub(button_offset_from_hero, button_offset_from_hero, g);
                         transform_vector_by_basis(button_offset_from_hero, button_offset_from_hero, g - 0x40);

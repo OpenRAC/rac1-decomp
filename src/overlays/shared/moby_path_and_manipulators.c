@@ -836,7 +836,8 @@ void func_L00_00263950(int m, struct ManipState *p, int c, float fa, float fb) {
         *(int *)&p->target = m;
     }
     if (p->goal[0] == 0.0f && p->goal[1] == 0.0f && p->goal[2] == 0.0f && p->goal_scale == 1.0f &&
-        absolute_float(p->euler[0]) < 0.005f && absolute_float(p->euler[1]) < 0.005f && absolute_float(p->euler[2]) < 0.005f) {
+        absolute_float(p->euler[0]) < 0.005f && absolute_float(p->euler[1]) < 0.005f &&
+        absolute_float(p->euler[2]) < 0.005f) {
         if (p->attached)
             DetachManipulator(m, p);
         return;

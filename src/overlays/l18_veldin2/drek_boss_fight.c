@@ -1087,8 +1087,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                 d->f368 = -1;
                 break;
             }
-            if (moby->prev_seq == 10 &&
-                (is_value_within_interpolated_window((char *)moby, 1.0f) != 0 || is_value_within_interpolated_window((char *)moby, 16.0f) != 0)) {
+            if (moby->prev_seq == 10 && (is_value_within_interpolated_window((char *)moby, 1.0f) != 0 ||
+                                         is_value_within_interpolated_window((char *)moby, 16.0f) != 0)) {
                 qcopy(v0, g_hero.motion.near_ground_point.f);
                 if (absolute_float(v0[2] - d->f3C0[2]) < 5.0f) {
                     if ((float)moby->frame < 15.0f) {
@@ -1192,8 +1192,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                 FastVecAdd(d->f3C0, d->f3C0, v0);
             }
             h = select_drek_boss_platform_firing_target((char *)moby);
-            if (h != 0 &&
-                (is_value_within_interpolated_window((char *)moby, 1.0f) != 0 || is_value_within_interpolated_window((char *)moby, 16.0f) != 0)) {
+            if (h != 0 && (is_value_within_interpolated_window((char *)moby, 1.0f) != 0 ||
+                           is_value_within_interpolated_window((char *)moby, 16.0f) != 0)) {
                 qcopy(v2, h + 0x10);
                 qcopy(v0, d->f3C0);
                 FastVecAdd(v0, v0, ((f32 *)&moby->rot_row0));
@@ -1291,7 +1291,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 v4[3] = *(float *)(recs + idx * 0x80 + 0x78);
             }
             start_camera_transition((char *)d->f334, v0, v1, v2, v3, v4, drek_boss_camera_move_ticks,
-                                                   drek_boss_camera_move_hold_ticks, 1);
+                                    drek_boss_camera_move_hold_ticks, 1);
             g_hero.pending_item[3] = 3;
             moby->state = 8;
             request_thruster_pack_lock_red_wait(veldin2_moby_table + d->f21C * 0x100, scale_ticks(0x708));
@@ -1432,7 +1432,8 @@ void drek_final_boss_robot_update(Moby *moby) {
             if (d->f354 != 0) {
                 if (d->f33C == 0) {
                     moby_point_position(moby, 1, v1);
-                    d->f33C = (unsigned char *)spawn_drek_boss_electric_ball(moby, v1, scale_ticks(drek_boss_class_3d7_ticks));
+                    d->f33C = (unsigned char *)spawn_drek_boss_electric_ball(moby, v1,
+                                                                             scale_ticks(drek_boss_class_3d7_ticks));
                 } else if (fast_dec_timer(&d->f354) != 0) {
                     if (moby->prev_seq != 9) {
                         MobyBlendAnimation(moby, 9, 0, 0);
@@ -1472,7 +1473,8 @@ void drek_final_boss_robot_update(Moby *moby) {
             SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                                    g_frame_time * 6.2831855f);
             update_drek_boss_arena_circling_movement((char *)moby);
-            if (is_value_within_interpolated_window((char *)moby, 1.0f) != 0 || is_value_within_interpolated_window((char *)moby, 16.0f) != 0) {
+            if (is_value_within_interpolated_window((char *)moby, 1.0f) != 0 ||
+                is_value_within_interpolated_window((char *)moby, 16.0f) != 0) {
                 if (random_integer_below(5) != 0 || d->fB4 == 2) {
                     float a;
                     float r;
@@ -1801,7 +1803,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                 spawn_explosion(moby, veldin2_zero_vec, v0, 0.0f, 0.0f, 0x28, 0xA, 0x20, 2.5f, 5.0f, 9.0f, 2.0f, -1,
                                 10.0f, 0, 0, -1, 0);
             }
-            if (moby->seq == moby->prev_seq && moby->seq == 14 && is_value_within_interpolated_window((char *)moby, 30.0f) != 0) {
+            if (moby->seq == moby->prev_seq && moby->seq == 14 &&
+                is_value_within_interpolated_window((char *)moby, 30.0f) != 0) {
                 moby->state = 0x1B;
                 end_thruster_pack_lock_red_wait(veldin2_moby_table + d->f21C * 0x100);
             }
@@ -2256,8 +2259,8 @@ void update_drek_boss_hero_follow_movement(char *m) {
     }
     FastVecAdd(v, v, veldin2_arena_nodes + (d->f344 << 7) + 0x30);
     t = g_hero.motion.speed_xy;
-    t +=
-        (vec_distance_xy(m + 0x10, v) - l18_drek_boss_hero_follow_target_distance) / l18_drek_boss_hero_follow_target_distance * (g_frame_time * 4.75f);
+    t += (vec_distance_xy(m + 0x10, v) - l18_drek_boss_hero_follow_target_distance) /
+         l18_drek_boss_hero_follow_target_distance * (g_frame_time * 4.75f);
     hi = g_frame_time * 20.0f;
     lo = g_frame_time * 4.75f;
     if (t > hi) {
@@ -2641,9 +2644,11 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
                                              (int)draw_segmented_hud_meter_base + 0x20, (int)d->p36C, 0x15E);
         }
     }
-    ApproachWithVelocity_p(p0, x, p2, l18_drek_boss_scalar_acceleration_and_braking_gp * g_frame_time_sq, l18_drek_boss_scalar_acceleration_and_braking_gp * g_frame_time_sq,
+    ApproachWithVelocity_p(p0, x, p2, l18_drek_boss_scalar_acceleration_and_braking_gp * g_frame_time_sq,
+                           l18_drek_boss_scalar_acceleration_and_braking_gp * g_frame_time_sq,
                            drek_boss_scalar_maximum_speed_gp * g_frame_time);
-    ApproachWithVelocity_p(p1, y, p3, l18_drek_boss_scalar_acceleration_and_braking_gp * g_frame_time_sq, l18_drek_boss_scalar_acceleration_and_braking_gp * g_frame_time_sq,
+    ApproachWithVelocity_p(p1, y, p3, l18_drek_boss_scalar_acceleration_and_braking_gp * g_frame_time_sq,
+                           l18_drek_boss_scalar_acceleration_and_braking_gp * g_frame_time_sq,
                            drek_boss_scalar_maximum_speed_gp * g_frame_time);
 }
 typedef struct {
@@ -2689,22 +2694,30 @@ void spawn_drek_boss_firing_effects(char *moby, void *p) {
         for (i = 0; i < drek_boss_firing_particle_count_gp; i++) {
             int h;
             vec_scale_to_length(d, &a,
-                                random_float_between(drek_boss_firing_particle_speed_range_start_gp, drek_boss_firing_particle_speed_range_end_gp));
-            h = truncate_float_to_s32(
-                randf_sym((float)drek_boss_firing_particle_increment_range_start_gp, (float)drek_boss_firing_particle_increment_range_end_gp));
-            PartType44Spawn(p, d, scale_ticks(func_L00_00258BC8(drek_boss_firing_particle_lifetime_range_start_frames_gp, drek_boss_firing_particle_lifetime_range_end_frames_gp)),
-                            0x7F, 0xFFFFFF, h, drek_boss_firing_particle_initial_size_gp, drek_boss_firing_particle_size_increment_gp,
-                            drek_boss_firing_particle_velocity_multiplier_gp, drek_boss_firing_particle_gravity_direction_scale_gp, 0.85f);
+                                random_float_between(drek_boss_firing_particle_speed_range_start_gp,
+                                                     drek_boss_firing_particle_speed_range_end_gp));
+            h = truncate_float_to_s32(randf_sym((float)drek_boss_firing_particle_increment_range_start_gp,
+                                                (float)drek_boss_firing_particle_increment_range_end_gp));
+            PartType44Spawn(p, d,
+                            scale_ticks(func_L00_00258BC8(drek_boss_firing_particle_lifetime_range_start_frames_gp,
+                                                          drek_boss_firing_particle_lifetime_range_end_frames_gp)),
+                            0x7F, 0xFFFFFF, h, drek_boss_firing_particle_initial_size_gp,
+                            drek_boss_firing_particle_size_increment_gp,
+                            drek_boss_firing_particle_velocity_multiplier_gp,
+                            drek_boss_firing_particle_gravity_direction_scale_gp, 0.85f);
         }
     }
     {
         int j;
         for (j = 0; j < drek_boss_firing_secondary_effect_count_gp; j++) {
             vec_scale_to_length(d, &a,
-                                random_float_between(drek_boss_firing_secondary_effect_emission_length_range_start_gp, drek_boss_firing_secondary_effect_emission_length_range_end_gp));
-            spawn_burst(p, d, drek_boss_firing_secondary_effect_initial_color_gp, drek_boss_firing_secondary_effect_final_color_gp,
-                            scale_ticks(func_L00_00258BC8(drek_boss_firing_secondary_effect_lifetime_range_start_frames_gp, drek_boss_firing_secondary_effect_lifetime_range_end_frames_gp)), 1,
-                            drek_boss_firing_secondary_effect_initial_size_gp);
+                                random_float_between(drek_boss_firing_secondary_effect_emission_length_range_start_gp,
+                                                     drek_boss_firing_secondary_effect_emission_length_range_end_gp));
+            spawn_burst(p, d, drek_boss_firing_secondary_effect_initial_color_gp,
+                        drek_boss_firing_secondary_effect_final_color_gp,
+                        scale_ticks(func_L00_00258BC8(drek_boss_firing_secondary_effect_lifetime_range_start_frames_gp,
+                                                      drek_boss_firing_secondary_effect_lifetime_range_end_frames_gp)),
+                        1, drek_boss_firing_secondary_effect_initial_size_gp);
         }
     }
 }
@@ -2752,11 +2765,14 @@ void render_drek_boss_joint_glows(char *moby) {
         g = g / IntToFloat(n2);
         g = g * 6.18318f;
         g = FastSin(g - 3.14159f);
-        h2 = FastTweenColor(drek_boss_animation_glow_blend_start_color_gp, drek_boss_animation_glow_blend_end_color_gp, g * 0.5f + 0.5f);
+        h2 = FastTweenColor(drek_boss_animation_glow_blend_start_color_gp, drek_boss_animation_glow_blend_end_color_gp,
+                            g * 0.5f + 0.5f);
         moby_point_position(moby, 5, b);
-        draw_offset_textured_effect_quad(b, h2, drek_boss_animation_glow_quad_scale_gp, drek_boss_animation_glow_position_offset_scale_gp);
+        draw_offset_textured_effect_quad(b, h2, drek_boss_animation_glow_quad_scale_gp,
+                                         drek_boss_animation_glow_position_offset_scale_gp);
         moby_point_position(moby, 6, b);
-        draw_offset_textured_effect_quad(b, h2, drek_boss_animation_glow_quad_scale_gp, drek_boss_animation_glow_position_offset_scale_gp);
+        draw_offset_textured_effect_quad(b, h2, drek_boss_animation_glow_quad_scale_gp,
+                                         drek_boss_animation_glow_position_offset_scale_gp);
     }
     for (i = 0; i < 8; i++) {
         moby_point_position(moby, 11 + i, a);

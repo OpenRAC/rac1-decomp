@@ -692,8 +692,8 @@ no_hit:
     {
         u8 saved_flag = kalebo3_available;
         u16 save_id = moby->save_id;
-        u32 saved_bit = *(u32 *)(D_0014C290 + (((s16)save_id >> 5) * 4) + g_current_level_index * 0x100) &
-                        (1U << (save_id & 31));
+        u32 saved_bit =
+            *(u32 *)(D_0014C290 + (((s16)save_id >> 5) * 4) + g_current_level_index * 0x100) & (1U << (save_id & 31));
         if (saved_flag != 0 && saved_bit != 0)
             DeleteMoby_r(moby);
     }
@@ -827,9 +827,7 @@ void exploding_prop_update(struct Moby *moby) {
         moby->state = 1;
         if (gemlik_available[3] != 0) {
             u16 save_id = moby->save_id;
-            if ((*(s32 *)(D_0014C290 + (((s16)save_id >> 5) * 4) + g_current_level_index * 256) >>
-                 (save_id & 31)) &
-                1)
+            if ((*(s32 *)(D_0014C290 + (((s16)save_id >> 5) * 4) + g_current_level_index * 256) >> (save_id & 31)) & 1)
                 DeleteMoby(moby);
         }
     }
@@ -1652,8 +1650,7 @@ void helicopter_update(HMoby_6950 *m) {
                 d->child->flags |= 0x41;
             quartu_moby_state_bytes_base.collected[(short)m->id] = 0;
             l15_save_state.collected[(short)m->id] = 0;
-            *(int *)(D_0014C290 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &=
-                ~(1 << (m->id & 0x1F));
+            *(int *)(D_0014C290 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
             quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
             if (hero_globals_base[0x2EC1] != 2) {
                 m->pos.f[2] = d->f1A8 - 7.5f;
@@ -2018,9 +2015,9 @@ void ultramech_unlimited_update(UMoby *m) {
                         m->pos.q = path->pt[0].q;
                         FastVecSub(&d->vel, (Vec4 *)path + path->n, &m->pos);
                         vec_set_length_xy(&d->vel, &d->vel, ultramech_path_horizontal_speed_gp * g_frame_time);
-                        d->vel.f[2] =
-                            jump_speed_4318(&m->pos, (Vec4 *)path + path->n, 0, ultramech_path_horizontal_speed_gp * g_frame_time,
-                                            -(ultramech_path_gravity_gp * g_frame_time_sq));
+                        d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)path + path->n, 0,
+                                                      ultramech_path_horizontal_speed_gp * g_frame_time,
+                                                      -(ultramech_path_gravity_gp * g_frame_time_sq));
                     }
                 }
             }
@@ -2077,8 +2074,8 @@ void ultramech_unlimited_update(UMoby *m) {
                 v10.f[2] += 1.0f;
                 z = probe_ground_height(&v10, 0, 0.5f);
                 if (m->pos.f[2] - z < d->vel.f[2] * multiply_global_factor(26.0f) +
-                                          ultramech_path_gravity_gp * g_frame_time_sq * 0.5f * multiply_global_factor(26.0f) *
-                                              multiply_global_factor(26.0f) &&
+                                          ultramech_path_gravity_gp * g_frame_time_sq * 0.5f *
+                                              multiply_global_factor(26.0f) * multiply_global_factor(26.0f) &&
                     m->anim != 5) {
                     MobyBlendAnimation(m, 5, 0, scale_ticks(6));
                 }
@@ -2138,7 +2135,8 @@ void ultramech_unlimited_update(UMoby *m) {
                         v20.f[2] = 0.0f;
                     if (v20.f[2] < 0.0f)
                         v20.f[2] = 0.0f;
-                    spawn_blarg_ship_rocket(&v20, 3.0f, &v10, (int)m, (int)tgt, scale_ticks(l15_ultramech_projectile_duration_frames));
+                    spawn_blarg_ship_rocket(&v20, 3.0f, &v10, (int)m, (int)tgt,
+                                            scale_ticks(l15_ultramech_projectile_duration_frames));
                     vec_scale_to_length(&v20, &v20, 3.0f);
                     add_vectors(&v30, &v10, &v20);
                     emit_radial_particle_burst(m, &v10, 0);
@@ -2169,7 +2167,8 @@ void ultramech_unlimited_update(UMoby *m) {
                     vec_set_length_xy(&d->vel, &d->vel, ultramech_path_horizontal_speed_gp * g_frame_time);
                     d->vel.f[2] = jump_speed_4318(
                         &m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
-                        0, ultramech_path_horizontal_speed_gp * g_frame_time, -(ultramech_path_gravity_gp * g_frame_time_sq));
+                        0, ultramech_path_horizontal_speed_gp * g_frame_time,
+                        -(ultramech_path_gravity_gp * g_frame_time_sq));
                 }
             } else {
                 m->state = 4;
@@ -2195,7 +2194,8 @@ void ultramech_unlimited_update(UMoby *m) {
                     vec_set_length_xy(&d->vel, &d->vel, ultramech_path_horizontal_speed_gp * g_frame_time);
                     d->vel.f[2] = jump_speed_4318(
                         &m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
-                        0, ultramech_path_horizontal_speed_gp * g_frame_time, -(ultramech_path_gravity_gp * g_frame_time_sq));
+                        0, ultramech_path_horizontal_speed_gp * g_frame_time,
+                        -(ultramech_path_gravity_gp * g_frame_time_sq));
                 } else if (fast_dec_timer(&d->timer)) {
                     m->state = 5;
                     if (m->anim != 6)
@@ -2258,7 +2258,8 @@ void ultramech_unlimited_update(UMoby *m) {
                     vec_set_length_xy(&d->vel, &d->vel, ultramech_path_horizontal_speed_gp * g_frame_time);
                     d->vel.f[2] = jump_speed_4318(
                         &m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
-                        0, ultramech_path_horizontal_speed_gp * g_frame_time, -(ultramech_path_gravity_gp * g_frame_time_sq));
+                        0, ultramech_path_horizontal_speed_gp * g_frame_time,
+                        -(ultramech_path_gravity_gp * g_frame_time_sq));
                 } else if (ultramech_melee_range_gp < vec_distance_xy(&m->pos, &tgt->pos)) {
                     m->state = 4;
                     if (m->anim != 0)
@@ -2328,8 +2329,7 @@ void ultramech_unlimited_update(UMoby *m) {
             d->b58 = 0;
             quartu_moby_state_bytes_base.collected[(short)m->id] = 0;
             l15_save_state.collected[(short)m->id] = 0;
-            *(int *)(D_0014C290 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &=
-                ~(1 << (m->id & 0x1F));
+            *(int *)(D_0014C290 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
             quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
             if (hero_vehicle_mode[0] != 2)
                 m->state = 0;
@@ -2897,11 +2897,13 @@ void draw_moby_radial_ripple_mesh_buffers(char *moby) {
                  uv_vertex_index++) {
                 T4_2EC080 uv_scroll_factors = ripple_mesh_buffers_uv_scroll_factors;
                 *(float *)(uv_vertex_index * 8 + ((int *)&ripple_mesh_buffers_scrolled_uv_tables)[uv_buffer_index]) =
-                    *(float *)(uv_vertex_index * 8 + ((int *)&ripple_mesh_buffers_template_uv_tables)[uv_buffer_index]) +
+                    *(float *)(uv_vertex_index * 8 +
+                               ((int *)&ripple_mesh_buffers_template_uv_tables)[uv_buffer_index]) +
                     fast_fmod(scale * uv_scroll_factors.p[i].v[0], 1.0f);
-                *(float *)(uv_vertex_index * 8 + ((int *)&ripple_mesh_buffers_scrolled_uv_tables)[uv_buffer_index] + 4) =
-                    *(float *)(uv_vertex_index * 8 + ((int *)&ripple_mesh_buffers_template_uv_tables)[uv_buffer_index] + 4) +
-                    fast_fmod(scale * uv_scroll_factors.p[i].v[1], 1.0f);
+                *(float *)(uv_vertex_index * 8 + ((int *)&ripple_mesh_buffers_scrolled_uv_tables)[uv_buffer_index] +
+                           4) = *(float *)(uv_vertex_index * 8 +
+                                           ((int *)&ripple_mesh_buffers_template_uv_tables)[uv_buffer_index] + 4) +
+                                fast_fmod(scale * uv_scroll_factors.p[i].v[1], 1.0f);
             }
         }
         font_queue_vu_state();
@@ -2987,13 +2989,15 @@ void RingWave_DrawA(char *moby) {
     for (j = 0; j < 2; j++) {
         for (n = 0; n < 68; n++) {
             uv_scroll_factors = ripple_mesh_uv_scroll_factors;
-            ripple_mesh_scrolled_uvs[n][0] = ripple_mesh_template_uvs[n][0] + fast_fmod(scale * uv_scroll_factors.f[j * 2], 1.0f);
-            ripple_mesh_scrolled_uvs[n][1] = ripple_mesh_template_uvs[n][1] + fast_fmod(scale * v_scroll_factors->f[j * 2], 1.0f);
+            ripple_mesh_scrolled_uvs[n][0] =
+                ripple_mesh_template_uvs[n][0] + fast_fmod(scale * uv_scroll_factors.f[j * 2], 1.0f);
+            ripple_mesh_scrolled_uvs[n][1] =
+                ripple_mesh_template_uvs[n][1] + fast_fmod(scale * v_scroll_factors->f[j * 2], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            draw_env_overlay_mesh(ripple_mesh_vertex_counts[k], ripple_mesh_world_vertex_tables[k], ripple_mesh_colour_tables[k],
-                                  (void *)ripple_mesh_scrolled_uv_tables[k], 1);
+            draw_env_overlay_mesh(ripple_mesh_vertex_counts[k], ripple_mesh_world_vertex_tables[k],
+                                  ripple_mesh_colour_tables[k], (void *)ripple_mesh_scrolled_uv_tables[k], 1);
         }
     }
 }

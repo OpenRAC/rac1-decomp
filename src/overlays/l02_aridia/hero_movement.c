@@ -942,7 +942,7 @@ void update_hero_state_motion(void) {
                     a = FastAddRots(a, 3.1415927f);
                 }
                 spring_angle(&g_hero.swing_yaw, a, &g_hero.swing_yaw_vel, 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, 0.0f);
+                             g_frame_scale_sq * 0.3f, 0.0f);
             }
             g_hero.motion.move_yaw = g_hero.swing_yaw;
             turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
@@ -960,9 +960,9 @@ void update_hero_state_motion(void) {
             vec[1][0] = -fast_atan2(square_root(vec[0][0] * vec[0][0] + vec[0][2] * vec[0][2]), vec[0][1]);
             vec[1][1] = fast_atan2(vec[0][2], vec[0][0]);
             spring_angle(&g_hero.motion.rot.f[1], vec[1][1], &g_hero.motion.rot_spring_vel.f[1], 0,
-                        g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
+                         g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
             spring_angle(&g_hero.motion.rot.f[0], vec[1][0], &g_hero.motion.rot_spring_vel.f[0], 0,
-                        g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
+                         g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
             if (!(g_hero.motion.pos.f[2] < g_hero.swing_target_moby->pos.z)) {
                 below = 0;
             }
@@ -1674,9 +1674,9 @@ void update_hero_state_motion(void) {
                         spd = g_hero.motion.flat_speed;
                         ApproachValue(&spd, g_hero.target_speed * g_frame_time, g_frame_time_sq * 5.0f);
                         FastVecSub(g_hero.motion.velocity.f, vec[5], g_hero.motion.pos.f);
-                        vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f,
-                                          ledge_shimmy_planar_speed_by_anim_frame[truncate_float_to_s32(g_hero.anim_frame)] *
-                                              0.5f);
+                        vec_set_length_xy(
+                            g_hero.motion.velocity.f, g_hero.motion.velocity.f,
+                            ledge_shimmy_planar_speed_by_anim_frame[truncate_float_to_s32(g_hero.anim_frame)] * 0.5f);
                     }
                 }
             }
@@ -1699,9 +1699,9 @@ void update_hero_state_motion(void) {
                 }
                 qcopy(vec[0], g_hero.motion.rot.f);
                 spring_angle(&vec[0][1], t, &g_hero.motion.rot_spring_vel.f[1], 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
+                             g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
                 spring_angle(&vec[0][0], 0.0f, &g_hero.motion.rot_spring_vel.f[0], 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
+                             g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
                 rotate_hero_about_fixed_local_pivot(g_hero.motion.rot_spring_vel.f[0],
                                                     g_hero.motion.rot_spring_vel.f[1], 0.0f);
                 if (g_hero.ground_distance > 1.0f) {

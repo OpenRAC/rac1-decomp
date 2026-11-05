@@ -87,9 +87,10 @@ void effect_slots_fire(char *slots, float *position, float *direction, float dis
         first_count = 1;
     for (i = 0; i < n + first_count; i++) {
         func_L00_00258DB0(offset, 0.0f,
-                 (((l02_effect_particle_full_travel_spread) - (l02_effect_particle_zero_travel_spread)) * (travel / distance) +
-                  (l02_effect_particle_zero_travel_spread)) *
-                     g_frame_time);
+                          (((l02_effect_particle_full_travel_spread) - (l02_effect_particle_zero_travel_spread)) *
+                               (travel / distance) +
+                           (l02_effect_particle_zero_travel_spread)) *
+                              g_frame_time);
         FastVecAdd(offset, offset, adjusted);
         FastVecScale(velocity, adjusted, random_float_between(0.0f, 1.0f));
         FastVecAdd(velocity, velocity, origin);

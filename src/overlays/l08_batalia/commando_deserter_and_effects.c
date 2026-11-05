@@ -499,9 +499,12 @@ void layered_mesh_effect_update(unsigned char *moby) {
     switch (moby[0x20]) {
         case 0:
             if (layered_mesh_rgba_tables_initialized == 0) {
-                scale_rgba_tables(scrolled_mesh_batch_colour_tables, 13, scrolled_mesh_batch_vertex_counts, 0.5f, 0.5f, 0.65f, 0.5f, 1);
-                scale_rgba_tables(pair_offset_batch_colour_tables, 8, pair_offset_batch_vertex_counts, 0.5f, 0.5f, 0.5f, 1.0f, 1);
-                scale_rgba_tables(eleven_entry_batch_colour_tables, 11, eleven_entry_batch_vertex_counts, 0.25f, 0.25f, 0.25f, 1.0f, 1);
+                scale_rgba_tables(scrolled_mesh_batch_colour_tables, 13, scrolled_mesh_batch_vertex_counts, 0.5f, 0.5f,
+                                  0.65f, 0.5f, 1);
+                scale_rgba_tables(pair_offset_batch_colour_tables, 8, pair_offset_batch_vertex_counts, 0.5f, 0.5f, 0.5f,
+                                  1.0f, 1);
+                scale_rgba_tables(eleven_entry_batch_colour_tables, 11, eleven_entry_batch_vertex_counts, 0.25f, 0.25f,
+                                  0.25f, 1.0f, 1);
                 layered_mesh_rgba_tables_initialized = 1;
             }
             moby[0x20] = 1;
@@ -534,7 +537,8 @@ void layered_mesh_effect_update(unsigned char *moby) {
                 d = FastVecLength(w);
                 if (d <= 84.0f) {
                     advance_scroll_offsets(0);
-                    advance_wrapped_sine_pair(layered_mesh_effect_sine_output_pair, 0.52f, 0.62f, 0.06f, l08_layered_mesh_effect_sine_phase_pair);
+                    advance_wrapped_sine_pair(layered_mesh_effect_sine_output_pair, 0.52f, 0.62f, 0.06f,
+                                              l08_layered_mesh_effect_sine_phase_pair);
                     advance_scroll_offsets(2);
                     if (d < 20.0f) {
                         *(unsigned char *)&layered_mesh_effect_fade_alpha = 0xFF;
@@ -608,8 +612,7 @@ void landmine_update(struct Moby *moby) {
                 DeleteMoby_r2(moby);
                 return;
             }
-            moby->rot.y =
-                FastAddRots(moby->rot.y, (landmine_spin_rate_degrees_gp) * 0.017453292f * g_frame_time);
+            moby->rot.y = FastAddRots(moby->rot.y, (landmine_spin_rate_degrees_gp) * 0.017453292f * g_frame_time);
             distance = vec_distance_xy(&moby->pos, D_0013F4D0);
             if (distance < 2.0f && *(s32 *)(D_0013F4D0 + 0x2004) == 0x42) {
                 clear_u64_value(&velocity);
@@ -957,9 +960,9 @@ void draw_flickering_mesh_effect(M45 *moby) {
                     pwidth = data->width * 0.5f;
                     px = random_float_between(-1.0f, 1.0f) * data->particle_range;
                     pfraction = random_float_between(0.0f, px);
-                    vec_scale_to_length(
-                        &scratch[2], &side_step[0],
-                        -(data->particle_offset + square_root(FastCos(pfraction * 3.1415927f)) * data->particle_height));
+                    vec_scale_to_length(&scratch[2], &side_step[0],
+                                        -(data->particle_offset +
+                                          square_root(FastCos(pfraction * 3.1415927f)) * data->particle_height));
                     vec_scale_to_length(&scratch[1], &step, pfraction * pwidth);
                     FastVecAdd(&scratch[1], &scratch[1], &moby->position);
                     FastVecAdd(&scratch[1], &scratch[1], &scratch[2]);
@@ -2047,12 +2050,12 @@ void batalia_textured_effect_update(unsigned char *moby) {
     switch (moby[0x20]) {
         case 0:
             if (batalia_rgba_tables_initialized == 0) {
-                scale_rgba_tables(batalia_eight_batch_colour_tables, 8, batalia_eight_batch_vertex_counts, 0.5f, 0.5f, 0.65f,
-                                  0.5f, 1);
-                scale_rgba_tables(&batalia_offset_batch_colour_tables, 2, &batalia_offset_batch_vertex_counts, 0.5f, 0.5f, 0.5f,
-                                  1.0f, 1);
-                scale_rgba_tables(batalia_six_batch_colour_tables, 6, batalia_six_batch_vertex_counts, 0.25f, 0.25f, 0.25f,
-                                  1.0f, 1);
+                scale_rgba_tables(batalia_eight_batch_colour_tables, 8, batalia_eight_batch_vertex_counts, 0.5f, 0.5f,
+                                  0.65f, 0.5f, 1);
+                scale_rgba_tables(&batalia_offset_batch_colour_tables, 2, &batalia_offset_batch_vertex_counts, 0.5f,
+                                  0.5f, 0.5f, 1.0f, 1);
+                scale_rgba_tables(batalia_six_batch_colour_tables, 6, batalia_six_batch_vertex_counts, 0.25f, 0.25f,
+                                  0.25f, 1.0f, 1);
                 batalia_rgba_tables_initialized = 1;
             }
             moby[0x20] = 1;

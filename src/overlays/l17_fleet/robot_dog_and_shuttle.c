@@ -711,8 +711,7 @@ void shuttle_1448_update(unsigned char *m) {
     switch (((Moby *)m)->state) {
         case 0:
             if (l17_save_id_collection_state.collected[(short)((Moby *)m)->save_id] != 0 ||
-                (*(int *)(D_0014C290 +
-                          (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
+                (*(int *)(D_0014C290 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                  (((Moby *)m)->save_id & 0x1F)) &
                     1) {
                 v->sel = 0;
@@ -792,7 +791,7 @@ void shuttle_1448_update(unsigned char *m) {
                 set_camera_position(a);
                 set_camera_rotation(rot);
                 func_L00_00217718(fleet_camera_points + (v->cut << 7) + 0x30,
-                                     fleet_camera_points + (v->cut << 7) + 0x70, 0x72, 0);
+                                  fleet_camera_points + (v->cut << 7) + 0x70, 0x72, 0);
             } else if (l17_save_id_collection_state.collected[(short)((Moby *)m)->save_id] != 0 ||
                        (*(int *)(D_0014C290 +
                                  (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
@@ -835,8 +834,8 @@ void shuttle_1448_update(unsigned char *m) {
                 rot[2] = FastAddRots(((Moby *)m)->rot.z, 3.1415927f);
                 func_L00_00217718(b, rot, 0, 0);
                 jet_end_mount(0);
-                *(int *)(D_0014C290 + (((short)((Moby *)m)->save_id >> 5) * 4 +
-                                              (g_current_level_index_m << 8))) |= 1 << (((Moby *)m)->save_id & 0x1F);
+                *(int *)(D_0014C290 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |=
+                    1 << (((Moby *)m)->save_id & 0x1F);
                 shuttle_travel_completion_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
             }
             break;
@@ -1106,7 +1105,8 @@ void fleet_camera_box_watcher_update(char *moby) {
             if (d->dwell_a > d->cooldown && tgt != -1 &&
                 ((unsigned int)((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode < 2 ||
                  ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 9) &&
-                fleet_help_request_gate_state[0] == 0 && fleet_help_request_gate_state[9] == -1 && gHaveHologuise != 0) {
+                fleet_help_request_gate_state[0] == 0 && fleet_help_request_gate_state[9] == -1 &&
+                gHaveHologuise != 0) {
                 d->cooldown = scale_ticks(0x708);
                 if (*(int *)(help_stats_base + 0x739) >= 0) {
                     help_request(0x3A9A, 0x7D);
@@ -1117,7 +1117,8 @@ void fleet_camera_box_watcher_update(char *moby) {
         skip1:
             if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
                                             d->box_b[0]) &&
-                fleet_help_request_gate_state[0] == 0 && fleet_help_request_gate_state[9] == -1 && gHaveHeliPack[2] == 0) {
+                fleet_help_request_gate_state[0] == 0 && fleet_help_request_gate_state[9] == -1 &&
+                gHaveHeliPack[2] == 0) {
                 int w = *(int *)(help_stats_base + 0x761);
                 mask = 1 << g_current_level_index;
                 if (!(w & mask)) {
@@ -1144,7 +1145,8 @@ void fleet_camera_box_watcher_update(char *moby) {
                 d->last_target = -1;
             }
             if (scale_ticks(0xE10) < d->dwell_b && tgt != -1 && hero_is_in_special_state() &&
-                fleet_help_request_gate_state[0] == 0 && fleet_help_request_gate_state[9] == -1 && gHaveHeliPack[2] != 0) {
+                fleet_help_request_gate_state[0] == 0 && fleet_help_request_gate_state[9] == -1 &&
+                gHaveHeliPack[2] != 0) {
                 help_request(0x4E2E, 0x78);
                 d->last_target = tgt;
                 d->dwell_b = 0;
@@ -1344,8 +1346,8 @@ void draw_fleet_backdrop_quads(char *moby) {
         pkt.uv[6] = FastSin(FastAddRots(ang, 1.5707964f)) * 0.5f + 0.5f;
         pkt.uv[7] = FastCos(FastAddRots(ang, 1.5707964f)) * 0.5f + 0.5f;
         {
-            int c = FastTweenColor(backdrop_quad_color_blend_source_colors[k], backdrop_quad_color_blend_target_colors[k],
-                                   backdrop_quad_color_blend_factors[k]);
+            int c = FastTweenColor(backdrop_quad_color_blend_source_colors[k],
+                                   backdrop_quad_color_blend_target_colors[k], backdrop_quad_color_blend_factors[k]);
             pkt.col[3] = c;
             pkt.col[2] = c;
             pkt.col[1] = c;
@@ -1418,8 +1420,9 @@ done:
             }
         }
         for (i = 0; i < 5; i++) {
-            backdrop_quad_uv_rotation_angles[i] = FastAddRots(backdrop_quad_uv_rotation_angles[i],
-                                                        backdrop_quad_uv_rotation_rate_factors[i] * 0.1f * frame_delta_time);
+            backdrop_quad_uv_rotation_angles[i] =
+                FastAddRots(backdrop_quad_uv_rotation_angles[i],
+                            backdrop_quad_uv_rotation_rate_factors[i] * 0.1f * frame_delta_time);
         }
         for (i = 0; i < 2; i++) {
             fleet_backdrop_beam_uv_scroll[i] += ((float *)&fleet_backdrop_beam_scroll_speeds)[i] * frame_delta_time;
@@ -1511,7 +1514,7 @@ void blarg_ship_1843_update(unsigned char *moby) {
                 ((Moby *)moby)->flags |= 1;
             } else if (((Moby *)moby)->visible == 0) {
                 if (fast_vec_dist(&((Moby *)moby)->pos,
-                                &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 32.0f) {
+                                  &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 32.0f) {
                     ((Moby *)moby)->state = 3;
                     ((Moby *)moby)->collision = 0;
                     ((Moby *)moby)->flags |= 1;
@@ -1523,7 +1526,7 @@ void blarg_ship_1843_update(unsigned char *moby) {
             scratch_vector[3] = 3.0f;
             if (FastBSphereCheck((char *)&((Moby *)moby)->pos, 512.0f) == -1) {
                 if (fast_vec_dist(&((Moby *)moby)->pos,
-                                &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 32.0f) {
+                                  &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 32.0f) {
                     moby_pvars->dwell += 1;
                     if (scale_ticks(60) < moby_pvars->dwell) {
                         ((Moby *)moby)->state = 1;
@@ -1824,9 +1827,10 @@ void draw_reflection_strips(void) {
     font_queue_vu_state();
     p = (float *)reflection_strip_uv_buffer;
     for (i = 0; i < 2; i++) {
-        compute_reflection_sphere_map_uvs(
-            ((int *)&reflection_strip_pair0_vertex_counts)[i], ((int *)&reflection_strip_pair0_direction_tables)[i],
-            ((int *)&reflection_strip_pair0_position_tables)[i], ((int *)&reflection_strip_pair0_unused_pair_tables)[i], p);
+        compute_reflection_sphere_map_uvs(((int *)&reflection_strip_pair0_vertex_counts)[i],
+                                          ((int *)&reflection_strip_pair0_direction_tables)[i],
+                                          ((int *)&reflection_strip_pair0_position_tables)[i],
+                                          ((int *)&reflection_strip_pair0_unused_pair_tables)[i], p);
         draw_env_overlay_mesh(((int *)&reflection_strip_pair0_vertex_counts)[i],
                               ((int *)&reflection_strip_pair0_position_tables)[i],
                               ((int *)&reflection_strip_pair0_colour_tables)[i], p, 1);
@@ -1854,8 +1858,8 @@ void draw_reflection_strip(void) {
             ((int *)&reflection_strip0_vertex_counts)[i], (V3 *)((int *)&reflection_strip0_direction_tables)[i],
             (V3 *)((int *)&reflection_strip0_position_tables)[i], ((int *)&reflection_strip0_unused_pair_tables)[i], p);
         draw_env_overlay_mesh(((int *)&reflection_strip0_vertex_counts)[i],
-                              ((int *)&reflection_strip0_position_tables)[i], ((int *)&reflection_strip0_colour_tables)[i],
-                              p, 1);
+                              ((int *)&reflection_strip0_position_tables)[i],
+                              ((int *)&reflection_strip0_colour_tables)[i], p, 1);
     }
 }
 /* Computes a per-vertex 2D sphere-map texture coordinate from position and normal arrays. */

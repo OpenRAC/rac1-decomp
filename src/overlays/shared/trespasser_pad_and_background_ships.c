@@ -1381,7 +1381,8 @@ void draw_tresspasser_puzzle_textured_quads(void) {
         q = *p++;
         /* The TEX0 is 64 bits (its palette, height and colour mode in the upper half): read and
            passed whole, as draw_tresspasser_puzzle reads it, not through GetEffectTex's int declaration. */
-        func_L02_0020BF88_DC2C0(&q, b, c, ((u64 (*)(int))GetEffectTex)((l02_tresspasser_puzzle_texture_index_offset) + 0x28), 1);
+        func_L02_0020BF88_DC2C0(&q, b, c,
+                                ((u64 (*)(int))GetEffectTex)((l02_tresspasser_puzzle_texture_index_offset) + 0x28), 1);
     }
 }
 
@@ -2067,20 +2068,26 @@ void spawn_background_ship_1_joint_sparks(char *m, void *arg1) {
         FastVecScale(v20, v30, background_ship_1_second_spark_position_delta_scale_gp);
         func_L00_00258DB0(v40, 0.0f, background_ship_1_spark_random_offset_radius_scale_gp * g_frame_time);
         FastVecAdd(v20, v20, v40);
-        v10[3] = random_float_between(background_ship_1_first_spark_fourth_component_range_start_gp, background_ship_1_first_spark_fourth_component_range_end_gp);
-        v20[3] = random_float_between(background_ship_1_second_spark_fourth_component_range_start_gp, background_ship_1_second_spark_fourth_component_range_end_gp);
-        a = FastTweenColor(background_ship_1_first_spark_color_tween_start_gp, background_ship_1_first_spark_color_tween_end_gp,
-                           random_float_between(0.0f, 1.0f));
+        v10[3] = random_float_between(background_ship_1_first_spark_fourth_component_range_start_gp,
+                                      background_ship_1_first_spark_fourth_component_range_end_gp);
+        v20[3] = random_float_between(background_ship_1_second_spark_fourth_component_range_start_gp,
+                                      background_ship_1_second_spark_fourth_component_range_end_gp);
+        a = FastTweenColor(background_ship_1_first_spark_color_tween_start_gp,
+                           background_ship_1_first_spark_color_tween_end_gp, random_float_between(0.0f, 1.0f));
         b = FastTweenColor(background_ship_1_second_spark_color_tween_start_gp, background_ship_1_spark_end_color_b,
                            random_float_between(0.0f, 1.0f));
-        c = truncate_float_to_s32_r(
-            multiply_global_factor((float)background_ship_1_spark_frame_count_random_span_gp * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = truncate_float_to_s32_r(multiply_global_factor(
-            (float)background_ship_1_spark_second_frame_count_base_gp *
-            (random_float_between(-background_ship_1_spark_frame_count_variation_fraction_gp, background_ship_1_spark_frame_count_variation_fraction_gp) + 1.0f)));
-        e = truncate_float_to_s32_r(multiply_global_factor(
-            (float)background_ship_1_spark_third_frame_count_base_gp *
-            (random_float_between(-background_ship_1_spark_frame_count_variation_fraction_gp, background_ship_1_spark_frame_count_variation_fraction_gp) + 1.0f)));
+        c = truncate_float_to_s32_r(multiply_global_factor(
+            (float)background_ship_1_spark_frame_count_random_span_gp * random_float_between(0.0f, 1.0f) + 1.0f));
+        d = truncate_float_to_s32_r(
+            multiply_global_factor((float)background_ship_1_spark_second_frame_count_base_gp *
+                                   (random_float_between(-background_ship_1_spark_frame_count_variation_fraction_gp,
+                                                         background_ship_1_spark_frame_count_variation_fraction_gp) +
+                                    1.0f)));
+        e = truncate_float_to_s32_r(
+            multiply_global_factor((float)background_ship_1_spark_third_frame_count_base_gp *
+                                   (random_float_between(-background_ship_1_spark_frame_count_variation_fraction_gp,
+                                                         background_ship_1_spark_frame_count_variation_fraction_gp) +
+                                    1.0f)));
         p = PartType02Spawn(v50, v10, v20, a, b, c, d, e, -1);
         if (p != 0)
             p[9] = truncate_float_to_s32_r(8.0f) + 0x60;
@@ -2329,20 +2336,26 @@ void spawn_background_ship_2_joint_sparks(char *m, void *arg1) {
         FastVecScale(v20, v30, background_ship_2_second_spark_position_delta_scale_gp);
         func_L00_00258DB0(v40, 0.0f, background_ship_2_spark_random_offset_radius_scale_gp * g_frame_time);
         FastVecAdd(v20, v20, v40);
-        v10[3] = random_float_between(background_ship_2_first_spark_fourth_component_range_start_gp, background_ship_2_first_spark_fourth_component_range_end_gp);
-        v20[3] = random_float_between(background_ship_2_second_spark_fourth_component_range_start_gp, background_ship_2_second_spark_fourth_component_range_end_gp);
-        a = FastTweenColor(background_ship_2_first_spark_color_tween_start_gp, background_ship_2_first_spark_color_tween_end_gp,
-                           random_float_between(0.0f, 1.0f));
-        b = FastTweenColor(background_ship_2_second_spark_color_tween_start_gp, background_ship_2_second_spark_color_tween_end_gp,
-                           random_float_between(0.0f, 1.0f));
-        c = truncate_float_to_s32_r(
-            multiply_global_factor((float)background_ship_2_spark_frame_count_random_span_gp * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = truncate_float_to_s32_r(multiply_global_factor(
-            (float)background_ship_2_spark_second_frame_count_base_gp *
-            (random_float_between(-background_ship_2_spark_frame_count_variation_fraction_gp, background_ship_2_spark_frame_count_variation_fraction_gp) + 1.0f)));
-        e = truncate_float_to_s32_r(multiply_global_factor(
-            (float)background_ship_2_spark_third_frame_count_base_gp *
-            (random_float_between(-background_ship_2_spark_frame_count_variation_fraction_gp, background_ship_2_spark_frame_count_variation_fraction_gp) + 1.0f)));
+        v10[3] = random_float_between(background_ship_2_first_spark_fourth_component_range_start_gp,
+                                      background_ship_2_first_spark_fourth_component_range_end_gp);
+        v20[3] = random_float_between(background_ship_2_second_spark_fourth_component_range_start_gp,
+                                      background_ship_2_second_spark_fourth_component_range_end_gp);
+        a = FastTweenColor(background_ship_2_first_spark_color_tween_start_gp,
+                           background_ship_2_first_spark_color_tween_end_gp, random_float_between(0.0f, 1.0f));
+        b = FastTweenColor(background_ship_2_second_spark_color_tween_start_gp,
+                           background_ship_2_second_spark_color_tween_end_gp, random_float_between(0.0f, 1.0f));
+        c = truncate_float_to_s32_r(multiply_global_factor(
+            (float)background_ship_2_spark_frame_count_random_span_gp * random_float_between(0.0f, 1.0f) + 1.0f));
+        d = truncate_float_to_s32_r(
+            multiply_global_factor((float)background_ship_2_spark_second_frame_count_base_gp *
+                                   (random_float_between(-background_ship_2_spark_frame_count_variation_fraction_gp,
+                                                         background_ship_2_spark_frame_count_variation_fraction_gp) +
+                                    1.0f)));
+        e = truncate_float_to_s32_r(
+            multiply_global_factor((float)background_ship_2_spark_third_frame_count_base_gp *
+                                   (random_float_between(-background_ship_2_spark_frame_count_variation_fraction_gp,
+                                                         background_ship_2_spark_frame_count_variation_fraction_gp) +
+                                    1.0f)));
         p = PartType02Spawn(v50, v10, v20, a, b, c, d, e, -1);
         if (p != 0)
             p[9] = truncate_float_to_s32_r(8.0f) + 0x60;
@@ -2373,21 +2386,28 @@ void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
         FastVecScale(v1, mat, background_ship_2_level_10_second_spark_position_delta_scale_gp);
         func_L00_00258DB0(v2, 0.0f, background_ship_2_level_10_spark_random_offset_radius_scale_gp * g_frame_time);
         FastVecAdd(v1, v1, v2);
-        v0[3] =
-            random_float_between(background_ship_2_first_spark_fourth_component_range_start_gp, background_ship_2_first_spark_fourth_component_range_end_gp) / 1.5f;
-        v1[3] = random_float_between(background_ship_2_second_spark_fourth_component_range_start_gp, background_ship_2_second_spark_fourth_component_range_end_gp) / 1.5f;
-        a = FastTweenColor(background_ship_2_level_10_first_spark_color_tween_start_gp, background_ship_2_level_10_first_spark_color_tween_end_gp,
-                           random_float_between(0.0f, 1.0f));
-        b = FastTweenColor(background_ship_2_level_10_second_spark_color_tween_start_gp, background_ship_1_second_spark_color_tween_end_gp,
-                           random_float_between(0.0f, 1.0f));
-        c = truncate_float_to_s32_r(
-            multiply_global_factor((float)background_ship_2_spark_frame_count_random_span_gp * random_float_between(0.0f, 1.0f) + 1.0f));
-        d = truncate_float_to_s32_r(multiply_global_factor(
-            (float)background_ship_2_spark_second_frame_count_base_gp *
-            (random_float_between(-background_ship_2_spark_frame_count_variation_fraction_gp, background_ship_2_spark_frame_count_variation_fraction_gp) + 1.0f)));
-        e = truncate_float_to_s32_r(multiply_global_factor(
-            (float)background_ship_2_spark_third_frame_count_base_gp *
-            (random_float_between(-background_ship_2_spark_frame_count_variation_fraction_gp, background_ship_2_spark_frame_count_variation_fraction_gp) + 1.0f)));
+        v0[3] = random_float_between(background_ship_2_first_spark_fourth_component_range_start_gp,
+                                     background_ship_2_first_spark_fourth_component_range_end_gp) /
+                1.5f;
+        v1[3] = random_float_between(background_ship_2_second_spark_fourth_component_range_start_gp,
+                                     background_ship_2_second_spark_fourth_component_range_end_gp) /
+                1.5f;
+        a = FastTweenColor(background_ship_2_level_10_first_spark_color_tween_start_gp,
+                           background_ship_2_level_10_first_spark_color_tween_end_gp, random_float_between(0.0f, 1.0f));
+        b = FastTweenColor(background_ship_2_level_10_second_spark_color_tween_start_gp,
+                           background_ship_1_second_spark_color_tween_end_gp, random_float_between(0.0f, 1.0f));
+        c = truncate_float_to_s32_r(multiply_global_factor(
+            (float)background_ship_2_spark_frame_count_random_span_gp * random_float_between(0.0f, 1.0f) + 1.0f));
+        d = truncate_float_to_s32_r(
+            multiply_global_factor((float)background_ship_2_spark_second_frame_count_base_gp *
+                                   (random_float_between(-background_ship_2_spark_frame_count_variation_fraction_gp,
+                                                         background_ship_2_spark_frame_count_variation_fraction_gp) +
+                                    1.0f)));
+        e = truncate_float_to_s32_r(
+            multiply_global_factor((float)background_ship_2_spark_third_frame_count_base_gp *
+                                   (random_float_between(-background_ship_2_spark_frame_count_variation_fraction_gp,
+                                                         background_ship_2_spark_frame_count_variation_fraction_gp) +
+                                    1.0f)));
         p = PartType02Spawn(m, v0, v1, a, b, c, d, e, -1);
         if (p != 0) {
             p[9] = truncate_float_to_s32_r(8.0f) + 0x60;
@@ -2783,7 +2803,8 @@ void apply_moby_camera_control(char *moby) {
         angle = fast_atan2(*(float *)aridia_camera_moby, *(float *)(aridia_camera_moby + 4));
         if (*(short *)(data + 0x20) < 2)
             *(float *)(data + 0x40) = *(float *)(l02_moby_record_table + *(short *)(moby + 0x84) * 32 + 0x18);
-        else if (absolute_float(g_controller_state.analog[0]) >= 0.3f || absolute_float(g_controller_state.analog[1]) >= 0.3f)
+        else if (absolute_float(g_controller_state.analog[0]) >= 0.3f ||
+                 absolute_float(g_controller_state.analog[1]) >= 0.3f)
             *(float *)(data + 0x40) = angle;
         heading = *(float *)(data + 0x40);
         if (FastDiffRots(heading, angle) > 1.5707964f)

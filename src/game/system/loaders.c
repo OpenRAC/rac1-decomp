@@ -1640,8 +1640,8 @@ s32 service_level_archive_load(void) {
             }
             shared_header = level_archive_load_state.shared;
             sound_bank_handle = 0xFFFFFFFFU;
-            snd_BankLoadFromEE_CB(shared_header->sound_bank_offset + (s32)shared_header, (s32)store_sound_bank_handle_callback,
-                                  (u32)&sound_bank_handle);
+            snd_BankLoadFromEE_CB(shared_header->sound_bank_offset + (s32)shared_header,
+                                  (s32)store_sound_bank_handle_callback, (u32)&sound_bank_handle);
             level_archive_load_state.stage = level_archive_load_state.stage + 1;
             break;
         case 7:

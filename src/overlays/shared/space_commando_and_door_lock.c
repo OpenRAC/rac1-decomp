@@ -377,8 +377,7 @@ void blarg_space_commando_update(struct Moby *moby) {
             a.f[2] = 0.0f;
             MobySteerToward(moby, &vars->ctl, &a, &b, 1.0f);
             resolve_point_path_segment_xy_clearance_v(vars->path, &moby->pos, &moby->pos, 0.75f);
-            if (path_8808(vars->path, &moby->pos, &target->pos, &c) != 0 &&
-                fast_vec_dist(&moby->pos, &c) < 0.8f) {
+            if (path_8808(vars->path, &moby->pos, &target->pos, &c) != 0 && fast_vec_dist(&moby->pos, &c) < 0.8f) {
                 near = 1;
             }
             if (vars->unk188 == 0) {
@@ -997,8 +996,7 @@ void draw_pulsing_timer_display(char *moby) {
     float v;
     int col;
 
-    DrawUIFrame(W(timer_frame_x_addend_gp) + W(timer_text_y_gp),
-                W(timer_frame_y_addend_gp) + W(timer_text_y_gp),
+    DrawUIFrame(W(timer_frame_x_addend_gp) + W(timer_text_y_gp), W(timer_frame_y_addend_gp) + W(timer_text_y_gp),
                 W(timer_frame_left_x_addend_gp) + W(timer_text_center_x_gp),
                 W(timer_frame_right_x_addend_gp) + W(timer_text_center_x_gp), W(timer_frame_fill_high_byte_gp));
     v = FastSin(IntToFloat(blarg_frame_count % 60) / 60.0f * 6.28318f) * 3.0f + 0.5f;
@@ -1066,10 +1064,14 @@ void draw_bot_door_lock_glow(char *o) {
     pk.tag[0] = 0;
     pk.tag[1] = GetEffectTex_v(0x18);
     for (i = 0; i < 4; i++) {
-        transform_vector_by_basis(v[0], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][0] * 16, mat);
-        transform_vector_by_basis(v[1], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][1] * 16, mat);
-        transform_vector_by_basis(v[2], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][2] * 16, mat);
-        transform_vector_by_basis(v[3], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][3] * 16, mat);
+        transform_vector_by_basis(v[0], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][0] * 16,
+                                  mat);
+        transform_vector_by_basis(v[1], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][1] * 16,
+                                  mat);
+        transform_vector_by_basis(v[2], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][2] * 16,
+                                  mat);
+        transform_vector_by_basis(v[3], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][3] * 16,
+                                  mat);
         pk.pos[0][0] = ((Moby *)o)->pos.x + v[0][0] * *(float *)(data + 0x24);
         pk.pos[0][1] = ((Moby *)o)->pos.y + v[0][1] * *(float *)(data + 0x24);
         pk.pos[0][2] = ((Moby *)o)->pos.z + v[0][2];
@@ -1260,7 +1262,8 @@ void bot_door_lock_update(Moby *moby) {
             }
             if (0.0f < data->f9) {
                 AddDrawCallback((void *)draw_bot_door_lock_glow, moby);
-                data->f6 = FastAddRots(data->f6, (360.0f / (bot_door_lock_number_bob_period_gp)) * 0.017453292f * g_frame_time);
+                data->f6 = FastAddRots(data->f6,
+                                       (360.0f / (bot_door_lock_number_bob_period_gp)) * 0.017453292f * g_frame_time);
                 pos[2] += (bot_door_lock_number_bob_amplitude_gp)*FastCos(data->f6);
                 value = truncate_float_to_s32((bot_door_lock_number_color_pulse_amplitude_gp)*FastCos(data->f10));
                 color_channels = (value / 2 + 120) * 0x100 | 0x20000000U;

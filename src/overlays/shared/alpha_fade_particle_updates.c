@@ -827,7 +827,8 @@ void update_color_tween_emitter_particle(struct PartBase *p) {
 extern unsigned char *part_type_textures[];
 
 /* spawns particle type 0x3B from a position, colour index and flags */
-unsigned char *spawn_timed_hero_relative_particle(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode) {
+unsigned char *spawn_timed_hero_relative_particle(float f, void *pos, int a1, unsigned char a2, int idx, int flag,
+                                                  int s, int mode) {
     unsigned char *r = create_part(0x3B);
     if (r != 0) {
         char *v = (unsigned char *)((struct PartBase *)r)->data;

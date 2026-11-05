@@ -286,8 +286,10 @@ void draw_electric_gate_beams(char *a) {
         do {
             tex = GetEffectTex(l05_electric_gate_beam_effect_texture_index);
             nj = j + 1;
-            arr[j][i].a88 = (s64)l05_electric_gate_blend_minuend_selector | ((s64)l05_electric_gate_blend_subtrahend_selector << 2) |
-                            ((s64)l05_electric_gate_blend_alpha_factor_selector << 4) | ((s64)l05_electric_gate_blend_addend_selector << 6) | 0x8000000000LL;
+            arr[j][i].a88 = (s64)l05_electric_gate_blend_minuend_selector |
+                            ((s64)l05_electric_gate_blend_subtrahend_selector << 2) |
+                            ((s64)l05_electric_gate_blend_alpha_factor_selector << 4) |
+                            ((s64)l05_electric_gate_blend_addend_selector << 6) | 0x8000000000LL;
             arr[j][i].a78 = tex;
             arr[j][i].a80 = 0xFF9000000260LL;
             arr[j][i].a70 = 0;
@@ -380,7 +382,8 @@ void fog_zone_update(Moby *m) {
             *(int *)&d->in_near = 0;
             *(int *)&d->in_far_intensity = 0;
             {
-                int c = l05_volume_blended_color_low_byte[0] + (l05_volume_blended_color_lower_middle_byte[0] << 8) + (l05_volume_blended_color_upper_middle_byte[0] << 16) +
+                int c = l05_volume_blended_color_low_byte[0] + (l05_volume_blended_color_lower_middle_byte[0] << 8) +
+                        (l05_volume_blended_color_upper_middle_byte[0] << 16) +
                         (l05_volume_blended_color_high_byte[0] << 24);
                 d->tint_b = 0x40408070;
                 d->tint_a = c;
@@ -620,8 +623,10 @@ void drain_cover_update(Moby *moby) {
                 clear_u64_value(d->vel);
                 d->vel[2] = square_root(d->f80 * 2.0f * (l05_drain_cover_gravity * g_frame_time_sq));
             } else if ((float)d->timer < (float)scale_ticks(drain_cover_spray_life) * 0.5f) {
-                emit_drain_cover_particles((char *)moby, d->home[2], l05_drain_cover_pre_rise_particle_height_span + d->home[2]);
-                emit_drain_cover_particles((char *)moby, d->home[2], l05_drain_cover_pre_rise_particle_height_span + d->home[2]);
+                emit_drain_cover_particles((char *)moby, d->home[2],
+                                           l05_drain_cover_pre_rise_particle_height_span + d->home[2]);
+                emit_drain_cover_particles((char *)moby, d->home[2],
+                                           l05_drain_cover_pre_rise_particle_height_span + d->home[2]);
                 if ((float)d->timer < (float)scale_ticks(drain_cover_spray_life) * 0.2f) {
                     a = l05_drain_cover_pre_rise_particle_configuration;
                     b = drain_cover_burst_color_b;
@@ -635,9 +640,12 @@ void drain_cover_update(Moby *moby) {
                         v60[2] = 0.0f;
                         vec_scale_to_length(
                             v40, v60,
-                            random_float_between(l05_drain_cover_pre_rise_particle_radial_speed_lower_bound, l05_drain_cover_pre_rise_particle_radial_speed_upper_bound) *
+                            random_float_between(l05_drain_cover_pre_rise_particle_radial_speed_lower_bound,
+                                                 l05_drain_cover_pre_rise_particle_radial_speed_upper_bound) *
                                 g_frame_time);
-                        v40[2] = random_float_between(0.0f, l05_drain_cover_pre_rise_particle_vertical_speed_upper_bound) * g_frame_time;
+                        v40[2] =
+                            random_float_between(0.0f, l05_drain_cover_pre_rise_particle_vertical_speed_upper_bound) *
+                            g_frame_time;
                         vec_set_length_xy(v50, v40, 0.0f);
                         FastVecAdd(v60, &moby->pos, v60);
                         v60[2] = random_float_between(moby->pos.z - 0.25f, moby->pos.z + 0.5f);
@@ -666,8 +674,8 @@ void drain_cover_update(Moby *moby) {
             emit_drain_cover_particles((char *)moby, d->home[2], moby->pos.z);
             update_drain_cover_tilt((char *)moby, drain_cover_air_wobble, 1.0f);
             ApproachWithVelocity_v(d->home[2] + d->home[3], l05_drain_cover_hover_acceleration * g_frame_time_sq,
-                                   l05_drain_cover_hover_acceleration * g_frame_time_sq, g_frame_time * 20.0f, &moby->pos.z,
-                                   &d->vel[2]);
+                                   l05_drain_cover_hover_acceleration * g_frame_time_sq, g_frame_time * 20.0f,
+                                   &moby->pos.z, &d->vel[2]);
             if (d->vel[2] == 0.0f) {
                 if (d->home[3] > d->f84) {
                     d->home[3] = d->f84 - 0.5f;
@@ -760,7 +768,8 @@ void emit_drain_cover_particles(char *obj, float a, float b) {
         t = random_float_between((a + b) * 0.5f, b) - ground;
         if (t < w[2])
             w[2] = t;
-        u = random_float_between(drain_cover_particle_scalar_lower_bound_gp, drain_cover_particle_scalar_upper_bound_gp);
+        u = random_float_between(drain_cover_particle_scalar_lower_bound_gp,
+                                 drain_cover_particle_scalar_upper_bound_gp);
         k = scale_ticks(drain_cover_spray_life);
         m = truncate_float_to_s32_r(randf_sym(fi, (float)drain_cover_particle_size_sampling_bound_gp));
         n = drain_cover_particle_color_gp;
@@ -1732,7 +1741,8 @@ void hoverboard_girl_update(Moby *moby) {
                 blend_moby_animation(moby, 0, 0, scale_frame_count(20));
             }
             moby->pos.z = find_ground_height(0.5f, (HGVec *)&moby->pos, 0);
-            if ((*(HGGates *)level_object_states).first_gate == 0 || (*(HGGates *)level_object_states).second_gate == 0) {
+            if ((*(HGGates *)level_object_states).first_gate == 0 ||
+                (*(HGGates *)level_object_states).second_gate == 0) {
                 HGRaceEntry **entries = race_entries_r;
                 int entry = get_dialogue_entry_r(moby);
                 entries[entry]->state = 13;
@@ -2421,8 +2431,8 @@ void PickupL05_Update(char *moby) {
             tab = l05_cuboids;
             qcopy(qa, tab[s].position);
             qcopy(interpolation_end_angles, tab[s].direction);
-            sample_camera_path(*(int **)&taxi_data->path, 0, rotation_or_start_position_scratch, interpolation_start_angles,
-                         0, (float)**(int **)&taxi_data->path);
+            sample_camera_path(*(int **)&taxi_data->path, 0, rotation_or_start_position_scratch,
+                               interpolation_start_angles, 0, (float)**(int **)&taxi_data->path);
             lerp_vector(&taxi_data->blend_pos, rotation_or_start_position_scratch, interpolation_end_position,
                         taxi_data->blend);
             taxi_data->blend_rot.y =

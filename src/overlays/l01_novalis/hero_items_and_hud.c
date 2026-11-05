@@ -224,7 +224,8 @@ void HeroL01_UpdateStateTransitions(void) {
                                 if (fast_dec_timer(&g_hero.slot3_anim_timer)) {
                                     if (0.55850536f > novalis_lean_state.f258 &&
                                         novalis_lean_state.f254 < 0.34906584f && g_hero.items[3].state == 2) {
-                                        g_hero.slot3_anim_timer = func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
+                                        g_hero.slot3_anim_timer =
+                                            func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
                                         blend_hero_slot3_animation_pair();
                                     }
                                 }

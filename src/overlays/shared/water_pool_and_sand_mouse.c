@@ -205,8 +205,8 @@ void pool_flush(char *p, int n) {
             do {
                 if (*(unsigned short *)(q + 0x1E) != 0) {
                     ripple_lerp_buffers(q + (ripple_draw_buffer * 0x5C0 + 0x50),
-                                        q + (pool_wave_next_source_slot_index * 0x5C0 + 0x50), q + (pool_wave_source_slot_index * 0x5C0 + 0x50),
-                                        pool_wave_step_accumulator);
+                                        q + (pool_wave_next_source_slot_index * 0x5C0 + 0x50),
+                                        q + (pool_wave_source_slot_index * 0x5C0 + 0x50), pool_wave_step_accumulator);
                 }
                 k--;
                 q += 0x1190;
@@ -582,8 +582,9 @@ void render_water_grids(f32 *pos, s32 count) {
                     mode = 0;
             }
             mask = *(u16 *)((u8 *)pos + 0x1e);
-            if (*(u32 *)(pos + 5) != (cached_water_texture_id_gp) || *(u32 *)(pos + 6) != (cached_water_second_texture_id_gp) ||
-                *(u8 *)(pos + 7) != (water_last_alpha2) || *(u8 *)((u8 *)pos + 0x1d) != (cached_water_alpha_1_fix_gp)) {
+            if (*(u32 *)(pos + 5) != (cached_water_texture_id_gp) ||
+                *(u32 *)(pos + 6) != (cached_water_second_texture_id_gp) || *(u8 *)(pos + 7) != (water_last_alpha2) ||
+                *(u8 *)((u8 *)pos + 0x1d) != (cached_water_alpha_1_fix_gp)) {
                 l01_packet.words[0] = 0x10000005;
                 l01_packet.words[1] = 0;
                 l01_packet.words[2] = 0x11000000;
@@ -666,11 +667,10 @@ void novalis_elevator_update(unsigned char *moby) {
         unsigned short id;
         if (is_point_inside_clip_volume(&((struct Hero *)g_hero)->motion.pos, data->trigger_idx) ||
             novalis_checkpoint_level_state.collected[(short)(id = ((Moby *)moby)->save_id)] != 0 ||
-            (*(int *)(D_0014C290 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) &
-                1) {
+            (*(int *)(D_0014C290 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) & 1) {
             if (data->trigger_idx != -1) {
-                *(int *)(D_0014C290 + (((short)((Moby *)moby)->save_id >> 5) * 4 +
-                                              (g_current_level_index_m << 8))) |= 1 << (((Moby *)moby)->save_id & 0x1F);
+                *(int *)(D_0014C290 + (((short)((Moby *)moby)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |=
+                    1 << (((Moby *)moby)->save_id & 0x1F);
                 moby_killed[(short)((Moby *)moby)->save_id >> 5] |= 1 << (((Moby *)moby)->save_id & 0x1F);
                 data->trigger_idx = -1;
             }
@@ -735,11 +735,12 @@ void novalis_elevator_update(unsigned char *moby) {
                 g->jump_lock_timer = 4;
                 g->unk1F4 = 4;
             }
-            if (data->wait_timer != 0 || (data->unk_BC < 0.0f &&
-                                          vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos),
-                                                          hero = (&((struct Hero *)g_hero)->motion.pos)) < 2.83f &&
-                                          absolute_float(*(float *)((hero -= 0x80) + 0x88) - ((Moby *)moby)->pos.z) < 4.0f &&
-                                          ((Moby *)moby)->pos.z - *(float *)(hero + 0x88) > 0.9f)) {
+            if (data->wait_timer != 0 ||
+                (data->unk_BC < 0.0f &&
+                 vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos),
+                                 hero = (&((struct Hero *)g_hero)->motion.pos)) < 2.83f &&
+                 absolute_float(*(float *)((hero -= 0x80) + 0x88) - ((Moby *)moby)->pos.z) < 4.0f &&
+                 ((Moby *)moby)->pos.z - *(float *)(hero + 0x88) > 0.9f)) {
                 int r;
                 if (data->wait_timer == 0) {
                     data->wait_timer = scale_ticks(30);
@@ -1183,8 +1184,8 @@ void bolt_crank_update(char *m) {
                 V90[2] = 0.0f;
                 d = func_001F9CE8(V90);
                 VA0 = -d;
-                Spring(&VA0, &bolt_crank_radial_correction_step_gp, 0.0f, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f,
-                       g_frame_time * 7.0f);
+                Spring(&VA0, &bolt_crank_radial_correction_step_gp, 0.0f, g_frame_scale_sq * 0.015f,
+                       g_frame_scale_sq * 0.3f, g_frame_time * 7.0f);
                 vec_scale_to_length(V90, V90, bolt_crank_radial_correction_step_gp);
                 FastVecAdd(h + 0x80, h + 0x80, V90);
                 F(h, 0x88) = hy;
@@ -1282,7 +1283,8 @@ void gold_weapon_case_update(struct Moby *m) {
         case 0:
             if (m->oclass != MOBY_CLASS_GOLD_WEAPON_CASE) {
                 m->state = 2;
-            } else if (gold_weapon_purchased[gold_weapon_case_item_ids_by_slot[v->slot]] != 0 || DialogRequest_Init(m, v) == -1) {
+            } else if (gold_weapon_purchased[gold_weapon_case_item_ids_by_slot[v->slot]] != 0 ||
+                       DialogRequest_Init(m, v) == -1) {
                 m->state = 3;
             } else {
                 m->state = 1;
@@ -1460,9 +1462,10 @@ void update_sand_mouse_targeted_spawning(char *moby, char *state) {
     qzero(&v);
     FastVecAdd(&v, &v, &((Moby *)moby)->pos);
     v.f[2] = v.f[2] + (sand_mouse_spawn_and_fallback_aim_height_offset_gp);
-    e = select_sand_mouse_spawn_target(moby, &v, &((Moby *)moby)->rot, (sand_mouse_spawn_target_yaw_limit_degrees_gp) * 0.017453292f,
-                                       (sand_mouse_spawn_target_pitch_limit_degrees_gp) * 0.017453292f, (sand_mouse_spawn_target_range_gp), 2.0f,
-                                       3.1415927f, 3.1415927f);
+    e = select_sand_mouse_spawn_target(moby, &v, &((Moby *)moby)->rot,
+                                       (sand_mouse_spawn_target_yaw_limit_degrees_gp) * 0.017453292f,
+                                       (sand_mouse_spawn_target_pitch_limit_degrees_gp) * 0.017453292f,
+                                       (sand_mouse_spawn_target_range_gp), 2.0f, 3.1415927f, 3.1415927f);
     if (e != 0) {
         *(char **)(state + 0x68) = e;
         if (D_0013F4D0.f[2] + 1.1f < ((Moby *)moby)->pos.z) {
@@ -1755,8 +1758,7 @@ void sand_mouse_update(Moby *moby) {
                 qcopy(((float *)&moby->pos), ((float *)&novalis_mobys_r[d->parent].pos));
                 moby->pos.z = moby->pos.z + 0.02f;
                 if (novalis_checkpoint_level_state.collected[(short)(id = moby->save_id)] != 0 ||
-                    (*(int *)(D_0014C290 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >>
-                     (id & 0x1F)) &
+                    (*(int *)(D_0014C290 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) &
                         1) {
                     STUB_printf(sand_mouse_already_completed_message);
                     DeleteMoby(moby);
@@ -1937,7 +1939,7 @@ void sand_mouse_update(Moby *moby) {
                     dir = -dir;
                 }
                 n = func_L00_00258BC8(sand_mouse_fade_particle_random_integer_min_gp,
-                               sand_mouse_fade_particle_random_integer_max_gp);
+                                      sand_mouse_fade_particle_random_integer_max_gp);
                 f = random_float_between(sand_mouse_fade_particle_random_float_range_start_gp,
                                          sand_mouse_fade_particle_random_float_range_end_gp);
                 PartType53Spawn(va, n, col, 2, dir, vb, f, 0.001f,
@@ -2026,9 +2028,9 @@ void smoke_trail_projectile_update(char *moby) {
             mb->rot.z = fast_atan2(moby_vars->vel_x, moby_vars->vel_y);
             clear_u64_value(z);
             spawn_effect(&mb->pos, z, 0x6F00AFFF, 0xFF, scale_ticks(func_L00_00258BC8(0xF, 0x16)), 0x28,
-                            func_L00_00258BC8(0x14, 0x23), 1);
+                         func_L00_00258BC8(0x14, 0x23), 1);
             spawn_effect(&mb->pos, z, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(func_L00_00258BC8(0x1E, 0x3C)), 0x28,
-                            func_L00_00258BC8(0x32, 0x4B), 0);
+                         func_L00_00258BC8(0x32, 0x4B), 0);
             gz = mb->pos.z - probe_ground_height(&mb->pos, 0, 0.5f);
             if (gz < moby_vars->floor_offset) {
                 mb->pos.z = mb->pos.z + (moby_vars->floor_offset - gz);
@@ -2601,7 +2603,8 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
         e = novalis_paths[d->unk_24C];
         b = (char *)d->unk_1C0;
         if (FindNearestEligibleMoby(d->unk_228, m, b, 0, 0, e + 0x10, *(int *)e) != 2) {
-            if (d->unk_228 < vec_distance_xy(&d->target_pos, b) || 3.0f < absolute_float(((Moby *)m)->pos.z - d->unk_1C8)) {
+            if (d->unk_228 < vec_distance_xy(&d->target_pos, b) ||
+                3.0f < absolute_float(((Moby *)m)->pos.z - d->unk_1C8)) {
                 d->mode = 2;
             }
         }
@@ -2727,14 +2730,15 @@ char *find_nearest_extermibot_moby_in_list(char *self, int idx) {
         }
     }
 }
-extern short amoeboid_first_movement_particle_spawn_gate_modulus_plus_one_gp, amoeboid_second_movement_particle_spawn_gate_modulus_plus_one_gp, amoeboid_movement_particle_max_spawn_radius_gp, amoeboid_first_movement_particle_base_scale_max_gp,
-    amoeboid_first_movement_particle_secondary_sample_max_gp;
+extern short amoeboid_first_movement_particle_spawn_gate_modulus_plus_one_gp,
+    amoeboid_second_movement_particle_spawn_gate_modulus_plus_one_gp, amoeboid_movement_particle_max_spawn_radius_gp,
+    amoeboid_first_movement_particle_base_scale_max_gp, amoeboid_first_movement_particle_secondary_sample_max_gp;
 extern short amoeboid_first_movement_particle_lifetime_max_gp, amoeboid_first_movement_particle_lifetime_min_gp,
     amoeboid_first_movement_particle_header_and_data_value_gp, amoeboid_first_movement_particle_data_value_gp,
     D_L01_00161A60;
-extern short amoeboid_second_movement_particle_secondary_sample_max_gp, amoeboid_second_movement_particle_lifetime_max_gp,
-    D_L01_00161A68, amoeboid_second_movement_particle_header_and_data_value_gp,
-    amoeboid_second_movement_particle_data_value_gp;
+extern short amoeboid_second_movement_particle_secondary_sample_max_gp,
+    amoeboid_second_movement_particle_lifetime_max_gp, D_L01_00161A68,
+    amoeboid_second_movement_particle_header_and_data_value_gp, amoeboid_second_movement_particle_data_value_gp;
 
 /* Spawns up to two particle effects on the moby, each aimed by a random direction and speed. */
 void spawn_amoeboid_movement_particles(unsigned char *moby) {
@@ -2750,8 +2754,9 @@ void spawn_amoeboid_movement_particles(unsigned char *moby) {
             float e = random_float_between(*(float *)&amoeboid_first_movement_particle_base_scale_max_gp,
                                            *(float *)&amoeboid_first_movement_particle_secondary_sample_max_gp) *
                       d->size;
-            int s = truncate_float_to_s32_r(random_float_between((float)*(int *)&amoeboid_first_movement_particle_lifetime_min_gp,
-                                                                 (float)*(int *)&amoeboid_first_movement_particle_lifetime_max_gp));
+            int s = truncate_float_to_s32_r(
+                random_float_between((float)*(int *)&amoeboid_first_movement_particle_lifetime_min_gp,
+                                     (float)*(int *)&amoeboid_first_movement_particle_lifetime_max_gp));
             v[0] = FastCos(a) * b;
             v[1] = FastSin(a) * b;
             v[2] = z;
@@ -2767,8 +2772,9 @@ void spawn_amoeboid_movement_particles(unsigned char *moby) {
             float e = random_float_between(*(float *)&amoeboid_second_movement_particle_base_scale_max_gp,
                                            *(float *)&amoeboid_second_movement_particle_secondary_sample_max_gp) *
                       d->size;
-            int s = truncate_float_to_s32_r(random_float_between((float)*(int *)&amoeboid_second_movement_particle_lifetime_min_gp,
-                                                                 (float)*(int *)&amoeboid_second_movement_particle_lifetime_max_gp));
+            int s = truncate_float_to_s32_r(
+                random_float_between((float)*(int *)&amoeboid_second_movement_particle_lifetime_min_gp,
+                                     (float)*(int *)&amoeboid_second_movement_particle_lifetime_max_gp));
             v[0] = FastCos(a) * b;
             v[1] = FastSin(a) * b;
             v[2] = z;

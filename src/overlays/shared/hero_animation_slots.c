@@ -742,8 +742,8 @@ void update_hero_item_slot_blends(void) {
             if (want) {
                 Hero *h = (Hero *)GB;
                 if (SLOT(i) == 0) {
-                    char *n =
-                        (char *)allocate_moby_animation_slot(*(char **)&h->moby, ((int *)&l00_hero_item_animation_slot_ids)[i]);
+                    char *n = (char *)allocate_moby_animation_slot(*(char **)&h->moby,
+                                                                   ((int *)&l00_hero_item_animation_slot_ids)[i]);
                     SLOT(i) = n;
                     ((struct AnimBlendSlot *)n)->weight = 0.0f;
                     *(char **)(SLOT(i) + 0x18) = moby_class_headers[g_class_slot[i + 1]];
@@ -1589,13 +1589,13 @@ void update_hero_item_mobys(void) {
                             D_L00_0017A780[5].scale3.f[1] = 1.0f;
                             D_L00_0017A780[5].scale3.f[2] = 1.0f;
                             if (j == 0) {
-                                pack_pose(l00_hero_item_28_29_primary_joint_selection, l00_hero_item_28_29_primary_packed_pose,
-                                          *(s32 *)&moby->pclass, 0, 0);
+                                pack_pose(l00_hero_item_28_29_primary_joint_selection,
+                                          l00_hero_item_28_29_primary_packed_pose, *(s32 *)&moby->pclass, 0, 0);
                                 moby->cur_frame_data = l00_hero_item_28_29_primary_packed_pose;
                                 moby->prev_frame_data = l00_hero_item_28_29_primary_packed_pose;
                             } else {
-                                pack_pose(l00_hero_item_28_29_secondary_joint_selection, l00_hero_item_28_29_secondary_packed_pose,
-                                          *(s32 *)&moby->pclass, 0, 0);
+                                pack_pose(l00_hero_item_28_29_secondary_joint_selection,
+                                          l00_hero_item_28_29_secondary_packed_pose, *(s32 *)&moby->pclass, 0, 0);
                                 moby->cur_frame_data = l00_hero_item_28_29_secondary_packed_pose;
                                 moby->prev_frame_data = l00_hero_item_28_29_secondary_packed_pose;
                             }
@@ -2718,7 +2718,8 @@ void stick_target(float scale, int mode) {
         }
         q.q = 0;
         q.f[0] = 1.0f;
-        transform_vector_by_basis(hero_globals_base + 0xF8D, &q, (void *)(*(int *)(hero_globals_base + 0xF8D + 0x1F10) + 0xC0));
+        transform_vector_by_basis(hero_globals_base + 0xF8D, &q,
+                                  (void *)(*(int *)(hero_globals_base + 0xF8D + 0x1F10) + 0xC0));
         return;
     }
     w = PB;

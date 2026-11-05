@@ -263,8 +263,7 @@ void skids_agent_update(Moby *m) {
         case 3:
             ApproachWithVelocity(&d->f180, &d->f184, 1.0f, g_frame_time_sq * 0.1f, g_frame_time_sq * 0.25f,
                                  g_frame_time * 0.5f);
-            lerp_vector(v0, l02_cuboids + (d->f158 << 7) + 0x30, l02_cuboids + (d->f15C << 7) + 0x30,
-                        d->f180);
+            lerp_vector(v0, l02_cuboids + (d->f158 << 7) + 0x30, l02_cuboids + (d->f15C << 7) + 0x30, d->f180);
             {
                 Node_2E21F8 *t = (Node_2E21F8 *)l02_cuboids;
                 qcopy(v2, t[d->f158].f70);
@@ -733,7 +732,8 @@ void func_L02_002EB480_r(Moby *m) __asm__("func_L02_002EB480");
 void func_L02_002EB480_r(Moby *m) {
     int *d = (int *)m->pvars;
 
-    begin_animated_frame_rendering(0.0f, 260080.0f, 255.0f, 0.0f, 15, 15, 25, 30, 40, 64, aridia_ocean_animated_frame_packet);
+    begin_animated_frame_rendering(0.0f, 260080.0f, 255.0f, 0.0f, 15, 15, 25, 30, 40, 64,
+                                   aridia_ocean_animated_frame_packet);
     if (aridia_ocean_clip_culling_override != 0 ||
         (d[0] != -1 && is_point_inside_clip_volume(aridia_camera_pos, d[0]))) {
         RefreshPointLight_r(aridia_ocean_first_clip_draw_data);

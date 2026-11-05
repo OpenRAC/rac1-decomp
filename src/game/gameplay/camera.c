@@ -547,7 +547,7 @@ void start_camera_blend(Camera *from) {
             fast_vec_normalize(local2, *(char **)&g->moby + 0xE0, 1.0f);
             /* &gCamera.current->pos: the previous camera is the one the switch saved */
             compute_camera_angles((float *)&r->orbit.yaw, &from->pos, &(*(Camera **)((char *)r - 0xF0))->pos, local0,
-                               local1, local2);
+                                  local1, local2);
             extract_matrix_rotation_quaternion(&r->orbit.rot, from);
             qcopy(&r->orbit.saved_rot, &r->orbit.rot);
         }

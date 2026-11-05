@@ -1189,7 +1189,8 @@ void process_hero_race_object_interactions(void) {
                     set_identity_matrix(matrix);
                     matrix_from_basis_rows(matrix, first + 0xC0);
                     transform_vector(delta, delta, matrix);
-                    if (absolute_float(delta[0]) < 0.5f && absolute_float(delta[1]) < 2.9f && absolute_float(delta[2]) < 2.9f) {
+                    if (absolute_float(delta[0]) < 0.5f && absolute_float(delta[1]) < 2.9f &&
+                        absolute_float(delta[2]) < 2.9f) {
                         HERO->boost_pad_timer += **(int **)(first + 0x78);
                         ((Moby *)first)->command = scale_ticks(0x3C);
                         if (HERO->hoverboard_moby != 0)
@@ -1224,7 +1225,8 @@ void process_hero_race_object_interactions(void) {
                             set_identity_matrix(matrix);
                             matrix_from_basis_rows(matrix, second + 0xC0);
                             transform_vector(delta, delta, matrix);
-                            if (absolute_float(delta[0]) < 2.8f && absolute_float(delta[1]) < 1.25f && absolute_float(delta[2]) < 1.5f) {
+                            if (absolute_float(delta[0]) < 2.8f && absolute_float(delta[1]) < 1.25f &&
+                                absolute_float(delta[2]) < 1.5f) {
                                 HERO->boost_pad_timer += **(int **)(second + 0x78);
                                 ((Moby *)second)->command = scale_ticks(0x3C);
                                 if (HERO->hoverboard_moby != 0)

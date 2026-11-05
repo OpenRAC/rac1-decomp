@@ -703,7 +703,8 @@ void update_pause_menu(void) {
         }
         flag = (GS.unk8 == GS.owner->unk38);
         if (GS.owner == GS.unk8 && GS.owner != &pause_menu_state_21_page && GS.owner != &pause_menu_no_toggle_page_4 &&
-            GS.owner != &pause_menu_no_toggle_page_5 && GS.owner != &l00_pause_menu_self_transition_animation_guard_page_owner &&
+            GS.owner != &pause_menu_no_toggle_page_5 &&
+            GS.owner != &l00_pause_menu_self_transition_animation_guard_page_owner &&
             GS.owner != &pause_menu_no_toggle_page_3 && GS.owner != &pause_menu_no_toggle_page_2) {
             if (GS.state != 0x23) {
                 flag = flag ^ 1;
@@ -857,7 +858,7 @@ void draw_pause_menu_pages(int transfer_only) {
         page_data->w = rect.w;
         page_data->h = rect.h;
         append_screen_rect_packet(rect.x + 1, rect.y + 1, rect.x + rect.w - 1, rect.y + rect.h - 1,
-                              pause_menu_panel_bg_color, 0);
+                                  pause_menu_panel_bg_color, 0);
     }
     for (pass = 0; pass < 2; pass++) {
         HEnt **mobys = l00_pause_menu_page_mobys;

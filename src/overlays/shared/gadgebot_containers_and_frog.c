@@ -319,8 +319,10 @@ void draw_gadgebot_spawn_container(char *moby) {
     }
     quad.tex = GetEffectTex(gadgebot_container_texture_index_gp);
     quad.unk80 = 0xff9000000260L;
-    quad.unk88 = (long)gadgebot_container_blend_minuend_selector_gp | (long)gadgebot_container_blend_subtrahend_selector_gp << 2 |
-                 (long)gadgebot_container_blend_factor_selector_gp << 4 | (long)gadgebot_container_blend_addend_selector_gp << 6 |
+    quad.unk88 = (long)gadgebot_container_blend_minuend_selector_gp |
+                 (long)gadgebot_container_blend_subtrahend_selector_gp << 2 |
+                 (long)gadgebot_container_blend_factor_selector_gp << 4 |
+                 (long)gadgebot_container_blend_addend_selector_gp << 6 |
                  (long)gadgebot_container_blend_fixed_alpha_gp << 32;
     quad.unk70 = 0;
     quad.color[3] = gadgebot_container_quad_color_gp;
@@ -1975,7 +1977,8 @@ void GadgebotUpdate(Moby *moby) {
                     i++;
                 } while (i < 6);
                 (*(float (*)[4]) & moby->pos)[2] = z;
-                if (absolute_float(save1[2] - probe_ground_height((*(float (*)[4]) & moby->pos), 0, 0.5f)) >= d->ctl.f0C) {
+                if (absolute_float(save1[2] - probe_ground_height((*(float (*)[4]) & moby->pos), 0, 0.5f)) >=
+                    d->ctl.f0C) {
                     *(u128 *)(*(float (*)[4]) & moby->pos) = *(u128 *)save1;
                     d->f284 = 0.0f;
                 }
@@ -2579,7 +2582,8 @@ void select_hero_or_gadgebot_target(char *moby, char **current, f32 range) {
     best.score = 999999.0f;
     best.moby = 0;
     for (i = 0; i < (*(s32 *)&D_L06_00161D74_F4908); i++) {
-        func_L06_002F4818_F4908(moby, *current, cached_gadgebot_target_mobies[i], (int *)&best.moby, &best.score, range);
+        func_L06_002F4818_F4908(moby, *current, cached_gadgebot_target_mobies[i], (int *)&best.moby, &best.score,
+                                range);
     }
     func_L06_002F4818_F4908(moby, *current, (char *)g_hero_r2.moby, (int *)&best.moby, &best.score, range);
     *current = best.moby;
@@ -2964,8 +2968,8 @@ void initialize_energy_sphere_holder_vars(char *moby) {
     holder_vars[15] = 1.75f;
     holder_vars[14] = 2.25f;
 }
-extern short energy_sphere_holder_beam_color_start_gp, energy_sphere_holder_beam_color_end_gp, energy_sphere_holder_beam_particle_variant_flag_gp,
-    D_L06_00161EF4, D_L06_00161EF8, D_L06_00161EFC;
+extern short energy_sphere_holder_beam_color_start_gp, energy_sphere_holder_beam_color_end_gp,
+    energy_sphere_holder_beam_particle_variant_flag_gp, D_L06_00161EF4, D_L06_00161EF8, D_L06_00161EFC;
 extern int energy_sphere_holder_spark_lifetime_frames_gp SDATA(D_L06_00161F00);
 
 extern int truncate_float_to_s32_g(float) __asm__("func_001FA898");
@@ -3004,9 +3008,11 @@ void update_energy_sphere_holder_beam_effects(char *m) {
             d->t[i] = scale_ticks(0xFF);
         }
         f = IntToFloat(scale_ticks(0xFF) - d->t[i]) / (float)scale_ticks(0xFF);
-        c = FastTweenColor(*(int *)&energy_sphere_holder_beam_color_start_gp, *(int *)&energy_sphere_holder_beam_color_end_gp, absolute_float(0.5f - f));
-        spawn_timed_hero_relative_particle(pos, c, truncate_float_to_s32_g(d->ph[i]), *(int *)&energy_sphere_holder_beam_texture_index_gp,
-                        *(int *)&energy_sphere_holder_beam_particle_variant_flag_gp, 2, 0, d->sz[i]);
+        c = FastTweenColor(*(int *)&energy_sphere_holder_beam_color_start_gp,
+                           *(int *)&energy_sphere_holder_beam_color_end_gp, absolute_float(0.5f - f));
+        spawn_timed_hero_relative_particle(pos, c, truncate_float_to_s32_g(d->ph[i]),
+                                           *(int *)&energy_sphere_holder_beam_texture_index_gp,
+                                           *(int *)&energy_sphere_holder_beam_particle_variant_flag_gp, 2, 0, d->sz[i]);
         FastVecAdd(pos, pos, step);
     }
     if ((blarg_frame_count & 3) == 3 && ((unsigned char *)m)[0x31] != 0) {
@@ -3079,8 +3085,8 @@ void respawn_volume_update(char *m) {
 
 extern void spawn_energy_sphere_destruction_particles(char *m);
 
-extern short energy_sphere_rotation_rate_x_degrees_gp, energy_sphere_rotation_rate_y_degrees_gp, energy_sphere_rotation_rate_z_degrees_gp,
-    blarg_energy_sphere_scale_factor;
+extern short energy_sphere_rotation_rate_x_degrees_gp, energy_sphere_rotation_rate_y_degrees_gp,
+    energy_sphere_rotation_rate_z_degrees_gp, blarg_energy_sphere_scale_factor;
 
 struct EnergySphereVars {
     char *state_data; /* 0x00: points 0x20 bytes into the vars block */
@@ -3156,14 +3162,15 @@ void spawn_energy_sphere_destruction_particles(char *m) {
         int c;
         int v;
         func_L00_00258DB0(buf, energy_sphere_destruction_speed_range_start_gp * g_frame_time,
-                 energy_sphere_destruction_speed_range_end_gp * g_frame_time);
-        f = random_float_between(energy_sphere_destruction_scale_range_start_gp, energy_sphere_destruction_scale_range_end_gp);
+                          energy_sphere_destruction_speed_range_end_gp * g_frame_time);
+        f = random_float_between(energy_sphere_destruction_scale_range_start_gp,
+                                 energy_sphere_destruction_scale_range_end_gp);
         if (random_integer_below(2) != 0) {
-            r = FastTweenColor(energy_sphere_destruction_nonzero_branch_color_start_gp, energy_sphere_destruction_nonzero_branch_color_end_gp,
-                               random_float_between(0.0f, 1.0f));
+            r = FastTweenColor(energy_sphere_destruction_nonzero_branch_color_start_gp,
+                               energy_sphere_destruction_nonzero_branch_color_end_gp, random_float_between(0.0f, 1.0f));
         } else {
-            r = FastTweenColor(energy_sphere_destruction_zero_branch_color_start_gp, energy_sphere_destruction_zero_branch_color_end_gp,
-                               random_float_between(0.0f, 1.0f));
+            r = FastTweenColor(energy_sphere_destruction_zero_branch_color_start_gp,
+                               energy_sphere_destruction_zero_branch_color_end_gp, random_float_between(0.0f, 1.0f));
         }
         c = l06_energy_sphere_destruction_particle_lifetime;
         v = random_integer_below(0xFF);

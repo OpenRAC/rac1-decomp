@@ -285,8 +285,8 @@ void Camera_CaptureTransform(Camera *from) {
             vec_scale_to_length(local1, *(char **)&g->moby + 0xD0, 1.0f);
             vec_scale_to_length(local2, *(char **)&g->moby + 0xE0, 1.0f);
             compute_camera_angles(&r->orbit.yaw, &from->pos,
-                               &(*(Camera **)((char *)r - 0xF0))->pos, /* gCameraLvl.current */
-                               local0, local1, local2);
+                                  &(*(Camera **)((char *)r - 0xF0))->pos, /* gCameraLvl.current */
+                                  local0, local1, local2);
             extract_matrix_rotation_quaternion(&r->orbit.rot, from);
             qcopy(&r->orbit.saved_rot, &r->orbit.rot);
         }

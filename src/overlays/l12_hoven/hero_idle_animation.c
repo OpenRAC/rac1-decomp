@@ -288,15 +288,15 @@ int HeroL12_SetMoveState(int a, int b) {
             if (p->state.prev_control_mode == HERO_MODE_SWIM) {
                 emit_hero_surface_effect_burst(3, 0xA, 0);
                 if (hoven_water_patches != 0) {
-                    pool_splash(hoven_water_patches, hoven_water_patch_count, 0, p->motion.pos.f[0],
-                                  p->motion.pos.f[1], 0.4f, 0.3f);
+                    pool_splash(hoven_water_patches, hoven_water_patch_count, 0, p->motion.pos.f[0], p->motion.pos.f[1],
+                                0.4f, 0.3f);
                 }
             } else if (p->motion.displacement.f[2] < g_frame_time * -0.5f) {
                 int n = truncate_float_to_s32(absolute_float(p->motion.displacement.f[2]) * 300.0f);
                 emit_hero_surface_effect_burst(3, n < 0x28 ? n : 0x28, 1);
                 if (hoven_water_patches != 0) {
-                    pool_splash(hoven_water_patches, hoven_water_patch_count, 0, p->motion.pos.f[0],
-                                  p->motion.pos.f[1], 0.5f, -0.4f);
+                    pool_splash(hoven_water_patches, hoven_water_patch_count, 0, p->motion.pos.f[0], p->motion.pos.f[1],
+                                0.5f, -0.4f);
                 }
                 p->splash_effect_timer = scale_ticks(0x4B);
             }

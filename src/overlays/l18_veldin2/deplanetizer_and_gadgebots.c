@@ -905,7 +905,8 @@ void cutscene_joint_trail_update(M2 *m) {
                     moby_point_position(p, 9, buf2);
                     FastVecSub(buf3, buf, buf2);
                     vec_scale_to_length(buf3, buf3, cutscene_joint_trail_velocity_scale_gp);
-                    draw_trail(buf, buf, buf3, cutscene_joint_trail_first_spawn_particle_value_gp, cutscene_joint_trail_second_spawn_particle_value_gp);
+                    draw_trail(buf, buf, buf3, cutscene_joint_trail_first_spawn_particle_value_gp,
+                               cutscene_joint_trail_second_spawn_particle_value_gp);
                 }
             }
             break;

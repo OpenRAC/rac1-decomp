@@ -353,7 +353,7 @@ void HeroL17_UpdateStatePhysics(void) {
                     emit_hero_surface_effect_burst(3, 0x10, 0);
                     if (fleet_water_patches != 0) {
                         pool_splash(fleet_water_patches, fleet_water_patch_count, 0, g_hero.motion.pos.f[0],
-                                      g_hero.motion.pos.f[1], 0.4f, -0.3f);
+                                    g_hero.motion.pos.f[1], 0.4f, -0.3f);
                     }
                     g_hero.splash_effect_timer = scale_ticks(0x46);
                 }
@@ -530,7 +530,7 @@ void HeroL17_UpdateStatePhysics(void) {
                             vec[0][2] += random_float_between(0.0f, 0.03f);
                             qcopy(vec[1], g_hero.motion.displacement.f);
                             AddSphericalOffset(vec[1], vec[1], g_frame_time * -0.75f, g_hero.motion.rot.f[2],
-                                                  g_hero.motion.rot.f[1]);
+                                               g_hero.motion.rot.f[1]);
                             g_hero.pack_particle_timer = truncate_float_to_s32(
                                 (g_frame_time * 7.0f - g_hero.ground_speed) / (g_frame_time * 7.0f) * scale_ticks(5));
                             PartType34Spawn(vec[0], vec[1], random_float_between(6300.0f, 9450.0f), -1.0f);
@@ -571,7 +571,7 @@ void HeroL17_UpdateStatePhysics(void) {
             adjust_hero_velocity_from_collision_probes(0);
             lean = g_hero.unk8EC * FastCos(ang) * -7.0f;
             spring_angle(&g_hero.motion.rot.f[0], lean, &g_hero.swim_lean_vel, 0, 0.007f, 0.17f,
-                        g_frame_time * 1.2217305f);
+                         g_frame_time * 1.2217305f);
             Hero_SetTiltSpringParams(0.009f, 0.22f);
             Hero_SetTiltSpringParams(0.04f, 0.2f);
             Hero_SetTiltSpringParams(0.02f, 0.2f);
@@ -872,7 +872,7 @@ void HeroL17_UpdateStatePhysics(void) {
                     a = FastAddRots(a, 3.1415927f);
                 }
                 spring_angle(&g_hero.swing_yaw, a, &g_hero.swing_yaw_vel, 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, 0.0f);
+                             g_frame_scale_sq * 0.3f, 0.0f);
             }
             g_hero.motion.move_yaw = g_hero.swing_yaw;
             turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
@@ -890,9 +890,9 @@ void HeroL17_UpdateStatePhysics(void) {
             vec[1][0] = -fast_atan2(square_root(vec[0][0] * vec[0][0] + vec[0][2] * vec[0][2]), vec[0][1]);
             vec[1][1] = fast_atan2(vec[0][2], vec[0][0]);
             spring_angle(&g_hero.motion.rot.f[1], vec[1][1], &g_hero.motion.rot_spring_vel.f[1], 0,
-                        g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
+                         g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
             spring_angle(&g_hero.motion.rot.f[0], vec[1][0], &g_hero.motion.rot_spring_vel.f[0], 0,
-                        g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
+                         g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
             if (!(g_hero.motion.pos.f[2] < g_hero.swing_target_moby->pos.z)) {
                 below = 0;
             }
@@ -1718,10 +1718,10 @@ void HeroL17_UpdateStatePhysics(void) {
                 }
                 lean = d * 9.0f;
                 spring_angle(&g_hero.motion.rot.f[0], lean * 0.5f, &g_hero.roll_spring_velocity, 0, 0.007f, 0.17f,
-                            g_frame_time * 1.2217305f);
+                             g_frame_time * 1.2217305f);
                 if (g_hero.state_timer > scale_ticks(0x64)) {
                     spring_angle(&g_hero.motion.rot.f[1], -g_hero.rail_ride_pitch, &g_hero.rail_ride_pitch_vel, 0,
-                                g_frame_scale_sq * 0.035f, g_frame_scale_sq * 0.3f, g_frame_time * 1.9198622f);
+                                 g_frame_scale_sq * 0.035f, g_frame_scale_sq * 0.3f, g_frame_time * 1.9198622f);
                 }
                 Hero_SetTiltSpringParams(0.009f, 0.22f);
                 Hero_SetTiltSpringParams(0.04f, 0.2f);
@@ -1982,8 +1982,8 @@ void HeroL17_UpdateStatePhysics(void) {
                             stick_target(1.0f, 0);
                             a = FastDiffRots(g_hero.motion.move_yaw, l17_camera.f158);
                             if (FastDiffRots(a, 1.5707964f) < 1.2217305f || FastDiffRots(a, -1.5707964f) < 1.2217305f) {
-                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, l17_camera.f158),
-                                                 1.5707964f) < 0.7853982f) {
+                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, l17_camera.f158), 1.5707964f) <
+                                    0.7853982f) {
                                     g_hero.grind_pose = 2;
                                 } else {
                                     g_hero.grind_pose = 3;
@@ -2001,7 +2001,7 @@ void HeroL17_UpdateStatePhysics(void) {
                             }
                         }
                         spring_angle(&g_hero.rail_lean, tgt, &g_hero.grind_lean_vel, 0, g_frame_scale_sq * 0.015f,
-                                    g_frame_scale_sq * 0.3f, 0.0f);
+                                     g_frame_scale_sq * 0.3f, 0.0f);
                         ApproachValue(&g_hero.grind_base_speed, spd, g_frame_time_sq * 15.0f);
                         idx = g_hero.rail_segment;
                         frac = g_hero.rail_seg_frac;
@@ -2239,9 +2239,9 @@ void HeroL17_UpdateStatePhysics(void) {
                 }
                 qcopy(vec[0], g_hero.motion.rot.f);
                 spring_angle(&vec[0][1], t, &g_hero.motion.rot_spring_vel.f[1], 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
+                             g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
                 spring_angle(&vec[0][0], 0.0f, &g_hero.motion.rot_spring_vel.f[0], 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
+                             g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
                 rotate_hero_about_fixed_local_pivot(g_hero.motion.rot_spring_vel.f[0],
                                                     g_hero.motion.rot_spring_vel.f[1], 0.0f);
                 if (g_hero.ground_distance > 1.0f) {
@@ -2402,7 +2402,7 @@ void HeroL17_UpdateStatePhysics(void) {
                     emit_hero_surface_effect_burst(3, 0x10, 1);
                     if (fleet_water_patches != 0) {
                         pool_splash(fleet_water_patches, fleet_water_patch_count, 0, g_hero.motion.pos.f[0],
-                                      g_hero.motion.pos.f[1], 0.4f, 0.35f);
+                                    g_hero.motion.pos.f[1], 0.4f, 0.35f);
                     }
                 }
                 if (g_hero.anim_frame >= 4.0f && g_hero.anim_frame <= 7.0f) {

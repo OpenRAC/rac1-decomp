@@ -639,12 +639,14 @@ void draw_beam_and_arc_effects(char *m) {
     if (t <= -8.0f) {
         beam_first_pass_texture_u_offset_gp = t + 8.0f;
     }
-    draw_beam_and_arc_two_pass_quads(tesla_beam_points, primary_beam_first_pass_alpha_gp, primary_beam_second_pass_alpha_gp,
-                                     p->arc_alpha, beam_and_arc_first_pass_half_width_gp, primary_beam_second_pass_half_width_gp,
+    draw_beam_and_arc_two_pass_quads(tesla_beam_points, primary_beam_first_pass_alpha_gp,
+                                     primary_beam_second_pass_alpha_gp, p->arc_alpha,
+                                     beam_and_arc_first_pass_half_width_gp, primary_beam_second_pass_half_width_gp,
                                      primary_beam_second_pass_segment_extension_factor_gp);
     draw_beam_and_arc_two_pass_quads(tesla_beam_points + 0x140, secondary_beam_first_pass_alpha_gp,
                                      secondary_beam_second_pass_alpha_gp, p->arc_alpha, beam_arc_bolt_half_width,
-                                     secondary_beam_and_arc_second_pass_half_width_gp, secondary_beam_second_pass_segment_extension_factor_gp);
+                                     secondary_beam_and_arc_second_pass_half_width_gp,
+                                     secondary_beam_second_pass_segment_extension_factor_gp);
     draw_beam_and_arc_two_pass_quads(arc_points, *(short *)&beam_arc_bolt0_alpha, *(short *)&beam_arc_bolt0_alpha, 5,
                                      beam_arc_bolt_half_width, secondary_beam_and_arc_second_pass_half_width_gp, 0.2f);
     draw_beam_and_arc_two_pass_quads(arc_points + 0x50, *(short *)&beam_arc_second_row_alpha,
@@ -1073,7 +1075,8 @@ void draw_walloper_arc_and_quad_effects(int arg) {
     for (i = 9; i >= 0; i--) {
         if (l00_walloper_arc_update_countdowns[9 - i] != 0) {
             int r = truncate_float_to_s32_r(IntToFloat(l00_walloper_arc_base_alphas[9 - i]) * walloper_effect_fade_m);
-            draw_walloper_arc_two_pass_quads(l00_walloper_arcs + (9 - i) * 0x50, r, r, 5, walloper_arc_first_pass_half_width_gp,
+            draw_walloper_arc_two_pass_quads(l00_walloper_arcs + (9 - i) * 0x50, r, r, 5,
+                                             walloper_arc_first_pass_half_width_gp,
                                              walloper_arc_second_pass_half_width_gp, 0.2f);
         }
     }

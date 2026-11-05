@@ -429,7 +429,8 @@ s32 func_0022DD68_r(void) {
 
         if (voice_pool_DD68.voices[slot_index].moby != 0 && !(voice_pool_DD68.voices[slot_index].flags & 8)) {
             if (voice_pool_DD68.voices[slot_index].flags & 0x40) {
-                transform_vector_by_basis(&direction, &voice_pool_DD68.voices[slot_index].position_offset, &moby->rotation);
+                transform_vector_by_basis(&direction, &voice_pool_DD68.voices[slot_index].position_offset,
+                                          &moby->rotation);
                 FastVecAdd(&direction, &direction, &moby->position);
                 FastVecSub(&relative_velocity, &direction, &voice_pool_DD68.voices[slot_index].position);
                 qcopy(&voice_pool_DD68.voices[slot_index].position, &direction);

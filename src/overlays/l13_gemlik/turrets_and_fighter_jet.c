@@ -1310,8 +1310,8 @@ void robosquawker_update(Moby *m) {
                 qcopy(&v->v1E0, path + v->w224 * 16 + 16);
                 v->v1E0.f[2] = v->v1E0.f[2] + random_float_between(-0.2f, 0.2f);
                 g = probe_ground_height(&m->pos, 0x120, 0.5f);
-                if (g > 1.0f && func_001F9CE8(&vb) < v->f1FC + 4.0f && absolute_float(m->pos.z - tgt.pos.f[2]) < 10.0f &&
-                    random_integer_below(0x13) == 0) {
+                if (g > 1.0f && func_001F9CE8(&vb) < v->f1FC + 4.0f &&
+                    absolute_float(m->pos.z - tgt.pos.f[2]) < 10.0f && random_integer_below(0x13) == 0) {
                     if (m->prev_seq != 0) {
                         MobyBlendAnimation(m, 0, 0, scale_ticks(3));
                     }
@@ -1429,7 +1429,8 @@ void robosquawker_update(Moby *m) {
             a = fast_atan2(v->v1D0.f[0] - m->pos.x, v->v1D0.f[1] - m->pos.y);
             MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
             FastVecSub(&va, &tgt, &v->v1D0);
-            if ((FastVecLength(&va) < v->f1FC && absolute_float(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) || m->command == 2) {
+            if ((FastVecLength(&va) < v->f1FC && absolute_float(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) ||
+                m->command == 2) {
                 if (m->group != 0xFF) {
                     alert_group_e81e0(m->group, 2);
                 }
@@ -1827,8 +1828,8 @@ void robosquawker_update(Moby *m) {
 }
 
 /* Append the same effect quad four times at x, y, each turned a further quarter turn. */
-void DrawRotatedQuadCross(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
-                                           float y, float s, float ang) {
+void DrawRotatedQuadCross(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s,
+                          float ang) {
     int h;
     float w;
     h = GetEffectTex(0x37);
@@ -2062,11 +2063,11 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                         u[1] += 208.0f;
                         dist = fast_vec_dist((char *)a + 0x10, np);
                         h = absolute_float(FastSubRots(fast_atan2(((Moby *)m)->pos.x - *(float *)((char *)a + 0x10),
-                                                            ((Moby *)m)->pos.y - *(float *)((char *)a + 0x14)),
-                                                 *(float *)(p + 0x38)));
+                                                                  ((Moby *)m)->pos.y - *(float *)((char *)a + 0x14)),
+                                                       *(float *)(p + 0x38)));
                         k = absolute_float(FastSubRots(-fast_atan2(vec_distance_xy((char *)a + 0x10, np),
-                                                             ((Moby *)m)->pos.z - *(float *)((char *)a + 0x18)),
-                                                 *(float *)(p + 0x34)));
+                                                                   ((Moby *)m)->pos.z - *(float *)((char *)a + 0x18)),
+                                                       *(float *)(p + 0x34)));
                         s = square_root(h * h + k * k);
                         t = FastAddRots(*(float *)(p + 0x114), 0.1f / (s / 3.1415927f));
                         *(float *)(p + 0x114) = t;
@@ -2105,8 +2106,8 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
                             float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
-                            emit_transformed_2d_vertex_packet(fighter_jet_target_marker_vertices, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y,
-                                                              1.0f, -ang);
+                            emit_transformed_2d_vertex_packet(fighter_jet_target_marker_vertices, 0x1E, 0xFFFFF3,
+                                                              0xFF00FF00, x, y, 1.0f, -ang);
                         }
                     }
                     draw_fighter_jet_radar_icon(a3, a2, m, 1, 0x75808080, *(int *)(p + 0x104));
@@ -2120,8 +2121,8 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
                             float ang = normalize_angle(IntToFloat(gemlik_frame_count) / 20.0f);
-                            emit_transformed_2d_vertex_packet(fighter_jet_target_marker_vertices, 0x1E, 0xFFFFF3, 0xFF00FF00, x, y,
-                                                              1.0f, -ang);
+                            emit_transformed_2d_vertex_packet(fighter_jet_target_marker_vertices, 0x1E, 0xFFFFF3,
+                                                              0xFF00FF00, x, y, 1.0f, -ang);
                         }
                     }
                     draw_fighter_jet_radar_icon(a3, a2, m, 1, 0x75808080, *(int *)(p + 0x104));

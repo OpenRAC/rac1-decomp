@@ -30,8 +30,7 @@ int videoCallback(void *unused, char *entry, char *buffer) {
                       (char *)(((unsigned int)spans.p2 & 0xFFFFFFF) | 0x20000000), spans.n2, source, first, buffer,
                       remaining);
     if (copied > 0) {
-        if (!videoDecPutTs(D_0016130C + 0xD9048, *(long *)(entry + 0x10), *(long *)(entry + 0x18), spans.p1,
-                           copied)) {
+        if (!videoDecPutTs(D_0016130C + 0xD9048, *(long *)(entry + 0x10), *(long *)(entry + 0x18), spans.p1, copied)) {
             ErrMessage(pts_buffer_overflow_message);
         }
     }

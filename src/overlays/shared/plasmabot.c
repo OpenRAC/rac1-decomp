@@ -990,7 +990,7 @@ int follow_plasmabot_path(char *moby) {
     float c[4];
     struct PlasmabotVars *data = (struct PlasmabotVars *)((Moby *)moby)->pvars;
     int r = sample_path(l14_paths[data->path_a], a, &data->path_step, &data->path_t, 0,
-                                     plasmabot_path_speed * g_frame_time * data->scale);
+                        plasmabot_path_speed * g_frame_time * data->scale);
     float ang;
     float k;
     float m;
@@ -1347,7 +1347,7 @@ void plasmabot_death_debris_update(struct MobyDf *moby) {
         return;
     }
     spawn_burst(&moby->pos, oltanis_zero_vector, 0x4F007FFF, 0x1FFFFFFF,
-                    func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
+                func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
     for (i = 0; i < 2; i++) {
         n = random_integer_below(6);
         if (random_integer_below(2) != 0)
@@ -1660,7 +1660,8 @@ void emit_debris_trail_particles(Moby *m) {
         pos.f[0] += randf_sym(0.0f, 0.1f);
         pos.f[1] += randf_sym(0.0f, 0.1f);
     }
-    PartType21Spawn_r(&pos, &vel, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
+    PartType21Spawn_r(&pos, &vel, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1,
+                      60000.0f);
     n = random_integer_below(6);
     if (random_integer_below(2) != 0) {
         n = -n;
@@ -2194,8 +2195,8 @@ void start_electric_beam_pulse(char *moby) {
             delta.w = (electric_beam_spark_step_w_gp);
             s17 = random_integer_below(2) ? (vendor_beam_spark_tex_a) : (electric_beam_branch_end_spark_color_gp);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&work, &delta, &delta, (electric_beam_spark_initial_word_gp), (electric_beam_spark_second_word_gp),
-                            l >> 1, 15, n, s17);
+            PartType02Spawn(&work, &delta, &delta, (electric_beam_spark_initial_word_gp),
+                            (electric_beam_spark_second_word_gp), l >> 1, 15, n, s17);
         }
         for (k = 0; k < 2; k++) {
             int n, unused_color;
@@ -2205,8 +2206,9 @@ void start_electric_beam_pulse(char *moby) {
             unused_color =
                 random_integer_below(2) ? (vendor_beam_spark_tex_a) : (electric_beam_branch_end_spark_color_gp);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&work, &delta, &delta, (electric_beam_spark_initial_word_gp), (electric_beam_spark_second_word_gp),
-                            beam->cnt[k] >> 1, 15, n, (electric_beam_branch_end_spark_color_gp));
+            PartType02Spawn(&work, &delta, &delta, (electric_beam_spark_initial_word_gp),
+                            (electric_beam_spark_second_word_gp), beam->cnt[k] >> 1, 15, n,
+                            (electric_beam_branch_end_spark_color_gp));
         }
     }
 }
@@ -2241,12 +2243,15 @@ void update_electric_beam_animation(char *moby) {
     {
         int h = d->s12;
         if (electric_beam_color_transition_countdown_gp < h) {
-            float f = IntToFloat(h - electric_beam_color_transition_countdown_gp) / IntToFloat(d->r620 - electric_beam_color_transition_countdown_gp);
-            *(int *)((char *)d + 0x14) = FastTweenColor(electric_beam_transition_color_gp, electric_beam_initial_color_gp, f);
+            float f = IntToFloat(h - electric_beam_color_transition_countdown_gp) /
+                      IntToFloat(d->r620 - electric_beam_color_transition_countdown_gp);
+            *(int *)((char *)d + 0x14) =
+                FastTweenColor(electric_beam_transition_color_gp, electric_beam_initial_color_gp, f);
         } else if (vendor_beam_fade_end_ticks < h) {
             float f = IntToFloat(h - vendor_beam_fade_end_ticks) /
                       IntToFloat(electric_beam_color_transition_countdown_gp - vendor_beam_fade_end_ticks);
-            *(int *)((char *)d + 0x14) = FastTweenColor(electric_beam_final_color_gp, electric_beam_transition_color_gp, f);
+            *(int *)((char *)d + 0x14) =
+                FastTweenColor(electric_beam_final_color_gp, electric_beam_transition_color_gp, f);
         } else {
             *(int *)((char *)d + 0x14) = 0;
         }

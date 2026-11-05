@@ -1726,9 +1726,9 @@ void platform_664_update(Moby *moby) {
         ang = data->ang;
         pos = (*(Vec4A *)&moby->pos);
         spring_angle(&data->ang.x, -k * b, &data->angvel.x, 0, D_L09_00161A84_2F9A50 * deg * g_frame_time_sq_r,
-                    D_L09_00161A88_2F9A50 * g_frame_scale_sq, D_L09_00161A8C_2F9A50 * deg * g_frame_time_r2);
+                     D_L09_00161A88_2F9A50 * g_frame_scale_sq, D_L09_00161A8C_2F9A50 * deg * g_frame_time_r2);
         spring_angle(&data->ang.y, y, &data->angvel.y, 0, D_L09_00161A84_2F9A50 * deg * g_frame_time_sq_r,
-                    D_L09_00161A88_2F9A50 * g_frame_scale_sq, D_L09_00161A8C_2F9A50 * deg * g_frame_time_r2);
+                     D_L09_00161A88_2F9A50 * g_frame_scale_sq, D_L09_00161A8C_2F9A50 * deg * g_frame_time_r2);
         (*(Vec4A *)&moby->pos).z = (*(Vec4A *)&moby->pos).z - D_L09_00161A78_2F9A50 * g_frame_time_r2;
         if (low < z0 && (*(Vec4A *)&moby->pos).z <= low) {
             Moby_PlaySound_r2(1, 0, moby);
@@ -1740,9 +1740,9 @@ void platform_664_update(Moby *moby) {
     } else {
         float deg = 0.01745329238474369f;
         spring_angle(&data->ang.x, 0.0f, &data->angvel.x, 0, D_L09_00161A90_2F9A50 * deg * g_frame_time_sq_r,
-                    D_L09_00161A94_2F9A50 * g_frame_scale_sq, D_L09_00161A98_2F9A50 * deg * g_frame_time_r2);
+                     D_L09_00161A94_2F9A50 * g_frame_scale_sq, D_L09_00161A98_2F9A50 * deg * g_frame_time_r2);
         spring_angle(&data->ang.y, 0.0f, &data->angvel.y, 0, D_L09_00161A90_2F9A50 * deg * g_frame_time_sq_r,
-                    D_L09_00161A94_2F9A50 * g_frame_scale_sq, D_L09_00161A98_2F9A50 * deg * g_frame_time_r2);
+                     D_L09_00161A94_2F9A50 * g_frame_scale_sq, D_L09_00161A98_2F9A50 * deg * g_frame_time_r2);
         (*(Vec4A *)&moby->pos).z = (*(Vec4A *)&moby->pos).z +
                                    D_L09_00161A7C_2F9A50 * g_frame_time_r2 * (data->baseZ - (*(Vec4A *)&moby->pos).z);
         if (data->baseZ < (*(Vec4A *)&moby->pos).z) {
@@ -1856,8 +1856,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
         unsigned short id;
         if (is_point_inside_clip_volume(&g_hero.motion.pos, data->clip_volume) ||
             l09_moby_collection_state.collected[(short)(id = m->save_id)] != 0 ||
-            ((*(int *)(D_0014C290 + (g_current_level_index << 8) + (((short)id >> 5) << 2))) >> (id & 0x1F)) &
-                1) {
+            ((*(int *)(D_0014C290 + (g_current_level_index << 8) + (((short)id >> 5) << 2))) >> (id & 0x1F)) & 1) {
             if (data->clip_volume != -1) {
                 (*(int *)(D_0014C290 + (g_current_level_index << 8) + (((short)m->save_id >> 5) << 2))) |=
                     1 << (m->save_id & 0x1F);
@@ -1926,9 +1925,9 @@ void PathPlatformL09_Update(unsigned char *moby) {
             }
             break;
         case 2:
-            if (data->timer != 0 ||
-                (data->unkBC.f < 0.0f && vec_distance_xy(&m->pos, &g_hero.motion.pos) < 2.0f &&
-                 absolute_float(g_hero.motion.pos.f[2] - m->pos.z) < 4.0f && m->pos.z - g_hero.motion.pos.f[2] > 1.0f)) {
+            if (data->timer != 0 || (data->unkBC.f < 0.0f && vec_distance_xy(&m->pos, &g_hero.motion.pos) < 2.0f &&
+                                     absolute_float(g_hero.motion.pos.f[2] - m->pos.z) < 4.0f &&
+                                     m->pos.z - g_hero.motion.pos.f[2] > 1.0f)) {
                 int r;
                 if (data->timer == 0) {
                     data->timer = scale_ticks(30);
@@ -2688,10 +2687,12 @@ void turret_update(struct Moby *moby) {
                             FastVecAdd(&dir, &shot, &dir);
                             vec_scale_to_length(&dir, &dir,
                                                 random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                            a_26EBC0(&muzzle, &dir, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)), 50000.0f);
+                            a_26EBC0(&muzzle, &dir, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)),
+                                     50000.0f);
                         }
                         vec_scale_to_length(&shot, &shot, g_frame_time * 0.5f);
-                        a_26EBC0(&muzzle, &shot, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)), 500000.0f);
+                        a_26EBC0(&muzzle, &shot, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)),
+                                 500000.0f);
                     } else if (moby->anim_flags & 2) {
                         MobyBlendAnimation(moby, 4, 0, 1);
                     }
@@ -2718,10 +2719,12 @@ void turret_update(struct Moby *moby) {
                             FastVecAdd(&dir, &shot, &dir);
                             vec_scale_to_length(&dir, &dir,
                                                 random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                            a_26EBC0(&muzzle, &dir, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)), 50000.0f);
+                            a_26EBC0(&muzzle, &dir, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)),
+                                     50000.0f);
                         }
                         vec_scale_to_length(&shot, &shot, g_frame_time * 0.5f);
-                        a_26EBC0(&muzzle, &shot, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)), 500000.0f);
+                        a_26EBC0(&muzzle, &shot, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)),
+                                 500000.0f);
                     } else if (moby->anim_flags & 2) {
                         MobyBlendAnimation(moby, 3, 0, 1);
                     }
@@ -3043,9 +3046,9 @@ void floating_ship_piece_update(char *moby) {
                 *(u128_30A560 *)v3 = *(u128_30A560 *)&data->rot.x;
                 *(u128_30A560 *)v4 = *(u128_30A560 *)(moby + 0x10);
                 spring_angle(&data->rot, -e44 * dot2, &data->rot_vel, 0, D_L09_00161E54_30A560 * k * g_frame_time_sq_r,
-                            D_L09_00161E58_30A560 * g_frame_scale_sq, D_L09_00161E5C_30A560 * k * g_frame_time_r2);
+                             D_L09_00161E58_30A560 * g_frame_scale_sq, D_L09_00161E5C_30A560 * k * g_frame_time_r2);
                 spring_angle(&data->rot.y, a2, &data->rot_vel.y, 0, D_L09_00161E54_30A560 * k * g_frame_time_sq_r,
-                            D_L09_00161E58_30A560 * g_frame_scale_sq, D_L09_00161E5C_30A560 * k * g_frame_time_r2);
+                             D_L09_00161E58_30A560 * g_frame_scale_sq, D_L09_00161E5C_30A560 * k * g_frame_time_r2);
                 f2 = ((Moby *)moby)->pos.z - D_L09_00161E48_30A560 * g_frame_time_r2;
                 ((Moby *)moby)->pos.z = f2;
                 if (f24 < f25 && f2 <= f24) {
@@ -3065,18 +3068,18 @@ void floating_ship_piece_update(char *moby) {
                     ((Mpos *)moby)->z = ((Mpos *)moby)->z + r;
                     k = 0.0174532924f;
                     spring_angle(&data->rot, 0.0f, &data->rot_vel, 0,
-                                D_L09_00161E60_30A560 * k * g_frame_time_sq_r * 3.0f,
-                                D_L09_00161E64_30A560 * g_frame_scale_sq, g_frame_time_r2 * 1.57079637f);
+                                 D_L09_00161E60_30A560 * k * g_frame_time_sq_r * 3.0f,
+                                 D_L09_00161E64_30A560 * g_frame_scale_sq, g_frame_time_r2 * 1.57079637f);
                     spring_angle(&data->rot.y, 0.0f, &data->rot_vel.y, 0,
-                                D_L09_00161E60_30A560 * k * g_frame_time_sq_r * 3.0f,
-                                D_L09_00161E64_30A560 * g_frame_scale_sq, g_frame_time_r2 * 1.57079637f);
+                                 D_L09_00161E60_30A560 * k * g_frame_time_sq_r * 3.0f,
+                                 D_L09_00161E64_30A560 * g_frame_scale_sq, g_frame_time_r2 * 1.57079637f);
                 } else {
                     float k;
                     k = 0.0174532924f;
                     spring_angle(&data->rot, 0.0f, &data->rot_vel, 0, D_L09_00161E60_30A560 * k * g_frame_time_sq_r,
-                                D_L09_00161E64_30A560 * g_frame_scale_sq, D_L09_00161E68_30A560 * k * g_frame_time_r2);
+                                 D_L09_00161E64_30A560 * g_frame_scale_sq, D_L09_00161E68_30A560 * k * g_frame_time_r2);
                     spring_angle(&data->rot.y, 0.0f, &data->rot_vel.y, 0, D_L09_00161E60_30A560 * k * g_frame_time_sq_r,
-                                D_L09_00161E64_30A560 * g_frame_scale_sq, D_L09_00161E68_30A560 * k * g_frame_time_r2);
+                                 D_L09_00161E64_30A560 * g_frame_scale_sq, D_L09_00161E68_30A560 * k * g_frame_time_r2);
                 }
                 if (((Mpos *)moby)->z > data->base_z) {
                     ((Mpos *)moby)->z = data->base_z;

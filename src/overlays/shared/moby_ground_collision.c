@@ -185,7 +185,8 @@ extern int coll_line_p(void *, void *, int, void *, int) __asm__("func_L00_001EF
 extern int coll_sphere_v(void *, float, int, void *) __asm__("func_L00_001F10E0");
 
 /* Moves pos toward to while keeping it over the ground and out of walls; returns 0 if it was snapped back. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/math_interpolation_00257ef0.c, FUN_L00_00258490. */
-int move_moby_xy_with_collision_constraints(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, float r, float lim, float slope) {
+int move_moby_xy_with_collision_constraints(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, float r, float lim,
+                                            float slope) {
     Vec4 d;
     Vec4 n;
     Vec4 a;

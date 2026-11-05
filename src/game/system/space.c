@@ -621,8 +621,8 @@ void update_level_gameplay_frame(void) {
     if (((*(LevelFrame_LGS *)&render_sequence)).time == 1 && g_current_level_index_m != LEVEL_VELDIN1 &&
         (g_current_level_index_m != LEVEL_NOVALIS || level_available[3] != 0)) {
         snd_reenable_command_flush();
-        snd_play_sound_vol_pan_pmpb(sound_bank_handle, ((*(LevelFrame_LRS *)&D_0013E130)).mode, 0x400, 0, 0, 0,
-                                    0, D_0013E6C0);
+        snd_play_sound_vol_pan_pmpb(sound_bank_handle, ((*(LevelFrame_LRS *)&D_0013E130)).mode, 0x400, 0, 0, 0, 0,
+                                    D_0013E6C0);
         snd_reset_state_and_flush_commands();
         snd_FlushSoundCommands();
     }
@@ -643,8 +643,7 @@ void update_level_gameplay_frame(void) {
         if (((*(LevelFrame_LRS *)&D_0013E130)).state < 2) {
             if (((*(LevelFrame_LRS *)&D_0013E130)).state == 0) {
                 mode_advance = (func_001160D8() >> 16) % 3 + 1;
-                ((*(LevelFrame_LRS *)&D_0013E130)).mode =
-                    (((*(LevelFrame_LRS *)&D_0013E130)).mode + mode_advance) & 3;
+                ((*(LevelFrame_LRS *)&D_0013E130)).mode = (((*(LevelFrame_LRS *)&D_0013E130)).mode + mode_advance) & 3;
             } else {
                 ((*(LevelFrame_LRS *)&D_0013E130)).mode = 4;
             }
@@ -659,15 +658,13 @@ void update_level_gameplay_frame(void) {
                 ((*(LevelFrame_LRA *)&level_resource_buffers)).source_end_offset + current_vu_chain;
             archive_table = ((*(LevelFrame_LRA *)&level_resource_buffers)).archive_table;
             archive_data = (u8 *)archive_table + archive_table->data_offset;
-            archive_entry =
-                (LevelFrame_RAE *)(archive_data +
-                                   archive_table->scene_offsets[((*(LevelFrame_LRS *)&D_0013E130)).mode]);
+            archive_entry = (LevelFrame_RAE *)(archive_data +
+                                               archive_table->scene_offsets[((*(LevelFrame_LRS *)&D_0013E130)).mode]);
             for (prepared_frame_index = 0; prepared_frame_index < 0x46 && archive_entry->available != 0;
                  prepared_frame_index++, archive_entry++) {
                 payload_offset = archive_entry->offset + 0x800;
                 ((*(LevelFrame_LGS *)&render_sequence)).prepared_frames[prepared_frame_index] =
-                    (s32)(archive_data +
-                          archive_table->scene_offsets[((*(LevelFrame_LRS *)&D_0013E130)).mode]) +
+                    (s32)(archive_data + archive_table->scene_offsets[((*(LevelFrame_LRS *)&D_0013E130)).mode]) +
                     payload_offset;
             }
             parse_space_scene_chunk(0);
@@ -1251,7 +1248,7 @@ void update_resident_gameplay_state(void) {
             UpdateViewContext();
             qcopy(&resident_data_00187040.position, &keyframe->position);
             transform_vector_by_basis(&resident_data_00187040.position, &resident_data_00187040.position,
-                            resident_data_0013E130.player->transform);
+                                      resident_data_0013E130.player->transform);
             FastVecAdd(&resident_data_00187040.position, &resident_data_00187040.position,
                        &resident_data_0013E130.player->position);
             segment_angle = FastAddRots(keyframe_angles[2], resident_data_0013E130.player->rotation.components[2]);
@@ -1287,7 +1284,8 @@ void update_resident_gameplay_state(void) {
                              1.0f - object->blend);
                 FastVecScale(&scratch_vectors[1], animation_positions + object->next_frame * 16, object->blend);
                 FastVecAdd(&object->position, &scratch_vectors[0], &scratch_vectors[1]);
-                transform_vector_by_basis(&object->position, &object->position, resident_data_0013E130.player->transform);
+                transform_vector_by_basis(&object->position, &object->position,
+                                          resident_data_0013E130.player->transform);
                 FastVecAdd(&object->position, &object->position, &resident_data_0013E130.player->position);
                 object->rotation.components[2] = resident_data_0013E130.player->rotation.components[2];
                 object->cached_selector = 0xFF;
@@ -1622,15 +1620,15 @@ void update_resident_gameplay_state(void) {
                             resident_data_0013E130.history_count++;
                         }
                         transform_vector_by_basis(&resident_data_0013E130.trailA[resident_data_0013E130.trail],
-                                        &resident_data_001D9D40[resident_data_0013E130.content_variant].a,
-                                        resident_data_0013E130.player->transform);
+                                                  &resident_data_001D9D40[resident_data_0013E130.content_variant].a,
+                                                  resident_data_0013E130.player->transform);
                         FastVecAdd(&resident_data_0013E130.trailA[resident_data_0013E130.trail],
                                    &resident_data_0013E130.trailA[resident_data_0013E130.trail],
                                    &resident_data_0013E130.player->position);
                         resident_data_0013E130.trailA[resident_data_0013E130.trail].components[3] = 1.0f;
                         transform_vector_by_basis(&resident_data_0013E130.trailB[resident_data_0013E130.trail],
-                                        &resident_data_001D9D40[resident_data_0013E130.content_variant].b,
-                                        resident_data_0013E130.player->transform);
+                                                  &resident_data_001D9D40[resident_data_0013E130.content_variant].b,
+                                                  resident_data_0013E130.player->transform);
                         FastVecAdd(&resident_data_0013E130.trailB[resident_data_0013E130.trail],
                                    &resident_data_0013E130.trailB[resident_data_0013E130.trail],
                                    &resident_data_0013E130.player->position);
@@ -1649,7 +1647,8 @@ void update_resident_gameplay_state(void) {
                     ResidentRenderObject *scratch_vectors = resident_data_0013E130.companion_a;
                     qcopy(&scratch_vectors->rotation, &p->rotation);
                     transform_vector_by_basis(&scratch_vectors->position,
-                                    &resident_data_001DA010[resident_data_0013E130.content_variant], p->transform);
+                                              &resident_data_001DA010[resident_data_0013E130.content_variant],
+                                              p->transform);
                 }
                 FastVecAdd(&resident_data_0013E130.companion_a->position, &resident_data_0013E130.companion_a->position,
                            &resident_data_0013E130.player->position);
@@ -1659,7 +1658,8 @@ void update_resident_gameplay_state(void) {
                     ResidentRenderObject *p = resident_data_0013E130.player;
                     qcopy(&scratch_vectors->rotation, &p->rotation);
                     transform_vector_by_basis(&scratch_vectors->position,
-                                    &resident_data_001DA040[resident_data_0013E130.content_variant], p->transform);
+                                              &resident_data_001DA040[resident_data_0013E130.content_variant],
+                                              p->transform);
                 }
                 FastVecAdd(&resident_data_0013E130.companion_b->position, &resident_data_0013E130.companion_b->position,
                            &resident_data_0013E130.player->position);
@@ -2158,8 +2158,8 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
     second_output = second_texture;
     archive_memory = &level_resource_buffers;
     upload_index = 0;
-    func_002175C8((void *)(archive_memory->archive_base + 0x100000),
-                      disc_table.loading_slides[language_index].sector, disc_table.loading_slides[language_index].size);
+    func_002175C8((void *)(archive_memory->archive_base + 0x100000), disc_table.loading_slides[language_index].sector,
+                  disc_table.loading_slides[language_index].size);
     sce_cd_sync_s(0);
     flush_cache(0);
     fast_decompress(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
@@ -2639,8 +2639,10 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
         fast_dec_timer(&(env_map_blend_timer));
         transition_fraction = IntToFloat((env_map_blend_timer)) / IntToFloat(scale_game_frame_count(0x3C));
         for (element_index = 0; element_index < vertex_count; element_index++) {
-            transform_vector(&environment_mapping_transformed_vertex_positions[element_index], &positions[element_index], object_transform);
-            FastVecSub(view_direction, &environment_mapping_transformed_vertex_positions[element_index], camera_position_r);
+            transform_vector(&environment_mapping_transformed_vertex_positions[element_index],
+                             &positions[element_index], object_transform);
+            FastVecSub(view_direction, &environment_mapping_transformed_vertex_positions[element_index],
+                       camera_position_r);
             fast_vec_normalize(view_direction, view_direction, 1.0f);
             transform_vector(normal, &normals[element_index], object_transform);
             fast_vec_normalize(normal, normal, 0.1f);
@@ -2655,10 +2657,12 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
             } else {
                 coordinate = reflection[0] / sphere_denominator + 0.5f;
                 environment_mapping_vertex_uvs[element_index][0] =
-                    coordinate + (environment_mapping_saved_vertex_uvs[element_index][0] - coordinate) * transition_fraction;
+                    coordinate +
+                    (environment_mapping_saved_vertex_uvs[element_index][0] - coordinate) * transition_fraction;
                 coordinate = reflection[1] / sphere_denominator + 0.5f;
                 environment_mapping_vertex_uvs[element_index][1] =
-                    coordinate + (environment_mapping_saved_vertex_uvs[element_index][1] - coordinate) * transition_fraction;
+                    coordinate +
+                    (environment_mapping_saved_vertex_uvs[element_index][1] - coordinate) * transition_fraction;
             }
         }
         if ((environment_mapping_uv_refresh_state) == 1) {
@@ -2668,13 +2672,17 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
         if ((env_map_was_active) == 1) {
             (env_map_was_active) = 0;
             for (element_index = 0; element_index < vertex_count; element_index++) {
-                environment_mapping_saved_vertex_uvs[element_index][0] = environment_mapping_vertex_uvs[element_index][0];
-                environment_mapping_saved_vertex_uvs[element_index][1] = environment_mapping_vertex_uvs[element_index][1];
-                transform_vector(&environment_mapping_transformed_vertex_positions[element_index], &positions[element_index], object_transform);
+                environment_mapping_saved_vertex_uvs[element_index][0] =
+                    environment_mapping_vertex_uvs[element_index][0];
+                environment_mapping_saved_vertex_uvs[element_index][1] =
+                    environment_mapping_vertex_uvs[element_index][1];
+                transform_vector(&environment_mapping_transformed_vertex_positions[element_index],
+                                 &positions[element_index], object_transform);
             }
         } else {
             for (element_index = 0; element_index < vertex_count; element_index++) {
-                transform_vector(&environment_mapping_transformed_vertex_positions[element_index], &positions[element_index], object_transform);
+                transform_vector(&environment_mapping_transformed_vertex_positions[element_index],
+                                 &positions[element_index], object_transform);
             }
         }
         (env_map_blend_timer) = scale_game_frame_count(0x3C);

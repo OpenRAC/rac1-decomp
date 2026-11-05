@@ -451,7 +451,8 @@ void blarg_elite_commando_update(char *m) {
             angle = fast_atan2(target[0] - ((Moby *)m)->pos.x, target[1] - ((Moby *)m)->pos.y);
             SteerAngleWithVelocity(heading, &d->turn_vel, angle, g_frame_time_sq * 12.566371f,
                                    g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
-            if (is_value_within_interpolated_window(m, 2.0f) || is_value_within_interpolated_window(m, 17.0f) || is_value_within_interpolated_window(m, 32.0f)) {
+            if (is_value_within_interpolated_window(m, 2.0f) || is_value_within_interpolated_window(m, 17.0f) ||
+                is_value_within_interpolated_window(m, 32.0f)) {
                 moby_point_position(m, 0, temp);
                 FastVecSub(delta, target, temp);
                 vec_scale_to_length(delta, delta, g_frame_time * 20.0f);
@@ -1014,8 +1015,8 @@ extern float D_0013F4D0[];
 extern unsigned char hero_vehicle_mode[];
 extern float armed_transport_passenger_attachment_offset[4];
 extern float kalebo3_zero_vec[] MACRO_ADDR;
-extern short armed_transport_spawn_direction_scale, armed_transport_max_path_speed, armed_transport_bob_phase_speed_degrees,
-    D_L16_00161E4C;
+extern short armed_transport_spawn_direction_scale, armed_transport_max_path_speed,
+    armed_transport_bob_phase_speed_degrees, D_L16_00161E4C;
 
 /* Update the armed transport: fly in, set down its four passengers, hover, track and fire; sink and burst when
    destroyed. */
@@ -1072,7 +1073,8 @@ void armed_transport_update(char *m) {
                 for (i = 0; i < 4; i++) {
                     if ((&d->children[0])[i] >= 0) {
                         set_blarg_elite_commando_parent_transform(kalebo3_moby_array + ((&d->children[0])[i] << 8), m,
-                                                                  armed_transport_passenger_attachment_offset, (char *)vector.f);
+                                                                  armed_transport_passenger_attachment_offset,
+                                                                  (char *)vector.f);
                     }
                 }
             }
@@ -1114,7 +1116,8 @@ void armed_transport_update(char *m) {
 
                     clear_u64_value(rotation.f);
                     rotation.f[2] = FastAddRots(((Moby *)m)->rot.z, 3.14159f);
-                    transform_vector_by_basis(vector.f, armed_transport_passenger_attachment_offset, &((struct Moby *)m)->rot_row0);
+                    transform_vector_by_basis(vector.f, armed_transport_passenger_attachment_offset,
+                                              &((struct Moby *)m)->rot_row0);
                     FastVecAdd(vector.f, vector.f, &((struct Moby *)m)->pos);
                     start_blarg_elite_commando_return_to_initial_position(passenger, scale_ticks(90));
                     *slot = -1;
@@ -1172,7 +1175,8 @@ void armed_transport_update(char *m) {
         case 7:
             moby_point_position(m, 1, vector.f);
             FastVecSub(rotation.f, &d->target, vector.f);
-            vec_scale_to_length(rotation.f, rotation.f, *(float *)&armed_transport_spawn_direction_scale * g_frame_time);
+            vec_scale_to_length(rotation.f, rotation.f,
+                                *(float *)&armed_transport_spawn_direction_scale * g_frame_time);
             Moby_PlaySound_update(1, 0, m);
             spawn_rocket_50_moby(m, (char *)rotation.f, vector.f, &d->target, scale_ticks(45));
             ((struct Moby *)m)->state = 6;
@@ -1199,7 +1203,8 @@ void armed_transport_update(char *m) {
             break;
         }
     }
-    d->unk_18C = FastAddRots(d->unk_18C, *(float *)&armed_transport_bob_phase_speed_degrees * 0.017453292f * g_frame_time);
+    d->unk_18C =
+        FastAddRots(d->unk_18C, *(float *)&armed_transport_bob_phase_speed_degrees * 0.017453292f * g_frame_time);
     ((Moby *)m)->pos.z = d->base_z + *(float *)&armed_transport_bob_amplitude * FastSin(d->unk_18C);
     update_armed_transport_joint_animation(m);
 }

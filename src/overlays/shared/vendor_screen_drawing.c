@@ -133,8 +133,7 @@ message:
     font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
     return;
 purchase:
-    cost = gHavePersuader ? item_price_table[MENU.rows[MENU.f58].fD0].i4
-                                     : item_price_table[MENU.rows[MENU.f58].fD0].i0;
+    cost = gHavePersuader ? item_price_table[MENU.rows[MENU.f58].fD0].i4 : item_price_table[MENU.rows[MENU.f58].fD0].i0;
     if (gBolts >= cost) {
         FontPrintSmall(6, 6, 0x80f0f0f0L, msg_string(0x523E), -1);
         FontPrintSmall(2, 0x20, 0x80f0f0f0L, msg_string(0x5239), -1);
@@ -293,13 +292,15 @@ void draw_vendor_hologram_cone(void) {
     s.hdr[1] = GetEffectTex(0x18);
     for (i = 0; i < 4; i++) {
         transform_vector_by_basis(v[0], vendor_hologram_vertex_offsets[vendor_hologram_cone_quads[i].a],
-                        (char *)D_L00_001CA7C0[7] + 0xC0);
-        transform_vector_by_basis(v[1], vendor_hologram_vertex_offsets[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)],
-                        (char *)D_L00_001CA7C0[7] + 0xC0);
-        transform_vector_by_basis(v[2], vendor_hologram_vertex_offsets[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)],
-                        (char *)D_L00_001CA7C0[7] + 0xC0);
+                                  (char *)D_L00_001CA7C0[7] + 0xC0);
+        transform_vector_by_basis(
+            v[1], vendor_hologram_vertex_offsets[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)],
+            (char *)D_L00_001CA7C0[7] + 0xC0);
+        transform_vector_by_basis(
+            v[2], vendor_hologram_vertex_offsets[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)],
+            (char *)D_L00_001CA7C0[7] + 0xC0);
         transform_vector_by_basis(v[3], vendor_hologram_vertex_offsets[vendor_hologram_cone_quads[i].d],
-                        (char *)D_L00_001CA7C0[7] + 0xC0);
+                                  (char *)D_L00_001CA7C0[7] + 0xC0);
         s.pos[0][0] = *(float *)((char *)D_L00_001CA7C0[7] + 0x10) + v[0][0];
         s.pos[0][1] = *(float *)((char *)D_L00_001CA7C0[7] + 0x14) + v[0][1];
         s.pos[0][2] = *(float *)((char *)D_L00_001CA7C0[7] + 0x18) + v[0][2];

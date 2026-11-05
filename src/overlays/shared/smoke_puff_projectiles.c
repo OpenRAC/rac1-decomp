@@ -209,7 +209,8 @@ void spawn_moby_table_segment_puffs(char *a, int i, int j, int k) {
     v10[3] = 1.0f;
     transform_vector_by_basis(v10, v10, a + 0xC0);
     FastVecAdd(v10, v10, a + 0x10);
-    spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k, *(float *)(pi + 0xC) * moby_segment_puff_scale_multiplier,
+    spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k,
+                                                *(float *)(pi + 0xC) * moby_segment_puff_scale_multiplier,
                                                 *(float *)(pj + 0xC) * moby_segment_puff_scale_multiplier);
 }
 extern int eudora_puff_count_a SDATA(eudora_puff_count_a);

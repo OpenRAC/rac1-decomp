@@ -511,7 +511,8 @@ void draw_electric_water_countdown(char *moby) {
     DrawUIFrame(W(electric_water_countdown_frame_x_offset) + W(electric_water_countdown_text_y),
                 W(electric_water_countdown_frame_y_offset) + W(electric_water_countdown_text_y),
                 W(electric_water_countdown_frame_left_x_offset) + W(electric_water_countdown_text_x),
-                W(electric_water_countdown_frame_right_x_offset) + W(electric_water_countdown_text_x), W(electric_water_countdown_frame_color));
+                W(electric_water_countdown_frame_right_x_offset) + W(electric_water_countdown_text_x),
+                W(electric_water_countdown_frame_color));
     v = FastSin(IntToFloat(quartu_frame_count % 60) / 60.0f * 6.28318f) * 3.0f + 0.5f;
     if (v > 1.0f) {
         v = 1.0f;
@@ -652,10 +653,10 @@ void update_electric_water_bolt_effect(Moby *moby) {
 
     *(float *)&electric_water_bolt_wave_phase =
         FastAddRots(*(float *)&electric_water_bolt_wave_phase, electric_water_bolt_height_wave_frame_phase_step_gp);
-    *(float *)&electric_water_mirror_bolt_phase =
-        FastSubRots(*(float *)&electric_water_mirror_bolt_phase, electric_water_bolt_paired_path_frame_phase_decrement_gp);
-    *(float *)&electric_water_mirror_bolt_height_phase =
-        FastAddRots(*(float *)&electric_water_mirror_bolt_height_phase, electric_water_bolt_paired_height_frame_phase_step_gp);
+    *(float *)&electric_water_mirror_bolt_phase = FastSubRots(*(float *)&electric_water_mirror_bolt_phase,
+                                                              electric_water_bolt_paired_path_frame_phase_decrement_gp);
+    *(float *)&electric_water_mirror_bolt_height_phase = FastAddRots(
+        *(float *)&electric_water_mirror_bolt_height_phase, electric_water_bolt_paired_height_frame_phase_step_gp);
     scale = fast_vec_dist(&data->a, &data->c) * 0.05f;
     if (flag) {
         *(int *)&quartu_beam_arc_outer_color_r = 0x7F2040;
@@ -676,10 +677,12 @@ void update_electric_water_bolt_effect(Moby *moby) {
         float a;
         float b;
         f21 = electric_water_bolt_height_wave_start_amplitude_gp +
-              (electric_water_bolt_height_wave_end_amplitude_gp - electric_water_bolt_height_wave_start_amplitude_gp) * (IntToFloat(i) * 0.05f);
+              (electric_water_bolt_height_wave_end_amplitude_gp - electric_water_bolt_height_wave_start_amplitude_gp) *
+                  (IntToFloat(i) * 0.05f);
         f21 = f21 * FastSin(normalize_angle(*(float *)&electric_water_bolt_wave_phase +
                                             (float)i * electric_water_bolt_height_wave_point_phase_step_gp));
-        f21 = f21 + randf_sym(electric_water_bolt_height_jitter_lower_bound_gp, electric_water_bolt_height_jitter_upper_bound_gp);
+        f21 = f21 + randf_sym(electric_water_bolt_height_jitter_lower_bound_gp,
+                              electric_water_bolt_height_jitter_upper_bound_gp);
         electric_water_bolt_points_r2[0][i].f[2] =
             electric_water_bolt_points_r2[0][i].f[2] - electric_water_bolt_wave_offsets[i];
         electric_water_bolt_wave_offsets[i] = f21;
@@ -851,17 +854,20 @@ extern void draw_electric_water_bolt_start_quads(char *);
 
 // Scrolls a wrapping coordinate, refreshes the two path curves and four colour curves, then runs the follow-up.
 void draw_electric_water_bolt_effect(char *moby) {
-    float v = F(l15_electric_water_bolt_draw_wrapped_accumulator) - F(l15_electric_water_bolt_draw_accumulator_decrement_rate) * frame_scale;
+    float v = F(l15_electric_water_bolt_draw_wrapped_accumulator) -
+              F(l15_electric_water_bolt_draw_accumulator_decrement_rate) * frame_scale;
     F(l15_electric_water_bolt_draw_wrapped_accumulator) = v;
     if (v <= -8.0f) {
         F(l15_electric_water_bolt_draw_wrapped_accumulator) = v + 8.0f;
     }
     draw_beam_and_arc_two_pass_quads(electric_water_bolt_points, W(l15_electric_water_first_bolt_path_first_pass_alpha),
-                                     W(l15_electric_water_first_bolt_path_second_pass_alpha), 0x14, F(quartu_beam_arc_main_half_width),
-                                     F(quartu_beam_arc_main_outer_half_width), F(quartu_beam_arc_main_end_extension));
-    draw_beam_and_arc_two_pass_quads(electric_water_bolt_points + 0x140, W(l15_electric_water_second_bolt_path_first_pass_alpha),
-                                     W(l15_electric_water_second_bolt_path_second_pass_alpha), 0x14, F(quartu_beam_arc_bolt_half_width),
-                                     F(quartu_beam_arc_bolt_outer_half_width), F(quartu_beam_arc_second_end_extension));
+                                     W(l15_electric_water_first_bolt_path_second_pass_alpha), 0x14,
+                                     F(quartu_beam_arc_main_half_width), F(quartu_beam_arc_main_outer_half_width),
+                                     F(quartu_beam_arc_main_end_extension));
+    draw_beam_and_arc_two_pass_quads(
+        electric_water_bolt_points + 0x140, W(l15_electric_water_second_bolt_path_first_pass_alpha),
+        W(l15_electric_water_second_bolt_path_second_pass_alpha), 0x14, F(quartu_beam_arc_bolt_half_width),
+        F(quartu_beam_arc_bolt_outer_half_width), F(quartu_beam_arc_second_end_extension));
     draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points, *(short *)&first_side_arc_fade_level,
                                      *(short *)&first_side_arc_fade_level, 5, F(quartu_beam_arc_bolt_half_width),
                                      F(quartu_beam_arc_bolt_outer_half_width), 0.2f);

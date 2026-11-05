@@ -1241,7 +1241,8 @@ void blaster_update(Moby *m) {
             if (r)
                 h = r->height;
             w.point.f.z += h;
-            EffectQueue_Add_r2((int)m, 0xFF0FFF0F, absolute_float(0.9f - d * 0.65f), &w.point, 0.0f, 0x26, -1, 90.0f, 4);
+            EffectQueue_Add_r2((int)m, 0xFF0FFF0F, absolute_float(0.9f - d * 0.65f), &w.point, 0.0f, 0x26, -1, 90.0f,
+                               4);
         }
     }
     if (hero_2B33E8.item_anim_active && hero_2B33E8.state.current != 0x72 && cinematic_mode != 2) {
@@ -1303,7 +1304,8 @@ void blaster_update(Moby *m) {
                                     10000.0f);
                 }
                 vec_scale_to_length(&velocity, &velocity, g_frame_time_r * 0.5f);
-                PartType27Spawn(&launch, &velocity, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)), 200000.0f);
+                PartType27Spawn(&launch, &velocity, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)),
+                                200000.0f);
             }
             if (m->prev_seq != 4)
                 MobyBlendAnimation(m, 4, 0, scale_ticks(7));
@@ -1814,10 +1816,10 @@ void visibomb_missile_update(Moby *m) {
     update_attached_moby_transform_r(m, d);
     {
         Moby *skip = m;
-        build_axis_rotation_quaternion(&d->f24->pos, 1,
-                           -(d->f1C * 0.5f + absolute_float(d->f18 / 3.0f) + (d->f18 - m->rot.x) * 1.1f) * 0.7f);
-        build_axis_rotation_quaternion(&d->f28->pos, 1,
-                           -(d->f1C * 0.5f + absolute_float(d->f18 / 3.0f) - (d->f18 - m->rot.x) * 1.1f) * 0.7f);
+        build_axis_rotation_quaternion(
+            &d->f24->pos, 1, -(d->f1C * 0.5f + absolute_float(d->f18 / 3.0f) + (d->f18 - m->rot.x) * 1.1f) * 0.7f);
+        build_axis_rotation_quaternion(
+            &d->f28->pos, 1, -(d->f1C * 0.5f + absolute_float(d->f18 / 3.0f) - (d->f18 - m->rot.x) * 1.1f) * 0.7f);
         ev.moby = m;
         ev.flags = 0x830000;
         ev.f1C = 6.0f;
@@ -2267,7 +2269,8 @@ void draw_taunter_effect_quads(Moby *m) {
             t = IntToFloat(taunter_effect_slots[i].s4) * taunter_effect_inv_lifetime;
             if (t > 1.0f)
                 t = 1.0f;
-            s = taunter_effect_quad_final_scale_gp + (taunter_effect_quad_initial_scale_gp - taunter_effect_quad_final_scale_gp) * t;
+            s = taunter_effect_quad_final_scale_gp +
+                (taunter_effect_quad_initial_scale_gp - taunter_effect_quad_final_scale_gp) * t;
             u = (IntToFloat(taunter_effect_alpha) - 0.0f) * t + 0.0f;
             j = truncate_float_to_s32_r(u);
             pk.col[3] = (taunter_effect_quad_rgb_gp & 0xFFFFFF) | (j << 24);
@@ -2459,11 +2462,12 @@ void pyrocitor_update(Moby *moby) {
                 if (length < 4.0f || (moby->flags & 1))
                     initial_count = 1;
                 for (i = 0; i < extra + initial_count; i++) {
-                    func_L00_00258DB0((float *)&random_vec, 0.0f,
-                             ((pyrocitor_flame_full_length_random_range_gp - pyrocitor_flame_zero_length_random_range_gp) *
-                                  (length / (pyrocitor_flame_base_range_gp + speed)) +
-                              pyrocitor_flame_zero_length_random_range_gp) *
-                                 g_frame_time);
+                    func_L00_00258DB0(
+                        (float *)&random_vec, 0.0f,
+                        ((pyrocitor_flame_full_length_random_range_gp - pyrocitor_flame_zero_length_random_range_gp) *
+                             (length / (pyrocitor_flame_base_range_gp + speed)) +
+                         pyrocitor_flame_zero_length_random_range_gp) *
+                            g_frame_time);
                     FastVecAdd(&random_vec, &random_vec, &dir);
                     FastVecScale(&particle_pos, &dir, random_float_between(0.0f, 1.0f));
                     FastVecAdd(&particle_pos, &particle_pos, &scratch);
@@ -2648,10 +2652,12 @@ void update_pyrocitor_flame_effect_slots(char *m) {
                     c2 = FastTweenColor(pyrocitor_spark_second_color_start_gp, pyrocitor_spark_second_color_end_gp,
                                         random_float_between(0.0f, 1.0f));
                     swap_packed_color_channels(c2, q[0x10]);
-                    c3 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(
-                        (float)pyrocitor_spark_random_frame_count_min_gp, (float)pyrocitor_spark_random_frame_count_max_gp)));
-                    c4 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(
-                        (float)pyrocitor_spark_random_frame_count_min_gp, (float)pyrocitor_spark_random_frame_count_max_gp)));
+                    c3 = truncate_float_to_s32_r(
+                        multiply_global_factor(random_float_between((float)pyrocitor_spark_random_frame_count_min_gp,
+                                                                    (float)pyrocitor_spark_random_frame_count_max_gp)));
+                    c4 = truncate_float_to_s32_r(
+                        multiply_global_factor(random_float_between((float)pyrocitor_spark_random_frame_count_min_gp,
+                                                                    (float)pyrocitor_spark_random_frame_count_max_gp)));
                     func_L00_00258DB0(v3, 0.0f, f20 + f20);
                     FastVecAdd(v3, v3, (o + 0x10));
                     PartType02Spawn(v3, qv, v2, c1, c2, 0xA, c3, c4, pyrocitor_spark_lookup_index_and_flags_gp);
@@ -2805,7 +2811,8 @@ void tesla_claw_update(Moby *m) {
                     if (2.0943f < FastDiffRots(((Hero *)g_hero_r3)->motion.rot.f[2],
                                                fast_atan2(s->target->pos.x - ((Hero *)g_hero_r3)->motion.pos.f[0],
                                                           s->target->pos.y - ((Hero *)g_hero_r3)->motion.pos.f[1])) ||
-                        !s->target->visible || 20.0f < fast_vec_dist(&s->target->pos, &((Hero *)g_hero_r3)->motion.pos)) {
+                        !s->target->visible ||
+                        20.0f < fast_vec_dist(&s->target->pos, &((Hero *)g_hero_r3)->motion.pos)) {
                         s->target = 0;
                         s->lock = 0;
                     }

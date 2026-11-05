@@ -237,16 +237,16 @@ void spawn_nanotech_ball_collection_effect_pair(Moby *m) {
     Vx c;
     char *p = (char *)&m->pos;
     FastVecSub(&a, g_debug_camera, p);
-    FastVecScale(
-        &b, &g_hero.gravity_dir,
-        random_float_between(nanotech_ball_collection_gravity_scale_range_start_gp * g_frame_time, nanotech_ball_collection_gravity_scale_range_end_gp * g_frame_time));
+    FastVecScale(&b, &g_hero.gravity_dir,
+                 random_float_between(nanotech_ball_collection_gravity_scale_range_start_gp * g_frame_time,
+                                      nanotech_ball_collection_gravity_scale_range_end_gp * g_frame_time));
     build_look_at_matrix_v(&c, &b, random_angle_radians(), &a);
-    spawn_moving_hero_relative_alpha_fade_particle(p, &c, nanotech_ball_collection_first_particle_color,
-                                                   l00_nanotech_ball_collection_particle_lifetime_frames, random_integer_below(0xFF) & 0xFF, 1,
-                                                   nanotech_ball_collection_first_particle_scale_factor_gp);
-    spawn_moving_hero_relative_alpha_fade_particle(p, &c, nanotech_ball_collection_second_particle_color,
-                                                   l00_nanotech_ball_collection_particle_lifetime_frames, random_integer_below(0xFF) & 0xFF, 1,
-                                                   nanotech_ball_collection_second_particle_scale_factor_gp);
+    spawn_moving_hero_relative_alpha_fade_particle(
+        p, &c, nanotech_ball_collection_first_particle_color, l00_nanotech_ball_collection_particle_lifetime_frames,
+        random_integer_below(0xFF) & 0xFF, 1, nanotech_ball_collection_first_particle_scale_factor_gp);
+    spawn_moving_hero_relative_alpha_fade_particle(
+        p, &c, nanotech_ball_collection_second_particle_color, l00_nanotech_ball_collection_particle_lifetime_frames,
+        random_integer_below(0xFF) & 0xFF, 1, nanotech_ball_collection_second_particle_scale_factor_gp);
 }
 typedef struct {
     f32 x, y, z, w;
@@ -307,20 +307,22 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
             o->f60[i] = f + 255.0f;
         t = IntToFloat(scale_ticks(0xFF) - o->h58[i]);
         t = t / (f32)scale_ticks(0xFF);
-        c = FastTweenColor((nanotech_ball_collection_color_range_start_gp), (nanotech_ball_collection_color_range_end_gp), absolute_float(0.5f - t));
+        c = FastTweenColor((nanotech_ball_collection_color_range_start_gp),
+                           (nanotech_ball_collection_color_range_end_gp), absolute_float(0.5f - t));
         hi = c >> 24;
         t = 1.0f - o->h58[i] / IntToFloat(scale_ticks((nanotech_ring_fade_ticks)));
         al = truncate_float_to_s32(IntToFloat(hi) * (1.0f - t)) << 24;
         c = al | (c & 0xFFFFFF);
         a.z = z + ((&nanotech_ball_collection_particle_z_offsets))[i];
         p = spawn_timed_hero_relative_particle(&a, c, truncate_float_to_s32(o->f60[i]),
-                            (nanotech_ball_collection_particle_byte_source_index), 0, 2, 1,
-                            ((&nanotech_ball_collection_particle_scale_factors))[i] * t);
+                                               (nanotech_ball_collection_particle_byte_source_index), 0, 2, 1,
+                                               ((&nanotech_ball_collection_particle_scale_factors))[i] * t);
         if (p)
             p[2] = *part_type_textures.pF8;
-        p = spawn_timed_hero_relative_particle(
-            &a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]), (nanotech_ball_collection_particle_byte_source_index),
-            (nanotech_ball_collection_second_particle_mode_selector), 2, 1, ((&nanotech_ball_collection_particle_scale_factors))[i] * (t * 0.7f));
+        p = spawn_timed_hero_relative_particle(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]),
+                                               (nanotech_ball_collection_particle_byte_source_index),
+                                               (nanotech_ball_collection_second_particle_mode_selector), 2, 1,
+                                               ((&nanotech_ball_collection_particle_scale_factors))[i] * (t * 0.7f));
         if (p)
             p[2] = *part_type_textures.pF8;
         FastVecAdd(&a, &a, &b);
@@ -355,8 +357,8 @@ extern float nanotech_slot_orbit_radius SDATA(nanotech_slot_orbit_radius);
 void update_nanotech_ball_slot_offsets(void) {
     int i;
     for (i = 0; i < 8; i++) {
-        build_look_at_matrix_v(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, nanotech_ball_slot_offset_transform_amount_gp,
-                               nanotech_slot_spin_axes + i * 16);
+        build_look_at_matrix_v(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16,
+                               nanotech_ball_slot_offset_transform_amount_gp, nanotech_slot_spin_axes + i * 16);
         vec_scale_to_length(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, nanotech_slot_orbit_radius);
     }
 }
@@ -585,7 +587,8 @@ void nanotech_ball_update(Moby *m) {
                                 dst->y = src->y;
                                 dst->z = src->z;
                             }
-                            x->h1E = x->h1C = scale_ticks(func_L00_00258BC8(D_L00_00161B14_2D9EA0, D_L00_00161B18_2D9EA0));
+                            x->h1E = x->h1C =
+                                scale_ticks(func_L00_00258BC8(D_L00_00161B14_2D9EA0, D_L00_00161B18_2D9EA0));
                         }
                     }
                 }
@@ -864,12 +867,12 @@ void draw_nanotech_ball(Moby *moby) {
             ((Vec3f *)nanotech_ball_transformed_mesh_vertices)[j].z = z;
         }
     }
-    draw_env_overlay_mesh(0x94, nanotech_ball_transformed_mesh_vertices, nanotech_ball_mesh_vertex_colors, nanotech_ball_mesh_texcoords,
-                          1);
-    draw_env_overlay_mesh(0x6d, nanotech_ball_transformed_mesh_vertices + 0x6d8, nanotech_ball_mesh_vertex_colors + 0x248,
-                          nanotech_ball_mesh_texcoords + 0x490, 1);
-    draw_env_overlay_mesh(0x24, nanotech_ball_transformed_mesh_vertices + 0xbe8, nanotech_ball_mesh_vertex_colors + 0x3f8,
-                          nanotech_ball_mesh_texcoords + 0x7f0, 1);
+    draw_env_overlay_mesh(0x94, nanotech_ball_transformed_mesh_vertices, nanotech_ball_mesh_vertex_colors,
+                          nanotech_ball_mesh_texcoords, 1);
+    draw_env_overlay_mesh(0x6d, nanotech_ball_transformed_mesh_vertices + 0x6d8,
+                          nanotech_ball_mesh_vertex_colors + 0x248, nanotech_ball_mesh_texcoords + 0x490, 1);
+    draw_env_overlay_mesh(0x24, nanotech_ball_transformed_mesh_vertices + 0xbe8,
+                          nanotech_ball_mesh_vertex_colors + 0x3f8, nanotech_ball_mesh_texcoords + 0x7f0, 1);
     quad.texture[1] = get_effect_texture_2DACC0(0xb);
     quad.texture[3] = 0x8000000048ULL;
     color = truncate_float_to_s32_2DACC0(pulse * 64.0f + 128.0f);

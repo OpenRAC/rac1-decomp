@@ -310,7 +310,8 @@ void *_malloc_r(struct _reent *ptr, u32 bytes) {
             __malloc_unlock(ptr);
             return (void *)(((char *)victim) + (2 * 4));
         }
-        (&malloc_split_remainder_bin_head)->fd = ((&malloc_split_remainder_bin_head)->bk = &malloc_split_remainder_bin_head);
+        (&malloc_split_remainder_bin_head)->fd =
+            ((&malloc_split_remainder_bin_head)->bk = &malloc_split_remainder_bin_head);
         if (remainder_size >= 0) {
             ((mchunkptr)(((char *)victim) + victim_size))->size |= 1;
             (void)0;
@@ -387,7 +388,8 @@ void *_malloc_r(struct _reent *ptr, u32 bytes) {
                             bck->fd = fwd;
                         };
                         {
-                            (&malloc_split_remainder_bin_head)->fd = ((&malloc_split_remainder_bin_head)->bk = remainder);
+                            (&malloc_split_remainder_bin_head)->fd =
+                                ((&malloc_split_remainder_bin_head)->bk = remainder);
                             remainder->fd = (remainder->bk = &malloc_split_remainder_bin_head);
                         };
                         remainder->size = remainder_size | 1;

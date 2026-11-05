@@ -25,7 +25,7 @@ int draw_menu_icon_list(char *arg0) {
     }
     if (*(int *)(arg0 + 0x24) * 16 < y) {
         append_screen_rect_packet(0, *(int *)(arg0 + 0x24) - 0x14, *(int *)(arg0 + 0x20), *(int *)(arg0 + 0x24),
-                              *(int *)&panel_clear_color, 0);
+                                  *(int *)&panel_clear_color, 0);
         draw_hud_sprite_flipped(GetIconFrame(0xE99E, 6), x >> 4, *(int *)(arg0 + 0x24) - 0x12, 0x20, 0x10, 0x80);
     }
     DoGifPaging();

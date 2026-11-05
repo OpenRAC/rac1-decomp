@@ -235,11 +235,11 @@ void handle_pause_input(void) {
         PauseAllSounds(0);
         return;
     }
-    if (!(gDebugFreeCamLvl.w8 & 0x10) && cinematic_mode_frames >= 8 && (((PadS *)(&g_controller_state))->w1A4 & 0x500) &&
-        g_hero.state.control_mode != 0x16 && g_hero.state.current != 0x72 && g_hero.state.current != 0x32 &&
-        g_hero.state.current != 0x1D && !g_hero.fall_fade_pending && g_hero.health.hp &&
-        ((AreaS *)memory_card_state)->wDC < 3 && ((AreaS *)memory_card_state)->wE4 < 0 && lvl == 0 && !special &&
-        !gDebugFreeCamLvl.wEC) {
+    if (!(gDebugFreeCamLvl.w8 & 0x10) && cinematic_mode_frames >= 8 &&
+        (((PadS *)(&g_controller_state))->w1A4 & 0x500) && g_hero.state.control_mode != 0x16 &&
+        g_hero.state.current != 0x72 && g_hero.state.current != 0x32 && g_hero.state.current != 0x1D &&
+        !g_hero.fall_fade_pending && g_hero.health.hp && ((AreaS *)memory_card_state)->wDC < 3 &&
+        ((AreaS *)memory_card_state)->wE4 < 0 && lvl == 0 && !special && !gDebugFreeCamLvl.wEC) {
         PauseAllSounds(10);
         return;
     }
@@ -279,7 +279,8 @@ void handle_pause_input(void) {
     }
     if ((gDebugFreeCamLvl.w8 & 2) || ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200)))
         reset_frame_counters();
-    if ((gDebugFreeCamLvl.w8 & 2) || ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200))) {
+    if ((gDebugFreeCamLvl.w8 & 2) ||
+        ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200))) {
         count_expired_mobys();
         func_00213C78();
         enqueue_voice_request();
@@ -289,12 +290,14 @@ void handle_pause_input(void) {
     if ((gDebugFreeCamLvl.w8 & 1) || ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200)))
         coordinate_hero_frame_update();
     Profile_Mark_a(level_profile_mark_after_hero, 7);
-    if ((gDebugFreeCamLvl.w8 & 4) || ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200))) {
+    if ((gDebugFreeCamLvl.w8 & 4) ||
+        ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200))) {
         UpdateParts();
         update_glints();
     }
     Profile_Mark_a(level_profile_mark_after_parts, 5);
-    if ((gDebugFreeCamLvl.w8 & 8) || ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200))) {
+    if ((gDebugFreeCamLvl.w8 & 8) ||
+        ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200))) {
         Camera_UpdateFrame();
     } else if (gDebugFreeCamLvl.w14) {
         update_debug_camera();
@@ -1050,7 +1053,7 @@ void play_queued_movie(void) {
         memcard_update_state();
     }
     play_mpeg_movie(queued_movie_request, movie_request_source_mode, (movie_request_decoder_buffer + 0x3F) & ~0x3F,
-               (movie_request_decoder_state + 0x3F) & ~0x3F, movie_request_audio_context);
+                    (movie_request_decoder_state + 0x3F) & ~0x3F, movie_request_audio_context);
     sce_cd_sync_s(0);
     movie_exit_to_gameplay();
 }

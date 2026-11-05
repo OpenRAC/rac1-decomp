@@ -78,4 +78,3 @@ int read_mpeg(char *vd, char *rb, int *file) {
     snd_FlushSoundCommands();
     return aborted;
 }
-

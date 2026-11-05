@@ -25,8 +25,7 @@ void hero_relocation_trigger_update(char *m) {
     }
     id = *(unsigned short *)(m + 0xB2);
     if (l10_save_state.collected[(short)id] != 0 ||
-        ((*(int *)(D_0014C290 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) !=
-            0) {
+        ((*(int *)(D_0014C290 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = orxon_mobys_r;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
@@ -92,7 +91,7 @@ void hero_relocation_trigger_update(char *m) {
             exit_hero_vehicle_mode();
             {
                 func_L00_00217718(l10_cuboids + (*(int *)(d + 4) << 7) + 0x30,
-                                     l10_cuboids + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
+                                  l10_cuboids + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
             }
             request_music_track(0, 5);
             {

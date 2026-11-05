@@ -222,7 +222,8 @@ void taxi_platform_update(unsigned char *moby) {
             if (data->wait_timer != 0 ||
                 (data->rise < 0.0f &&
                  vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), hero = &g_hero.motion.pos) < 2.0f &&
-                 absolute_float(F(hero -= 0x80, 0x88) - F(moby, 0x18)) < 4.0f && F(moby, 0x18) - F(hero, 0x88) > 1.0f)) {
+                 absolute_float(F(hero -= 0x80, 0x88) - F(moby, 0x18)) < 4.0f &&
+                 F(moby, 0x18) - F(hero, 0x88) > 1.0f)) {
                 int r;
                 if (data->wait_timer == 0) {
                     data->wait_timer = scale_ticks(30);
@@ -378,9 +379,9 @@ void mission_gated_taxi_platform_update(unsigned char *moby) {
             }
             break;
         case TAXI_TRAVERSE_PATH:
-            if (data->wait_timer != 0 ||
-                (data->rise < 0.0f && vec_distance_xy(&m->pos, &g_hero.motion.pos) < 2.0f &&
-                 absolute_float(g_hero.motion.pos.f[2] - m->pos.z) < 4.0f && m->pos.z - g_hero.motion.pos.f[2] > 1.0f)) {
+            if (data->wait_timer != 0 || (data->rise < 0.0f && vec_distance_xy(&m->pos, &g_hero.motion.pos) < 2.0f &&
+                                          absolute_float(g_hero.motion.pos.f[2] - m->pos.z) < 4.0f &&
+                                          m->pos.z - g_hero.motion.pos.f[2] > 1.0f)) {
                 int r;
                 if (data->wait_timer == 0) {
                     data->wait_timer = scale_ticks(30);
@@ -1038,8 +1039,8 @@ void machinegun_turret_projectile_update(Moby *m) {
                 vec_scale_to_length(&dir, &dir, FastVecLength(&spark) * 0.5f);
                 FastVecAdd(&dir, &spark, &dir);
                 vec_scale_to_length(&dir, &dir, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                PartType27Spawn((char *)&m->pos, (char *)&dir, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)),
-                                30000.0f);
+                PartType27Spawn((char *)&m->pos, (char *)&dir, 0x7F2F4F6F,
+                                func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
             }
         }
         Moby_PlaySound_r(0, 0, m);
@@ -3036,7 +3037,8 @@ void SharkigatorUpdate(unsigned char *moby) {
             }
             goto end;
         case 14:
-            if (step_moby_motion(moby, ((struct SharkigatorVars *)data)->fall_state) & (((Moby *)moby)->anim_flags & 2)) {
+            if (step_moby_motion(moby, ((struct SharkigatorVars *)data)->fall_state) &
+                (((Moby *)moby)->anim_flags & 2)) {
                 spawn_explosion(moby, &((struct SharkigatorVars *)data)->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f,
                                 4.0f, 1.0f, -1, 7.0f, 0, 1, -1, 0);
                 DeleteMoby(moby);

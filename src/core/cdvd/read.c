@@ -84,7 +84,8 @@ int sce_cd_read(int lba, int sectors, void *buf, unsigned char *mode) {
 
     cd_callback_num = 1;
     *(volatile int *)&cd_read_pending = 1;
-    r = sif_call_rpc(cd_ncmd_client, 1, 1, req, 0x18, 0, 0, (void *)cd_read_end_callback, native_cd_read_completion_buffer);
+    r = sif_call_rpc(cd_ncmd_client, 1, 1, req, 0x18, 0, 0, (void *)cd_read_end_callback,
+                     native_cd_read_completion_buffer);
     if (r < 0) {
         cd_callback_num = 0;
         *(volatile int *)&cd_read_pending = 0;

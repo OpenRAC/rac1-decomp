@@ -273,14 +273,14 @@ int l01_hero_set_state(int a, int b) {
                 emit_hero_surface_effect_burst(3, 0xA, 0);
                 if (pool_draw_tiles != 0) {
                     pool_splash(pool_draw_tiles, pool_draw_count, 0, p->motion.pos.f[0], p->motion.pos.f[1], 0.4f,
-                                  0.3f);
+                                0.3f);
                 }
             } else if (p->motion.displacement.f[2] < g_frame_time * -0.5f) {
                 int n = truncate_float_to_s32(absolute_float(p->motion.displacement.f[2]) * 300.0f);
                 emit_hero_surface_effect_burst(3, n < 0x28 ? n : 0x28, 1);
                 if (pool_draw_tiles != 0) {
                     pool_splash(pool_draw_tiles, pool_draw_count, 0, p->motion.pos.f[0], p->motion.pos.f[1], 0.5f,
-                                  -0.4f);
+                                -0.4f);
                 }
                 p->splash_effect_timer = scale_ticks(0x4B);
             }

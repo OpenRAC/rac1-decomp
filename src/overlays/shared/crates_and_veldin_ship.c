@@ -694,8 +694,7 @@ void break_crate(void *mv, int a1, int av) {
         e0 = 0;
     }
 
-    f = fast_atan2(((Cam140 *)gCameraLvl)->x - ((Moby *)m)->pos.x,
-                   ((Cam140 *)gCameraLvl)->y - ((Moby *)m)->pos.y);
+    f = fast_atan2(((Cam140 *)gCameraLvl)->x - ((Moby *)m)->pos.x, ((Cam140 *)gCameraLvl)->y - ((Moby *)m)->pos.y);
     f = FastSubRots(f, ((Moby *)m)->rot.z);
     f21 = f + 3.1415925f;
     f21 = FastNormalizeAngle((float)truncate_float_to_s32(f21 / 1.57f) * 1.57f);
@@ -1165,7 +1164,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
                 }
             }
             fall_time = square_root(g_frame_time_sq_r * 9.0f *
-                                   ((((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f) * 0.5f);
+                                    ((((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f) * 0.5f);
             distance = (fall_time + fall_time) * fall_time * (1.0f - value) / (g_frame_time_sq_r * 9.0f);
             vertical = value * distance;
             if (0.0f < distance) {
@@ -2337,7 +2336,8 @@ void horny_toad_update(Moby *moby) {
             }
             break;
         case 6:
-            if (move_horny_toad_toward_position((unsigned char *)moby, data->f180, 0.5f) < horny_toad_target_approach_distance_threshold_gp &&
+            if (move_horny_toad_toward_position((unsigned char *)moby, data->f180, 0.5f) <
+                    horny_toad_target_approach_distance_threshold_gp &&
                 FastDiffRots(moby->rot.z, fast_atan2((*(Vec_5AC0 *)&tgt->pos)[0] - (*(Vec_5AC0 *)&moby->pos)[0],
                                                      (*(Vec_5AC0 *)&tgt->pos)[1] - (*(Vec_5AC0 *)&moby->pos)[1])) <
                     0.17453292f) {
@@ -3281,7 +3281,8 @@ void update_infobot_particle_effect(char *o) {
         f = f / (float)scale_ticks(0xFF);
         col = FastTweenColor(0x4040FFFF, 0x1040FFFF, absolute_float(0.5f - f));
         if (cinematic_mode != 2) {
-            spawn_timed_hero_relative_particle(d, col, truncate_float_to_s32_r_r(p->a[i]) & 0xFF, 0x35, 1, 2, 0, p->d[i]);
+            spawn_timed_hero_relative_particle(d, col, truncate_float_to_s32_r_r(p->a[i]) & 0xFF, 0x35, 1, 2, 0,
+                                               p->d[i]);
         }
         FastVecAdd(d, d, e);
     }
@@ -3416,7 +3417,7 @@ void particle_spawner_smoke_fire_update(P *p) {
                     f = random_float_between(q->f24, q->f28);
                     col = func_L00_00258BC8(q->h2C, q->h2E) << 24 | (smoke_fire_emitted_particle_base_color_gp);
                     r = func_L00_00258BC8((smoke_fire_emitted_particle_sign_randomized_sample_min_gp),
-                                   (smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
+                                          (smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
                     ent = PartType23Spawn_v(&b, r, (smoke_fire_emitted_particle_position_spread_gp), 1.0f, &a,
                                             (smoke_fire_emitted_particle_random_scalar_upper_bound_gp), col, f);
                     if (ent) {
@@ -3589,7 +3590,8 @@ void draw_smoke_fire_spawner(P *spawner) {
                     smoke_fire_particle_quad_local_positions[particle_quad_vertex_index][2] * height;
                 quad.positions[particle_quad_vertex_index].f[3] = one;
                 quad.texture_coordinates[particle_quad_vertex_index][0] =
-                    smoke_fire_particle_quad_texture_coordinates[particle_quad_vertex_index * 2] - smoke_particle_scroll[i];
+                    smoke_fire_particle_quad_texture_coordinates[particle_quad_vertex_index * 2] -
+                    smoke_particle_scroll[i];
                 quad.texture_coordinates[particle_quad_vertex_index][1] =
                     smoke_fire_particle_quad_texture_coordinates[particle_quad_vertex_index * 2 + 1];
                 quad.colors[particle_quad_vertex_index] =

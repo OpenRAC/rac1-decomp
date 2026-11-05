@@ -217,7 +217,8 @@ void rocket_tank_update(M1454 *m) {
             update_rocket_tank_path_movement_v(m);
             ApproachValue(&d->f130, 30.0f, g_frame_time * 6.0f);
             d->f134 = FastAddRots(d->f134, g_frame_time * 6.2831855f);
-            if (is_value_within_interpolated_window((char *)m, 4.0f) || is_value_within_interpolated_window((char *)m, 10.0f)) {
+            if (is_value_within_interpolated_window((char *)m, 4.0f) ||
+                is_value_within_interpolated_window((char *)m, 10.0f)) {
                 float v[4];
                 float w[4];
                 float s;

@@ -316,9 +316,11 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
         s = FastAddRots(data->phase, g_frame_time * 6.2831855f);
         data->phase = s;
         if (moby->command == 1) {
-            r = FastTweenColor(faucet_item_16_pulse_start_color_gp, faucet_item_16_pulse_end_color_gp, (FastSin(s) + 1.0f) * 0.5f);
+            r = FastTweenColor(faucet_item_16_pulse_start_color_gp, faucet_item_16_pulse_end_color_gp,
+                               (FastSin(s) + 1.0f) * 0.5f);
         } else {
-            r = FastTweenColor(faucet_fallback_pulse_start_color_gp, faucet_fallback_pulse_end_color_gp, (FastSin(s) + 1.0f) * 0.5f);
+            r = FastTweenColor(faucet_fallback_pulse_start_color_gp, faucet_fallback_pulse_end_color_gp,
+                               (FastSin(s) + 1.0f) * 0.5f);
         }
         moby->glow_color = FastTweenColor(faucet_base_color_gp, r, data->pulse);
     } else {
@@ -442,7 +444,7 @@ void hoverboard_update(unsigned char *moby) {
             b = scale_ticks(13);
             c = func_L00_00258BC8(a, b);
             spawn_effect(position, effect_position, l05_hoverboard_effect_initial_color,
-                            l05_hoverboard_effect_color_endpoint, c, 15, 15, 1);
+                         l05_hoverboard_effect_color_endpoint, c, 15, 15, 1);
         } else {
             int a;
             int b;
@@ -460,7 +462,7 @@ void hoverboard_update(unsigned char *moby) {
                 b2 = scale_ticks(0x11);
                 c2 = func_L00_00258BC8(a2, b2);
                 spawn_burst(position, effect_position, l05_hoverboard_effect_initial_color,
-                                l05_hoverboard_effect_color_endpoint, c2, 1, 15000.0f);
+                            l05_hoverboard_effect_color_endpoint, c2, 1, 15000.0f);
             }
         }
     }
@@ -645,7 +647,8 @@ void draw_moby_wobble_quads(unsigned char *m) {
 
     texture = f_tex_0D678(wobble_quad_texture_index_gp);
     flags = (u64)(s64)wobble_quad_blend_a_selector_gp | ((u64)(s64)wobble_quad_blend_b_selector_gp << 2) |
-            ((u64)(s64)wobble_quad_blend_c_selector_gp << 4) | ((u64)(s64)wobble_quad_blend_d_selector_gp << 6) | 0x8000000000UL;
+            ((u64)(s64)wobble_quad_blend_c_selector_gp << 4) | ((u64)(s64)wobble_quad_blend_d_selector_gp << 6) |
+            0x8000000000UL;
     quad_b.control[0] = 0;
     quad_b.control[2] = 0xFF9000000260L;
     quad_a.control[2] = 0xFF9000000260L;

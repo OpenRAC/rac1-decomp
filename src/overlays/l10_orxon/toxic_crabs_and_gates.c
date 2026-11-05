@@ -249,8 +249,7 @@ void toxic_crab_update(Moby *m) {
                 char *base = orxon_mobys_c;
                 Moby *p = (Moby *)(base + (d->i1BC << 8));
                 if (p == 0 || p->state == 0xFE || p->state == 0xFD ||
-                    ((*(int *)((char *)&D_0014C290 +
-                               (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
+                    ((*(int *)((char *)&D_0014C290 + (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                       (p->save_id & 0x1F)) &
                      1)) {
                     m->state = 2;
@@ -785,8 +784,10 @@ void emit_moby_particles(void *p) {
         add_random_offset_to_vector_xyz(v, (l10_toxic_crab_particle_group_position_jitter));
         v[2] = v[2] + 0.55f;
         f22 = random_angle_radians();
-        f20 = random_float_between((l10_toxic_crab_particle_speed_lower_bound), (l10_toxic_crab_particle_speed_upper_bound));
-        f21 = random_float_between((l10_toxic_crab_particle_rise_lower_bound), (l10_toxic_crab_particle_rise_upper_bound));
+        f20 = random_float_between((l10_toxic_crab_particle_speed_lower_bound),
+                                   (l10_toxic_crab_particle_speed_upper_bound));
+        f21 = random_float_between((l10_toxic_crab_particle_rise_lower_bound),
+                                   (l10_toxic_crab_particle_rise_upper_bound));
         if (((unsigned char)arg0[0x20]) == 0xB) {
             f20 = f20 * 0.55f;
             f21 = f21 * 0.55f;
@@ -815,7 +816,8 @@ void emit_moby_particles(void *p) {
             x18 = FastTweenColor((l10_toxic_crab_particle_end_color_a), (l10_toxic_crab_particle_end_color_b), r);
             x17 = scale_ticks((l10_toxic_crab_particle_life_frames));
             x16 = scale_ticks((l10_toxic_crab_particle_fade_frames));
-            r = random_float_between((float)(l10_toxic_crab_particle_random_duration_base) * 0.5f, (float)(l10_toxic_crab_particle_random_duration_base) * 2.5f);
+            r = random_float_between((float)(l10_toxic_crab_particle_random_duration_base) * 0.5f,
+                                     (float)(l10_toxic_crab_particle_random_duration_base) * 2.5f);
             r = multiply_global_factor(r);
             r7 = truncate_float_to_s32(r);
             PartType02Spawn(v, a, b, x19, x18, x17, x16, r7, -1);
@@ -2027,8 +2029,8 @@ remove_candidate:
     if (candidate != 0)
         DeleteMoby(candidate);
     save_id = moby->save_id;
-    bits = (int *)((char *)&D_0014C290 +
-                   (((int)((unsigned int)save_id << 16) >> 21) * 4 + (g_current_level_index << 8)));
+    bits =
+        (int *)((char *)&D_0014C290 + (((int)((unsigned int)save_id << 16) >> 21) * 4 + (g_current_level_index << 8)));
     *bits |= 1 << (save_id & 31);
     save_id = moby->save_id;
     orxon_moby_killed[(int)((unsigned int)save_id << 16) >> 21] |= 1 << (save_id & 31);
@@ -2328,8 +2330,8 @@ extern short burst_spark_vertical_vector_z_scale_gp, burst_spark_random_vector_z
     burst_spark_vertical_vector_fourth_component_max_gp, burst_spark_random_vector_fourth_component_min_gp;
 extern short burst_spark_random_vector_fourth_component_max_gp, orxon_spark_time1, orxon_spark_time2, orxon_spark_time3,
     orxon_spark_time_spread, D_L10_00162014;
-extern short l10_burst_spark_initial_color_to, l10_burst_spark_second_color_from, l10_burst_spark_second_color_to, orxon_spark_interval_min,
-    orxon_spark_interval_max, orxon_spark_burst_ticks_min;
+extern short l10_burst_spark_initial_color_to, l10_burst_spark_second_color_from, l10_burst_spark_second_color_to,
+    orxon_spark_interval_min, orxon_spark_interval_max, orxon_spark_burst_ticks_min;
 extern short orxon_spark_burst_ticks_max, orxon_spark_pause_ticks_min, orxon_spark_pause_ticks_max;
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
@@ -2387,8 +2389,8 @@ extern short orxon_smoke_start_speed_z, orxon_smoke_end_speed_z, orxon_smoke_jit
     orxon_smoke_start_size_max;
 extern short orxon_smoke_end_size_min, orxon_smoke_end_size_max, orxon_smoke_time1, orxon_smoke_time2,
     orxon_smoke_time3;
-extern short orxon_smoke_time_spread, l10_timed_spark_initial_color_from, l10_timed_spark_initial_color_to, l10_timed_spark_second_color_from,
-    D_L10_00162074;
+extern short orxon_smoke_time_spread, l10_timed_spark_initial_color_from, l10_timed_spark_initial_color_to,
+    l10_timed_spark_second_color_from, D_L10_00162074;
 extern short orxon_smoke_interval_min, orxon_smoke_interval_max;
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
@@ -2428,13 +2430,16 @@ void emit_timed_spark_particle(void *pos, short *timer) {
     *timer = truncate_float_to_s32_r_r(
         random_float_between((float)*(int *)&orxon_smoke_interval_min, (float)*(int *)&orxon_smoke_interval_max));
 }
-extern short height_adjusted_spark_vector_z_adjustment_scale_gp, height_adjusted_spark_random_vector_radius_scale_gp, height_adjusted_spark_first_vector_fourth_component_min_gp, height_adjusted_spark_first_vector_fourth_component_max_gp,
-    D_L10_00162090, D_L10_00162094;
-extern short height_adjusted_spark_base_frame_count_gp, height_adjusted_spark_base_third_frame_count_gp, height_adjusted_spark_frame_count_scale_spread_gp, l10_height_adjusted_spark_initial_color_from,
-    D_L10_001620A8, D_L10_001620AC;
-extern short l10_height_adjusted_spark_second_color_to, height_adjusted_spark_timer_reset_min_gp, height_adjusted_spark_timer_reset_max_gp, orxon_drip_burst_ticks_min,
-    D_L10_001620C0, D_L10_001620C4;
-extern short height_adjusted_spark_pause_duration_max_gp, l10_height_adjusted_spark_lookup_index_and_flags, height_adjusted_spark_height_derived_frame_count_scale_gp;
+extern short height_adjusted_spark_vector_z_adjustment_scale_gp, height_adjusted_spark_random_vector_radius_scale_gp,
+    height_adjusted_spark_first_vector_fourth_component_min_gp,
+    height_adjusted_spark_first_vector_fourth_component_max_gp, D_L10_00162090, D_L10_00162094;
+extern short height_adjusted_spark_base_frame_count_gp, height_adjusted_spark_base_third_frame_count_gp,
+    height_adjusted_spark_frame_count_scale_spread_gp, l10_height_adjusted_spark_initial_color_from, D_L10_001620A8,
+    D_L10_001620AC;
+extern short l10_height_adjusted_spark_second_color_to, height_adjusted_spark_timer_reset_min_gp,
+    height_adjusted_spark_timer_reset_max_gp, orxon_drip_burst_ticks_min, D_L10_001620C0, D_L10_001620C4;
+extern short height_adjusted_spark_pause_duration_max_gp, l10_height_adjusted_spark_lookup_index_and_flags,
+    height_adjusted_spark_height_derived_frame_count_scale_gp;
 
 /* Emits falling drips from pos in bursts (burst timer as in emit_burst_spark_particle); each drip lives about as
  * long as it takes to fall the given height. */
@@ -2446,15 +2451,16 @@ void emit_height_adjusted_burst_spark_particle(void *pos, short *timer, short *b
     int a, b, c, c1;
     if (*burst >= 0) {
         if (FastDecTimer(burst)) {
-            *burst = -truncate_float_to_s32_r_r(random_float_between((float)*(int *)&height_adjusted_spark_pause_duration_min_gp,
-                                                                     (float)*(int *)&height_adjusted_spark_pause_duration_max_gp));
+            *burst = -truncate_float_to_s32_r_r(
+                random_float_between((float)*(int *)&height_adjusted_spark_pause_duration_min_gp,
+                                     (float)*(int *)&height_adjusted_spark_pause_duration_max_gp));
             return;
         }
     } else {
         if (++*burst != 0)
             return;
-        *burst = truncate_float_to_s32_r_r(random_float_between((float)*(int *)&orxon_drip_burst_ticks_min,
-                                                                (float)*(int *)&height_adjusted_spark_active_duration_max_gp));
+        *burst = truncate_float_to_s32_r_r(random_float_between(
+            (float)*(int *)&orxon_drip_burst_ticks_min, (float)*(int *)&height_adjusted_spark_active_duration_max_gp));
     }
     qcopy(p, pos);
     p[3] = 3.0f;
@@ -2463,24 +2469,30 @@ void emit_height_adjusted_burst_spark_particle(void *pos, short *timer, short *b
         return;
     if (!FastDecTimer(timer))
         return;
-    s = random_float_between(1.0f - *(float *)&height_adjusted_spark_frame_count_scale_spread_gp, *(float *)&height_adjusted_spark_frame_count_scale_spread_gp + 1.0f);
+    s = random_float_between(1.0f - *(float *)&height_adjusted_spark_frame_count_scale_spread_gp,
+                             *(float *)&height_adjusted_spark_frame_count_scale_spread_gp + 1.0f);
     a = truncate_float_to_s32_r_r((float)*(int *)&height_adjusted_spark_base_frame_count_gp * s);
     b = truncate_float_to_s32_r_r((float)*(int *)&height_adjusted_spark_base_third_frame_count_gp * s);
-    c = truncate_float_to_s32_r_r(square_root((height + height) / (*(float *)&height_adjusted_spark_vector_z_adjustment_scale_gp * g_frame_time_sq)) *
-                                  *(float *)&height_adjusted_spark_height_derived_frame_count_scale_gp * s);
+    c = truncate_float_to_s32_r_r(
+        square_root((height + height) /
+                    (*(float *)&height_adjusted_spark_vector_z_adjustment_scale_gp * g_frame_time_sq)) *
+        *(float *)&height_adjusted_spark_height_derived_frame_count_scale_gp * s);
     clear_u64_value(vel);
     func_L00_00258DB0(acc, 0.0f, *(float *)&height_adjusted_spark_random_vector_radius_scale_gp * g_frame_time);
     acc[2] -= *(float *)&height_adjusted_spark_vector_z_adjustment_scale_gp * g_frame_time_sq * (float)c;
-    vel[3] = random_float_between(*(float *)&height_adjusted_spark_first_vector_fourth_component_min_gp, *(float *)&height_adjusted_spark_first_vector_fourth_component_max_gp);
-    acc[3] = random_float_between(*(float *)&height_adjusted_spark_random_vector_fourth_component_min_gp, *(float *)&height_adjusted_spark_random_vector_fourth_component_max_gp);
-    c1 = FastTweenColor(*(int *)&l10_height_adjusted_spark_initial_color_from, *(int *)&l10_height_adjusted_spark_initial_color_to,
-                        random_float_between(0.0f, 1.0f));
+    vel[3] = random_float_between(*(float *)&height_adjusted_spark_first_vector_fourth_component_min_gp,
+                                  *(float *)&height_adjusted_spark_first_vector_fourth_component_max_gp);
+    acc[3] = random_float_between(*(float *)&height_adjusted_spark_random_vector_fourth_component_min_gp,
+                                  *(float *)&height_adjusted_spark_random_vector_fourth_component_max_gp);
+    c1 = FastTweenColor(*(int *)&l10_height_adjusted_spark_initial_color_from,
+                        *(int *)&l10_height_adjusted_spark_initial_color_to, random_float_between(0.0f, 1.0f));
     PartType02Spawn(pos, vel, acc, c1,
-                    FastTweenColor(*(int *)&l10_height_adjusted_spark_second_color_from, *(int *)&l10_height_adjusted_spark_second_color_to,
+                    FastTweenColor(*(int *)&l10_height_adjusted_spark_second_color_from,
+                                   *(int *)&l10_height_adjusted_spark_second_color_to,
                                    random_float_between(0.0f, 1.0f)),
                     a, c, b, *(int *)&l10_height_adjusted_spark_lookup_index_and_flags);
-    *timer = truncate_float_to_s32_r_r(
-        random_float_between((float)*(int *)&height_adjusted_spark_timer_reset_min_gp, (float)*(int *)&height_adjusted_spark_timer_reset_max_gp));
+    *timer = truncate_float_to_s32_r_r(random_float_between((float)*(int *)&height_adjusted_spark_timer_reset_min_gp,
+                                                            (float)*(int *)&height_adjusted_spark_timer_reset_max_gp));
 }
 struct L10Data {
     char pad0[0x30];

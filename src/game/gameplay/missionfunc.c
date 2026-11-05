@@ -346,30 +346,30 @@ struct TextRegion {
 };
 /* One entry of a level's map icon list; the list ends at the first entry with flags bit 4. */
 struct MapIcon {
-    s16 id;             /* 0x00: moby index (current level) or level_object_states index; -1..-9 are fixed positions */
-    s16 link;           /* 0x02: -1 always active, else the link's active word decides */
-    u16 flags;          /* 0x04: 0x4 ends the list, 0x10 label shown */
-    u16 texture_id;     /* 0x06 */
-    s16 frame_index;    /* 0x08 */
-    s16 label_text_id;  /* 0x0A: 0 = no label */
-    s16 label_item;     /* 0x0C */
-    u16 label_width;    /* 0x0E */
-    u16 label_height;   /* 0x10 */
+    s16 id; /* 0x00: moby index (current level) or level_object_states index; -1..-9 are fixed positions */
+    s16 link; /* 0x02: -1 always active, else the link's active word decides */
+    u16 flags; /* 0x04: 0x4 ends the list, 0x10 label shown */
+    u16 texture_id; /* 0x06 */
+    s16 frame_index; /* 0x08 */
+    s16 label_text_id; /* 0x0A: 0 = no label */
+    s16 label_item; /* 0x0C */
+    u16 label_width; /* 0x0E */
+    u16 label_height; /* 0x10 */
     s16 label_offset_x; /* 0x12 */
     s16 label_offset_y; /* 0x14 */
     u8 pad16[0x2];
-    f32 x;              /* 0x18: map position 0..1 */
-    f32 y;              /* 0x1C */
-    f32 angle;          /* 0x20 */
-    s32 active;         /* 0x24 */
+    f32 x; /* 0x18: map position 0..1 */
+    f32 y; /* 0x1C */
+    f32 angle; /* 0x20 */
+    s32 active; /* 0x24 */
 };
 /* Map screen state at level_map_selection, as far as this function reads it. */
 struct MapState {
     u8 pad0[0x20];
     struct MapIcon *icons; /* 0x020: icon list of the shown level */
     u8 pad24[0xE0];
-    s32 pan_x[20];               /* 0x104 */
-    s32 pan_y[20];               /* 0x154 */
+    s32 pan_x[20]; /* 0x104 */
+    s32 pan_y[20]; /* 0x154 */
 };
 extern struct MapState level_map_selection_r __asm__("D_001A01F0");
 extern struct Hero g_hero;

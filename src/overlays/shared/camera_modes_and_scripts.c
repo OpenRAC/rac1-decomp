@@ -168,9 +168,12 @@ void update_hero_aligned_camera_from_input(Camera *o) {
     if (t == 0.0f)
         t = -IntToFloat((g_controller_state.held >> 13) & 1);
     r = absolute_float(st->a);
-    k = (hero_aligned_camera_rotation_gain_at_zero_input_gp) + ((hero_aligned_camera_rotation_gain_at_unit_input_gp) - (hero_aligned_camera_rotation_gain_at_zero_input_gp)) * r;
-    st->a = r = func_001EC120_EB3E8(st->a, t, (hero_aligned_camera_input_stiffness_gp), (hero_aligned_camera_input_damping_gp),
-                                    (hero_aligned_camera_input_step_limit_gp), &st->va);
+    k = (hero_aligned_camera_rotation_gain_at_zero_input_gp) +
+        ((hero_aligned_camera_rotation_gain_at_unit_input_gp) - (hero_aligned_camera_rotation_gain_at_zero_input_gp)) *
+            r;
+    st->a = r =
+        func_001EC120_EB3E8(st->a, t, (hero_aligned_camera_input_stiffness_gp), (hero_aligned_camera_input_damping_gp),
+                            (hero_aligned_camera_input_step_limit_gp), &st->va);
     if (r != 0.0f)
         build_look_at_matrix(o->basis, o->basis, &up, k * r);
     if (g_hero_r.motion.platform_carry.f[3] != 0.0f && g_hero_r.unk308 == 0)
@@ -187,9 +190,12 @@ void update_hero_aligned_camera_from_input(Camera *o) {
     if (D_0015EEDC == 0)
         t = -t;
     r = absolute_float(st->b);
-    k = (hero_aligned_camera_rotation_gain_at_zero_input_gp) + ((hero_aligned_camera_rotation_gain_at_unit_input_gp) - (hero_aligned_camera_rotation_gain_at_zero_input_gp)) * r;
-    st->b = func_001EC120_EB3E8(st->b, t, (hero_aligned_camera_input_stiffness_gp), (hero_aligned_camera_input_damping_gp),
-                                (hero_aligned_camera_input_step_limit_gp), &st->vb);
+    k = (hero_aligned_camera_rotation_gain_at_zero_input_gp) +
+        ((hero_aligned_camera_rotation_gain_at_unit_input_gp) - (hero_aligned_camera_rotation_gain_at_zero_input_gp)) *
+            r;
+    st->b =
+        func_001EC120_EB3E8(st->b, t, (hero_aligned_camera_input_stiffness_gp), (hero_aligned_camera_input_damping_gp),
+                            (hero_aligned_camera_input_step_limit_gp), &st->vb);
     if (st->b != 0.0f) {
         float a, n, z;
         FastVecCross(&side, o->basis, &up);
@@ -578,7 +584,8 @@ void update_camera_pose_from_targets(void *arg) {
             } else {
                 F(c, 0x1C) = interpolate_wrapped_angle_cosine_eased(F(c, 0x1C), F(c, 8), t);
             }
-            F(c, 0x24) = F(c, 0x24) + (F(c, 0x10) - F(c, 0x24)) * cubic_hermite_scalar(F(c, 0x44), 0, 1.0f, F(c, 0x48), t);
+            F(c, 0x24) =
+                F(c, 0x24) + (F(c, 0x10) - F(c, 0x24)) * cubic_hermite_scalar(F(c, 0x44), 0, 1.0f, F(c, 0x48), t);
             F(c, 0x20) = interpolate_wrapped_angle_cosine_eased(F(c, 0x20), F(c, 0xC), t);
             interpolate_vector_xyz_cosine_eased(c + 0x30, c + 0x30, (char *)&D_0013F4D0, t);
             compute_position_from_spherical_offset(&((Camera *)m)->pos, c + 0x1C, c + 0x30);
@@ -702,15 +709,15 @@ void update_orbit_camera_pose(char *camera_object) {
     f32 t;
     t = FastAddRots(orbit_origin[6], camera_state->target[0]);
     obj->angles[0] = rope_spring_turn(camera_state->pos, obj->angles[0], t, camera_state->rate_a[0],
-                                        camera_state->rate_b[0], camera_state->rate_c[0]);
+                                      camera_state->rate_b[0], camera_state->rate_c[0]);
     obj->angles[1] = rope_spring_turn(camera_state->pos + 1, obj->angles[1], camera_state->target[1],
-                                        camera_state->rate_a[1], camera_state->rate_b[1], camera_state->rate_c[1]);
+                                      camera_state->rate_a[1], camera_state->rate_b[1], camera_state->rate_c[1]);
     obj->angles[2] = Cam_InterpValues_v(camera_state->pos + 2, obj->angles[2], camera_state->target[2],
                                         camera_state->rate_a[2], camera_state->rate_b[2], camera_state->rate_c[2]);
     obj->angles[3] = rope_spring_turn(camera_state->pos + 3, obj->angles[3], camera_state->target[3],
-                                        camera_state->rate_a[3], camera_state->rate_b[3], camera_state->rate_c[3]);
+                                      camera_state->rate_a[3], camera_state->rate_b[3], camera_state->rate_c[3]);
     obj->angles[4] = rope_spring_turn(camera_state->pos + 4, obj->angles[4], camera_state->target[4],
-                                        camera_state->rate_a[4], camera_state->rate_b[4], camera_state->rate_c[4]);
+                                      camera_state->rate_a[4], camera_state->rate_b[4], camera_state->rate_c[4]);
     if (camera_state->eye_flag == 0) {
         orbit_origin[0] = Cam_InterpValues_v(camera_state->eye, orbit_origin[0], camera_state->look_target[0],
                                              camera_state->offset[0], camera_state->offset[1], camera_state->offset[2]);
@@ -1055,18 +1062,17 @@ void update_target_tracking_camera_position(Camera *cam) {
                 FastVecSub(offset, chosen + 0x10, current_target + 0x10);
                 *angle = rope_spring_turn(turn, *angle, fast_atan2(offset[0], offset[1]), 0.00125f, 0.175f, 0.0f);
             } else if (*(int *)(follow + 0x40) == 1)
-                *angle = rope_spring_turn(turn, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48), 0.00125f,
-                                            0.175f, 0.0f);
+                *angle = rope_spring_turn(turn, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48), 0.00125f, 0.175f,
+                                          0.0f);
             else
                 *angle = rope_spring_turn(turn, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
         }
     } else if (hero_2ED320.state.current == HERO_STATE_APPROACH_TARGET_MOBY) {
         if (*(int *)(follow + 0x40) == 1)
             *angle = rope_spring_turn(angle + 1, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48),
-                                        rope_turn_k_2ED320, 0.175f, 0.0f);
+                                      rope_turn_k_2ED320, 0.175f, 0.0f);
         else
-            *angle =
-                rope_spring_turn(angle + 1, *angle, hero_2ED320.motion.rot.f[2], rope_turn_k_2ED320, 0.175f, 0.0f);
+            *angle = rope_spring_turn(angle + 1, *angle, hero_2ED320.motion.rot.f[2], rope_turn_k_2ED320, 0.175f, 0.0f);
     }
     *(float *)(follow + 0x30) = FastCos(*angle);
     *(float *)(follow + 0x34) = FastSin(*angle);
@@ -2109,7 +2115,8 @@ void update_sound_emitter_playback_at_random_position(char *m) {
     }
     FastVecSub(reference_position_delta.f, g_debug_camera, ((SoundEmitter *)m)->pos);
     reference_position_delta.f[3] = 0;
-    transform_vector_by_basis(transformed_reference_position_delta.f, reference_position_delta.f, ((SoundEmitter *)m)->inv_basis);
+    transform_vector_by_basis(transformed_reference_position_delta.f, reference_position_delta.f,
+                              ((SoundEmitter *)m)->inv_basis);
     transform_vector_by_basis(b.f, uniform_range_vector.f, ((SoundEmitter *)m)->inv_basis);
     if (!(absolute_float(transformed_reference_position_delta.f[0]) <= absolute_float(b.f[0]) + 1.0f))
         return;

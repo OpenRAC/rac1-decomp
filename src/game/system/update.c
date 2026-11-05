@@ -203,7 +203,8 @@ void update_resident_dialogue_animation_state(Moby *m) {
             }
             break;
         case 4:
-            if (is_value_within_interpolated_window(m, ((&resident_dialogue_after_completion_wait_thresholds))[vendor_state_r.pick]) != 0 &&
+            if (is_value_within_interpolated_window(
+                    m, ((&resident_dialogue_after_completion_wait_thresholds))[vendor_state_r.pick]) != 0 &&
                 resident_stream_pending != 0) {
                 resident_stream_pending = 0;
                 continue_audio_stream_if_ready();
@@ -217,7 +218,8 @@ void update_resident_dialogue_animation_state(Moby *m) {
             }
             break;
         case 5:
-            if (is_value_within_interpolated_window(m, ((&resident_dialogue_after_start_wait_thresholds))[vendor_state_r.pick]) != 0 &&
+            if (is_value_within_interpolated_window(
+                    m, ((&resident_dialogue_after_start_wait_thresholds))[vendor_state_r.pick]) != 0 &&
                 resident_stream_pending != 0) {
                 resident_stream_pending = 0;
                 continue_audio_stream_if_ready();
@@ -231,7 +233,8 @@ void update_resident_dialogue_animation_state(Moby *m) {
             }
             break;
         case 6:
-            if (is_value_within_interpolated_window(m, ((&resident_dialogue_before_timed_idle_restore_thresholds))[vendor_state_r.pick]) != 0 &&
+            if (is_value_within_interpolated_window(
+                    m, ((&resident_dialogue_before_timed_idle_restore_thresholds))[vendor_state_r.pick]) != 0 &&
                 resident_stream_pending != 0) {
                 resident_stream_pending = 0;
                 continue_audio_stream_if_ready();

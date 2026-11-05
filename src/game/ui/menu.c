@@ -1013,7 +1013,7 @@ void draw_map_markers(int left, int top, int right, int bottom) {
         }
         if (m->icon == -1) {
             append_screen_rect_packet(sx - marker_half_size, sy - marker_half_size, sx + marker_half_size,
-                                  sy + marker_half_size, m->sub, 1);
+                                      sy + marker_half_size, m->sub, 1);
         } else {
             int tex = GetIconFrame(m->icon, m->sub);
             int *st = level_map_selection;

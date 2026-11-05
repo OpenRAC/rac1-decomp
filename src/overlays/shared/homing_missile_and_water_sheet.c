@@ -298,8 +298,8 @@ char *spawn_blarg_ship_shot(int owner, float *dir, float *pos, float size, float
     }
     return m;
 }
-extern short projectile_trail_color_a, projectile_trail_color_b, projectile_trail_life_ticks, l11_projectile_trail_initial_particle_scalar,
-    projectile_trail_speed_scale;
+extern short projectile_trail_color_a, projectile_trail_color_b, projectile_trail_life_ticks,
+    l11_projectile_trail_initial_particle_scalar, projectile_trail_speed_scale;
 extern char pokitaru_coll_hit_normal[];
 extern float g_frame_time_e __asm__("D_0015EE6C") MACRO_ADDR;
 
@@ -597,7 +597,8 @@ void draw_pokitaru_ocean(Moby *moby) {
         l11_ocean_strip_vertex_positions[i + 1].y = v0.y;
         l11_ocean_strip_vertex_positions[i + 1].z = v0.z;
     }
-    draw_env_overlay_mesh_r(0xC, l11_ocean_strip_vertex_positions, ocean_strip_vertex_colors, l11_ocean_strip_vertex_uvs, 1);
+    draw_env_overlay_mesh_r(0xC, l11_ocean_strip_vertex_positions, ocean_strip_vertex_colors,
+                            l11_ocean_strip_vertex_uvs, 1);
     q.z78 = GetEffectTex(0x16);
     q.q80 = 0xFF9000000260L;
     q.q88 = 0x8000000044L;
@@ -643,13 +644,16 @@ void draw_pokitaru_ocean(Moby *moby) {
             for (y = d->f18 * -2.0f; y < d->f18 * 2.0f; y += d->f18) {
                 n = 0;
                 for (x = d->f18 * -2.0f; x < d->f18 * 2.0f; x += d->f18) {
-                    l11_ocean_wave_grid_vertex_uvs[n].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
-                    l11_ocean_wave_grid_vertex_uvs[n].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
+                    l11_ocean_wave_grid_vertex_uvs[n].u =
+                        x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    l11_ocean_wave_grid_vertex_uvs[n].v =
+                        y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     l11_ocean_wave_grid_vertex_positions[n].x = x + ((Cam *)l11_camera)->x + 1.0f;
                     l11_ocean_wave_grid_vertex_positions[n].y = y + ((Cam *)l11_camera)->y + 1.0f;
                     l11_ocean_wave_grid_vertex_positions[n].z = pokitaru_ocean_height;
                     i = n + 1;
-                    l11_ocean_wave_grid_vertex_uvs[i].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    l11_ocean_wave_grid_vertex_uvs[i].u =
+                        x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     l11_ocean_wave_grid_vertex_uvs[i].v =
                         (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     l11_ocean_wave_grid_vertex_positions[i].x = x + ((Cam *)l11_camera)->x + 1.0f;
@@ -658,7 +662,8 @@ void draw_pokitaru_ocean(Moby *moby) {
                     i = n + 2;
                     l11_ocean_wave_grid_vertex_uvs[i].u =
                         (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
-                    l11_ocean_wave_grid_vertex_uvs[i].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
+                    l11_ocean_wave_grid_vertex_uvs[i].v =
+                        y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     l11_ocean_wave_grid_vertex_positions[i].x = x + d->f18 + ((Cam *)l11_camera)->x + 1.0f;
                     l11_ocean_wave_grid_vertex_positions[i].y = y + ((Cam *)l11_camera)->y + 1.0f;
                     l11_ocean_wave_grid_vertex_positions[i].z = pokitaru_ocean_height;
@@ -1519,7 +1524,8 @@ void queue_oil_tanker_front_texture_2b_batches(int a) {
     for (i = 0; i < 5; i++) {
         add_uv_scroll_offset(pokitaru_faded_scrolled_uvs, oil_tanker_front_texture_2b_batch_pair_sources[i],
                              oil_tanker_front_texture_2b_batch_vertex_counts[i], &pokitaru_faded_2b_scroll[a]);
-        draw_env_overlay_mesh(oil_tanker_front_texture_2b_batch_vertex_counts[i], oil_tanker_front_texture_2b_batch_triplet_sources[i],
+        draw_env_overlay_mesh(oil_tanker_front_texture_2b_batch_vertex_counts[i],
+                              oil_tanker_front_texture_2b_batch_triplet_sources[i],
                               oil_tanker_front_texture_2b_batch_color_tables[i], pokitaru_faded_scrolled_uvs, 1);
     }
 }

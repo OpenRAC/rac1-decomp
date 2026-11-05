@@ -226,7 +226,8 @@ void level_13_homing_rocket_update(Moby *m) {
             Veh *vd = (void *)h->ship_moby->pvars;
             float a = FastAddRots(h->ship_moby->rot.z, vd->f90);
             float b = FastAddRots(h->ship_moby->rot.y, vd->f94);
-            BuildSphericalOffset(&tmp, fast_vec_dist(&m->pos, &h->ship_moby->pos) / (d->speed + 24.0f) * vd->f64, a, -b);
+            BuildSphericalOffset(&tmp, fast_vec_dist(&m->pos, &h->ship_moby->pos) / (d->speed + 24.0f) * vd->f64, a,
+                                 -b);
             FastVecAdd(&tmp, &tmp, &h->ship_moby->pos);
             yaw = fast_atan2(tmp.x - m->pos.x, tmp.y - m->pos.y);
             pitch = -fast_atan2(vec_distance_xy(&m->pos, &tmp), tmp.z - m->pos.z);
@@ -422,7 +423,8 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
     }
 
     target = moby_data->target;
-    if (target != 0 && target->state != 0xFE && target->state != 0xFD && 8.0f < fast_vec_dist(&moby->pos, &target->pos)) {
+    if (target != 0 && target->state != 0xFE && target->state != 0xFD &&
+        8.0f < fast_vec_dist(&moby->pos, &target->pos)) {
         make_hit_descriptor(hitpos, moby, 0x30000, 16.0f, &moby_data->velocity);
         qcopy(&steering_and_collision_vector, &moby->pos);
         steering_and_collision_vector.f[2] = steering_and_collision_vector.f[2] + 0.75f;
@@ -841,15 +843,15 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
     moby_point_position(m, 2, point_2_position);
     moby_point_position(m, 3, point_3_position);
     if (gemlik_frame_count_r & 1) {
-        spawn_effect(point_2_position, downward_effect_vector, 0xCF0000FF, 0xCF, scale_ticks(func_L00_00258BC8(0x12, 0x16)),
-                        0x32, -0xA, 1);
-        spawn_effect(point_3_position, downward_effect_vector, 0xCF0000FF, 0xCF, scale_ticks(func_L00_00258BC8(0x12, 0x16)),
-                        0x32, -0xA, 1);
+        spawn_effect(point_2_position, downward_effect_vector, 0xCF0000FF, 0xCF,
+                     scale_ticks(func_L00_00258BC8(0x12, 0x16)), 0x32, -0xA, 1);
+        spawn_effect(point_3_position, downward_effect_vector, 0xCF0000FF, 0xCF,
+                     scale_ticks(func_L00_00258BC8(0x12, 0x16)), 0x32, -0xA, 1);
     } else {
-        spawn_effect(point_2_position, downward_effect_vector, 0x6000FFFF, 0x80, scale_ticks(func_L00_00258BC8(0x14, 0x18)),
-                        0x64, -0xA, 1);
-        spawn_effect(point_3_position, downward_effect_vector, 0x6000FFFF, 0x80, scale_ticks(func_L00_00258BC8(0x14, 0x18)),
-                        0x64, -0xA, 1);
+        spawn_effect(point_2_position, downward_effect_vector, 0x6000FFFF, 0x80,
+                     scale_ticks(func_L00_00258BC8(0x14, 0x18)), 0x64, -0xA, 1);
+        spawn_effect(point_3_position, downward_effect_vector, 0x6000FFFF, 0x80,
+                     scale_ticks(func_L00_00258BC8(0x14, 0x18)), 0x64, -0xA, 1);
     }
     {
         int ra = func_L00_00258BC8(0xA, 0x19);
@@ -2861,7 +2863,9 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
             if (gemlik_frame_count_r & 1) {
                 r = scale_ticks(func_L00_00258BC8(0xF, 0x14));
                 spawn_effect(a, &zv, 0xCF0000FF, 0xCF, r, truncate_float_to_s32_r2(s * 350.0f), -100, 1);
-            } else if (m->command == 0 || l13_starfighter_attachment_slot_indices_by_command[m->command - 1] != joint_effect_gate_slot_indices[i] ||
+            } else if (m->command == 0 ||
+                       l13_starfighter_attachment_slot_indices_by_command[m->command - 1] !=
+                           joint_effect_gate_slot_indices[i] ||
                        random_integer_below(9) == 0) {
                 r = scale_ticks(func_L00_00258BC8(0xF, 0x16));
                 spawn_effect(a, &zv, 0x6000FFFF, 0x80, r, truncate_float_to_s32_r2(s * 600.0f), -100, 1);

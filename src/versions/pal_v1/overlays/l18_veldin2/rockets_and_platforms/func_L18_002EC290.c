@@ -125,8 +125,8 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
                 f20 = random_float_between(0.17453292f, 0.959931076f) * t;
                 t = -t;
                 build_look_at_matrix(&s[5], &s[5], &s[9], f20);
-                FastVecAdd((l18_electric_bolt_side_arc_points[k].p + j), &l18_electric_bolt_side_arc_predecessor_view[k].p[j - 1],
-                           &s[5]);
+                FastVecAdd((l18_electric_bolt_side_arc_points[k].p + j),
+                           &l18_electric_bolt_side_arc_predecessor_view[k].p[j - 1], &s[5]);
             }
         } else {
             int j;
@@ -139,8 +139,8 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
             }
             qcopy(&l18_electric_bolt_side_arc_points[k].p[0], &s[8]);
             for (j = 1; j < 5; j++) {
-                FastVecAdd((l18_electric_bolt_side_arc_points[k].p + j), &l18_electric_bolt_side_arc_predecessor_view[k].p[j - 1],
-                           &d[j]);
+                FastVecAdd((l18_electric_bolt_side_arc_points[k].p + j),
+                           &l18_electric_bolt_side_arc_predecessor_view[k].p[j - 1], &d[j]);
             }
             {
                 int x = electric_bolt_branch_peak_ticks[k];

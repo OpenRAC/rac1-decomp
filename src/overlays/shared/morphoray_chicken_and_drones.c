@@ -1386,8 +1386,8 @@ void homing_shot_update(Moby *m) {
                 vec_scale_to_length(&a, &a, FastVecLength(&b) * 0.5f);
                 FastVecAdd(&b, &b, &a);
                 vec_scale_to_length(&b, &b, random_float_between(g_frame_time_r2 * 3.0f, g_frame_time_r2 * 6.0f));
-                PartType27Spawn_r(&*(Vec4A *)&m->pos, &b, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)),
-                                  30000.0f);
+                PartType27Spawn_r(&*(Vec4A *)&m->pos, &b, 0x7F2F4F6F,
+                                  func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
             }
             if (gold_weapon_purchased[0xF] == 0) {
                 clear_homing_shot_trail_and_spawn_end_effects_r(m, 0);
@@ -1460,7 +1460,8 @@ void homing_shot_update(Moby *m) {
         return;
     }
     FastVecScale(&c, &b, random_float_between(g_frame_time_r2 * 0.5f, g_frame_time_r2 + g_frame_time_r2) / len);
-    PartType27Spawn_r(&*(Vec4A *)&m->pos, &c, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
+    PartType27Spawn_r(&*(Vec4A *)&m->pos, &c, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)),
+                      30000.0f);
 }
 
 extern u8 *PartType23Spawn_v(void *, s32, f32, f32, void *, u32, f32, f32) __asm__("func_L00_0026DEA0");

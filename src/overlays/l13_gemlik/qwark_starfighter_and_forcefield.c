@@ -624,7 +624,8 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
             }
             moby->scale = ((struct MobyClass *)moby->cls)->scale * 4.0f;
             for (i = 0; i < 10; i++) {
-                data->parts[i] = spawn_moby_joint_attachment((char *)moby, i, qwarks_starfighter_attachment_class_ids[i]);
+                data->parts[i] =
+                    spawn_moby_joint_attachment((char *)moby, i, qwarks_starfighter_attachment_class_ids[i]);
             }
             data->owner = (char *)moby;
             for (j = 0; j < 5; j++) {
@@ -752,9 +753,9 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
                         data->s9C % *(int *)walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]];
                     data->s9E = data->s9C - 1;
                     if (data->s9E < 0) {
-                        data->s9E =
-                            *(unsigned short *)walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]] -
-                            1;
+                        data->s9E = *(unsigned short *)
+                                        walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]] -
+                                    1;
                     }
                 }
             }
@@ -771,7 +772,8 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
                                                   (data->s24 << 4) | 0xF);
             update_qwarks_starfighter_attack_commands(moby, data);
             moby_point_position(moby, 0x13, joint);
-            hero_distance = fast_vec_dist(data->v80, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+            hero_distance =
+                fast_vec_dist(data->v80, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
             if (data->snd11C != -1) {
                 SoundVoice *voice = (SoundVoice *)(hero_globals_base_snd + 0x1D + data->snd11C * 0x70);
                 if (voice->moby == moby && voice->active != 0)
@@ -807,15 +809,17 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
                     if (data->b13B != qwarks_starfighter_command_path_slots[moby->bBC]) {
                         data->b13B = qwarks_starfighter_command_path_slots[moby->bBC];
                         data->s9C = select_point_index_by_distance(
-                            moby->pos, walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]], 0.0f);
+                            moby->pos, walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]],
+                            0.0f);
                         data->s9C = *(unsigned short *)&data->s9C + func_L00_00258BC8(3, 7);
-                        data->s9C =
-                            data->s9C % *(int *)walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]];
+                        data->s9C = data->s9C %
+                                    *(int *)walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]];
                         data->s9E = data->s9C - 1;
                         if (data->s9E < 0) {
-                            data->s9E = *(unsigned short *)
-                                            walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]] -
-                                        1;
+                            data->s9E =
+                                *(unsigned short *)
+                                    walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]] -
+                                1;
                         }
                     }
                 }
@@ -919,8 +923,10 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
             if (*(int *)(q + 0x50) == 0) {
                 int line = *(int *)(q + 0x1C);
                 if (line == -1 && (short)data->h138 <= 0) {
-                    if (queue_starfighter_voice_line(moby, data, l13_starfighter_owner_unavailable_voice_line_index + 0x1D, 1) != 0) {
-                        l13_starfighter_owner_unavailable_voice_line_index = (l13_starfighter_owner_unavailable_voice_line_index + 1) % 4;
+                    if (queue_starfighter_voice_line(
+                            moby, data, l13_starfighter_owner_unavailable_voice_line_index + 0x1D, 1) != 0) {
+                        l13_starfighter_owner_unavailable_voice_line_index =
+                            (l13_starfighter_owner_unavailable_voice_line_index + 1) % 4;
                         data->h138 += 1;
                     }
                 }
@@ -1017,8 +1023,7 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
             }
             emit_randomized_moby_joint_effects(moby, data);
             if (fast_dec_timer(&data->iF8) != 0) {
-                QwarksStarfighterPart388 *owner =
-                    (QwarksStarfighterPart388 *)(moby_base + (data->i134 << 8));
+                QwarksStarfighterPart388 *owner = (QwarksStarfighterPart388 *)(moby_base + (data->i134 << 8));
                 owner->state = 8;
                 owner->flags |= 2;
                 if (data->light120 != -1) {
@@ -1196,8 +1201,10 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
             if (owner == 0 || owner->cls_id != 0x45 || owner->state == 0xFE || owner->state == 0xFD ||
                 owner->state == 7) {
                 moby->state = STARFIGHTER_STATE_OWNER_UNAVAILABLE;
-                if (queue_starfighter_voice_line(moby, data, l13_starfighter_owner_unavailable_voice_line_index + 0x1D, 1) != 0) {
-                    l13_starfighter_owner_unavailable_voice_line_index = (l13_starfighter_owner_unavailable_voice_line_index + 1) % 4;
+                if (queue_starfighter_voice_line(moby, data, l13_starfighter_owner_unavailable_voice_line_index + 0x1D,
+                                                 1) != 0) {
+                    l13_starfighter_owner_unavailable_voice_line_index =
+                        (l13_starfighter_owner_unavailable_voice_line_index + 1) % 4;
                     data->h138 = 1;
                 } else {
                     data->h138 = 0;
@@ -2119,7 +2126,8 @@ void gemlik_projectile_update(struct Moby *moby) {
                 work.hit[0x18] = 1;
                 *(unsigned short *)(work.hit + 0x1A) = *(unsigned short *)((char *)moby + 0xA6);
                 work.hit[0x19] = 1;
-                if ((unsigned char)ent[0xA4] == 0xFF || (e = &l13_moby_hit_entries[(unsigned char)ent[0xA4]])->p34 != ent) {
+                if ((unsigned char)ent[0xA4] == 0xFF ||
+                    (e = &l13_moby_hit_entries[(unsigned char)ent[0xA4]])->p34 != ent) {
                     record_moby_hit(ent, work.hit);
                 } else {
                     e->f2C += 1.0f;
@@ -2178,8 +2186,8 @@ void gemlik_projectile_update(struct Moby *moby) {
             FastVecAdd(&work.direction, &work.random_direction, &work.direction);
             vec_scale_to_length(&work.direction, &work.direction,
                                 random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-            PartType27Spawn(&moby->pos, &work.direction, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)),
-                            30000.0f);
+            PartType27Spawn(&moby->pos, &work.direction, 0x7F2F4F6F,
+                            func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
         }
     }
     {
@@ -2739,8 +2747,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
             }
             resolve_point_path_segment_xy_clearance_v(vars->path, &moby->pos, &moby->pos, 0.75f);
             close = 0;
-            if (path_8808(vars->path, &moby->pos, &target->pos, &c) != 0 &&
-                fast_vec_dist(&moby->pos, &c) < 0.8f) {
+            if (path_8808(vars->path, &moby->pos, &target->pos, &c) != 0 && fast_vec_dist(&moby->pos, &c) < 0.8f) {
                 close = 1;
             }
             {
@@ -2772,8 +2779,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
             a.f[2] = 0.0f;
             MobySteerToward(moby, &vars->ctl, &a, &b, 1.0f);
             resolve_point_path_segment_xy_clearance_v(vars->path, &moby->pos, &moby->pos, 0.75f);
-            if (path_8808(vars->path, &moby->pos, &target->pos, &c) != 0 &&
-                fast_vec_dist(&moby->pos, &c) < 0.8f) {
+            if (path_8808(vars->path, &moby->pos, &target->pos, &c) != 0 && fast_vec_dist(&moby->pos, &c) < 0.8f) {
                 near = 1;
             }
             if (vars->unk184 == 0) {
@@ -2996,7 +3002,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
     }
     path = (int *)walker_paths[vars->path];
     if (FindNearestEligibleMoby_v(moby, vars->target, vars->range, 0, 0, path + 4, *path) != 2) {
-        if (vars->range < vec_distance_xy(vars->home, vars->target) || absolute_float(moby->pos.z - vars->target[2]) > 3.0f) {
+        if (vars->range < vec_distance_xy(vars->home, vars->target) ||
+            absolute_float(moby->pos.z - vars->target[2]) > 3.0f) {
             vars->mode = 2;
         }
         if (vars->target_moby != -1 && is_point_inside_clip_volume(vars->target, vars->target_moby) == 0) {
@@ -3222,20 +3229,24 @@ void spawn_point_table_sparks(char *moby) {
         }
         f21 = random_angle_radians();
         f22 = random_angle_radians();
-        v[0] = FastCos(f21) * random_float_between(point_spark_xy_multiplier_range_start, point_spark_xy_multiplier_range_end);
-        v[1] = FastSin(f21) * random_float_between(point_spark_xy_multiplier_range_start, point_spark_xy_multiplier_range_end);
+        v[0] = FastCos(f21) *
+               random_float_between(point_spark_xy_multiplier_range_start, point_spark_xy_multiplier_range_end);
+        v[1] = FastSin(f21) *
+               random_float_between(point_spark_xy_multiplier_range_start, point_spark_xy_multiplier_range_end);
         v[2] = 0;
-        w[0] = FastCos(f22) * random_float_between(point_spark_xy_multiplier_range_start, point_spark_xy_multiplier_range_end);
-        w[1] = FastSin(f22) * random_float_between(point_spark_xy_multiplier_range_start, point_spark_xy_multiplier_range_end);
+        w[0] = FastCos(f22) *
+               random_float_between(point_spark_xy_multiplier_range_start, point_spark_xy_multiplier_range_end);
+        w[1] = FastSin(f22) *
+               random_float_between(point_spark_xy_multiplier_range_start, point_spark_xy_multiplier_range_end);
         w[2] = 0;
         v[2] = random_float_between(point_spark_z_range_start, point_spark_z_range_end);
         w[2] = random_float_between(point_spark_z_range_start, point_spark_z_range_end);
-        s18 = truncate_float_to_s32_r_r(
-            multiply_global_factor(random_float_between(point_spark_frame_count_range_start, point_spark_frame_count_range_end)));
-        s19 = truncate_float_to_s32_r_r(
-            multiply_global_factor(random_float_between(point_spark_second_frame_count_range_start, point_spark_second_frame_count_range_end)));
-        s17 = truncate_float_to_s32_r_r(
-            multiply_global_factor(random_float_between(point_spark_third_frame_count_range_start, point_spark_third_frame_count_range_end)));
+        s18 = truncate_float_to_s32_r_r(multiply_global_factor(
+            random_float_between(point_spark_frame_count_range_start, point_spark_frame_count_range_end)));
+        s19 = truncate_float_to_s32_r_r(multiply_global_factor(random_float_between(
+            point_spark_second_frame_count_range_start, point_spark_second_frame_count_range_end)));
+        s17 = truncate_float_to_s32_r_r(multiply_global_factor(
+            random_float_between(point_spark_third_frame_count_range_start, point_spark_third_frame_count_range_end)));
         FastVecScale(v, v, 1.0f / (float)s18);
         v[3] = point_spark_first_vector_w;
         FastVecScale(w, w, 1.0f / (float)s17);
@@ -3346,7 +3357,8 @@ void gemlik_bobbing_pool_tile_update(struct Moby *moby) {
                 gemlik_pool_draw_cleared_word = 0;
                 for (i = 0; i < 22; i++) {
                     pool_bind_tile(&Tiles_9e88_r[i], tb + i * 16);
-                    Tiles_9e88_r[bobbing_platform_vars->idx].c1E = gemlik_pool_tile_visible_subtiles[bobbing_platform_vars->idx];
+                    Tiles_9e88_r[bobbing_platform_vars->idx].c1E =
+                        gemlik_pool_tile_visible_subtiles[bobbing_platform_vars->idx];
                 }
                 for (k = 0; k < 22; k++) {
                     for (j = 0; j < 2; j++) {
@@ -3397,7 +3409,8 @@ void gemlik_bobbing_pool_tile_update(struct Moby *moby) {
         if (height_half_span_or_tile_enabled == 0.0f)
             Tiles_9e88_r[bobbing_platform_vars->idx].c1E = 0;
         else
-            Tiles_9e88_r[bobbing_platform_vars->idx].c1E = gemlik_pool_tile_visible_subtiles[bobbing_platform_vars->idx];
+            Tiles_9e88_r[bobbing_platform_vars->idx].c1E =
+                gemlik_pool_tile_visible_subtiles[bobbing_platform_vars->idx];
         if (bobbing_platform_vars->idx == 0) {
             pool_flush(Tiles_9e88_r, 22);
             AddDrawCallback(render_level13_water_grids, moby);

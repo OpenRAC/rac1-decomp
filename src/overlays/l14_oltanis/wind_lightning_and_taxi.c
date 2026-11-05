@@ -773,8 +773,7 @@ void update_wind_sparks(struct Moby *m) {
             FastVecScale(work, dir, d->f440[i]);
             FastVecAdd(pos, pos, work);
             if (in_clip != 0 && absolute_float(pos[0] - l14_camera.x) < 8.0f &&
-                absolute_float(pos[1] - l14_camera.y) < 8.0f &&
-                FastDiffRots(m->rot.z, l14_camera.yaw) > 2.3561945f) {
+                absolute_float(pos[1] - l14_camera.y) < 8.0f && FastDiffRots(m->rot.z, l14_camera.yaw) > 2.3561945f) {
                 if (d->n320[i] > scale_ticks(20)) {
                     d->n320[i] = scale_ticks(20);
                 }
@@ -1083,8 +1082,8 @@ void flying_bolt_update(struct Moby *m) {
                 vec_scale_to_length(&dir, &dir, FastVecLength(&spark) * 0.5f);
                 FastVecAdd(&dir, &spark, &dir);
                 vec_scale_to_length(&dir, &dir, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                PartType27Spawn((char *)&m->pos, (char *)&dir, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)),
-                                30000.0f);
+                PartType27Spawn((char *)&m->pos, (char *)&dir, 0x7F2F4F6F,
+                                func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
             }
         }
         Moby_PlaySound(0, 0, m);
@@ -1251,7 +1250,8 @@ void update_branched_lightning_arc(char *moby) {
             t = IntToFloat(i) / IntToFloat(40);
             *e = truncate_float_to_s32((float)-scale_ticks((*(int *)&lightning_grow_ticks)) * t + 0.0f);
         }
-        lerp_vector(lightning_main_arc_penultimate_point, lightning_main_arc_penultimate_point - 4, lightning_main_arc_penultimate_point + 4, 0.5f);
+        lerp_vector(lightning_main_arc_penultimate_point, lightning_main_arc_penultimate_point - 4,
+                    lightning_main_arc_penultimate_point + 4, 0.5f);
         sign = -1.0f;
         lightning_arc_remaining_frames = lightning_arc_initial_lifetime_frames =
             scale_ticks(func_L00_00258BC8((*(int *)&lightning_arc_life_min), (*(int *)&lightning_arc_life_max)));
@@ -1517,11 +1517,11 @@ void draw_branched_lightning_arc(void) {
         q[0].col[1] = c;
         q[0].col[0] = c;
         q[1].col[0] = q[1].col[1] = lightning_arc_inner_base_color_gp | ((a >> 1) << 24);
-        sz[0].z =
-            (lightning_arc_outer_half_width_start_gp +
-             (lightning_arc_outer_half_width_end_gp - lightning_arc_outer_half_width_start_gp) *
-                 cubic_hermite_scalar(-1.0f, 0.0f, 1.0f, 0.0f, IntToFloat(lightning_branch_starts[j]) / IntToFloat(0x28))) *
-            0.75f;
+        sz[0].z = (lightning_arc_outer_half_width_start_gp +
+                   (lightning_arc_outer_half_width_end_gp - lightning_arc_outer_half_width_start_gp) *
+                       cubic_hermite_scalar(-1.0f, 0.0f, 1.0f, 0.0f,
+                                            IntToFloat(lightning_branch_starts[j]) / IntToFloat(0x28))) *
+                  0.75f;
         sz[1].z = sz[0].z * 4.0f;
         qcopy(&q[0].v[0], &sz[0]);
         FastVecScale(&q[0].v[1], &q[0].v[0], -1.0f);
@@ -1597,14 +1597,17 @@ void spawn_lightning_arc_particle_pairs(float *pos, int n) {
     if (n > 0) {
         i = n;
         do {
-            a = random_float_between(lightning_arc_particle_scale_range_start_gp, lightning_arc_particle_scale_range_end_gp);
+            a = random_float_between(lightning_arc_particle_scale_range_start_gp,
+                                     lightning_arc_particle_scale_range_end_gp);
             s = random_integer_below(2);
             if (s == 0)
                 s--;
             f21 = random_angle_radians();
             f20 = random_float_between(0.34906584f, 1.5358897f);
-            BuildSphericalOffset(v, random_float_between(lightning_arc_particle_speed_range_start_gp, lightning_arc_particle_speed_range_end_gp), f21,
-                                 f20);
+            BuildSphericalOffset(v,
+                                 random_float_between(lightning_arc_particle_speed_range_start_gp,
+                                                      lightning_arc_particle_speed_range_end_gp),
+                                 f21, f20);
             qcopy(p2, pos);
             pos[0] += randf_sym(0.0f, 0.15f);
             pos[1] += randf_sym(0.0f, 0.15f);
@@ -1918,8 +1921,8 @@ int advance_elevator_along_path(char *m) {
         qcopy(rot, &moby_vars->rot_to);
     }
     step = elevator_path_step_rate_gp * g_frame_time;
-    path_endpoint_reached = sample_path(selected_path, pos, &moby_vars->point, &moby_vars->point_dist, 0,
-                                                     step * moby_vars->dir);
+    path_endpoint_reached =
+        sample_path(selected_path, pos, &moby_vars->point, &moby_vars->point_dist, 0, step * moby_vars->dir);
     Spring(&elevator_moby->pos.x, &moby_vars->pos_vel_x, pos[0], 0.003f, 0.2f, 0.0f);
     Spring(&elevator_moby->pos.y, &moby_vars->pos_vel_y, pos[1], 0.003f, 0.2f, 0.0f);
     Spring(&elevator_moby->pos.z, &moby_vars->pos_vel_z, pos[2], 0.003f, 0.2f, 0.0f);
@@ -2944,9 +2947,8 @@ void advance_enemy_fighter_along_flight_path(char *m) {
     float path_target_position[3];
     float path_position_delta[3];
     float target_yaw, yaw_error_factor, path_vertical_angle;
-    sample_path((int)l14_paths[moby_vars->path], (char *)path_target_position,
-                             (char *)&moby_vars->segment, (char *)&moby_vars->along, 1,
-                             (enemy_fighter_path_step_rate_gp)*g_frame_time);
+    sample_path((int)l14_paths[moby_vars->path], (char *)path_target_position, (char *)&moby_vars->segment,
+                (char *)&moby_vars->along, 1, (enemy_fighter_path_step_rate_gp)*g_frame_time);
     Spring(&moby->pos.x, &moby_vars->f70, path_target_position[0], (enemy_fighter_flight_spring_strength_gp),
            (enemy_fighter_flight_spring_damping_gp), 0.0f);
     Spring(&moby->pos.y, &moby_vars->f74, path_target_position[1], (enemy_fighter_flight_spring_strength_gp),
@@ -3344,9 +3346,9 @@ int advance_rocket_strike_fighter_along_flight_path(char *m) {
     float yaw;
     float yaw_error_factor;
     int path_boundary_reached;
-    path_boundary_reached = sample_path(
-        oltanis_paths_ee[moby_vars->path], path_target_position, &moby_vars->segment, &moby_vars->along,
-        (unsigned int)*(int *)(((char *)moby_vars) + 0x8C) >> 31, rocket_strike_fighter_path_step_rate_gp * g_frame_time);
+    path_boundary_reached = sample_path(oltanis_paths_ee[moby_vars->path], path_target_position, &moby_vars->segment,
+                                        &moby_vars->along, (unsigned int)*(int *)(((char *)moby_vars) + 0x8C) >> 31,
+                                        rocket_strike_fighter_path_step_rate_gp * g_frame_time);
     if (*(int *)(((char *)moby_vars) + 0x8C) != 0 &&
         (path_boundary_reached != 0 || *(short *)(race_state + 0x86) != 0x13)) {
         flag_vendor_item(((Moby *)((char *)moby_vars))->glow_color);
@@ -3371,9 +3373,11 @@ int advance_rocket_strike_fighter_along_flight_path(char *m) {
         if (0.01f < absolute_float(path_position_delta[1])) {
             yaw = fast_atan2(path_position_delta[0], path_position_delta[1]);
             yaw_error_factor = FastSubRots(moby->rot.z, yaw);
-            MobySpringTurn(moby, &moby_vars->f88, yaw, rocket_strike_fighter_flight_spring_strength_gp, rocket_strike_fighter_flight_spring_damping_gp, 0.0f);
+            MobySpringTurn(moby, &moby_vars->f88, yaw, rocket_strike_fighter_flight_spring_strength_gp,
+                           rocket_strike_fighter_flight_spring_damping_gp, 0.0f);
             yaw = fast_atan2(func_001F9CE8(path_position_delta), path_position_delta[2]);
-            Spring(&moby->rot.y, &moby_vars->f84, -yaw, rocket_strike_fighter_flight_spring_strength_gp, rocket_strike_fighter_flight_spring_damping_gp, 0.0f);
+            Spring(&moby->rot.y, &moby_vars->f84, -yaw, rocket_strike_fighter_flight_spring_strength_gp,
+                   rocket_strike_fighter_flight_spring_damping_gp, 0.0f);
             yaw_error_factor = yaw_error_factor / rocket_strike_fighter_bank_yaw_error_scale_gp;
             if (1.0f < yaw_error_factor)
                 yaw_error_factor = 1.0f;

@@ -230,7 +230,8 @@ void scoutbot_update(Moby *moby) {
                 d->v40[0] += FastCos(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += FastSin(moby->rot.z) * (dt_3DF8 * 12.0f);
             }
-            if (vec_distance_xy(&moby->pos, &d->f218->pos) < 3.0f && absolute_float(d->f218->pos.z - moby->pos.z) < 2.0f) {
+            if (vec_distance_xy(&moby->pos, &d->f218->pos) < 3.0f &&
+                absolute_float(d->f218->pos.z - moby->pos.z) < 2.0f) {
                 d->h214 = Moby_PlaySound(0, 0, moby);
                 moby->state = 6;
             } else if (vec_distance_xy(tgt, d->v1C0) > 15.0f || absolute_float(d->v1C0[2] - tgt[2]) > 4.0f) {
@@ -764,15 +765,20 @@ char *spawn_turret_rocket(int owner, float *position, float *rotation, int value
                 offset[3] = (moby_creation_particle_secondary_motion_w_gp);
                 i++;
                 spawn_burst(&((struct Moby *)moby)->pos, velocity_ptr, (moby_creation_initial_particle_word_gp),
-                                (moby_creation_second_particle_word_gp), func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
+                            (moby_creation_second_particle_word_gp),
+                            func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
                 a = truncate_float_to_s32(multiply_global_factor(
-                    random_float_between((float)(l08_turret_rocket_spark_first_frame_count_base), (float)(l08_turret_rocket_spark_first_frame_count_base) * 1.2f)));
+                    random_float_between((float)(l08_turret_rocket_spark_first_frame_count_base),
+                                         (float)(l08_turret_rocket_spark_first_frame_count_base) * 1.2f)));
                 b = truncate_float_to_s32(multiply_global_factor(
-                    random_float_between((float)(l08_turret_rocket_spark_second_frame_count_base), (float)(l08_turret_rocket_spark_second_frame_count_base) * 1.2f)));
+                    random_float_between((float)(l08_turret_rocket_spark_second_frame_count_base),
+                                         (float)(l08_turret_rocket_spark_second_frame_count_base) * 1.2f)));
                 c = truncate_float_to_s32(multiply_global_factor(
-                    random_float_between((float)(l08_turret_rocket_spark_third_frame_count_base), (float)(l08_turret_rocket_spark_third_frame_count_base) * 1.5f)));
-                PartType02Spawn(&((struct Moby *)moby)->pos, velocity_ptr, offset_ptr, (moby_creation_initial_spark_word_gp),
-                                (moby_creation_second_spark_word_gp), a, b, c, -1);
+                    random_float_between((float)(l08_turret_rocket_spark_third_frame_count_base),
+                                         (float)(l08_turret_rocket_spark_third_frame_count_base) * 1.5f)));
+                PartType02Spawn(&((struct Moby *)moby)->pos, velocity_ptr, offset_ptr,
+                                (moby_creation_initial_spark_word_gp), (moby_creation_second_spark_word_gp), a, b, c,
+                                -1);
             } while ((float)i < (moby_creation_particle_count_limit_gp));
         }
         if (g_current_level_index == LEVEL_HOVEN)
@@ -851,15 +857,20 @@ void rocket_458_update(char *moby) {
         offset[3] = (homing_projectile_trail_secondary_motion_w_gp);
         i++;
         a = truncate_float_to_s32(multiply_global_factor(
-            random_float_between((float)(l08_turret_rocket_spark_first_frame_count_base), (float)(l08_turret_rocket_spark_first_frame_count_base) * 1.2f)));
+            random_float_between((float)(l08_turret_rocket_spark_first_frame_count_base),
+                                 (float)(l08_turret_rocket_spark_first_frame_count_base) * 1.2f)));
         b = truncate_float_to_s32(multiply_global_factor(
-            random_float_between((float)(l08_turret_rocket_spark_second_frame_count_base), (float)(l08_turret_rocket_spark_second_frame_count_base) * 1.2f)));
+            random_float_between((float)(l08_turret_rocket_spark_second_frame_count_base),
+                                 (float)(l08_turret_rocket_spark_second_frame_count_base) * 1.2f)));
         c = truncate_float_to_s32(multiply_global_factor(
-            random_float_between((float)(l08_turret_rocket_spark_third_frame_count_base), (float)(l08_turret_rocket_spark_third_frame_count_base) * 1.5f)));
-        PartType02Spawn(position, velocity, offset, (homing_projectile_trail_initial_spark_word_gp), (homing_projectile_trail_second_spark_word_gp), a, b, c, -1);
+            random_float_between((float)(l08_turret_rocket_spark_third_frame_count_base),
+                                 (float)(l08_turret_rocket_spark_third_frame_count_base) * 1.5f)));
+        PartType02Spawn(position, velocity, offset, (homing_projectile_trail_initial_spark_word_gp),
+                        (homing_projectile_trail_second_spark_word_gp), a, b, c, -1);
     }
-    ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, (homing_projectile_spin_rate_degrees_gp) * 0.017453292f * g_frame_time *
-                                                                   (float)((struct Rocket458UpdateVars *)data)->unk_1C);
+    ((Moby *)moby)->rot.x =
+        FastAddRots(((Moby *)moby)->rot.x, (homing_projectile_spin_rate_degrees_gp) * 0.017453292f * g_frame_time *
+                                               (float)((struct Rocket458UpdateVars *)data)->unk_1C);
     target = ((struct Rocket458UpdateVars *)data)->unk_10;
     if (target != 0) {
         if ((unsigned char)target[0x20] == 0xfe)
@@ -925,10 +936,10 @@ extern IntPair batalia_uv_scroll[];
 void draw_scrolled_mesh_batch(int a) {
     int i;
     for (i = 0; i < 13; i++) {
-        add_uv_scroll_offset(batalia_scrolled_uvs, scrolled_mesh_uv_source_streams[i], scrolled_mesh_batch_vertex_counts[i],
-                             &batalia_uv_scroll[a]);
-        draw_env_overlay_mesh(scrolled_mesh_batch_vertex_counts[i], scrolled_mesh_position_streams[i], scrolled_mesh_batch_colour_tables[i],
-                              batalia_scrolled_uvs, 1);
+        add_uv_scroll_offset(batalia_scrolled_uvs, scrolled_mesh_uv_source_streams[i],
+                             scrolled_mesh_batch_vertex_counts[i], &batalia_uv_scroll[a]);
+        draw_env_overlay_mesh(scrolled_mesh_batch_vertex_counts[i], scrolled_mesh_position_streams[i],
+                              scrolled_mesh_batch_colour_tables[i], batalia_scrolled_uvs, 1);
     }
 }
 
@@ -942,10 +953,10 @@ extern IntPair scroll_pos_x[] MACRO_ADDR;
 void draw_eleven_entry_scrolled_texture_batch(int a) {
     int i;
     for (i = 0; i < 11; i++) {
-        add_uv_scroll_offset(batalia_scrolled_uvs, eleven_entry_scrolled_base_uv_tables[i], eleven_entry_batch_vertex_counts[i],
-                             &scroll_pos_x[a]);
-        draw_env_overlay_mesh(eleven_entry_batch_vertex_counts[i], eleven_entry_scrolled_vertex_position_tables[i], eleven_entry_batch_colour_tables[i],
-                              batalia_scrolled_uvs, 1);
+        add_uv_scroll_offset(batalia_scrolled_uvs, eleven_entry_scrolled_base_uv_tables[i],
+                             eleven_entry_batch_vertex_counts[i], &scroll_pos_x[a]);
+        draw_env_overlay_mesh(eleven_entry_batch_vertex_counts[i], eleven_entry_scrolled_vertex_position_tables[i],
+                              eleven_entry_batch_colour_tables[i], batalia_scrolled_uvs, 1);
     }
 }
 extern int pair_offset_batch_input_pair_streams[];
@@ -958,10 +969,10 @@ extern IntPair batalia_mesh8_scroll_offset[] MACRO_ADDR;
 void emit_pair_offset_render_batch(int a) {
     int i;
     for (i = 0; i < 8; i++) {
-        add_uv_scroll_offset(batalia_scrolled_uvs, pair_offset_batch_input_pair_streams[i], pair_offset_batch_vertex_counts[i],
-                             &batalia_mesh8_scroll_offset[a]);
-        draw_env_overlay_mesh(pair_offset_batch_vertex_counts[i], pair_offset_batch_packet_triplet_streams[i], pair_offset_batch_colour_tables[i],
-                              batalia_scrolled_uvs, 1);
+        add_uv_scroll_offset(batalia_scrolled_uvs, pair_offset_batch_input_pair_streams[i],
+                             pair_offset_batch_vertex_counts[i], &batalia_mesh8_scroll_offset[a]);
+        draw_env_overlay_mesh(pair_offset_batch_vertex_counts[i], pair_offset_batch_packet_triplet_streams[i],
+                              pair_offset_batch_colour_tables[i], batalia_scrolled_uvs, 1);
     }
 }
 
@@ -1094,21 +1105,30 @@ void directional_spark_emitter_update(char *m) {
         c[0] += random_float_between(-0.05f, 0.05f);
         random_float_between(-0.17453292f, 0.17453292f);
         vec_scale_to_length(v0, e,
-                            random_float_between((spark_emitter_default_primary_magnitude_base_gp), (spark_emitter_default_primary_magnitude_base_gp) * 1.2f) *
+                            random_float_between((spark_emitter_default_primary_magnitude_base_gp),
+                                                 (spark_emitter_default_primary_magnitude_base_gp) * 1.2f) *
                                 g_frame_time);
-        vec_scale_to_length(
-            d, e + 4,
-            random_float_between(-(spark_emitter_default_primary_spread_limit_gp), (spark_emitter_default_primary_spread_limit_gp)) * g_frame_time);
-        FastVecAdd(v0, v0, d);
-        v0[2] += random_float_between((spark_emitter_default_primary_z_increment_base_gp), (spark_emitter_default_primary_z_increment_base_gp) * 1.2f) * g_frame_time;
-        qcopy(v1, v0);
-        vec_scale_to_length(
-            v1, e, random_float_between((spark_emitter_default_secondary_magnitude_base_gp), (spark_emitter_default_secondary_magnitude_base_gp) * 1.5f) * g_frame_time);
         vec_scale_to_length(d, e + 4,
-                            random_float_between(-(spark_emitter_default_secondary_spread_limit_gp), (spark_emitter_default_secondary_spread_limit_gp)) *
+                            random_float_between(-(spark_emitter_default_primary_spread_limit_gp),
+                                                 (spark_emitter_default_primary_spread_limit_gp)) *
+                                g_frame_time);
+        FastVecAdd(v0, v0, d);
+        v0[2] += random_float_between((spark_emitter_default_primary_z_increment_base_gp),
+                                      (spark_emitter_default_primary_z_increment_base_gp) * 1.2f) *
+                 g_frame_time;
+        qcopy(v1, v0);
+        vec_scale_to_length(v1, e,
+                            random_float_between((spark_emitter_default_secondary_magnitude_base_gp),
+                                                 (spark_emitter_default_secondary_magnitude_base_gp) * 1.5f) *
+                                g_frame_time);
+        vec_scale_to_length(d, e + 4,
+                            random_float_between(-(spark_emitter_default_secondary_spread_limit_gp),
+                                                 (spark_emitter_default_secondary_spread_limit_gp)) *
                                 g_frame_time);
         FastVecAdd(v1, v1, d);
-        v1[2] += random_float_between((spark_emitter_default_secondary_z_increment_base_gp), (spark_emitter_default_secondary_z_increment_base_gp) * 1.5f) * g_frame_time;
+        v1[2] += random_float_between((spark_emitter_default_secondary_z_increment_base_gp),
+                                      (spark_emitter_default_secondary_z_increment_base_gp) * 1.5f) *
+                 g_frame_time;
         v0[3] = (spark_emitter_default_primary_motion_w_gp);
         v1[3] = (spark_emitter_default_secondary_motion_w_gp);
         s0 = truncate_float_to_s32(
@@ -1120,7 +1140,8 @@ void directional_spark_emitter_update(char *m) {
         s2 = truncate_float_to_s32(multiply_global_factor(
             random_float_between((f32)(spark_emitter_default_third_frame_count_base_gp),
                                  (f32)(spark_emitter_default_third_frame_count_base_gp) * 1.2f)));
-        PartType02Spawn(c, v0, v1, (spark_emitter_default_initial_spark_word_gp), (spark_emitter_default_second_spark_word_gp), s0, s16, s2, -1);
+        PartType02Spawn(c, v0, v1, (spark_emitter_default_initial_spark_word_gp),
+                        (spark_emitter_default_second_spark_word_gp), s0, s16, s2, -1);
     } else {
         v->timer = v->interval;
         euler_to_matrix(e, m + 0x40);
@@ -1623,7 +1644,8 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
         return;
     {
         float t = paratrooper_move_speed * g_frame_time;
-        ((struct Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * l08_paratrooper_model_scale_multiplier;
+        ((struct Moby *)m)->scale =
+            *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * l08_paratrooper_model_scale_multiplier;
         ((struct Paratrooper302618 *)d)->unk_F4 = t;
     }
 
@@ -1702,7 +1724,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
                     *(VecQuad *)S = *(VecQuad *)(Y + 0x10);
                     q58 = f;
                     trooper_knockback_arc(S, &q58, &((struct Paratrooper302618 *)d)->knock_dir_x,
-                                      &((struct Paratrooper302618 *)d)->knock_dir_y);
+                                          &((struct Paratrooper302618 *)d)->knock_dir_y);
                     InitKnockback(m, ((struct Paratrooper302618 *)d)->knockback, q58, 8, 1, 0);
                     ((Moby *)m)->state = 10;
                     ((struct Paratrooper302618 *)d)->flash = 0x78;
@@ -1736,7 +1758,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
                     *(VecQuad *)S = *(VecQuad *)(Y + 0x10);
                     q5c = f;
                     trooper_knockback_arc(S, &q5c, &((struct Paratrooper302618 *)d)->knock_dir_x,
-                                      &((struct Paratrooper302618 *)d)->knock_dir_y);
+                                          &((struct Paratrooper302618 *)d)->knock_dir_y);
                     InitKnockback(m, ((struct Paratrooper302618 *)d)->knockback, q5c, 0xC, 1, 0);
                     ((Moby *)m)->state = 11;
                     ((struct Paratrooper302618 *)d)->flash = 0xF0;
@@ -2000,7 +2022,7 @@ void ground_particle_scatter_update(Moby *m) {
             *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
             n = ground_particle_scatter_base_attempt_count_r;
             AddSphericalOffset(&base, &base, 16.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
-                                  ((Cam *)(batalia_hero_pos - 0x140))->f154);
+                               ((Cam *)(batalia_hero_pos - 0x140))->f154);
             base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
             if (n > 0) {
                 V_3091B0 *po = &off;
@@ -2098,7 +2120,7 @@ void ground_particle_scatter_update(Moby *m) {
                 w = 30.0f;
                 *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
                 AddSphericalOffset(&base, &base, w, ((Cam *)(batalia_hero_pos - 0x140))->f158,
-                                      ((Cam *)(batalia_hero_pos - 0x140))->f154);
+                                   ((Cam *)(batalia_hero_pos - 0x140))->f154);
                 sign = n >> 31;
                 base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
                 if (n > 0) {
@@ -2116,7 +2138,7 @@ void ground_particle_scatter_update(Moby *m) {
                 }
                 *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
                 AddSphericalOffset(&base, &base, 4.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
-                                      ((Cam *)(batalia_hero_pos - 0x140))->f154);
+                                   ((Cam *)(batalia_hero_pos - 0x140))->f154);
                 base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
                 h = (n - sign) >> 1;
                 if (h > 0) {
@@ -2219,7 +2241,8 @@ void update_ground_height_modulated_voice(char *m) {
         char *e = hero_globals_base + 0x1D + *(int *)(d + 8) * 0x70;
         if (*(char **)(e + 0x8C) == m && ((unsigned char *)e)[0x74] != 0) {
             Sound_SetPitchBend(*(int *)(d + 8),
-                               (int)((*(float *)(d + 4) + smoothed_below_reference_ground_fraction_gp) / (*(float *)(d + 4) + 1.0f) * 1024.0f));
+                               (int)((*(float *)(d + 4) + smoothed_below_reference_ground_fraction_gp) /
+                                     (*(float *)(d + 4) + 1.0f) * 1024.0f));
         }
     }
     qcopy_nc(hero_globals_base + 0xAD + *(int *)(d + 8) * 0x70, batalia_hero_pos);

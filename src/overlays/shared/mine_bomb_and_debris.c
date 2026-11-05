@@ -600,8 +600,9 @@ void mine_update(M910 *m) {
             }
             m->bA4 = 0xFF;
             if (m->state & 2) {
-                if (!(m->state & 4) || (vec_distance_xy(&((M910 *)D_G910.moby)->pos, &m->pos) < 0.75f &&
-                                        absolute_float(m->pos.f[2] - D_G910.motion.pos.f[2]) < 0.25f && (m->state & 0x10))) {
+                if (!(m->state & 4) ||
+                    (vec_distance_xy(&((M910 *)D_G910.moby)->pos, &m->pos) < 0.75f &&
+                     absolute_float(m->pos.f[2] - D_G910.motion.pos.f[2]) < 0.25f && (m->state & 0x10))) {
                     m->bBC = 1;
                 } else if (fast_vec_dist(&((M910 *)D_G910.moby)->pos, &m->pos) < 0.75f) {
                     V910 t;
@@ -1694,8 +1695,9 @@ void bomb_update(M_2aedd0 *m) {
                         FastVecAdd(&v, &v, &proj);
                         vec_scale_to_length(&v, &v, s * random_float_between(3.5f, 6.5f) * g_frame_time);
                         FastVecAdd(&v, &v, &a);
-                        SpawnFallingSpark((char *)&m->pos, (char *)&v, func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x78)),
-                                          0, (unsigned char)D_E910.p0[0xA]);
+                        SpawnFallingSpark((char *)&m->pos, (char *)&v,
+                                          func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x78)), 0,
+                                          (unsigned char)D_E910.p0[0xA]);
                     }
                 }
                 if (d->h68 < scale_ticks(0x14)) {
@@ -1736,7 +1738,8 @@ void bomb_update(M_2aedd0 *m) {
                     vec_scale_to_length(&delta, &delta, dist * 2.0f * g_frame_time);
                     FastVecAdd(&v, &v, &delta);
                     clamp_vec_length(&v, &v, g_frame_time * 10.0f);
-                    SpawnFallingSpark((char *)&m->pos, (char *)&v, func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x5A)), 1,
+                    SpawnFallingSpark((char *)&m->pos, (char *)&v,
+                                      func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x5A)), 1,
                                       (unsigned char)D_E910.p0[0xA]);
                     if (dist < 6.0f) {
                         cnt = truncate_float_to_s32(dist) + 1;
@@ -2687,7 +2690,8 @@ void gold_devastator_missile_update(M910 *m) {
         vec_scale_to_length(&camera_delta, &camera_delta, (distance + distance) * g_frame_time);
         FastVecAdd(&predicted, &predicted, &camera_delta);
         clamp_vec_length(&predicted, &predicted, g_frame_time * 10.0f);
-        SpawnFallingSpark((char *)(&m->pos), (char *)&predicted, func_L00_00258BC8(scale_ticks(60), scale_ticks(90)), 0, 0);
+        SpawnFallingSpark((char *)(&m->pos), (char *)&predicted, func_L00_00258BC8(scale_ticks(60), scale_ticks(90)), 0,
+                          0);
         if (distance < 6.0f)
             j = truncate_float_to_s32(distance) / 2;
         else
@@ -2881,7 +2885,9 @@ void emit_object_offset_particle_burst(unsigned char *o) {
     FastVecAdd(&b, o + 0x10, &a);
     for (i = 0; i < truncate_float_to_s32(24.0f); i++) {
         angle = randf_sym(0.0f, 0.1308997f);
-        build_look_at_matrix(&c, &l00_object_offset_burst_reference_direction, (char *)&l00_object_offset_burst_reference_direction - 0x20, (float)i * 0.2617994f + angle);
+        build_look_at_matrix(&c, &l00_object_offset_burst_reference_direction,
+                             (char *)&l00_object_offset_burst_reference_direction - 0x20,
+                             (float)i * 0.2617994f + angle);
         vec_scale_to_length(&c, &c, random_float_between(0.05f, 0.1f));
         t = func_L00_00258BC8(0, 3);
         if (random_integer_below(2) != 0)
@@ -2893,12 +2899,15 @@ void emit_object_offset_particle_burst(unsigned char *o) {
         {
             int low = scale_ticks(30);
             int high = scale_ticks(90);
-            PartType44Spawn(&b, &c, func_L00_00258BC8(low, high), 30, 0xFFFFFF, t, 60000.0f, 3000.0f, 0.85f, -0.001f, 0.0f);
+            PartType44Spawn(&b, &c, func_L00_00258BC8(low, high), 30, 0xFFFFFF, t, 60000.0f, 3000.0f, 0.85f, -0.001f,
+                            0.0f);
         }
     }
     for (j = 0; j < truncate_float_to_s32(6.0f); j++) {
         angle = random_float_between(0.0f, 0.7853982f);
-        build_look_at_matrix(&c, &l00_object_offset_burst_reference_direction, (char *)&l00_object_offset_burst_reference_direction - 0x20, (float)j * 1.0471976f + angle);
+        build_look_at_matrix(&c, &l00_object_offset_burst_reference_direction,
+                             (char *)&l00_object_offset_burst_reference_direction - 0x20,
+                             (float)j * 1.0471976f + angle);
         vec_scale_to_length(&c, &c, random_float_between(0.05f, 0.1f));
         {
             int low = scale_ticks(20);

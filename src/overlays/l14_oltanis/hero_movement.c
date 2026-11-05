@@ -656,7 +656,7 @@ void HeroL14_UpdateStatePhysics(void) {
                     a = FastAddRots(a, 3.1415927f);
                 }
                 spring_angle(&g_hero.swing_yaw, a, &g_hero.swing_yaw_vel, 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, 0.0f);
+                             g_frame_scale_sq * 0.3f, 0.0f);
             }
             g_hero.motion.move_yaw = g_hero.swing_yaw;
             turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.712389f);
@@ -674,9 +674,9 @@ void HeroL14_UpdateStatePhysics(void) {
             vec[1][0] = -fast_atan2(square_root(vec[0][0] * vec[0][0] + vec[0][2] * vec[0][2]), vec[0][1]);
             vec[1][1] = fast_atan2(vec[0][2], vec[0][0]);
             spring_angle(&g_hero.motion.rot.f[1], vec[1][1], &g_hero.motion.rot_spring_vel.f[1], 0,
-                        g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
+                         g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
             spring_angle(&g_hero.motion.rot.f[0], vec[1][0], &g_hero.motion.rot_spring_vel.f[0], 0,
-                        g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
+                         g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 9.599311f);
             if (!(g_hero.motion.pos.f[2] < g_hero.swing_target_moby->pos.z)) {
                 below = 0;
             }
@@ -1694,8 +1694,8 @@ void HeroL14_UpdateStatePhysics(void) {
                             stick_target(1.0f, 0);
                             a = FastDiffRots(g_hero.motion.move_yaw, l14_camera.f158);
                             if (FastDiffRots(a, 1.5707964f) < 1.2217305f || FastDiffRots(a, -1.5707964f) < 1.2217305f) {
-                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, l14_camera.f158),
-                                                 1.5707964f) < 0.7853982f) {
+                                if (FastDiffRots(FastSubRots(g_hero.motion.move_yaw, l14_camera.f158), 1.5707964f) <
+                                    0.7853982f) {
                                     g_hero.grind_pose = 2;
                                 } else {
                                     g_hero.grind_pose = 3;
@@ -1713,7 +1713,7 @@ void HeroL14_UpdateStatePhysics(void) {
                             }
                         }
                         spring_angle(&g_hero.rail_lean, tgt, &g_hero.grind_lean_vel, 0, g_frame_scale_sq * 0.015f,
-                                    g_frame_scale_sq * 0.3f, 0.0f);
+                                     g_frame_scale_sq * 0.3f, 0.0f);
                         ApproachValue(&g_hero.grind_base_speed, spd, g_frame_time_sq * 15.0f);
                         idx = g_hero.rail_segment;
                         frac = g_hero.rail_seg_frac;
@@ -1874,9 +1874,9 @@ void HeroL14_UpdateStatePhysics(void) {
                 }
                 qcopy(vec[0], g_hero.motion.rot.f);
                 spring_angle(&vec[0][1], t, &g_hero.motion.rot_spring_vel.f[1], 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
+                             g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
                 spring_angle(&vec[0][0], 0.0f, &g_hero.motion.rot_spring_vel.f[0], 0, g_frame_scale_sq * 0.02f,
-                            g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
+                             g_frame_scale_sq * 0.3f, g_frame_time * 2.6179938f);
                 rotate_hero_about_fixed_local_pivot(g_hero.motion.rot_spring_vel.f[0],
                                                     g_hero.motion.rot_spring_vel.f[1], 0.0f);
                 if (g_hero.ground_distance > 1.0f) {

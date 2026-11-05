@@ -305,8 +305,8 @@ void snow_plow_update(VehicleMoby *m) {
                 break;
             }
             case 1:
-                MobySpringTurn(m, &d->turn_velocity, l04_cuboids[d->selected].angle,
-                               g_frame_time_sq * 1.0471976f, g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
+                MobySpringTurn(m, &d->turn_velocity, l04_cuboids[d->selected].angle, g_frame_time_sq * 1.0471976f,
+                               g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
                 if (vec_distance_xy(&m->pos, &l04_cuboids[d->selected].pos) < 1.0f &&
                     FastDiffRots(m->rot.f[2], l04_cuboids[d->selected].angle) < 0.17453292f) {
                     d->phase = 2;
@@ -1070,8 +1070,7 @@ void woodcut_bot_update(Moby *m) {
                     MobyBlendAnimation(m, 4, 0, scale_ticks(10));
                     reset_walker_gait_helpers(d->f160);
                     m->state = 8;
-                } else if (d->f3DC == -1 ||
-                           point_in_path_xy(tgt, l04_paths[d->f3DC] + 4, *l04_paths[d->f3DC]) != 0) {
+                } else if (d->f3DC == -1 || point_in_path_xy(tgt, l04_paths[d->f3DC] + 4, *l04_paths[d->f3DC]) != 0) {
                     m->state = 5;
                     m->command |= 8;
                 } else if (adiff > 1.5707964f) {
@@ -1270,8 +1269,7 @@ void woodcut_bot_update(Moby *m) {
             break;
         case 10:
             if (m->seq == 0x10 && (m->anim_flags & 2)) {
-                if ((m->command & 0x10) ||
-                    point_in_path_xy(tgt, l04_paths[d->f3DC] + 4, *l04_paths[d->f3DC]) == 0) {
+                if ((m->command & 0x10) || point_in_path_xy(tgt, l04_paths[d->f3DC] + 4, *l04_paths[d->f3DC]) == 0) {
                     m->state = 6;
                     MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                 } else {
@@ -2210,10 +2208,12 @@ void woodcut_bot_debris_update(char *moby) {
                         reflect_vector(vel, vel, collision_normal);
                         FastVecScale(vel, vel, 0.75f);
                         pv->spin[0] = zero;
-                        pv->spin[1] = randf_sym(woodcut_debris_bounce_spin_min_degrees_gp, woodcut_debris_bounce_spin_max_degrees_gp) * 0.017453292f *
-                                      g_frame_time;
-                        pv->spin[2] = randf_sym(woodcut_debris_bounce_spin_min_degrees_gp, woodcut_debris_bounce_spin_max_degrees_gp) * 0.017453292f *
-                                      g_frame_time;
+                        pv->spin[1] = randf_sym(woodcut_debris_bounce_spin_min_degrees_gp,
+                                                woodcut_debris_bounce_spin_max_degrees_gp) *
+                                      0.017453292f * g_frame_time;
+                        pv->spin[2] = randf_sym(woodcut_debris_bounce_spin_min_degrees_gp,
+                                                woodcut_debris_bounce_spin_max_degrees_gp) *
+                                      0.017453292f * g_frame_time;
                     }
                 }
             }

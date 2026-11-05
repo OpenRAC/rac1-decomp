@@ -866,8 +866,8 @@ void ground_melee_enemy_update(Moby *m) {
         }
         case 4:
             MobySpringTurn_v(m, fast_atan2(query.x - m->pos.x, query.y - m->pos.y), d->turn, 0.05f, 0.3f, 0.2f);
-            if (m->seq == m->prev_seq && compute_interpolated_record_value(m) == 13.0f && absolute_float(m->pos.z - query.z) < 0.5f &&
-                vec_distance_xy(&m->pos, &query) < 2.0f &&
+            if (m->seq == m->prev_seq && compute_interpolated_record_value(m) == 13.0f &&
+                absolute_float(m->pos.z - query.z) < 0.5f && vec_distance_xy(&m->pos, &query) < 2.0f &&
                 FastDiffRots(fast_atan2(query.x - m->pos.x, query.y - m->pos.y), m->rot.z) < 0.2617994f) {
                 step.x = FastCos(m->rot.z) * 0.2f;
                 step.y = FastSin(m->rot.z) * 0.2f;

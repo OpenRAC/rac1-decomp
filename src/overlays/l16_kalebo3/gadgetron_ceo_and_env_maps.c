@@ -701,8 +701,8 @@ void ElevatorPlatformUpdate(Moby *m) {
                 d->particle = -1;
                 transform_vector_by_basis(motion.v, motion.v, elevator_reference_transform_table + (d->joint << 7));
                 d->goal = motion.v[2] + *(float *)(elevator_reference_transform_table + d->joint * 0x80 + 0x38);
-                m->pos.z =
-                    motion.v[2] + *(float *)(elevator_reference_transform_table + d->joint * 0x80 + 0x38) + elevator_height_offset;
+                m->pos.z = motion.v[2] + *(float *)(elevator_reference_transform_table + d->joint * 0x80 + 0x38) +
+                           elevator_height_offset;
                 m->command = 1;
                 m->state = 2;
                 break;
@@ -719,7 +719,8 @@ void ElevatorPlatformUpdate(Moby *m) {
                         motion.v[2] = 1.0f;
                     }
                     transform_vector(motion.v, motion.v, elevator_reference_transform_table + (d->joint << 7));
-                    motion.v[2] = motion.v[2] + *(float *)(elevator_reference_transform_table + d->joint * 0x80 + 0x38) +
+                    motion.v[2] = motion.v[2] +
+                                  *(float *)(elevator_reference_transform_table + d->joint * 0x80 + 0x38) +
                                   elevator_height_offset;
                     if (absolute_float(g_hero.motion.pos.f[2] - motion.v[2]) < 1.0f) {
                         m->command = (m->command + 1) & 1;
@@ -748,7 +749,8 @@ void ElevatorPlatformUpdate(Moby *m) {
                 float *hero_position = g_hero.motion.pos.f;
                 float speed;
 
-                if (vec_distance_xy(hero_position, elevator_reference_transform_table + (d->joint << 7) + 0x30) > 2.25f ||
+                if (vec_distance_xy(hero_position, elevator_reference_transform_table + (d->joint << 7) + 0x30) >
+                        2.25f ||
                     absolute_float(m->pos.z - hero_position[2] - 2.0f) > 1.0f || m->pos.z < d->goal) {
                     speed = ApproachWithVelocity(
                         &m->pos.z, &d->speed, d->goal, elevator_height_acceleration * g_frame_time_sq,
@@ -788,8 +790,8 @@ void ElevatorPlatformUpdate(Moby *m) {
 
 extern float elevator_ring_quad_uvs[][2];
 extern short elevator_max_speed, l16_elevator_ring_tint_start_color, l16_elevator_ring_tint_end_color;
-extern short l16_elevator_ring_blend_color_b_selector, l16_elevator_ring_blend_color_a_selector,
-    D_L16_00161F94, D_L16_00161F98;
+extern short l16_elevator_ring_blend_color_b_selector, l16_elevator_ring_blend_color_a_selector, D_L16_00161F94,
+    D_L16_00161F98;
 extern short elevator_ring_half_height, elevator_ring_outer_radius, elevator_ring_segment_angle_degrees;
 typedef float L16RingVector[4] __attribute__((aligned(16)));
 typedef struct {
@@ -1359,11 +1361,13 @@ void draw_level16_reflection_mesh_batch(void) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
     for (i = 0; i < 3; i++) {
-        compute_level16_reflection_map_coordinates(((int *)reflection_mesh_batch_vertex_counts)[i], ((int *)reflection_mesh_batch_direction_tables)[i],
-                                                   ((int *)reflection_mesh_batch_position_tables)[i], ((int *)reflection_mesh_batch_unused_pair_tables)[i],
-                                                   level16_reflection_mesh_coordinate_scratch);
-        draw_env_overlay_mesh(((int *)reflection_mesh_batch_vertex_counts)[i], ((int *)reflection_mesh_batch_position_tables)[i],
-                              ((int *)reflection_mesh_batch_colour_tables)[i], level16_reflection_mesh_coordinate_scratch, 1);
+        compute_level16_reflection_map_coordinates(
+            ((int *)reflection_mesh_batch_vertex_counts)[i], ((int *)reflection_mesh_batch_direction_tables)[i],
+            ((int *)reflection_mesh_batch_position_tables)[i], ((int *)reflection_mesh_batch_unused_pair_tables)[i],
+            level16_reflection_mesh_coordinate_scratch);
+        draw_env_overlay_mesh(
+            ((int *)reflection_mesh_batch_vertex_counts)[i], ((int *)reflection_mesh_batch_position_tables)[i],
+            ((int *)reflection_mesh_batch_colour_tables)[i], level16_reflection_mesh_coordinate_scratch, 1);
     }
 }
 void env_map_a_draw(void);

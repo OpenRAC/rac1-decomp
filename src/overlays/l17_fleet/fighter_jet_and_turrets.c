@@ -279,10 +279,11 @@ void fleet_beam_update(char *m) {
         *(v128 *)beam_vars->p20 = *(v128 *)c;
     }
     if (flag) {
-        beam_vars->scale = FastCos(FastAddRots(3.1415927f, (compute_interpolated_record_value(beam_moby) - beam_vars->anim_start) /
-                                                               beam_vars->anim_period)) *
-                               0.02f +
-                           0.09f;
+        beam_vars->scale =
+            FastCos(FastAddRots(3.1415927f, (compute_interpolated_record_value(beam_moby) - beam_vars->anim_start) /
+                                                beam_vars->anim_period)) *
+                0.02f +
+            0.09f;
         vec_scale_to_length(beam_vars->p10, beam_vector_scratch, 0.2f);
         FastVecSub(beam_endpoint_position_scratch, &beam_moby->pos, beam_vars->p10);
         *(v128 *)beam_vars->p10 = *(v128 *)beam_endpoint_position_scratch;
@@ -294,8 +295,7 @@ void fleet_beam_update(char *m) {
             vec_scale_to_length(axis_aligned_hero_offset, beam_moby->rot_row0,
                                 FastVecDot(beam_moby->rot_row0, hero_offset));
             FastVecSub(hero_offset, hero_offset, axis_aligned_hero_offset);
-            make_hit_descriptor((char *)hit_descriptor_and_vector_scratch, (int)beam_moby, 0x10001, 1.0f,
-                                    hero_offset);
+            make_hit_descriptor((char *)hit_descriptor_and_vector_scratch, (int)beam_moby, 0x10001, 1.0f, hero_offset);
             coll_line(&beam_moby->pos, beam_vars->p20, 9, beam_moby, hit_descriptor_and_vector_scratch);
             signed_beam_length = FastVecLength(beam_vars->p30);
             *(v128 *)beam_endpoint_position_scratch = *(v128 *)beam_vars->p10;
@@ -789,7 +789,8 @@ void fleet_rotating_radial_effect_update(Moby *m) {
                                 if (func_001160D8() & 1)
                                     f20 = 1.0f;
                                 c = truncate_float_to_s32_r(multiply_global_factor(
-                                    random_float_between(fleet_radial_particle_lifetime_range_end * 0.5f, fleet_radial_particle_lifetime_range_end)));
+                                    random_float_between(fleet_radial_particle_lifetime_range_end * 0.5f,
+                                                         fleet_radial_particle_lifetime_range_end)));
                                 if (c <= 0)
                                     c = 1;
                                 FastVecSub(sp100, spC0, ((char *)&m->pos));
@@ -945,8 +946,9 @@ void floating_mine_update(char *m) {
             ((Moby *)m)->state = 1;
             break;
         case 1:
-            update_moby_vertical_oscillation(l17_bobbing_vertical_amplitude, fleet_bobbing_phase_rate_degrees * 0.017453292f * g_frame_time,
-                                             m, &data->osc_phase, &data->osc_vel);
+            update_moby_vertical_oscillation(l17_bobbing_vertical_amplitude,
+                                             fleet_bobbing_phase_rate_degrees * 0.017453292f * g_frame_time, m,
+                                             &data->osc_phase, &data->osc_vel);
             make_hit_descriptor(w, (int)m, 0x10001, 1.0f, v);
             qcopy(pos, m + 0x10);
             pos[2] = pos[2] + 0.75f;
@@ -1321,8 +1323,8 @@ char *spawn_class_558_moby_toward_target(char *source_moby, char *spawn_position
 }
 
 /* Draws effect texture 0x2E four times at x, y, each copy turned a further 90 degrees. */
-void Effect_DrawFourQuadStar(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
-                                         float y, float s, float ang) {
+void Effect_DrawFourQuadStar(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y,
+                             float s, float ang) {
     int h;
     float w;
     h = GetEffectTex(0x2E);
@@ -1487,15 +1489,15 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
                             float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                            emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3, 0x500000FF, x,
-                                                              y, 1.0f, ang);
+                            emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3,
+                                                              0x500000FF, x, y, 1.0f, ang);
                         }
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
                             float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                            emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3, 0x500000FF, x,
-                                                              y, 1.3f, -ang);
+                            emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3,
+                                                              0x500000FF, x, y, 1.3f, -ang);
                         }
                     }
                 }
@@ -1514,15 +1516,15 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                        emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3, 0x400000FF, x, y,
-                                                          2.0f, ang);
+                        emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3,
+                                                          0x400000FF, x, y, 2.0f, ang);
                     }
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
                         float y = (v[1] - scr[5]) * 0.0625f;
                         float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                        emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3, 0x400000FF, x, y,
-                                                          2.5f, -ang);
+                        emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3,
+                                                          0x400000FF, x, y, 2.5f, -ang);
                     }
                 }
                 dd = fast_vec_dist(&((struct Moby *)m)->pos, &g_hero.motion.pos);
@@ -1542,8 +1544,8 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
                             float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                            emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3, 0xFF00FF00, x,
-                                                              y, 1.0f, -ang);
+                            emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3,
+                                                              0xFF00FF00, x, y, 1.0f, -ang);
                         }
                     }
                     draw_fighter_jet_radar_contact_icon(a3, a2, m, 1, 0x70808080, *(int *)(p + 0x104));
@@ -1557,8 +1559,8 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
                             float ang = normalize_angle(IntToFloat(fleet_frame_count) / 20.0f);
-                            emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3, 0xFF00FF00, x,
-                                                              y, 1.0f, -ang);
+                            emit_transformed_2d_vertex_packet(fighter_jet_screen_marker_vertices, 0x1E, 0xFFFFF3,
+                                                              0xFF00FF00, x, y, 1.0f, -ang);
                         }
                     }
                     draw_fighter_jet_radar_contact_icon(a3, a2, m, 1, 0x70808080, *(int *)(p + 0x104));
@@ -1611,8 +1613,8 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
         v[1] += 208.0f;
         dist = fast_vec_dist(ap, np);
         h = absolute_float(FastSubRots(fast_atan2(*(float *)(near + 0x10) - *(float *)((char *)a + 0x10),
-                                            *(float *)(near + 0x14) - *(float *)((char *)a + 0x14)),
-                                 *(float *)(p + 0x38)));
+                                                  *(float *)(near + 0x14) - *(float *)((char *)a + 0x14)),
+                                       *(float *)(p + 0x38)));
         k = absolute_float(
             FastSubRots(-fast_atan2(vec_distance_xy(ap, np), *(float *)(near + 0x18) - *(float *)((char *)a + 0x18)),
                         *(float *)(p + 0x34)));
@@ -2495,7 +2497,8 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                 qcopy(d->v40, moby->pos);
                 {
                     int i = d->i104 + 0x28;
-                    *(char **)&fleet_hud_health_clut = fighter_jet_hp_bar_clut_lookup_base + (l17_fighter_jet_hp_bar_clut_entries + i)->h * 16;
+                    *(char **)&fleet_hud_health_clut =
+                        fighter_jet_hp_bar_clut_lookup_base + (l17_fighter_jet_hp_bar_clut_entries + i)->h * 16;
                 }
                 if (fleet_hud_health_clut_saved == 0) {
                     *(Blk400 *)fleet_hud_health_clut_backup = **(Blk400 **)&fleet_hud_health_clut;
@@ -3007,8 +3010,10 @@ void magnet_elevator_update(char *moby) {
                 } else if (B(moby, 0x20) == 6) {
                     char *p = &g_hero.motion.pos;
                     float d = vec_distance_xy(moby + 0x10, p);
-                    float e = absolute_float((*(float *)((char *)(p) + (0x258))) - (*(float *)((char *)(state) + (0x64))));
-                    if (e < absolute_float((*(float *)((char *)(state) + (0x60))) - (*(float *)((char *)(state) + (0x64)))) *
+                    float e =
+                        absolute_float((*(float *)((char *)(p) + (0x258))) - (*(float *)((char *)(state) + (0x64))));
+                    if (e < absolute_float((*(float *)((char *)(state) + (0x60))) -
+                                           (*(float *)((char *)(state) + (0x64)))) *
                                 0.5f &&
                         d < 32.0f && d > 2.0f) {
                         B(moby, 0xBC) = 0;
@@ -3018,8 +3023,10 @@ void magnet_elevator_update(char *moby) {
                 } else if (B(moby, 0x20) == 7) {
                     char *p = &g_hero.motion.pos;
                     float d = vec_distance_xy(moby + 0x10, p);
-                    float e = absolute_float((*(float *)((char *)(p) + (0x258))) - (*(float *)((char *)(state) + (0x60))));
-                    if (e < absolute_float((*(float *)((char *)(state) + (0x60))) - (*(float *)((char *)(state) + (0x64)))) *
+                    float e =
+                        absolute_float((*(float *)((char *)(p) + (0x258))) - (*(float *)((char *)(state) + (0x60))));
+                    if (e < absolute_float((*(float *)((char *)(state) + (0x60))) -
+                                           (*(float *)((char *)(state) + (0x64)))) *
                                 0.5f &&
                         d < 32.0f && d > 2.0f) {
                         B(moby, 0xBC) = 0;
@@ -3358,7 +3365,8 @@ void robot_dog_1382_update(unsigned char *m) {
                 if (((Moby *)m)->prev_seq != 10) {
                     MobyBlendAnimation(m, 10, 5, scale_ticks(10));
                 }
-            } else if (fast_vec_dist(d->v180, &d->home) > 32.0f || absolute_float(d->v180[2] - ((Moby *)m)->pos.z) > 3.0f) {
+            } else if (fast_vec_dist(d->v180, &d->home) > 32.0f ||
+                       absolute_float(d->v180[2] - ((Moby *)m)->pos.z) > 3.0f) {
                 ((Moby *)m)->state = 11;
             }
             break;

@@ -217,7 +217,7 @@ void level_12_water_tile_update(char *moby) {
             *(unsigned char *)(hoven_ripple_patches + data->slot * 0x1190 + 0x1D) = 0x44;
             *(unsigned short *)(hoven_ripple_patches + data->slot * 0x1190 + 0x1E) = 0xFFFF;
             pool_bind_tile((float *)(hoven_ripple_patches + data->slot * 0x1190),
-                                     (int *)(hoven_ripple_patch_fixed + data->slot * 16));
+                           (int *)(hoven_ripple_patch_fixed + data->slot * 16));
             ((struct Moby *)moby)->state = 1;
             break;
         }
@@ -475,7 +475,8 @@ void spawn_spark_scatter(void *pos) {
                                                          (float)spark_scatter_second_frame_count_range_end));
         c = truncate_float_to_s32_r(random_float_between((float)spark_scatter_third_frame_count_range_start,
                                                          (float)spark_scatter_third_frame_count_range_end));
-        PartType02Spawn(w, v3, v4, l12_spark_scatter_start_color, l12_spark_scatter_end_color, a, b, c, l12_spark_scatter_table_index_and_mode);
+        PartType02Spawn(w, v3, v4, l12_spark_scatter_start_color, l12_spark_scatter_end_color, a, b, c,
+                        l12_spark_scatter_table_index_and_mode);
     } while (--i >= 0);
 }
 typedef struct TrollData54_2E2EF0 TrollData54_2E2EF0;
@@ -725,7 +726,8 @@ void hoven_anklebiter_update(Moby *m) {
             angle = fast_atan2(d->home[0] - m->pos.x, d->home[1] - m->pos.y);
             MobySpringTurn_r((char *)m, &d->turn_velocity, angle, 0.05f, 0.3f, 0.2f);
             FastVecSub(work.v0, &target->pos, d->home);
-            if ((FastVecLength(work.v0) < d->range && absolute_float(d->home[2] - target->pos.z) < 8.0f) || m->command == 2) {
+            if ((FastVecLength(work.v0) < d->range && absolute_float(d->home[2] - target->pos.z) < 8.0f) ||
+                m->command == 2) {
                 if (m->group != 255)
                     alert_group_e81e0(m->group, 2);
                 m->draw_dist = 0x40;
@@ -797,7 +799,8 @@ void hoven_anklebiter_update(Moby *m) {
                     m->state = 5;
                     if (m->prev_seq != 4)
                         MobyBlendAnimation(m, 4, 0, scale_ticks(5));
-                } else if (FastVecLength(work.v0) < d->range + 5.5f && absolute_float(m->pos.z - target->pos.z) < 4.4f) {
+                } else if (FastVecLength(work.v0) < d->range + 5.5f &&
+                           absolute_float(m->pos.z - target->pos.z) < 4.4f) {
                     if (m->group != 255)
                         alert_group_e81e0(m->group, 1);
                 } else if (m->command != 1 && random_integer_below(9) == 0) {
@@ -1017,8 +1020,10 @@ void spawn_hoven_anklebiter_death_sparks(struct Moby *mp) {
         add_random_offset_to_vector_xyz(v, (l12_anklebiter_spark_burst_origin_jitter));
         v[2] = v[2] + 0.55f;
         f22 = random_angle_radians();
-        f20 = random_float_between((l12_anklebiter_spark_horizontal_speed_range_start), (l12_anklebiter_spark_horizontal_speed_range_end));
-        f21 = random_float_between((l12_anklebiter_spark_vertical_speed_range_start), (l12_anklebiter_spark_vertical_speed_range_end));
+        f20 = random_float_between((l12_anklebiter_spark_horizontal_speed_range_start),
+                                   (l12_anklebiter_spark_horizontal_speed_range_end));
+        f21 = random_float_between((l12_anklebiter_spark_vertical_speed_range_start),
+                                   (l12_anklebiter_spark_vertical_speed_range_end));
         if (((unsigned char)arg0[0x20]) == 0xF) {
             f20 = f20 * 0.55f;
             f21 = f21 * 0.55f;
@@ -1042,9 +1047,11 @@ void spawn_hoven_anklebiter_death_sparks(struct Moby *mp) {
             add_random_offset_to_vector_xyz(v, (l12_anklebiter_spark_position_jitter));
             add_random_offset_to_vector_xyz(b, (l12_anklebiter_spark_velocity_jitter_scale)*g_frame_time);
             r = random_float_between(0.0f, 1.0f);
-            x19 = FastTweenColor((l12_anklebiter_spark_start_color_range_start), (l12_anklebiter_spark_start_color_range_end), r);
+            x19 = FastTweenColor((l12_anklebiter_spark_start_color_range_start),
+                                 (l12_anklebiter_spark_start_color_range_end), r);
             r = random_float_between(0.0f, 1.0f);
-            x18 = FastTweenColor((l12_anklebiter_spark_end_color_range_start), (l12_anklebiter_spark_end_color_range_end), r);
+            x18 = FastTweenColor((l12_anklebiter_spark_end_color_range_start),
+                                 (l12_anklebiter_spark_end_color_range_end), r);
             x17 = scale_ticks((l12_anklebiter_spark_life_frames));
             x16 = scale_ticks((l12_anklebiter_spark_fade_frames));
             r = random_float_between((float)(l12_anklebiter_spark_random_time_base) * 0.5f,
@@ -1252,7 +1259,7 @@ void steer_platform_toward_target(Moby *m, float *ang, void *target, int unused,
     ApproachValue(&m->rot, ang[0], FastDiffRots(ang[0], m->rot.x) / (platform_tilt_approach_divisor));
     ApproachValue(&m->rot.y, ang[1], FastDiffRots(ang[1], m->rot.y) / (platform_tilt_approach_divisor));
     spring_angle(&m->rot.z, ang[2], &d->yaw_vel, 0, g_frame_scale_sq * 0.005f, g_frame_scale_sq * 0.3f,
-                g_frame_time * lim);
+                 g_frame_time * lim);
     FastVecAdd(&m->pos, &m->pos, &d->vel);
 }
 extern float platform_tilt_offset_divisor SDATA(platform_tilt_offset_divisor);
@@ -2203,11 +2210,11 @@ tail:
         M_F(data, 0x208) = -M_F(data, 0x208);
     }
     ((void (*)(void *, void *, int, float, float))func_L00_00263950)(moby, data + 0x120, 5,
-                                                                          (*(float *)&g_frame_scale_sq) * 0.0179999992f,
-                                                                          (*(float *)&g_frame_scale_sq) * 0.300000012f);
+                                                                     (*(float *)&g_frame_scale_sq) * 0.0179999992f,
+                                                                     (*(float *)&g_frame_scale_sq) * 0.300000012f);
     ((void (*)(void *, void *, int, float, float))func_L00_00263950)(moby, data + 0x1A0, 6,
-                                                                          (*(float *)&g_frame_scale_sq) * 0.0240000002f,
-                                                                          (*(float *)&g_frame_scale_sq) * 0.300000012f);
+                                                                     (*(float *)&g_frame_scale_sq) * 0.0240000002f,
+                                                                     (*(float *)&g_frame_scale_sq) * 0.300000012f);
     return;
 }
 

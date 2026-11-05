@@ -259,7 +259,8 @@ void hero_update_transitions(void) {
                                 if (fast_dec_timer(&g_hero.slot3_anim_timer)) {
                                     if (0.55850536f > D_L00_0017A780.f258 && D_L00_0017A780.f254 < 0.34906584f &&
                                         g_hero.items[3].state == 2) {
-                                        g_hero.slot3_anim_timer = func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
+                                        g_hero.slot3_anim_timer =
+                                            func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
                                         blend_hero_slot3_animation_pair();
                                     }
                                 }
@@ -1401,7 +1402,7 @@ void hero_update_transitions(void) {
                                         sp28 = g_hero.rail_segment;
                                         sp2C = g_hero.rail_seg_frac;
                                         if (sample_path((int *)g_hero.rail_spline, v0, &sp28, &sp2C,
-                                                                     g_hero.rail_spline_loops, t)) {
+                                                        g_hero.rail_spline_loops, t)) {
                                             FastVecScale(v1, g_hero.motion.displacement.f, scale_ticks(0x30));
                                             FastVecAdd(v0, g_hero.motion.pos.f, v1);
                                         }
@@ -2737,8 +2738,8 @@ void hero_update_transitions(void) {
                         if (g_hero.rail_land_frames == 1) {
                             qcopy(v0, g_hero.motion.pos.f);
                             v0[2] = g_hero.ground_z.f + 0.2f;
-                            spawn_giant_clank_hit_sphere((int)((unsigned char *)g_hero.moby), v0, scale_ticks(0x19), 2.0f,
-                                                 g_frame_time * 15.0f, 40.0f);
+                            spawn_giant_clank_hit_sphere((int)((unsigned char *)g_hero.moby), v0, scale_ticks(0x19),
+                                                         2.0f, g_frame_time * 15.0f, 40.0f);
                         }
                         if (g_hero.rail_land_frames != 0 && g_hero.move_lock_timer == 0) {
                             if (pad_pressed_within(0x40, scale_ticks(4), 0)) {

@@ -701,7 +701,7 @@ void draw_map_overlay(void) {
                 cell_x = cell % 16;
                 cell_y = cell / 16;
                 append_screen_rect_packet(rx0 + cell_x * dx / 16, ry0 + cell_y * dy / 16, rx0 + (cell_x + 1) * dx / 16,
-                                      ry0 + (cell_y + 1) * dy / 16, 0x20000000, 1);
+                                          ry0 + (cell_y + 1) * dy / 16, 0x20000000, 1);
             }
         }
     }
@@ -830,8 +830,8 @@ void draw_map_overlay(void) {
                         if (id != 0) {
                             if (map_data_001A01F0.icons[i].flags & 0x40) {
                                 append_screen_rect_packet(icon_bounds[i].x0 - 0x20, icon_bounds[i].y0 - 0x20,
-                                                      icon_bounds[i].x1 + 0x20, icon_bounds[i].y1 + 0x20, 0x80000000,
-                                                      1);
+                                                          icon_bounds[i].x1 + 0x20, icon_bounds[i].y1 + 0x20,
+                                                          0x80000000, 1);
                             }
                             if (map_data_001A01F0.icons[i].flags & 0x200) {
                                 s = map_data_001A01F0.zoom[map_data_001A01F0.selected_map];

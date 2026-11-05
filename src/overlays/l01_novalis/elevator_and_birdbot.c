@@ -805,8 +805,9 @@ void birdbot_update(Moby *m) {
             MobySpringTurn((char *)m, &v->f194, a, 0.02f, 0.3f, 0.1f);
             fast_dec_timer(&v->w190);
             d = vec_distance_xy(&m->pos, &tgt);
-            if ((flag ? d < v->f1A0 * 2.0f : d < v->f1A0) && absolute_float((*(float *)&m->pos.z) - tgt.pos.f[2]) < 2.0f &&
-                m->visible != 0 && (!flag || res == 0) && v->w190 == 0 &&
+            if ((flag ? d < v->f1A0 * 2.0f : d < v->f1A0) &&
+                absolute_float((*(float *)&m->pos.z) - tgt.pos.f[2]) < 2.0f && m->visible != 0 && (!flag || res == 0) &&
+                v->w190 == 0 &&
                 FastDiffRots((*(float *)&m->rot.z), fast_atan2(tgt.pos.f[0] - (*(float *)&m->pos.x),
                                                                tgt.pos.f[1] - (*(float *)&m->pos.y))) < 0.08726646f) {
                 moby_point_position(m, 0, &va);
@@ -968,7 +969,7 @@ void birdbot_update(Moby *m) {
                     yaw = fast_atan2(vb.f[0], vb.f[1]);
                     pitch = fast_atan2(func_001F9CE8(&vb), vb.f[2]);
                     spawn_birdbot_projectile(m, &va, &vb, yaw, pitch,
-                                                  truncate_float_to_s32_r(multiply_global_factor(10.0f)));
+                                             truncate_float_to_s32_r(multiply_global_factor(10.0f)));
                     v->h1A4++;
                 } else {
                     if (m->prev_seq != 0) {
@@ -1090,9 +1091,10 @@ void birdbot_update(Moby *m) {
                 BuildSphericalOffset(&vb, v->f1B8, (*(float *)&m->rot.z),
                                      fast_atan2(vec_distance_xy(&m->pos, &va), va.f[2] - (*(float *)&m->pos.z)));
                 FastVecAdd(&m->pos, &m->pos, &vb);
-                (*(float *)&m->rot.y) = SpringTurn(
-                    &v->f1BC, (*(float *)&m->rot.y), v->f1B8 / (birdbot_path_speed_scale_gp * g_frame_time) * 0.5235988f,
-                    g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 4.712389f);
+                (*(float *)&m->rot.y) =
+                    SpringTurn(&v->f1BC, (*(float *)&m->rot.y),
+                               v->f1B8 / (birdbot_path_speed_scale_gp * g_frame_time) * 0.5235988f,
+                               g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 4.712389f);
             }
             qcopy(&va, &c->path->pts[c->idx]);
             va.f[2] += h;
@@ -1109,9 +1111,10 @@ void birdbot_update(Moby *m) {
                 va.f[1] = FastSin((*(float *)&m->rot.z)) * v->f1B8;
                 va.f[2] = 0.0f;
                 FastVecAdd(&m->pos, &m->pos, &va);
-                (*(float *)&m->rot.y) = SpringTurn(
-                    &v->f1BC, (*(float *)&m->rot.y), v->f1B8 / (birdbot_path_speed_scale_gp * g_frame_time) * 0.5235988f,
-                    g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
+                (*(float *)&m->rot.y) =
+                    SpringTurn(&v->f1BC, (*(float *)&m->rot.y),
+                               v->f1B8 / (birdbot_path_speed_scale_gp * g_frame_time) * 0.5235988f,
+                               g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
             } else {
                 float a;
                 float k;
@@ -1556,7 +1559,8 @@ void peckbot_update(Moby *m) {
             a = fast_atan2(v->v1D0.f[0] - m->pos.x, v->v1D0.f[1] - m->pos.y);
             MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
             FastVecSub(&va, &tgt, &v->v1D0);
-            if ((FastVecLength(&va) < v->f1FC && absolute_float(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) || m->command == 2) {
+            if ((FastVecLength(&va) < v->f1FC && absolute_float(v->v1D0.f[2] - tgt.pos.f[2]) < 8.0f) ||
+                m->command == 2) {
                 if (m->group != 0xFF) {
                     alert_group_e81e0(m->group, 2);
                 }
@@ -1696,8 +1700,8 @@ void peckbot_update(Moby *m) {
 
             a = fast_atan2(tgt.pos.f[0] - m->pos.x, tgt.pos.f[1] - m->pos.y);
             MobySpringTurn((char *)m, &v->f1F0, a, 0.05f, 0.3f, 0.2f);
-            if (m->seq == m->prev_seq && compute_interpolated_record_value(m) == 13.0f && absolute_float(m->pos.z - tgt.pos.f[2]) < 0.5f &&
-                vec_distance_xy(&m->pos, &tgt) < 2.0f &&
+            if (m->seq == m->prev_seq && compute_interpolated_record_value(m) == 13.0f &&
+                absolute_float(m->pos.z - tgt.pos.f[2]) < 0.5f && vec_distance_xy(&m->pos, &tgt) < 2.0f &&
                 FastDiffRots(fast_atan2(tgt.pos.f[0] - m->pos.x, tgt.pos.f[1] - m->pos.y), m->rot.z) < 0.2617994f) {
                 va.f[0] = FastCos(m->rot.z) * 0.2f;
                 va.f[1] = FastSin(m->rot.z) * 0.2f;
@@ -2763,7 +2767,7 @@ void bomber_jet_update(Moby *m) {
                 if (d->cam174 != -1) {
                     l01_hero_set_state(0x72, 0);
                     jet_mount(D_L01_0016016C + (d->cam174 << 7) + 0x30, D_L01_0016016C + (d->cam174 << 7) + 0x70, 0, 0,
-                                 0);
+                              0);
                     cutscene_active = 1;
                     m->collision = 0;
                     m->flags &= 0xEFFF;
@@ -2975,8 +2979,8 @@ void water_lily_update(HoverMoby *m) {
                     m->pos.v.y += g_hero_r2.motion.pos.f[1];
                 }
             }
-            move_moby_xy_with_collision_constraints(m, &tgt, &m->pos, 3, 0.1f, *(float *)&water_lily_collision_radius, 600.0f,
-                                  1.5707964f);
+            move_moby_xy_with_collision_constraints(m, &tgt, &m->pos, 3, 0.1f, *(float *)&water_lily_collision_radius,
+                                                    600.0f, 1.5707964f);
             m->pos.v.x = tgt.v.x;
             m->pos.v.y = tgt.v.y;
             m->pos.v.z = old.v.z;
@@ -3061,8 +3065,8 @@ void rising_debris_emitter_update(SteamMoby *m) {
         pos.f[2] = 0.0f;
         FastVecAdd(&pos, &pos, &m->pos);
         pos.f[2] += v->height;
-        spawn_debris_moby_v(&pos, &vel, colors.c[random_integer_below(3)], func_L00_00258BC8(0xB4, 0x12C), 0.05f, 1.0f, 1.0f,
-                            0.75f, 0);
+        spawn_debris_moby_v(&pos, &vel, colors.c[random_integer_below(3)], func_L00_00258BC8(0xB4, 0x12C), 0.05f, 1.0f,
+                            1.0f, 0.75f, 0);
     }
     for (i = 0; i < 2; i++) {
         colors = l01_rising_particle_variant_indices;
@@ -3191,8 +3195,8 @@ void falling_rock_update(Moby *falling_rock) {
         pos.f[1] = FastSin(debris_spawn_angle) * debris_spawn_radius;
         pos.f[2] = 0.0f;
         FastVecAdd(&pos, &pos, &falling_rock_vars->home);
-        spawn_debris_moby_v(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)], func_L00_00258BC8(0xB4, 0x12C),
-                            0.05f, 1.0f, 1.0f, 0.75f, 0);
+        spawn_debris_moby_v(&pos, &debris_initial_velocity, colors.c[random_integer_below(3)],
+                            func_L00_00258BC8(0xB4, 0x12C), 0.05f, 1.0f, 1.0f, 0.75f, 0);
     }
     switch (falling_rock->state) {
         case FALLING_ROCK_STATE_INITIALIZE:
@@ -3251,9 +3255,8 @@ void falling_rock_update(Moby *falling_rock) {
                 falling_rock->state = 4;
                 Moby_PlaySound_r2(0, 0, falling_rock);
                 falling_rock->pos.z = falling_rock_vars->home.f[2] - 20.0f;
-                *(int *)((char *)&D_0014C290 +
-                         (((short)falling_rock->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |=
-                    1 << (falling_rock->save_id & 0x1F);
+                *(int *)((char *)&D_0014C290 + (((short)falling_rock->save_id >> 5) * 4 +
+                                                (g_current_level_index_m << 8))) |= 1 << (falling_rock->save_id & 0x1F);
                 moby_killed[(short)falling_rock->save_id >> 5] |= 1 << (falling_rock->save_id & 0x1F);
             }
             falling_rock->pos.z += 0.0f;

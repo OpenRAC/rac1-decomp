@@ -309,7 +309,7 @@ void veldin_robot_enemy_update(Moby *moby) {
     manipulator_set_scale(vars->unk120, 2.5f);
     if (draw_map51[3] != 0) {
         func_L00_00263950((char *)moby, (char *)vars->unk120, 2, *(float *)&g_frame_scale_sq * 0.03f,
-                               *(float *)&g_frame_scale_sq * 0.3f);
+                          *(float *)&g_frame_scale_sq * 0.3f);
     }
     if (moby->visible != 0 && fast_vec_dist(&moby->pos, g_debug_camera) < 27.0f) {
         set_ground_height_band(moby);

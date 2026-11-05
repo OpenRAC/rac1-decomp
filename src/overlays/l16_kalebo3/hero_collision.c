@@ -405,7 +405,7 @@ int HeroL16_ApplyPositionOffset(int mode) {
                     collision_extent_or_displacement_length = 0.05f;
                 }
                 collision_result = rig_probe(hero.capsule_radius, collision_extent_or_displacement_length,
-                                                &hero.motion.pos, mask, hero.moby);
+                                             &hero.motion.pos, mask, hero.moby);
                 collision_result |= coll_sphere_hero_groups(hero.capsule_radius, &hero.motion.pos);
                 if (collision_result == 0)
                     break;

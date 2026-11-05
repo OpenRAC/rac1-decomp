@@ -1342,7 +1342,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
     half_h = GI(quick_select_height) / 2;
     draw_hud_sprite(GetIconFrame(0xe934, 0), x, y, half_w, half_h, alpha);
     draw_hud_sprite(GetIconFrame(0xe934, 0), x + GI(quick_select_width), y + GI(quick_select_height), -half_w, -half_h,
-              alpha);
+                    alpha);
     draw_hud_sprite(GetIconFrame(0xe934, 0), x + GI(quick_select_width), y, -half_w, half_h, alpha);
     draw_hud_sprite(GetIconFrame(0xe934, 0), x, y + GI(quick_select_height), half_w, -half_h, alpha);
     for (i = 0; i < quick_select_slot_count; i++) {
@@ -1359,19 +1359,20 @@ int draw_hud_item_selector_panel(HudElem *rec) {
                 icon_alpha = truncate_float_to_s32((float)alpha * GF(quick_select_unselected_alpha_scale));
             else
                 icon_alpha = alpha;
-            func_L00_0023BAB8((char *)rec,
-                     GetIconFrame(((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id,
-                                  ((unsigned char *)screen_globals_base +
-                                   0x4C6)[((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].item]
-                                      ? 4
-                                      : 0),
-                     icon_x, icon_y, 1, icon_alpha);
+            func_L00_0023BAB8(
+                (char *)rec,
+                GetIconFrame(((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id,
+                             ((unsigned char *)screen_globals_base +
+                              0x4C6)[((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].item]
+                                 ? 4
+                                 : 0),
+                icon_x, icon_y, 1, icon_alpha);
         }
     }
     selected = rec->unk74;
     if (selected >= 0 && *(int *)(((char **)hud_selector_slot_tables)[GI(quick_select_page)] + selected * 0x1C) != 0) {
-        color =
-            FastTweenColor(GI(l00_hud_item_selector_text_shadow_color_from), GI(hud_item_selector_text_shadow_color_to), open * fade);
+        color = FastTweenColor(GI(l00_hud_item_selector_text_shadow_color_from),
+                               GI(hud_item_selector_text_shadow_color_to), open * fade);
         {
             int id;
             id = *(int *)((char *)help_stats_base_i + 0x885 + selected * 4);
@@ -1393,7 +1394,8 @@ int draw_hud_item_selector_panel(HudElem *rec) {
             }
         }
         prefix_length = 0;
-        shadow = FastTweenColor(GI(l00_hud_item_selector_title_color_from), GI(l00_hud_item_selector_title_color_to), open * fade);
+        shadow = FastTweenColor(GI(l00_hud_item_selector_title_color_from), GI(l00_hud_item_selector_title_color_to),
+                                open * fade);
         {
             int item, id;
             item = *(int *)(((char **)hud_selector_slot_tables)[GI(quick_select_page)] + selected * 0x1C + 0x18);

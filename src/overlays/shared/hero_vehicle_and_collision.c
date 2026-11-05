@@ -785,14 +785,14 @@ int HeroEnterMoveState(int a, int b) {
                 emit_hero_surface_effect_burst(3, 0xA, 0);
                 if (water_patches != 0) {
                     pool_splash(water_patches, water_patch_count, 0, p->motion.pos.f[0], p->motion.pos.f[1], 0.4f,
-                                  0.3f);
+                                0.3f);
                 }
             } else if (p->motion.displacement.f[2] < g_frame_time * -0.5f) {
                 int n = truncate_float_to_s32(absolute_float(p->motion.displacement.f[2]) * 300.0f);
                 emit_hero_surface_effect_burst(3, n < 0x28 ? n : 0x28, 1);
                 if (water_patches != 0) {
                     pool_splash(water_patches, water_patch_count, 0, p->motion.pos.f[0], p->motion.pos.f[1], 0.5f,
-                                  -0.4f);
+                                -0.4f);
                 }
                 p->splash_effect_timer = scale_ticks(0x4B);
             }
@@ -1386,8 +1386,8 @@ int HeroEnterMoveState(int a, int b) {
             t = p->rail_candidate_frac;
             i = p->follow_path_segment;
             f = t;
-            sample_path(*(int *)&p->follow_path_spline, (char *)&out, (char *)&i, (char *)&f,
-                                     p->rail_candidate_kind, 1.0f);
+            sample_path(*(int *)&p->follow_path_spline, (char *)&out, (char *)&i, (char *)&f, p->rail_candidate_kind,
+                        1.0f);
             FastVecSub(&d, &out, &p->motion.pos);
             if (0.001f < FastVecLength(&d)) {
                 vec_scale_to_length(&d, &d, 1.0f);

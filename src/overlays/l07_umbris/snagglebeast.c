@@ -1055,7 +1055,8 @@ void snagglebeast_update(unsigned char *m) {
         case 3:
             MobySpringTurn_v((char *)m, ang, (float *)&d->turn_vel, g_frame_time_sq * 1.5707964f,
                              g_frame_time_sq * 0.6981317f, g_frame_time * 1.0471976f);
-            if (is_value_within_interpolated_window(m, 31.0f) || is_value_within_interpolated_window(m, 67.0f) || is_value_within_interpolated_window(m, 101.0f)) {
+            if (is_value_within_interpolated_window(m, 31.0f) || is_value_within_interpolated_window(m, 67.0f) ||
+                is_value_within_interpolated_window(m, 101.0f)) {
                 d->phase += 1;
                 qcopy(&va, &((Moby *)m)->pos);
                 d->turn_vel = 0;

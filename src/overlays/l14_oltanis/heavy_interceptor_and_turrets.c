@@ -887,20 +887,23 @@ void blarg_heavy_interceptor_update(struct Moby *m) {
             path_seg = 0;
             path_t = 0.0f;
             sample_path(tab, v, &path_seg, &path_t, dir, t);
-            Spring_r(&m->pos.x, v[0], &d->pos_vel.x, 0.005f, (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
-            Spring_r(&m->pos.y, v[1], &d->pos_vel.y, 0.005f, (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
-            Spring_r(&m->pos.z, v[2], &d->pos_vel.z, 0.005f, (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
+            Spring_r(&m->pos.x, v[0], &d->pos_vel.x, 0.005f,
+                     (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
+            Spring_r(&m->pos.y, v[1], &d->pos_vel.y, 0.005f,
+                     (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
+            Spring_r(&m->pos.z, v[2], &d->pos_vel.z, 0.005f,
+                     (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
             update_blarg_heavy_interceptor_aim_transforms_r(m, 0);
             if (fast_vec_dist(&m->pos, v) < 0.5f) {
                 m->state = 1;
             }
             sample_path(l14_paths[d->aim_path], v, &d->aim_seg, &d->aim_seg_t, d->path_dir, 0.0f);
-            Spring_r(&d->aim_point.x, v[0], &d->aim_vel.x, (l14_blarg_heavy_interceptor_path_easing_error_gain), (l14_blarg_heavy_interceptor_path_easing_damping_coefficient),
-                     0.0f);
-            Spring_r(&d->aim_point.y, v[1], &d->aim_vel.y, (l14_blarg_heavy_interceptor_path_easing_error_gain), (l14_blarg_heavy_interceptor_path_easing_damping_coefficient),
-                     0.0f);
-            Spring_r(&d->aim_point.z, v[2], &d->aim_vel.z, (l14_blarg_heavy_interceptor_path_easing_error_gain), (l14_blarg_heavy_interceptor_path_easing_damping_coefficient),
-                     0.0f);
+            Spring_r(&d->aim_point.x, v[0], &d->aim_vel.x, (l14_blarg_heavy_interceptor_path_easing_error_gain),
+                     (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
+            Spring_r(&d->aim_point.y, v[1], &d->aim_vel.y, (l14_blarg_heavy_interceptor_path_easing_error_gain),
+                     (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
+            Spring_r(&d->aim_point.z, v[2], &d->aim_vel.z, (l14_blarg_heavy_interceptor_path_easing_error_gain),
+                     (l14_blarg_heavy_interceptor_path_easing_damping_coefficient), 0.0f);
             break;
         }
         case 7: {
@@ -980,7 +983,7 @@ void blarg_heavy_interceptor_update(struct Moby *m) {
                 return;
             }
             spawn_burst(&m->pos, oltanis_zero_vector_r, 0x4F007FFF, 0x1FFFFFFF,
-                            func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
+                        func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
             for (i = 0; i < 2; i++) {
                 int a = random_integer_below(6);
                 float size;
@@ -1123,9 +1126,11 @@ void draw_blarg_heavy_interceptor_light_ring(char *moby) {
         }
     }
     if (d->locked_on != 0) {
-        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, cols, blarg_heavy_interceptor_light_ring_texture_coordinates, 1);
+        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, cols,
+                              blarg_heavy_interceptor_light_ring_texture_coordinates, 1);
     } else {
-        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, blarg_heavy_interceptor_light_ring_vertex_colors,
+        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts,
+                              blarg_heavy_interceptor_light_ring_vertex_colors,
                               blarg_heavy_interceptor_light_ring_texture_coordinates, 1);
     }
     FastVecScale(f.mat[1], f.mat[1], -1.0f);
@@ -1143,9 +1148,11 @@ void draw_blarg_heavy_interceptor_light_ring(char *moby) {
         o[2] = v[2];
     }
     if (d->locked_on != 0) {
-        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, cols, blarg_heavy_interceptor_light_ring_texture_coordinates, 1);
+        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, cols,
+                              blarg_heavy_interceptor_light_ring_texture_coordinates, 1);
     } else {
-        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, blarg_heavy_interceptor_light_ring_vertex_colors,
+        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts,
+                              blarg_heavy_interceptor_light_ring_vertex_colors,
                               blarg_heavy_interceptor_light_ring_texture_coordinates, 1);
     }
 }
@@ -1444,8 +1451,7 @@ void initialize_blarg_heavy_interceptor_paths(char *m) {
         sample_path(q, m + 0x10, &d->aim_seg, &d->aim_seg_t, d->path_dir, d->path_start * d->aim_path_len);
         d->patrol_seg_t = 0.0f;
         d->patrol_seg = 0;
-        sample_path(q, m + 0x10, &d->patrol_seg, &d->patrol_seg_t, d->path_dir,
-                                 d->path_start * d->patrol_path_len);
+        sample_path(q, m + 0x10, &d->patrol_seg, &d->patrol_seg_t, d->path_dir, d->path_start * d->patrol_path_len);
     } else {
         d->patrol_seg = 0;
         d->aim_seg = 0;
@@ -1463,11 +1469,14 @@ void update_blarg_heavy_interceptor_patrol_aim_point(char *moby) {
     float v[4];
     float save = data->aim_seg_t;
     int save2 = data->aim_seg;
-    int r = Spline_AdvanceByDistance_r3(l14_paths[data->aim_path], v, &data->aim_seg, &data->aim_seg_t,
-                                        data->path_dir, data->aim_speed);
-    Spring(&data->aim_point.x, &data->aim_vel.x, v[0], l14_blarg_heavy_interceptor_path_easing_error_gain, l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
-    Spring(&data->aim_point.y, &data->aim_vel.y, v[1], l14_blarg_heavy_interceptor_path_easing_error_gain, l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
-    Spring(&data->aim_point.z, &data->aim_vel.z, v[2], l14_blarg_heavy_interceptor_path_easing_error_gain, l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
+    int r = Spline_AdvanceByDistance_r3(l14_paths[data->aim_path], v, &data->aim_seg, &data->aim_seg_t, data->path_dir,
+                                        data->aim_speed);
+    Spring(&data->aim_point.x, &data->aim_vel.x, v[0], l14_blarg_heavy_interceptor_path_easing_error_gain,
+           l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
+    Spring(&data->aim_point.y, &data->aim_vel.y, v[1], l14_blarg_heavy_interceptor_path_easing_error_gain,
+           l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
+    Spring(&data->aim_point.z, &data->aim_vel.z, v[2], l14_blarg_heavy_interceptor_path_easing_error_gain,
+           l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
     if (data->path_dir == 0) {
         if (r != 0) {
             data->aim_seg_t = save;
@@ -1504,9 +1513,12 @@ void update_blarg_heavy_interceptor_patrol_path_position(struct Moby *moby) {
     idx = 0;
     frac = 0.0f;
     Spline_AdvanceByDistance_r4(tab, out, &idx, &frac, dir, t);
-    Spring(&moby->pos.x, &data->pos_vel.x, out[0], l14_blarg_heavy_interceptor_path_easing_error_gain, l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
-    Spring(&moby->pos.y, &data->pos_vel.y, out[1], l14_blarg_heavy_interceptor_path_easing_error_gain, l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
-    Spring(&moby->pos.z, &data->pos_vel.z, out[2], l14_blarg_heavy_interceptor_path_easing_error_gain, l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
+    Spring(&moby->pos.x, &data->pos_vel.x, out[0], l14_blarg_heavy_interceptor_path_easing_error_gain,
+           l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
+    Spring(&moby->pos.y, &data->pos_vel.y, out[1], l14_blarg_heavy_interceptor_path_easing_error_gain,
+           l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
+    Spring(&moby->pos.z, &data->pos_vel.z, out[2], l14_blarg_heavy_interceptor_path_easing_error_gain,
+           l14_blarg_heavy_interceptor_path_easing_damping_coefficient, 0.0f);
 }
 
 extern float blarg_heavy_interceptor_return_path_position_damping_coefficient_gp SDATA(D_L14_001614C4);
@@ -1523,9 +1535,12 @@ void update_blarg_heavy_interceptor_return_path_position(char *moby, float a, fl
             data->return_done = 1;
         }
     }
-    Spring((float *)(moby + 0x10), &data->pos_vel.x, tmp[0], a, blarg_heavy_interceptor_return_path_position_damping_coefficient_gp, 0.0f);
-    Spring((float *)(moby + 0x14), &data->pos_vel.y, tmp[1], a, blarg_heavy_interceptor_return_path_position_damping_coefficient_gp, 0.0f);
-    Spring((float *)(moby + 0x18), &data->pos_vel.z, tmp[2], a, blarg_heavy_interceptor_return_path_position_damping_coefficient_gp, 0.0f);
+    Spring((float *)(moby + 0x10), &data->pos_vel.x, tmp[0], a,
+           blarg_heavy_interceptor_return_path_position_damping_coefficient_gp, 0.0f);
+    Spring((float *)(moby + 0x14), &data->pos_vel.y, tmp[1], a,
+           blarg_heavy_interceptor_return_path_position_damping_coefficient_gp, 0.0f);
+    Spring((float *)(moby + 0x18), &data->pos_vel.z, tmp[2], a,
+           blarg_heavy_interceptor_return_path_position_damping_coefficient_gp, 0.0f);
 }
 
 extern float interceptor_bob_height SDATA(interceptor_bob_height);
@@ -1636,7 +1651,8 @@ void update_blarg_heavy_interceptor_light_ring_alpha(char *moby) {
             blarg_heavy_interceptor_light_ring_fade_values[i] = v;
             if (v > 0x50)
                 v = 0xA0 - v;
-            blarg_heavy_interceptor_light_ring_vertex_colors[i] = (blarg_heavy_interceptor_light_ring_vertex_colors[i] & 0xFFFFFF) | (v << 24);
+            blarg_heavy_interceptor_light_ring_vertex_colors[i] =
+                (blarg_heavy_interceptor_light_ring_vertex_colors[i] & 0xFFFFFF) | (v << 24);
         }
     }
 }
@@ -2358,7 +2374,7 @@ void minibomber_update(Moby *moby) {
         case 4:
             tg = 0.0f;
             a = cosine_interpolate(tg, d->f104,
-                                  (float)d->f102 / IntToFloat(scale_ticks(minibomber_aim_return_duration_frames)));
+                                   (float)d->f102 / IntToFloat(scale_ticks(minibomber_aim_return_duration_frames)));
             build_axis_rotation_quaternion(d->f120, 2, a);
             if (vec_distance_xy(&moby->pos, &d->fB0->pos) < minibomber_path_traversal_trigger_distance) {
                 if (d->f10C == 0) {
@@ -2425,7 +2441,7 @@ void minibomber_update(Moby *moby) {
             PathNode *q = oltanis_paths_r[d->fD8] + d->f100;
             tg = FastSubRots(fast_atan2(q[1].v[0] - moby->pos.x, q[1].v[1] - moby->pos.y), moby->rot.z);
             a = cosine_interpolate(tg, d->f104,
-                                  (float)d->f102 / IntToFloat(scale_ticks(minibomber_bomb_aim_duration_frames)));
+                                   (float)d->f102 / IntToFloat(scale_ticks(minibomber_bomb_aim_duration_frames)));
             build_axis_rotation_quaternion(d->f120, 2, a);
             if (moby->prev_seq == 2) {
                 moby->state = 4;
@@ -2564,13 +2580,15 @@ void update_minibomber_oscillation(char *moby) {
     if ((raw >= 2 && raw <= 3) || state == 7) {
         t = t * 1.5f;
     } else {
-        Spring(&data->bob_rate, &data->bob_rate_vel, minibomber_vertical_oscillation_phase_increment_target_gp, 0.002f, 0.2f, 0.0f);
-        update_moby_vertical_oscillation(minibomber_vertical_oscillation_amplitude_gp, data->bob_rate, moby, &data->bob_offset,
-                                         &data->bob_phase);
+        Spring(&data->bob_rate, &data->bob_rate_vel, minibomber_vertical_oscillation_phase_increment_target_gp, 0.002f,
+               0.2f, 0.0f);
+        update_moby_vertical_oscillation(minibomber_vertical_oscillation_amplitude_gp, data->bob_rate, moby,
+                                         &data->bob_offset, &data->bob_phase);
     }
     Spring(&data->tilt, &data->tilt_vel, t, 0.003f, 0.2f, 0.0f);
     update_moby_rotation_oscillation(moby, (char *)&data->wobble_a, (char *)&data->wobble_b, data->tilt,
-                                     minibomber_rotation_oscillation_first_phase_increment_gp, minibomber_rotation_oscillation_second_phase_increment_gp);
+                                     minibomber_rotation_oscillation_first_phase_increment_gp,
+                                     minibomber_rotation_oscillation_second_phase_increment_gp);
 }
 
 // Updates a moby's effect from its table entry and latches a default word.
@@ -3352,7 +3370,7 @@ void update_racer_path_and_weapon(struct Moby *m) {
     z = d->seg_t;
     find_nearest_path_point(path, &D_0013F3D0_67e8, &near.x, &d->seg, &d->seg_t, 0, 20.0f, 5.0f, z);
     ((void (*)(void *, void *, void *, void *, int, float))sample_path)(path, &near, &d->seg, &d->seg_t, 0,
-                                                                                     -d->path_step);
+                                                                        -d->path_step);
     ((void (*)(void *, void *, float, float, float, float))Spring)(&m->pos.x, &d->pos_vel, near.x, 0.01f, 0.2f, z);
     ((void (*)(void *, void *, float, float, float, float))Spring)(&m->pos.y, &d->pos_vel.y, near.y, 0.01f, 0.2f, z);
     ((void (*)(void *, void *, float, float, float, float))Spring)(&m->pos.z, &d->pos_vel.z, near.z, 0.01f, 0.2f, z);
@@ -3393,7 +3411,7 @@ void update_racer_path_and_weapon(struct Moby *m) {
         ti = d->seg;
         tf = d->seg_t;
         ((void (*)(void *, void *, void *, void *, int, float))sample_path)(path, &v[0], &ti, &tf, 0,
-                                                                                         k + (1.0f - k) * t);
+                                                                            k + (1.0f - k) * t);
         qcopy(&d->beam_end, &v[0]);
         FastVecSub(&v[1], &v[0], &m->pos);
         yaw = fast_atan2(v[1].x, v[1].y);
@@ -3535,8 +3553,8 @@ extern float l14_racer_path_follow_speed SDATA(D_L14_00161B00);
 void plasmabot_211_advance_on_path(char *moby) {
     struct L14RacerVars *data = (struct L14RacerVars *)((Moby *)moby)->pvars;
     int idx = data->path;
-    sample_path(*(int *)((idx << 5) + race_paths + 0x10), moby + 0x10, (char *)&data->seg,
-                             (char *)&data->seg_t, 0, l14_racer_path_follow_speed * g_frame_time);
+    sample_path(*(int *)((idx << 5) + race_paths + 0x10), moby + 0x10, (char *)&data->seg, (char *)&data->seg_t, 0,
+                l14_racer_path_follow_speed * g_frame_time);
 }
 typedef struct {
     float m[4][4];
@@ -3738,7 +3756,8 @@ void update_platform_tilt_basis(char *moby) {
     }
 
     if (fast_dec_timer(&data->settle_timer)) {
-        if (0.1f < absolute_float(((Moby *)moby)->rot_row2.x - v[0]) || 0.1f < absolute_float(((Moby *)moby)->rot_row2.y - v[1]) ||
+        if (0.1f < absolute_float(((Moby *)moby)->rot_row2.x - v[0]) ||
+            0.1f < absolute_float(((Moby *)moby)->rot_row2.y - v[1]) ||
             0.1f < absolute_float(((Moby *)moby)->rot_row2.z - v[2])) {
             data->settle_timer = scale_ticks(60);
             ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 2.0f;

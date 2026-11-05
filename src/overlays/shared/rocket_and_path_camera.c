@@ -202,8 +202,10 @@ void rocket_819_update(Moby *m) {
                 BuildSphericalOffset_v(speed, m->rot.z, -m->rot.y, d);
             }
             clear_u64_value(c);
-            spawn_effect(p, c, 0x6F00AFFF, 0xFF, scale_ticks(func_L00_00258BC8(15, 22)), 0x28, func_L00_00258BC8(20, 35), 1);
-            spawn_effect(p, c, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(func_L00_00258BC8(30, 60)), 0x28, func_L00_00258BC8(50, 75), 0);
+            spawn_effect(p, c, 0x6F00AFFF, 0xFF, scale_ticks(func_L00_00258BC8(15, 22)), 0x28,
+                         func_L00_00258BC8(20, 35), 1);
+            spawn_effect(p, c, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(func_L00_00258BC8(30, 60)), 0x28,
+                         func_L00_00258BC8(50, 75), 0);
             dist = fast_vec_dist(p, D_0013F4D0);
             FastVecAdd(p, p, d);
             if (d->warned == 0 && d->passed != 0 && d->dist < dist && dist < 5.0f) {
@@ -376,12 +378,12 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
     for (pass = 0; pass < quad_layer_count; pass++) {
         int parity = pass & 1;
         int level;
-        first.unk88 =
-            ALPHA_2EA578(((int *)&quad_layer_alpha_a_selectors)[parity], ((int *)&quad_layer_alpha_b_selectors)[parity],
-                         ((int *)&quad_layer_alpha_c_selectors)[parity], ((int *)&quad_layer_alpha_d_selectors)[parity], 0x80);
-        second.unk88 =
-            ALPHA_2EA578(((int *)&quad_layer_alpha_a_selectors)[parity], ((int *)&quad_layer_alpha_b_selectors)[parity],
-                         ((int *)&quad_layer_alpha_c_selectors)[parity], ((int *)&quad_layer_alpha_d_selectors)[parity], 0x80);
+        first.unk88 = ALPHA_2EA578(
+            ((int *)&quad_layer_alpha_a_selectors)[parity], ((int *)&quad_layer_alpha_b_selectors)[parity],
+            ((int *)&quad_layer_alpha_c_selectors)[parity], ((int *)&quad_layer_alpha_d_selectors)[parity], 0x80);
+        second.unk88 = ALPHA_2EA578(
+            ((int *)&quad_layer_alpha_a_selectors)[parity], ((int *)&quad_layer_alpha_b_selectors)[parity],
+            ((int *)&quad_layer_alpha_c_selectors)[parity], ((int *)&quad_layer_alpha_d_selectors)[parity], 0x80);
         level = quad_layer_colors[pass];
         second.col[2] = level;
         second.col[0] = level;

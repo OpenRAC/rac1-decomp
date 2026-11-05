@@ -1188,9 +1188,9 @@ void homing_rocket_update(struct Moby *m) {
             vec_scale_to_length(&back, v, -0.2f);
             add_vectors(&trail, &back, pos);
             spawn_effect(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks(func_L00_00258BC8(0xF, 0x16)), 0x28,
-                            func_L00_00258BC8(0x14, 0x23), 1);
+                         func_L00_00258BC8(0x14, 0x23), 1);
             spawn_effect(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(func_L00_00258BC8(0x1E, 0x3C)), 0x28,
-                            func_L00_00258BC8(0x32, 0x4B), 0);
+                         func_L00_00258BC8(0x32, 0x4B), 0);
             if (target.found != 0) {
                 pitch = -fast_atan2(vec_distance_xy(pos, &target.pos), target.pos.f[2] - m->pos.z);
                 m->rot.y = SpringTurn(&v->turn_vel, m->rot.y, pitch, g_frame_time_sq_r * 0.7853982f,
@@ -1307,11 +1307,11 @@ extern LevelState_hg l03_moby_collection_state;
 extern u8 mission_collection_recording_filter[];
 extern char *l03_cuboids SDATA(D_L03_0016016C);
 
-#define LINK_HELPER(M, V)                                                  \
-    t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058);             \
-    if (t->oclass == MOBY_CLASS_TAXI_1012) {                               \
-        flag = (s32 *)(t->pvars + 0x8C);                                   \
-        *flag = 1;                                                         \
+#define LINK_HELPER(M, V)                                                            \
+    t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058);                       \
+    if (t->oclass == MOBY_CLASS_TAXI_1012) {                                         \
+        flag = (s32 *)(t->pvars + 0x8C);                                             \
+        *flag = 1;                                                                   \
         record_moby_context_bytes(flag, 4, M, 2, helga_helper_flag_context_records); \
     }
 
@@ -1920,8 +1920,7 @@ void robot_qwark_update(unsigned char *m) {
         ((Moby *)m)->shadow_range = 21;
     }
     if (SAVEFLAGS->collected[(short)((Moby *)m)->save_id] != 0 ||
-        (D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) &
-            1) {
+        (D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) & 1) {
         if (((Moby *)m)->state != 3) {
             ((Moby *)m)->state = 3;
             MobySetAnimation(m, 1, 0);
@@ -1930,9 +1929,7 @@ void robot_qwark_update(unsigned char *m) {
     hit = (Hit_DD158 *)MobyGetHitMessage(m, -1, 0);
     if (hit != 0 && hit->source != 0 && (type = hit->type) == 3 &&
         SAVEFLAGS->collected[(short)((Moby *)m)->save_id] == 0 &&
-        (((D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >>
-           (((Moby *)m)->save_id & 0x1F)) ^
-          1) &
+        (((D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) ^ 1) &
          1)) {
         unsigned char *p5 = gSkillPoints;
         if (p5[5] == 0) {
@@ -1946,8 +1943,7 @@ void robot_qwark_update(unsigned char *m) {
         spawn_explosion(m, vel, pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
         ((Moby *)m)->state = type;
         MobySetAnimation(m, 1, 0);
-        D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |= 1
-                                                                                      << (((Moby *)m)->save_id & 0x1F);
+        D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
         kerwan_moby_killed_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
     }
     ((Moby *)m)->hit_slot = 0xFF;
@@ -2418,7 +2414,8 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                                             data->f38) != 0 &&
                 (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
                  ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
-                kerwan_usage_event_count < 3 && l03_help_message_playback_state[0] == 0 && l03_help_message_playback_state[9] == -1) {
+                kerwan_usage_event_count < 3 && l03_help_message_playback_state[0] == 0 &&
+                l03_help_message_playback_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x40].count == 0) {
                     help_request(0x3EC, 0x40);
@@ -2430,7 +2427,8 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
                  ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
                 ((Hero *)(hero_globals_base + 0xE1D))->state.current == HERO_STATE_LOOK &&
-                kerwan_usage_event_timer == -1 && l03_help_message_playback_state[0] == 0 && l03_help_message_playback_state[9] == -1) {
+                kerwan_usage_event_timer == -1 && l03_help_message_playback_state[0] == 0 &&
+                l03_help_message_playback_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x40].count != 0 && b[0x41].count == 0) {
                     help_request(0x3ED, 0x41);
@@ -2448,8 +2446,8 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 }
             }
 
-            if (kerwan_game_mode == 0 && (gHavePersuader + 0x11)[0] != 0 &&
-                l03_help_message_playback_state[0] == 0 && l03_help_message_playback_state[9] == -1) {
+            if (kerwan_game_mode == 0 && (gHavePersuader + 0x11)[0] != 0 && l03_help_message_playback_state[0] == 0 &&
+                l03_help_message_playback_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x19].count == 0) {
                     help_request(0xBBD, 0x19);
@@ -2503,8 +2501,8 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                                             data->f2C) != 0 &&
                 usage_stats_r[0x10].count == 0 &&
                 ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 6 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->items[0].item_id == 8 && l03_help_message_playback_state[0] == 0 &&
-                l03_help_message_playback_state[9] == -1) {
+                ((Hero *)(hero_globals_base + 0xE1D))->items[0].item_id == 8 &&
+                l03_help_message_playback_state[0] == 0 && l03_help_message_playback_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x1B].count == 0) {
                     help_request(0xBBF, 0x1B);

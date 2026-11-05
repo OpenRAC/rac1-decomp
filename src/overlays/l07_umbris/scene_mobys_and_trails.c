@@ -627,17 +627,20 @@ void Moby1789Update(unsigned char *moby) {
                     moby_point_position(o, 3, b0);
                     FastVecSub(c0, a0, b0);
                     vec_scale_to_length(c0, c0, scene_trail_velocity_length);
-                    draw_trail(a0, a0, c0, scene_trail_first_spawn_particle_value, scene_trail_second_spawn_particle_value);
+                    draw_trail(a0, a0, c0, scene_trail_first_spawn_particle_value,
+                               scene_trail_second_spawn_particle_value);
                     moby_point_position(o, 1, a1);
                     moby_point_position(o, 4, b1);
                     FastVecSub(c1, a1, b1);
                     vec_scale_to_length(c1, c1, scene_trail_velocity_length);
-                    draw_trail(a1, a1, c1, scene_trail_first_spawn_particle_value, scene_trail_second_spawn_particle_value);
+                    draw_trail(a1, a1, c1, scene_trail_first_spawn_particle_value,
+                               scene_trail_second_spawn_particle_value);
                     moby_point_position(o, 2, a2);
                     moby_point_position(o, 5, b2);
                     FastVecSub(c2, a2, b2);
                     vec_scale_to_length(c2, c2, scene_trail_velocity_length);
-                    draw_trail(a2, a2, c2, scene_trail_first_spawn_particle_value, scene_trail_second_spawn_particle_value);
+                    draw_trail(a2, a2, c2, scene_trail_first_spawn_particle_value,
+                               scene_trail_second_spawn_particle_value);
                 }
             }
             break;

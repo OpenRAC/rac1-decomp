@@ -34,17 +34,17 @@ void draw_level11_layered_effect_batches(void) {
     emit_level11_layered_effect_batches_with_pair_offset(0);
     if (*(unsigned char *)&l11_layered_effect_texture_29_distance_fade_alpha != 0) {
         VU1_addGSregister(6, GetEffectTex(0x29));
-        VU1_addGSregister(
-            0x42,
-            (long)((layered_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&l11_layered_effect_texture_29_distance_fade_alpha) >> 8)
-                    << 32 |
-                0x68);
+        VU1_addGSregister(0x42, (long)((layered_effect_texture_29_fixed_alpha_scale *
+                                        *(unsigned char *)&l11_layered_effect_texture_29_distance_fade_alpha) >>
+                                       8)
+                                        << 32 |
+                                    0x68);
         emit_level11_layered_effect_batches_with_pair_offset(1);
-        VU1_addGSregister(
-            0x42,
-            (long)((layered_effect_texture_29_fixed_alpha_scale * *(unsigned char *)&l11_layered_effect_texture_29_distance_fade_alpha) >> 8)
-                    << 32 |
-                0x62);
+        VU1_addGSregister(0x42, (long)((layered_effect_texture_29_fixed_alpha_scale *
+                                        *(unsigned char *)&l11_layered_effect_texture_29_distance_fade_alpha) >>
+                                       8)
+                                        << 32 |
+                                    0x62);
         emit_level11_layered_effect_batches_with_pair_offset(2);
     }
     VU1_addGSregister(6, GetEffectTex(0x2A));
@@ -99,10 +99,10 @@ void layered_scroll_effect_update(unsigned char *moby) {
             if (layered_effect_color_tables_initialized == 0) {
                 scale_rgba_tables(&pokitaru_layered_mesh_colors, 4, &pokitaru_layered_mesh_vertex_counts, 0.7f, 1.0f,
                                   0.9f, 0.5f, 1);
-                scale_rgba_tables(layered_effect_half_gray_rgba_tables, 11, layered_effect_half_gray_table_entry_counts, 0.5f, 0.5f,
-                                  0.5f, 1.0f, 1);
-                scale_rgba_tables(layered_effect_quarter_gray_rgba_tables, 8, layered_effect_quarter_gray_table_entry_counts, 0.25f, 0.25f,
-                                  0.25f, 0.7f, 1);
+                scale_rgba_tables(layered_effect_half_gray_rgba_tables, 11, layered_effect_half_gray_table_entry_counts,
+                                  0.5f, 0.5f, 0.5f, 1.0f, 1);
+                scale_rgba_tables(layered_effect_quarter_gray_rgba_tables, 8,
+                                  layered_effect_quarter_gray_table_entry_counts, 0.25f, 0.25f, 0.25f, 0.7f, 1);
                 layered_effect_color_tables_initialized = 1;
             }
             moby[0x20] = EFFECT_UPDATE_AND_QUEUE_DRAW;
@@ -172,7 +172,8 @@ void emit_render_batches_with_pair_offset(int arg) {
     int i;
     for (i = 0; i < 17; i++) {
         add_uv_scroll_offset(pokitaru_faded_scrolled_uvs, render_batch_pair_sources[i],
-                             distance_faded_effect_batch_vertex_counts[i], l11_distance_faded_effect_uv_offsets + arg * 8);
+                             distance_faded_effect_batch_vertex_counts[i],
+                             l11_distance_faded_effect_uv_offsets + arg * 8);
         draw_env_overlay_mesh(distance_faded_effect_batch_vertex_counts[i], render_batch_triplet_sources[i],
                               distance_faded_effect_batch_color_tables[i], pokitaru_faded_scrolled_uvs, 1);
     }
@@ -190,8 +191,8 @@ void emit_oil_tanker_render_batches_with_pair_offset(int a) {
     for (i = 0; i < 9; i++) {
         add_uv_scroll_offset(pokitaru_faded_scrolled_uvs, oil_tanker_render_batch_pair_sources[i],
                              oil_tanker_render_batch_vertex_counts[i], &pokitaru_faded_scroll_entries[a]);
-        draw_env_overlay_mesh(oil_tanker_render_batch_vertex_counts[i], oil_tanker_render_batch_triplet_sources[i], oil_tanker_render_batch_color_tables[i],
-                              pokitaru_faded_scrolled_uvs, 1);
+        draw_env_overlay_mesh(oil_tanker_render_batch_vertex_counts[i], oil_tanker_render_batch_triplet_sources[i],
+                              oil_tanker_render_batch_color_tables[i], pokitaru_faded_scrolled_uvs, 1);
     }
 }
 
@@ -202,8 +203,7 @@ extern int distance_faded_effect_fade_alpha MACRO_ADDR;
 extern int distance_faded_effect_texture_29_fixed_alpha_scale MACRO_ADDR;
 extern int distance_faded_effect_texture_2a_pair_one_fixed_alpha MACRO_ADDR;
 extern int distance_faded_effect_texture_2c_fixed_alpha_gp SDATA(D_L11_00162658);
-extern int distance_faded_effect_texture_2a_pair_zero_fixed_alpha_gp
-    SDATA(D_L11_00162678);
+extern int distance_faded_effect_texture_2a_pair_zero_fixed_alpha_gp SDATA(D_L11_00162678);
 extern int distance_faded_effect_texture_2b_fixed_alpha_gp SDATA(D_L11_00162688);
 
 // Draws the level 11 HUD gauges: sets up the gfx packets and per-gauge draws.
@@ -286,12 +286,12 @@ void distance_faded_effect_update(unsigned char *moby) {
     switch (moby[0x20]) {
         case EFFECT_INITIALIZE:
             if (distance_faded_effect_color_tables_initialized == 0) {
-                scale_rgba_tables(distance_faded_effect_batch_color_tables, 17, distance_faded_effect_batch_vertex_counts, 0.7f, 1.0f, 0.9f,
-                                  0.5f, 1);
-                scale_rgba_tables(oil_tanker_front_texture_2b_batch_color_tables, 5, oil_tanker_front_texture_2b_batch_vertex_counts, 0.5f, 0.5f, 0.5f,
-                                  1.0f, 1);
-                scale_rgba_tables(oil_tanker_render_batch_color_tables, 9, oil_tanker_render_batch_vertex_counts, 0.25f, 0.25f, 0.25f, 0.7f,
-                                  1);
+                scale_rgba_tables(distance_faded_effect_batch_color_tables, 17,
+                                  distance_faded_effect_batch_vertex_counts, 0.7f, 1.0f, 0.9f, 0.5f, 1);
+                scale_rgba_tables(oil_tanker_front_texture_2b_batch_color_tables, 5,
+                                  oil_tanker_front_texture_2b_batch_vertex_counts, 0.5f, 0.5f, 0.5f, 1.0f, 1);
+                scale_rgba_tables(oil_tanker_render_batch_color_tables, 9, oil_tanker_render_batch_vertex_counts, 0.25f,
+                                  0.25f, 0.25f, 0.7f, 1);
                 distance_faded_effect_color_tables_initialized = 1;
             }
             moby[0x20] = EFFECT_UPDATE_AND_QUEUE_DRAW;

@@ -417,7 +417,8 @@ void close_vendor_menu(int exit_cutscene_completed) {
     g_hero_field_20a5[0] = 0;
     update_hero_item_moby_flags();
     if (vendor_state_base->unk40 == 0) {
-        transform_vector_by_basis(&world_position, &vendor_close_hero_local_offset_gp, (char *)vendor_state_base->moby + 0xC0);
+        transform_vector_by_basis(&world_position, &vendor_close_hero_local_offset_gp,
+                                  (char *)vendor_state_base->moby + 0xC0);
         FastVecAdd(&world_position, &world_position, (char *)vendor_state_base->moby + 0x10);
         euler_rotation.x = 0.0f;
         euler_rotation.y = 0.0f;
@@ -889,7 +890,7 @@ void update_vendor_purchase(void) {
             }
         } else {
             pr1 = gHavePersuader[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+                                    : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
             if (gBolts < pr1) {
                 Moby_PlaySound(2, 0, vendor_menu_r4.cam);
             }
@@ -973,9 +974,8 @@ void update_vendor_purchase(void) {
                                ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA * vendor_buy_quantity
                                : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8 * vendor_buy_quantity;
                 } else {
-                    cost = gHavePersuader[0]
-                               ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+                    cost = gHavePersuader[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
+                                             : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
                 }
                 if (gBolts < cost && weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >=
                                          item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
@@ -1012,9 +1012,8 @@ void update_vendor_purchase(void) {
                         Moby_PlaySound(0, 0, vendor_menu_r4.cam);
                     }
                 } else {
-                    price = gHavePersuader[0]
-                                ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                                : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+                    price = gHavePersuader[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
+                                              : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
                     if (gBolts >= price) {
                         handle_vendor_auxiliary_moby_event(2);
                         grant_inventory_item(vendor_menu_r4.e[vendor_menu_r4.idx].item, 1);

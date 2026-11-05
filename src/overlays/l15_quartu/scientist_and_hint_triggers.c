@@ -269,8 +269,7 @@ void ultramech_scientist_update(char *moby) {
             if (data->hero_path != -1) {
                 char *paths = quartu_cuboids;
                 char *paths_again;
-                func_L00_00217718(paths + (data->hero_path << 7) + 0x30, paths + (data->hero_path << 7) + 0x70, 0,
-                                     1);
+                func_L00_00217718(paths + (data->hero_path << 7) + 0x30, paths + (data->hero_path << 7) + 0x70, 0, 1);
                 paths_again = quartu_cuboids;
                 jet_reset_camera(paths_again + (data->hero_path << 7) + 0x30,
                                  paths_again + (data->hero_path << 7) + 0x70);
@@ -390,9 +389,9 @@ void ultramech_scientist_update(char *moby) {
             data->unk_1D0 = 2.75f;
         }
         func_L00_00263950(moby, (char *)&data->manip_160, 1, ease_rate * g_frame_scale_sq,
-                               ease_limit * g_frame_scale_sq);
+                          ease_limit * g_frame_scale_sq);
         func_L00_00263950(moby, (char *)&data->manip_1E0, 0, ease_rate * g_frame_scale_sq,
-                               ease_limit * g_frame_scale_sq);
+                          ease_limit * g_frame_scale_sq);
     }
 }
 typedef struct Talk {
@@ -767,7 +766,7 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
         ripple_88_world_vertices[i][1] =
             quartu_ripple88_vertex_scale * template_vertex[1] + ((struct Moby *)moby)->pos.y;
         ripple_88_world_vertices[i][2] = quartu_ripple88_vertex_scale * template_vertex[2] +
-                                            ((struct Moby *)moby)->pos.z + quartu_ripple88_wave_height * z;
+                                         ((struct Moby *)moby)->pos.z + quartu_ripple88_wave_height * z;
         ripple_88_colours[i] = color;
     }
     for (j = 0; j < 2; j++) {

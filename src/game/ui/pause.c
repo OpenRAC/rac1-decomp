@@ -594,7 +594,7 @@ void render_level_effects_and_screen_sprites(void) {
             __builtin_memcpy(&clr, clr_src, 4);
         }
         append_screen_rect_packet(screen_x + 1, screen_y + 1, screen_x + projected_width - 1,
-                              screen_y + projected_height - 1, (u64)clr, 0);
+                                  screen_y + projected_height - 1, (u64)clr, 0);
     }
 
     for (pass = 0; pass < 2; pass++) {
@@ -865,7 +865,8 @@ extern int pause_action_list_mode MACRO_ADDR;
 /* pause_action_list_mode is read through a MACRO_ADDR alias: retail's one-register
    load. */
 int set_pause_action_list(MenuScreen *arg0) {
-    *(char **)&arg0->data.list.items = (pause_action_list_mode != 0) ? title_options_items_with_video : pause_action_list_short;
+    *(char **)&arg0->data.list.items =
+        (pause_action_list_mode != 0) ? title_options_items_with_video : pause_action_list_short;
     return 0;
 }
 
@@ -2637,8 +2638,7 @@ int enter_menu_help_text(MenuScreen *arg0) {
     }
     arg0->data.raw.load_state = 0;
     if (cd_read_state[4] == 0) {
-        if (start_audio_stream_read(help_text_read_destination, disc_table[0x1528 / 4], disc_table[0x152C / 4]) !=
-            0) {
+        if (start_audio_stream_read(help_text_read_destination, disc_table[0x1528 / 4], disc_table[0x152C / 4]) != 0) {
             arg0->data.raw.load_state = 1;
         } else {
             arg0->data.raw.load_state = 3;
@@ -4948,7 +4948,7 @@ int draw_pause_ring(char *arg0) {
 
             append_screen_rect_packet((int)x - 0x13, (int)y - 0x13, (int)x + 0x13, (int)y + 0x13, color, 0);
             append_screen_rect_packet((int)x - 0x12, (int)y - 0x12, (int)x + 0x12, (int)y + 0x12,
-                                  *(int *)&panel_clear_color, 0);
+                                      *(int *)&panel_clear_color, 0);
         }
         icon_entry_index = pause_state->slots[i];
         if (icon_entry_index == 0) {

@@ -1648,10 +1648,10 @@ void CamAttach_EasePose(char *m, float *v2) {
     switch (e->mode) {
         case 2:
             padb = (struct Hero *)g_hero;
-            if (padb->state.current == 0x11 ||
-                (padb->past_jump_apex != 0 && padb->ground_distance > 0.2f &&
-                 ((y = compute_follow_camera_signed_target_angle(m, e->eye_height)) < follow_camera_ground_focus_angle_lower_bound_gp ||
-                  follow_camera_ground_focus_angle_upper_bound_gp < y))) {
+            if (padb->state.current == 0x11 || (padb->past_jump_apex != 0 && padb->ground_distance > 0.2f &&
+                                                ((y = compute_follow_camera_signed_target_angle(m, e->eye_height)) <
+                                                     follow_camera_ground_focus_angle_lower_bound_gp ||
+                                                 follow_camera_ground_focus_angle_upper_bound_gp < y))) {
                 int v;
                 e->mode = 1;
                 v = *(unsigned short *)&l00_follow_camera_ground_focus_exit_transition_frames_gp;
@@ -1821,7 +1821,8 @@ void follow_camera_transition(char *m, float *in) {
     if (t == 3 || t == 5 || t == 6 || t == 7 || t == 1) {
         x = follow_camera_position_transition_end_stiffness_gp +
             (follow_camera_position_default_stiffness_gp - follow_camera_position_transition_end_stiffness_gp) * s;
-        y = follow_camera_position_transition_end_damping_gp + (follow_camera_position_default_damping_gp - follow_camera_position_transition_end_damping_gp) * s;
+        y = follow_camera_position_transition_end_damping_gp +
+            (follow_camera_position_default_damping_gp - follow_camera_position_transition_end_damping_gp) * s;
     } else {
         x = follow_camera_position_default_stiffness_gp;
         y = follow_camera_position_default_damping_gp;
@@ -3995,8 +3996,10 @@ void follow_camera_pull_back(char *camera_object, float *x, float *y) {
         if (current_distance < interpolated_pull_back_value)
             pull_back_state->f8 = interpolated_pull_back_value;
         follow_camera_set_distance(pull_back_state->f8, 0.003f, 0);
-        *x = orbit_distance_default_stiffness_gp + (orbit_distance_pull_back_stiffness_gp - orbit_distance_default_stiffness_gp) * k;
-        *y = orbit_distance_default_damping_gp + (orbit_distance_pull_back_damping_gp - orbit_distance_default_damping_gp) * k;
+        *x = orbit_distance_default_stiffness_gp +
+             (orbit_distance_pull_back_stiffness_gp - orbit_distance_default_stiffness_gp) * k;
+        *y = orbit_distance_default_damping_gp +
+             (orbit_distance_pull_back_damping_gp - orbit_distance_default_damping_gp) * k;
     } else {
         if (pull_back_state->h4 != 0) {
             pull_back_state->h4 = 0;

@@ -42,7 +42,8 @@ void flush_debug_text_queue(void) {
     E001f36f8 *p;
 
     for (i = 0; i < (debug_text_queue_count); i++) {
-        draw_debug_text(l00_debug_text_queue_entries[i].a, l00_debug_text_queue_entries[i].b, l00_debug_text_queue_entries[i].c, l00_debug_text_queue_entries[i].d);
+        draw_debug_text(l00_debug_text_queue_entries[i].a, l00_debug_text_queue_entries[i].b,
+                        l00_debug_text_queue_entries[i].c, l00_debug_text_queue_entries[i].d);
     }
     (debug_text_queue_count) = 0;
     (debug_text_queue_cursor) = debug_text_queue_buffer;
@@ -1060,8 +1061,9 @@ void draw_debug_menu(void) {
         print_debug_text(0x6C, 0x6D, 0x80F0F0F0,
                          *(char **)((char *)debug_menu_toggle_value_texts + flag_offset60(debug_menu60.draw_bits & 8)));
         print_debug_text(0x14, 0x7C, 0x8000C0C0, debug_menu_step_update_label);
-        print_debug_text(0x6C, 0x7C, 0x80F0F0F0,
-                         *(char **)((char *)debug_menu_toggle_value_texts + flag_offset60(debug_menu60.draw_bits & 0x10)));
+        print_debug_text(
+            0x6C, 0x7C, 0x80F0F0F0,
+            *(char **)((char *)debug_menu_toggle_value_texts + flag_offset60(debug_menu60.draw_bits & 0x10)));
         if (debug_menu60.group == 0) {
             print_debug_text(9, (debug_menu60.item * 0xF) + 0x40, 0x800000C0, debug_menu_selection_marker);
         }

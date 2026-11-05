@@ -2501,14 +2501,16 @@ void update_path_key_camera(char *cam) {
     }
     oltanis_key_cam_path_progress = (path_key_camera_rail_distances[side][g_hero.rail_segment] + g_hero.rail_seg_frac) /
                                     path_key_camera_rail_distances[side][999];
-    if (rec->n32 < 2 && path_key_camera_angle_override_progress_thresholds[rec->n32][side] <= oltanis_key_cam_path_progress) {
+    if (rec->n32 < 2 &&
+        path_key_camera_angle_override_progress_thresholds[rec->n32][side] <= oltanis_key_cam_path_progress) {
         rec->n32++;
     }
     if (rec->n32 == 1) {
         ((CamBones171D0 *)oltanis_lean_state)->f274 = oltanis_key_cam_lean_first_deg * 0.017453292f;
         ((CamBones171D0 *)oltanis_lean_state)->f278 = oltanis_key_cam_lean_second_deg * 0.017453292f;
     }
-    if (rec->n30 < 3 && path_key_camera_linked_moby_event_progress_thresholds[rec->n30][side] <= oltanis_key_cam_path_progress) {
+    if (rec->n30 < 3 &&
+        path_key_camera_linked_moby_event_progress_thresholds[rec->n30][side] <= oltanis_key_cam_path_progress) {
         CamMoby171D0 *m0 = (CamMoby171D0 *)(oltanis_mobys + (rec->m24 << 8));
         CamMoby171D0 *m1 = (CamMoby171D0 *)(oltanis_mobys + (rec->m28 << 8));
         CamMoby171D0 *m2 = (CamMoby171D0 *)(oltanis_mobys + (rec->m2C << 8));

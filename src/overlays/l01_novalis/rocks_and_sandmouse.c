@@ -160,8 +160,8 @@ void rock_formation_update(DebrisMoby *m) {
             FastVecAdd(&pos, &pos, &m->pos);
             vec_scale_to_length(&vel, &vel, random_float_between(1.0f, 5.0f) * g_frame_time);
             ((void (*)(void *, void *, int, float, int, float, float, float, int))spawn_debris_moby_v)(
-                &pos, &vel, colors.c[random_integer_below(3)], random_float_between(0.04f, 0.09f), func_L00_00258BC8(60, 180),
-                1.0f, 1.0f, 0.75f, 0);
+                &pos, &vel, colors.c[random_integer_below(3)], random_float_between(0.04f, 0.09f),
+                func_L00_00258BC8(60, 180), 1.0f, 1.0f, 0.75f, 0);
         }
         SetDeathBits(m, 0, -1);
         DeleteMoby(m);
@@ -294,8 +294,8 @@ void bridge_piece_1_update(BurstMoby *self) {
             pos.f[2] = 0.0f;
             vec_scale_to_length(&dir, &dir, random_float_between(g_frame_time_r * 5.0f, g_frame_time_r * 20.0f));
             FastVecAdd(&pos, &pos, &self->pos);
-            spawn_debris_moby_v(&pos, &dir, colors.c[random_integer_below(3)], func_L00_00258BC8(0xB4, 0x12C), 0.05f, 1.0f,
-                                1.0f, 0.75f, 0);
+            spawn_debris_moby_v(&pos, &dir, colors.c[random_integer_below(3)], func_L00_00258BC8(0xB4, 0x12C), 0.05f,
+                                1.0f, 1.0f, 0.75f, 0);
         }
         D_0014C290[g_current_level_index_r][self->id >> 5] |= 1 << (self->id & 0x1F);
         moby_killed[self->id >> 5] |= 1 << (self->id & 0x1F);
@@ -749,9 +749,9 @@ void agnogg_ship_front_update(Moby *moby) {
                         clear_u64_value(&D_L01_0016016C[q->rec].b);
                         clear_u64_value(&q->v);
                         D_L01_0016016C[q->rec].b.y = -fast_atan2(vec_distance_xy(&D_L01_0016016C[q->rec].a, &moby->pos),
-                                                                moby->pos.z - D_L01_0016016C[q->rec].a.z);
+                                                                 moby->pos.z - D_L01_0016016C[q->rec].a.z);
                         D_L01_0016016C[q->rec].b.z = fast_atan2(moby->pos.x - D_L01_0016016C[q->rec].a.x,
-                                                               moby->pos.y - D_L01_0016016C[q->rec].a.y);
+                                                                moby->pos.y - D_L01_0016016C[q->rec].a.y);
                     }
                     moby->state = 2;
                 }
@@ -1529,8 +1529,7 @@ void falling_splash_moby_update(char *m) {
             if (*(int *)(d + 0x18) == 0) {
                 Moby_PlaySound(0, 0, (int)m);
             }
-            pool_splash(pool_draw_tiles_s, pool_draw_count_s, 1, ((Moby *)m)->pos.x, ((Moby *)m)->pos.y, 0.5f,
-                          -0.35f);
+            pool_splash(pool_draw_tiles_s, pool_draw_count_s, 1, ((Moby *)m)->pos.x, ((Moby *)m)->pos.y, 0.5f, -0.35f);
             {
                 float g = g_frame_time;
                 float h = g_frame_time_sq_s;
@@ -2303,11 +2302,13 @@ void draw_level01_environment_mapped_meshes(void) {
     VU1_addGSregister(0x14, 0xFF9000000260L);
     font_queue_vu_state();
     for (i = 4; i >= 0; i--) {
-        generate_level01_environment_map_uvs(level01_environment_mesh_vertex_counts[4 - i], level01_environment_mesh_normal_addresses[4 - i],
-                                             level01_environment_mesh_position_addresses[4 - i], novalis_env_mesh_unused_args[4 - i],
-                                             level01_environment_mesh_uv_scratch);
-        draw_env_overlay_mesh(level01_environment_mesh_vertex_counts[4 - i], (int)level01_environment_mesh_position_addresses[4 - i],
-                              level01_environment_mesh_vertex_attribute_addresses[4 - i], level01_environment_mesh_uv_scratch, 1);
+        generate_level01_environment_map_uvs(level01_environment_mesh_vertex_counts[4 - i],
+                                             level01_environment_mesh_normal_addresses[4 - i],
+                                             level01_environment_mesh_position_addresses[4 - i],
+                                             novalis_env_mesh_unused_args[4 - i], level01_environment_mesh_uv_scratch);
+        draw_env_overlay_mesh(
+            level01_environment_mesh_vertex_counts[4 - i], (int)level01_environment_mesh_position_addresses[4 - i],
+            level01_environment_mesh_vertex_attribute_addresses[4 - i], level01_environment_mesh_uv_scratch, 1);
     }
 }
 

@@ -641,7 +641,8 @@ void bomber_tank_update(Moby *moby) {
                 if (moby->prev_seq != 1)
                     MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
             }
-            if (is_value_within_interpolated_window((char *)moby, 4.0f) != 0 || is_value_within_interpolated_window((char *)moby, 10.0f) != 0) {
+            if (is_value_within_interpolated_window((char *)moby, 4.0f) != 0 ||
+                is_value_within_interpolated_window((char *)moby, 10.0f) != 0) {
                 float k;
                 char *shot;
                 if (compute_interpolated_record_value(moby) == 4.0f) {
@@ -1421,13 +1422,14 @@ void spawn_particle_line_effect(struct Moby *moby, void *from, void *to, int cou
         FastVecAdd(&pos, from, &pos);
         vel.f[0] = randf_sym(0.0f, 0.005f);
         vel.f[1] = randf_sym(0.0f, 0.005f);
-        vel.f[2] = random_float_between((line_puff_initial_z_velocity_range_end_gp) * 0.1f, (line_puff_initial_z_velocity_range_end_gp));
+        vel.f[2] = random_float_between((line_puff_initial_z_velocity_range_end_gp) * 0.1f,
+                                        (line_puff_initial_z_velocity_range_end_gp));
         alpha = func_L00_00258BC8(0x30, 0x70);
         grey = func_L00_00258BC8(0x30, 0x7F);
         grey |= (grey << 16) | (grey << 8);
         size = random_float_between(1.0f, 1.02f);
-        puff = PartType23Spawn(&pos, (line_puff_position_jitter_range_end_gp), 1.0f, size, func_L00_00258BC8(-2, 2), &vel,
-                               grow + size0 * 210000.0f, (alpha << 24) | grey);
+        puff = PartType23Spawn(&pos, (line_puff_position_jitter_range_end_gp), 1.0f, size, func_L00_00258BC8(-2, 2),
+                               &vel, grow + size0 * 210000.0f, (alpha << 24) | grey);
         if (puff) {
             tail = puff + 0x20;
             if (random_integer_below(2)) {
@@ -1600,8 +1602,8 @@ void blarg_bombthrower_update(Moby *moby) {
     if (moby->state == 100) {
         float t = IntToFloat(l08_bombthrower_fade_interpolation_divisor_gp);
         int c = d->s132;
-        moby->alpha =
-            truncate_float_to_s32_r2((float)c + (float)-c * ((float)(l08_bombthrower_fade_interpolation_divisor_gp - d->s130) / t));
+        moby->alpha = truncate_float_to_s32_r2(
+            (float)c + (float)-c * ((float)(l08_bombthrower_fade_interpolation_divisor_gp - d->s130) / t));
         spawn_moby_table_puff_pattern(moby);
         return;
     }
@@ -2351,7 +2353,8 @@ void bomber_tank_bomb_update(struct Moby *moby) {
                         color = random_integer_below(100) < 40 ? 0x5ff8f8f8 : 0x2f486078;
                         color2 = scale_ticks(30);
                         alpha = scale_ticks(45);
-                        mine_debris(record.pos, position, color, 0x0f000020, 150000.0f, func_L00_00258BC8(color2, alpha), 2);
+                        mine_debris(record.pos, position, color, 0x0f000020, 150000.0f,
+                                    func_L00_00258BC8(color2, alpha), 2);
                     } break;
                     case 3: {
                         int color, color2, alpha;
@@ -2516,7 +2519,7 @@ void GuidedRocketUpdate(M46 *m) {
             size0 = truncate_float_to_s32_r_r(rocket_guidance_effect_velocity_w_gp);
             size1 = truncate_float_to_s32_r_r(rocket_guidance_effect_auxiliary_vector_w_gp);
             spawn_effect(m->position, effect, rocket_guidance_effect_initial_color_gp,
-                            rocket_guidance_effect_second_color_gp, life, size0, size1, 1);
+                         rocket_guidance_effect_second_color_gp, life, size0, size1, 1);
             return;
         }
         case 2: {
@@ -2554,7 +2557,7 @@ void GuidedRocketUpdate(M46 *m) {
             size0 = truncate_float_to_s32_r_r(rocket_guidance_effect_velocity_w_gp);
             size1 = truncate_float_to_s32_r_r(rocket_guidance_effect_auxiliary_vector_w_gp);
             spawn_effect(m->position, effect, rocket_guidance_effect_initial_color_gp,
-                            rocket_guidance_effect_second_color_gp, life, size0, size1, 1);
+                         rocket_guidance_effect_second_color_gp, life, size0, size1, 1);
             return;
         }
         case 3:
@@ -2673,8 +2676,7 @@ void GuidedRocketUpdate(M46 *m) {
                             accel[2] = random_float_between(g_frame_time * 8.0f, g_frame_time * 12.0f);
                             other->animation = 0;
                             a = fast_atan2(accel[0], accel[1]);
-                            b = fast_atan2(l08_camera.x - m->position[0],
-                                           l08_camera.y - m->position[1]);
+                            b = fast_atan2(l08_camera.x - m->position[0], l08_camera.y - m->position[1]);
                             angle_delta = FastDiffRots(a, b);
                             launch_offset = effect;
                             if (angle_delta < 0.7853982f) {
@@ -2961,20 +2963,26 @@ void spawn_moby_motion_spark(char *m, char *pos) {
     FastVecScale(v20, v30, moby_motion_spark_second_displacement_scale_gp);
     func_L00_00258DB0(v40, 0.0f, moby_motion_spark_jitter_magnitude_range_end_gp * g_frame_time);
     FastVecAdd(v20, v20, v40);
-    v10[3] = random_float_between(moby_motion_spark_first_vector_w_range_start_gp, moby_motion_spark_first_vector_w_range_end_gp);
-    v20[3] = random_float_between(moby_motion_spark_second_vector_w_range_start_gp, moby_motion_spark_second_vector_w_range_end_gp);
+    v10[3] = random_float_between(moby_motion_spark_first_vector_w_range_start_gp,
+                                  moby_motion_spark_first_vector_w_range_end_gp);
+    v20[3] = random_float_between(moby_motion_spark_second_vector_w_range_start_gp,
+                                  moby_motion_spark_second_vector_w_range_end_gp);
     a = FastTweenColor(moby_motion_spark_initial_color_start_gp, moby_motion_spark_initial_color_end_gp,
                        random_float_between(0.0f, 1.0f));
     b = FastTweenColor(moby_motion_spark_second_color_start_gp, moby_motion_spark_second_color_end_gp,
                        random_float_between(0.0f, 1.0f));
-    c = truncate_float_to_s32_r_r(
-        multiply_global_factor((float)moby_motion_spark_frame_count_random_span_gp * random_float_between(0.0f, 1.0f) + 1.0f));
-    d = truncate_float_to_s32_r_r(multiply_global_factor(
-        (float)moby_motion_spark_second_frame_count_base_gp *
-        (random_float_between(-moby_motion_spark_frame_count_variation_extent_gp, moby_motion_spark_frame_count_variation_extent_gp) + 1.0f)));
-    e = truncate_float_to_s32_r_r(multiply_global_factor(
-        (float)moby_motion_spark_third_frame_count_base_gp *
-        (random_float_between(-moby_motion_spark_frame_count_variation_extent_gp, moby_motion_spark_frame_count_variation_extent_gp) + 1.0f)));
+    c = truncate_float_to_s32_r_r(multiply_global_factor(
+        (float)moby_motion_spark_frame_count_random_span_gp * random_float_between(0.0f, 1.0f) + 1.0f));
+    d = truncate_float_to_s32_r_r(
+        multiply_global_factor((float)moby_motion_spark_second_frame_count_base_gp *
+                               (random_float_between(-moby_motion_spark_frame_count_variation_extent_gp,
+                                                     moby_motion_spark_frame_count_variation_extent_gp) +
+                                1.0f)));
+    e = truncate_float_to_s32_r_r(
+        multiply_global_factor((float)moby_motion_spark_third_frame_count_base_gp *
+                               (random_float_between(-moby_motion_spark_frame_count_variation_extent_gp,
+                                                     moby_motion_spark_frame_count_variation_extent_gp) +
+                                1.0f)));
     r = PartType02Spawn(v50, v10, v20, a, b, c, d, e, -1);
     if (r != 0) {
         r[9] = truncate_float_to_s32_r_r(8.0f) - 0x70;

@@ -559,7 +559,8 @@ void update_hero_rotation_targets_and_random_manipulators(void) {
             s32 j;
             for (i = 0; i < 7; i++) {
                 if (g_hero_r3.manipulators[i].attached == 0) {
-                    func_0020D960_05CC0((s32)g_hero_r3.moby, hero_random_manipulator_attachment_indices[i], &g_hero_r3.manipulators[i]);
+                    func_0020D960_05CC0((s32)g_hero_r3.moby, hero_random_manipulator_attachment_indices[i],
+                                        &g_hero_r3.manipulators[i]);
                     g_hero_r3.manipulators[i].absolute = 1;
                     qcopy(&g_hero_r3.manipulators[i].quat, &l00_hero_random_manipulator_initial_quaternions[i]);
                     qcopy(&g_hero_r3.manipulators[i].scale3, &l00_hero_random_manipulator_initial_scales[i]);
@@ -2945,7 +2946,8 @@ void update_hero_easing_targets_and_point_effects(void) {
     s32 i;
     if (hero_is_in_special_state())
         return;
-    if (0.03f < absolute_float(D_0013F450_20b1d8.unk2C0.f[0]) || 0.03f < absolute_float(D_0013F450_20b1d8.unk2C0.f[1]) ||
+    if (0.03f < absolute_float(D_0013F450_20b1d8.unk2C0.f[0]) ||
+        0.03f < absolute_float(D_0013F450_20b1d8.unk2C0.f[1]) ||
         0.06981317f < absolute_float(D_0013F450_20b1d8.unk2C8.f[0]) ||
         0.06981317f < absolute_float(D_0013F450_20b1d8.unk2C8.f[1]) ||
         0.06981317f < absolute_float(D_0013F450_20b1d8.unk2D0.f[0]) ||

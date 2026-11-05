@@ -619,9 +619,8 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 nd = (*(void **)&kerwan_mobys_r[d->fD8].pvars);
                 nd->f18 = fast_atan2(kerwan_paths_r[d->fAC]->n[0].x - ((Cam *)l03_camera)->f140.x,
                                      kerwan_paths_r[d->fAC]->n[0].y - ((Cam *)l03_camera)->f140.y);
-                nd->f14 =
-                    -fast_atan2(vec_distance_xy(&((Cam *)l03_camera)->f140, &kerwan_paths_r[d->fAC]->n[0]),
-                                kerwan_paths_r[d->fAC]->n[0].z - ((Cam *)l03_camera)->f140.z);
+                nd->f14 = -fast_atan2(vec_distance_xy(&((Cam *)l03_camera)->f140, &kerwan_paths_r[d->fAC]->n[0]),
+                                      kerwan_paths_r[d->fAC]->n[0].z - ((Cam *)l03_camera)->f140.z);
                 l03_cuboids[nd->f28].f30[0] =
                     FastCos(fast_atan2(kerwan_paths_r[d->fAC]->n[1].x - kerwan_paths_r[d->fAC]->n[0].x,
                                        kerwan_paths_r[d->fAC]->n[1].y - kerwan_paths_r[d->fAC]->n[0].y)) *
@@ -631,8 +630,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
                                        kerwan_paths_r[d->fAC]->n[1].y - kerwan_paths_r[d->fAC]->n[0].y)) *
                     -(d->fDC + 4.0f);
                 l03_cuboids[nd->f28].f30[2] = 0.0f;
-                FastVecAdd(l03_cuboids[nd->f28].f30, l03_cuboids[nd->f28].f30,
-                           &kerwan_paths_r[d->fAC]->n[0]);
+                FastVecAdd(l03_cuboids[nd->f28].f30, l03_cuboids[nd->f28].f30, &kerwan_paths_r[d->fAC]->n[0]);
                 l03_cuboids[nd->f28].f30[2] = l03_cuboids[nd->f28].f30[2] + 2.7f;
                 clear_u64_value(l03_cuboids[nd->f28].f70);
                 l03_cuboids[nd->f28].f70[2] =
@@ -1795,7 +1793,8 @@ void robot_dog_573_update(Moby *moby) {
                 if (moby->prev_seq != 5) {
                     MobyBlendAnimation(moby, 5, 0, truncate_float_to_s32(multiply_global_factor(10.0f)));
                 }
-            } else if (data->f230 < fast_vec_dist(&tgt, data->home) || absolute_float(tgt.pos[2] - moby->pos.z) > 3.0f) {
+            } else if (data->f230 < fast_vec_dist(&tgt, data->home) ||
+                       absolute_float(tgt.pos[2] - moby->pos.z) > 3.0f) {
                 moby->state = 7;
             }
             break;
@@ -1848,7 +1847,8 @@ void robot_dog_573_update(Moby *moby) {
             if (moby->seq == 5) {
                 ApproachValue(&data->f1A4, 0.0f, data->f234 * g_frame_time / multiply_global_factor(40.0f));
             }
-            if (absolute_float(compute_interpolated_record_value(moby) - 25.0f) <= 0.25f && absolute_float(tgt.pos[2] - moby->pos.z) < 1.0f &&
+            if (absolute_float(compute_interpolated_record_value(moby) - 25.0f) <= 0.25f &&
+                absolute_float(tgt.pos[2] - moby->pos.z) < 1.0f &&
                 FastDiffRots(fast_atan2(tgt.pos[0] - moby->pos.x, tgt.pos[1] - moby->pos.y), moby->rot.z) <
                     0.2617994f &&
                 tgt.obj != 0 && vec_distance_xy(&moby->pos, &tgt) < 2.0f) {
@@ -2373,7 +2373,8 @@ void kerwan_path_enemy_update(Moby *m) {
             }
             break;
         case 2:
-            if (dist < d->f270 && absolute_float(tgt.pos[2] - (*(float (*)[4]) & m->pos)[2]) < 4.0f && m->prev_seq != 0xA) {
+            if (dist < d->f270 && absolute_float(tgt.pos[2] - (*(float (*)[4]) & m->pos)[2]) < 4.0f &&
+                m->prev_seq != 0xA) {
                 MobyBlendAnimation(m, 0xA, 0, scale_ticks(10));
                 break;
             }
