@@ -97,7 +97,7 @@ def pair(v):
             by_name.setdefault(name, ov.fingerprint(b))
         for i, (addr, size, b) in enumerate(mine):
             name, method, sim = result.get(i, (None, None, None))
-            rows.append((program, addr, size, ov.fingerprint(b), name, method, sim))
+            rows.append((program, addr, size, ov.fingerprint(b), name, method, sim, bytes(b)))
         print(f"  {v.key} {program}: {len(mine)} functions, {len(result)} paired", flush=True)
     return rows
 
@@ -182,6 +182,23 @@ def catalogue(v, rows):
             e.update(name=c, counterpart=c, method="address", sim=1.0, same=True)
             e.pop("counterpart_of_name", None)
             taken.add(c)
+    # Or the same bytes, offsets included, as a primary function nothing has claimed: fingerprints
+    # mask the offsets, so two handwritten one-liners on different globals collide.
+    free = {}
+    for addr, size, name, b in primary_functions()[0]:
+        if name not in taken:
+            free.setdefault(bytes(b), name)
+    v_bytes = {}
+    for r in rows:
+        if r[0] == "boot":
+            v_bytes[r[1]] = r[7]
+    for e in out:
+        if e["kind"] == "exe" and e["name"] == own_name(v, e) and e["counterpart"] is not None:
+            c = free.get(bytes(v_bytes.get(e["key"][1], b"")))
+            if c is not None and c not in taken:
+                e.update(name=c, counterpart=c, method="bytes", sim=1.0, same=True)
+                e.pop("counterpart_of_name", None)
+                taken.add(c)
     return out
 
 

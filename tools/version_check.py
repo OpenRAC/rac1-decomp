@@ -660,7 +660,8 @@ def run(v, only=None, show=False):
         have = {r[0] for r in rows}
         for p in pieces:
             if p in ents and p not in have:
-                piece = "joined" if st in ("match", "asm") and ents[p]["same"] else ("differs" if st != "absent" else st)
+                # version-specific C of the owner was compared over the pieces too
+                piece = "joined" if st in ("match", "asm") and (ents[p]["same"] or owner in overrides) else ("differs" if st != "absent" else st)
                 rows.append((p, "-", piece, fmt_place(canonical_place(ents[p])), ents[p]["size"],
                              100.0 if piece == "joined" else 0.0))
                 counts[piece] += 1
