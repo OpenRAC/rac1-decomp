@@ -20,9 +20,9 @@ func_00113E90	src/core/libc/free_malloc_trim.c	match	boot:00113E90	364	100.00
 func_00114000	src/core/libc/fstat_r.c	match	boot:00114000	92	100.00
 func_00114060	src/core/libc/fvwrite_fwalk.c	match	boot:00114060	984	100.00
 func_00114438	src/core/libc/fvwrite_fwalk.c	match	boot:00114438	148	100.00
-func_001144D0	-	absent	-	0	0.00
+func_001144D0	-	asm	boot:001144D0	4	100.00
 func_001144D8	src/core/libc/localeconv.c	match	boot:001144D8	12	100.00
-func_001144E8	-	absent	-	0	0.00
+func_001144E8	-	asm	boot:001144E8	4	100.00
 func_001144F0	src/core/libc/localeconv.c	match	boot:001144F0	36	100.00
 func_00114518	src/core/libc/lseek_malloc.c	match	boot:00114518	96	100.00
 func_00114578	src/core/libc/lseek_malloc.c	match	boot:00114578	336	100.00
@@ -34,7 +34,7 @@ func_001151B4	-	asm	boot:001151B4	148	100.00
 func_00115248	-	asm	boot:00115248	176	100.00
 func_001152F8	-	asm	boot:001152F8	260	100.00
 func_001153FC	-	asm	boot:001153FC	192	100.00
-func_001154C0	src/core/libc/mprec.c	absent	-	0	0.00
+func_001154C0	src/core/libc/mprec.c	match	boot:001154C0	8	100.00
 func_001154C8	src/core/libc/mprec.c	match	boot:001154C8	8	100.00
 func_001154D0	src/core/libc/mprec.c	match	boot:001154D0	168	100.00
 func_00115578	src/core/libc/mprec.c	match	boot:00115578	44	100.00
@@ -47,7 +47,7 @@ func_00115A70	src/core/libc/mprec.c	match	boot:00115A70	256	100.00
 func_00115B70	src/core/libc/mprec.c	match	boot:00115B70	376	100.00
 func_00115CE8	src/core/libc/mprec.c	match	boot:00115CE8	104	100.00
 func_00115D50	src/core/libc/mprec.c	match	boot:00115D50	400	100.00
-func_00115EE0	-	absent	-	0	0.00
+func_00115EE0	-	asm	boot:00115EE0	4	100.00
 func_00115EE8	src/core/libc/mprec.c	match	boot:00115EE8	380	100.00
 func_00116068	-	asm	boot:00116068	8	100.00
 func_00116070	-	absent	-	0	0.00
@@ -161,7 +161,7 @@ func_00119088	src/core/kernel/libkernl_glue.c	match	boot:00119088	116	100.00
 func_00119100	src/core/kernel/libkernl_glue.c	absent	-	0	0.00
 func_00119108	src/core/kernel/libkernl_glue.c	match	boot:00119108	8	100.00
 func_00119110	-	asm	boot:00119110	172	100.00
-func_001191C0	src/core/kernel/libkernl_glue.c	absent	-	0	0.00
+func_001191C0	src/core/kernel/libkernl_glue.c	match	boot:001191C0	8	100.00
 func_001191C8	src/core/kernel/libkernl_glue.c	match	boot:001191C8	20	100.00
 func_001191E0	-	asm	boot:001191E0	164	100.00
 func_00119288	-	asm	boot:00119288	124	100.00
@@ -173,7 +173,7 @@ func_00119460	-	asm	boot:00119460	104	100.00
 func_001194C8	src/core/kernel/threads_deci2.c	match	boot:001194C8	216	100.00
 func_001195A0	src/core/kernel/threads_deci2.c	match	boot:001195A0	212	100.00
 func_00119678	-	asm	boot:00119678	148	100.00
-func_00119710	-	absent	-	0	0.00
+func_00119710	-	asm	boot:00119710	4	100.00
 func_00119718	src/core/kernel/threads_deci2.c	match	boot:00119718	68	100.00
 func_00119760	-	asm	boot:00119760	4	100.00
 func_00119768	src/core/kernel/threads_deci2.c	match	boot:00119768	48	100.00
@@ -313,15 +313,15 @@ func_00120480	src/libgcc/fp-bit.c	match	boot:00120480	184	100.00
 func_00120538	src/libgcc/fp-bit.c	match	boot:00120538	148	100.00
 func_001205D0	src/libgcc/fp-bit.c	match	boot:001205D0	160	100.00
 func_00120670	src/libgcc/fp-bit.c	match	boot:00120670	44	100.00
-func_001206A0	src/libgcc/fp-bit.c	absent	-	0	0.00
+func_001206A0	src/libgcc/fp-bit.c	match	boot:001206A0	4	100.00
 func_001206A8	src/libgcc/fp-bit.c	absent	-	0	0.00
 func_001206B0	src/libgcc/fp-bit.c	match	boot:001206B0	144	100.00
 func_00120740	src/libgcc/fp-bit.c	match	boot:00120740	4	100.00
-func_00120748	src/libgcc/fp-bit.c	absent	-	0	0.00
+func_00120748	src/libgcc/fp-bit.c	match	boot:00120748	4	100.00
 func_00120750	src/libgcc/fp-bit.c	match	boot:00120750	4	100.00
 func_00120758	src/libgcc/fp-bit.c	absent	-	0	0.00
 func_00120760	src/libgcc/fp-bit.c	match	boot:00120760	4	100.00
-func_00120768	src/libgcc/fp-bit.c	absent	-	0	0.00
+func_00120768	src/libgcc/fp-bit.c	match	boot:00120768	4	100.00
 func_00120770	src/libgcc/fp-bit.c	match	boot:00120770	4	100.00
 func_00120778	src/libgcc/fp-bit.c	match	boot:00120778	64	100.00
 func_001207B8	src/core/gs/vif1_gif_reset.c	match	boot:001207B8	160	100.00
@@ -617,7 +617,7 @@ func_0012E688	src/core/sound/989snd.c	match	boot:0012E688	404	100.00
 func_0012E820	src/core/sound/989snd.c	match	boot:0012E820	704	100.00
 func_0012EAE0	src/core/sound/989snd.c	match	boot:0012EAE0	56	100.00
 func_0012EB18	src/core/sound/989snd.c	match	boot:0012EB18	276	100.00
-func_0012EC30	src/core/sound/989snd.c	absent	-	0	0.00
+func_0012EC30	src/core/sound/989snd.c	match	boot:0012EC30	12	100.00
 func_0012EC40	src/core/sound/989snd.c	match	boot:0012EC40	32	100.00
 func_0012EC60	src/core/sound/989snd.c	match	boot:0012EC60	172	100.00
 func_0012ED10	src/core/sound/989snd.c	match	boot:0012ED10	44	100.00
