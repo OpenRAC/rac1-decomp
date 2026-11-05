@@ -681,7 +681,7 @@ func_001E97F0	src/game/system/stub.c	match	boot:001E9B70	8	100.00
 func_001E97F8	src/game/system/stub.c	match	boot:001E9B78	8	100.00
 func_001E9800	src/game/system/stub.c	match	boot:001E9B80	8	100.00
 func_001E9808	src/game/system/bmain.c	match	boot:001E9B88	464	100.00
-func_001E99D8	src/game/system/bmain.c	differs	boot:001E9D58	1476	0.00
+func_001E99D8	src/versions/jp/game/system/bmain/func_001E99D8.c	match	boot:001E9D58	1476	100.00
 func_001E9E70	src/game/ui/transition.c	match	boot:001EA320	88	100.00
 func_001E9EC8	src/game/ui/transition.c	match	boot:001EA378	3356	100.00
 func_001EABE8	src/versions/jp/game/ui/transition/func_001EABE8.c	match	boot:001EB098	1760	100.00

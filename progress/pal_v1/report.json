@@ -1,16 +1,16 @@
 {
  "measures": {
-  "fuzzy_match_percent": 99.01734429552877,
+  "fuzzy_match_percent": 99.11004357732592,
   "total_code": "3693664",
-  "matched_code": "3657368",
-  "matched_code_percent": 99.01734429552877,
+  "matched_code": "3660792",
+  "matched_code_percent": 99.11004357732592,
   "total_functions": 5082,
-  "matched_functions": 5075,
-  "matched_functions_percent": 99.86225895316804,
-  "complete_code": "2185140",
-  "complete_code_percent": 59.15914387448344,
+  "matched_functions": 5078,
+  "matched_functions_percent": 99.92129083038174,
+  "complete_code": "2328300",
+  "complete_code_percent": 63.03497015429666,
   "total_units": 140,
-  "complete_units": 134
+  "complete_units": 136
  },
  "units": [
   {
@@ -10165,17 +10165,17 @@
   {
    "name": "game/freeze",
    "measures": {
-    "fuzzy_match_percent": 68.58108108108108,
+    "fuzzy_match_percent": 100.0,
     "total_code": "7104",
-    "matched_code": "4872",
-    "matched_code_percent": 68.58108108108108,
+    "matched_code": "7104",
+    "matched_code_percent": 100.0,
     "total_functions": 3,
-    "matched_functions": 2,
-    "matched_functions_percent": 66.66666666666667,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 3,
+    "matched_functions_percent": 100.0,
+    "complete_code": "7104",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -10199,7 +10199,7 @@
     {
      "name": "func_001FD3E8",
      "size": "2232",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "4872",
      "metadata": {
       "virtual_address": "2083056"
@@ -10207,7 +10207,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/game/gameplay/freeze.c",
     "progress_categories": [
      "executable",
@@ -18355,13 +18355,13 @@
   {
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 99.38888457945343,
+    "fuzzy_match_percent": 99.4576856532898,
     "total_code": "1186028",
-    "matched_code": "1178780",
-    "matched_code_percent": 99.38888457945343,
+    "matched_code": "1179596",
+    "matched_code_percent": 99.4576856532898,
     "total_functions": 1927,
-    "matched_functions": 1925,
-    "matched_functions_percent": 99.89621172807473,
+    "matched_functions": 1926,
+    "matched_functions_percent": 99.94810586403736,
     "complete_code": "0",
     "complete_code_percent": 0.0,
     "total_units": 1,
@@ -33689,7 +33689,7 @@
     {
      "name": "func_L15_002EE458",
      "size": "816",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "1056784",
      "metadata": {
       "virtual_address": "3066264"
@@ -39108,17 +39108,17 @@
   {
    "name": "Level 06: Blarg Station (Nebula G34)",
    "measures": {
-    "fuzzy_match_percent": 99.72364320573881,
+    "fuzzy_match_percent": 100.0,
     "total_code": "136056",
-    "matched_code": "135680",
-    "matched_code_percent": 99.72364320573881,
+    "matched_code": "136056",
+    "matched_code_percent": 100.0,
     "total_functions": 91,
-    "matched_functions": 90,
-    "matched_functions_percent": 98.9010989010989,
-    "complete_code": "0",
-    "complete_code_percent": 0.0,
+    "matched_functions": 91,
+    "matched_functions_percent": 100.0,
+    "complete_code": "136056",
+    "complete_code_percent": 100.0,
     "total_units": 1,
-    "complete_units": 0
+    "complete_units": 1
    },
    "functions": [
     {
@@ -39745,7 +39745,7 @@
     {
      "name": "func_E1_L06_00301D28",
      "size": "376",
-     "fuzzy_match_percent": 0.0,
+     "fuzzy_match_percent": 100.0,
      "address": "964208",
      "metadata": {
       "virtual_address": "3153192"
@@ -39942,7 +39942,7 @@
     }
    ],
    "metadata": {
-    "complete": false,
+    "complete": true,
     "source_path": "src/overlays/l06_blarg",
     "progress_categories": [
      "level_code",
@@ -49417,45 +49417,45 @@
    "id": "executable",
    "name": "Executable",
    "measures": {
-    "fuzzy_match_percent": 99.13085801696565,
+    "fuzzy_match_percent": 99.61583924349881,
     "total_code": "460224",
-    "matched_code": "456224",
-    "matched_code_percent": 99.13085801696565,
+    "matched_code": "458456",
+    "matched_code_percent": 99.61583924349881,
     "total_functions": 1691,
-    "matched_functions": 1689,
-    "matched_functions_percent": 99.88172678888232,
-    "complete_code": "450720",
-    "complete_code_percent": 97.93491864831039
+    "matched_functions": 1690,
+    "matched_functions_percent": 99.94086339444117,
+    "complete_code": "457824",
+    "complete_code_percent": 99.47851481017939
    }
   },
   {
    "id": "level_code",
    "name": "Level code",
    "measures": {
-    "fuzzy_match_percent": 99.00118758968776,
+    "fuzzy_match_percent": 99.03805235291208,
     "total_code": "3233440",
-    "matched_code": "3201144",
-    "matched_code_percent": 99.00118758968776,
+    "matched_code": "3202336",
+    "matched_code_percent": 99.03805235291208,
     "total_functions": 3391,
-    "matched_functions": 3386,
-    "matched_functions_percent": 99.85255086994987,
-    "complete_code": "1734420",
-    "complete_code_percent": 53.64008610025236
+    "matched_functions": 3388,
+    "matched_functions_percent": 99.91153052196992,
+    "complete_code": "1870476",
+    "complete_code_percent": 57.84786481270721
    }
   },
   {
    "id": "game",
    "name": "Executable game code",
    "measures": {
-    "fuzzy_match_percent": 99.11090563152374,
+    "fuzzy_match_percent": 99.60702028913349,
     "total_code": "449896",
-    "matched_code": "445896",
-    "matched_code_percent": 99.11090563152374,
+    "matched_code": "448128",
+    "matched_code_percent": 99.60702028913349,
     "total_functions": 1658,
-    "matched_functions": 1656,
-    "matched_functions_percent": 99.87937273823884,
-    "complete_code": "440392",
-    "complete_code_percent": 97.88751178050038
+    "matched_functions": 1657,
+    "matched_functions_percent": 99.93968636911941,
+    "complete_code": "447496",
+    "complete_code_percent": 99.46654337891424
    }
   },
   {
@@ -49477,13 +49477,13 @@
    "id": "common",
    "name": "Shared level code",
    "measures": {
-    "fuzzy_match_percent": 99.38888457945343,
+    "fuzzy_match_percent": 99.4576856532898,
     "total_code": "1186028",
-    "matched_code": "1178780",
-    "matched_code_percent": 99.38888457945343,
+    "matched_code": "1179596",
+    "matched_code_percent": 99.4576856532898,
     "total_functions": 1927,
-    "matched_functions": 1925,
-    "matched_functions_percent": 99.89621172807473,
+    "matched_functions": 1926,
+    "matched_functions_percent": 99.94810586403736,
     "complete_code": "0",
     "complete_code_percent": 0.0
    }
@@ -49492,15 +49492,15 @@
    "id": "levels",
    "name": "Level-specific code",
    "measures": {
-    "fuzzy_match_percent": 98.77660187592922,
+    "fuzzy_match_percent": 98.79496652359174,
     "total_code": "2047412",
-    "matched_code": "2022364",
-    "matched_code_percent": 98.77660187592922,
+    "matched_code": "2022740",
+    "matched_code_percent": 98.79496652359174,
     "total_functions": 1464,
-    "matched_functions": 1461,
-    "matched_functions_percent": 99.79508196721312,
-    "complete_code": "1734420",
-    "complete_code_percent": 84.71279840110344
+    "matched_functions": 1462,
+    "matched_functions_percent": 99.86338797814207,
+    "complete_code": "1870476",
+    "complete_code_percent": 91.3580656946428
    }
   },
   {
@@ -49597,15 +49597,15 @@
    "id": "level_06",
    "name": "Level 06: Blarg Station (Nebula G34)",
    "measures": {
-    "fuzzy_match_percent": 99.72364320573881,
+    "fuzzy_match_percent": 100.0,
     "total_code": "136056",
-    "matched_code": "135680",
-    "matched_code_percent": 99.72364320573881,
+    "matched_code": "136056",
+    "matched_code_percent": 100.0,
     "total_functions": 91,
-    "matched_functions": 90,
-    "matched_functions_percent": 98.9010989010989,
-    "complete_code": "0",
-    "complete_code_percent": 0.0
+    "matched_functions": 91,
+    "matched_functions_percent": 100.0,
+    "complete_code": "136056",
+    "complete_code_percent": 100.0
    }
   },
   {

@@ -920,7 +920,7 @@ func_001FBAB8	src/game/render/framebuf.c	match	boot:001FB420	448	100.00
 func_001FBC78	-	asm	boot:001FB5E0	4	100.00
 func_001FBC80	src/versions/pal_v1/game/gameplay/freeze/func_001FBC80.c	match	boot:001FB5E8	408	100.00
 func_001FBE80	src/versions/pal_v1/game/gameplay/freeze/func_001FBE80.c	match	boot:001FB780	4464	100.00
-func_001FD3E8	src/game/gameplay/freeze.c	differs	boot:001FC8F0	2232	0.00
+func_001FD3E8	src/versions/pal_v1/game/gameplay/freeze/func_001FD3E8.c	match	boot:001FC8F0	2232	100.00
 func_001FDF10	src/game/ui/help.c	match	boot:001FD1A8	100	100.00
 func_001FDF78	src/game/ui/help.c	match	boot:001FD210	1212	100.00
 func_001FE438	src/game/ui/help.c	match	boot:001FD6D0	136	100.00
@@ -1705,6 +1705,7 @@ func_E1_00238C70	src/versions/pal_v1/game/ui/vendor/func_E1_00238C70.c	match	boo
 func_E1_L00_0020F978	src/versions/pal_v1/overlays/shared/hero_animation_slots/func_E1_L00_0020F978.c	match	00:0020F978	108	100.00
 func_E1_L00_00232180	src/versions/pal_v1/overlays/shared/hero_mapped_animations/func_E1_L00_00232180.c	match	00:00232180	64	100.00
 func_E1_L00_00234718	src/versions/pal_v1/overlays/shared/hero_mapped_animations/func_E1_L00_00234718.c	match	00:00234718	316	100.00
+func_E1_L06_00301D28	src/versions/pal_v1/overlays/l06_blarg/fred_and_commando/func_E1_L06_00301D28.c	match	06:00301D28	376	100.00
 func_L00_001EAD88	src/overlays/shared/pulse_waveforms.c	match	00:001EA988	96	100.00
 func_L00_001EADE8	-	joined	00:001EA9E8	4	100.00
 func_L00_001EADEC	-	joined	00:001EA9EC	692	100.00
@@ -4801,7 +4802,7 @@ func_L15_002ED3A0	src/overlays/l15_quartu/gates_helicopters_ultramechs.c	match	1
 func_L15_002ED3C4	-	joined	15:002EB904	92	100.00
 func_L15_002ED420	src/overlays/l15_quartu/gates_helicopters_ultramechs.c	match	15:002EB960	1608	100.00
 func_L15_002EDB50	src/overlays/l15_quartu/scientist_and_hint_triggers.c	match	15:002EC090	2312	100.00
-func_L15_002EE458	src/overlays/shared/electric_water.c	differs	15:002EC998	816	0.00
+func_L15_002EE458	src/versions/pal_v1/overlays/shared/electric_water/func_L15_002EE458.c	match	15:002EC998	816	100.00
 func_L15_002EE7E8	src/overlays/l15_quartu/scientist_and_hint_triggers.c	match	15:002ECCC8	1924	100.00
 func_L15_002EEF70	src/overlays/l15_quartu/scientist_and_hint_triggers.c	match	15:002ED450	188	100.00
 func_L15_002EF030	src/overlays/l15_quartu/scientist_and_hint_triggers.c	match	15:002ED510	888	100.00
