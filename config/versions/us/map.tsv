@@ -1110,7 +1110,7 @@ func_00209968	src/game/ui/menu.c	absent	-	0	0.00
 func_002099D0	src/game/ui/menu.c	match	boot:00208FA0	72	100.00
 func_00209A18	src/game/ui/menu.c	match	boot:00208FE8	68	100.00
 func_00209A60	src/versions/us/game/system/memcard/func_00209A60.c	match	boot:00209030	308	100.00
-func_00209BB8	src/game/system/memcard.c	differs	boot:00209168	300	0.00
+func_00209BB8	src/versions/us/game/system/memcard/func_00209BB8.c	match	boot:00209168	300	100.00
 func_00209CE8	src/game/system/memcard.c	match	boot:00209298	212	100.00
 func_00209DC0	src/game/system/memcard.c	differs	boot:00209370	104	0.00
 func_00209E68	src/game/system/memcard.c	differs	boot:002093D8	6100	0.00
@@ -1120,7 +1120,7 @@ func_0020BAD8	src/game/system/memcard.c	match	boot:0020AC88	56	100.00
 func_0020BB10	src/game/system/memcard.c	match	boot:0020ACC0	116	100.00
 func_0020BB88	src/game/system/memcard.c	match	boot:0020AD38	60	100.00
 func_0020BBC8	src/game/system/memcard.c	match	boot:0020AD78	232	100.00
-func_0020BCB0	src/game/system/memcard.c	differs	boot:0020AE60	188	0.00
+func_0020BCB0	src/versions/us/game/system/memcard/func_0020BCB0.c	match	boot:0020AE60	188	100.00
 func_0020BD70	src/versions/us/game/system/memcard/func_0020BD70.c	match	boot:0020AF20	596	100.00
 func_0020BFC8	src/game/system/memcard.c	differs	boot:0020B178	580	0.00
 func_0020C210	-	asm	boot:0020B3C0	32	100.00
@@ -1314,7 +1314,7 @@ func_00219C08	src/game/ui/pause.c	match	boot:00218D10	104	100.00
 func_00219C70	src/game/ui/pause.c	match	boot:00218D78	468	100.00
 func_00219E48	-	asm	boot:00218F50	20	100.00
 func_00219E60	src/game/ui/pause.c	match	boot:00218F68	44	100.00
-func_00219E90	src/game/ui/pause.c	differs	boot:00218F98	544	0.00
+func_00219E90	src/versions/us/game/ui/pause/func_00219E90.c	match	boot:00218F98	544	100.00
 func_0021A0B0	src/game/ui/pause.c	match	boot:002191B8	240	100.00
 func_0021A1A0	src/versions/us/game/ui/pause/func_0021A1A0.c	match	boot:002192A8	1036	100.00
 func_0021A610	src/game/ui/pause.c	match	boot:002196B8	1732	100.00
@@ -1326,8 +1326,8 @@ func_0021B138	src/versions/us/game/ui/pause/func_0021B138.c	match	boot:0021A1E0	
 func_0021B278	src/game/ui/pause.c	match	boot:0021A308	8	100.00
 func_0021B280	src/game/ui/pause.c	match	boot:0021A310	8	100.00
 func_0021B288	src/game/ui/pause.c	match	boot:0021A318	16	100.00
-func_0021B298	src/game/ui/pause.c	differs	boot:0021A328	2252	0.00
-func_0021BB90	src/game/ui/pause.c	differs	boot:0021ABF8	1488	0.00
+func_0021B298	src/versions/us/game/ui/pause/func_0021B298.c	match	boot:0021A328	2252	100.00
+func_0021BB90	src/versions/us/game/ui/pause/func_0021BB90.c	match	boot:0021ABF8	1488	100.00
 func_0021C1B0	src/game/ui/pause.c	match	boot:0021B1C8	1292	100.00
 func_0021C6C0	src/game/ui/pause.c	match	boot:0021B6D8	208	100.00
 func_0021C790	src/game/ui/pause.c	match	boot:0021B7A8	176	100.00
@@ -1446,7 +1446,7 @@ func_00226F68	src/game/ui/pause.c	match	boot:00225CD8	176	100.00
 func_00227018	src/game/ui/pause.c	match	boot:00225D88	80	100.00
 func_00227068	src/game/ui/pause.c	match	boot:00225DD8	68	100.00
 func_002270B0	src/game/ui/pause.c	match	boot:00225E20	76	100.00
-func_00227100	src/game/ui/pause.c	differs	boot:00225E70	1892	0.00
+func_00227100	src/versions/us/game/ui/pause/func_00227100.c	match	boot:00225E70	1892	100.00
 func_00227890	src/game/ui/pause.c	match	boot:002265D8	148	100.00
 func_00227928	src/game/ui/pause.c	match	boot:00226670	164	100.00
 func_002279D0	src/game/ui/pause.c	match	boot:00226718	92	100.00
@@ -1597,7 +1597,7 @@ func_00239948	src/game/ui/vendor.c	match	boot:00238630	88	100.00
 func_002399A0	src/game/ui/vendor.c	match	boot:00238688	96	100.00
 func_00239A00	src/game/ui/vendor.c	match	boot:002386E8	756	100.00
 func_00239CF8	src/game/ui/vendor.c	match	boot:002389E0	1316	100.00
-func_0023A220	src/game/ui/vendor.c	differs	boot:00238F08	596	0.00
+func_0023A220	src/versions/us/game/ui/vendor/func_0023A220.c	match	boot:00238F08	596	100.00
 func_0023A478	src/game/ui/vendor.c	absent	-	0	0.00
 func_0023A5D8	-	asm	boot:00239320	4	100.00
 func_0023A5E0	src/game/ui/vendor.c	match	boot:00239328	868	100.00
@@ -1767,7 +1767,7 @@ func_L00_001F8750	src/overlays/shared/debug_menu_and_text.c	match	00:001F83D0	11
 func_L00_001F91B0	src/overlays/shared/debug_menu_and_text.c	match	00:001F8E30	96	100.00
 func_L00_001F9248	src/versions/us/overlays/shared/debug_menu_and_text/func_L00_001F9248.c	match	00:001F8EC8	136	100.00
 func_L00_001F92C0	src/overlays/shared/debug_menu_and_text.c	match	00:001F8F50	40	100.00
-func_L00_001F92E8	src/overlays/shared/debug_menu_and_text.c	differs	00:001F8F78	232	0.00
+func_L00_001F92E8	src/versions/us/overlays/shared/debug_menu_and_text/func_L00_001F92E8.c	match	00:001F8F78	232	100.00
 func_L00_001F9D40	src/overlays/shared/debug_menu_and_text.c	match	00:001F99C0	96	100.00
 func_L00_001FB7F8	src/overlays/shared/debug_menu_and_text.c	match	00:001FB470	124	100.00
 func_L00_001FCAD8	src/overlays/shared/debug_menu_and_text.c	match	00:001FCB28	372	100.00
@@ -1866,7 +1866,7 @@ func_L00_00208260	src/overlays/shared/hero_idle_and_animation.c	match	00:00207C4
 func_L00_00208318	src/overlays/shared/hero_idle_and_animation.c	match	00:00207D00	64	100.00
 func_L00_00208358	src/versions/us/overlays/shared/hero_idle_and_animation/func_L00_00208358.c	match	00:00207D40	760	100.00
 func_L00_00208650	src/overlays/shared/hero_idle_and_animation.c	match	00:00208038	120	100.00
-func_L00_002086C8	src/overlays/shared/hero_idle_and_animation.c	differs	00:002080B0	1900	0.00
+func_L00_002086C8	src/versions/us/overlays/shared/hero_idle_and_animation/func_L00_002086C8.c	match	00:002080B0	1900	100.00
 func_L00_00208E98	src/overlays/shared/hero_idle_and_animation.c	match	00:00208820	492	100.00
 func_L00_00209088	src/overlays/shared/hero_idle_and_animation.c	match	00:00208A10	332	100.00
 func_L00_002091D8	src/overlays/shared/hero_idle_and_animation.c	match	00:00208B60	956	100.00
@@ -1973,7 +1973,7 @@ func_L00_002162B8	src/overlays/shared/hero_steering_and_tilt.c	match	00:00215B68
 func_L00_00216648	src/overlays/shared/hero_steering_and_tilt.c	match	00:00215EF8	384	100.00
 func_L00_002167C8	src/overlays/shared/hero_steering_and_tilt.c	match	00:00216078	172	100.00
 func_L00_00216880	src/overlays/shared/hero_steering_and_tilt.c	match	00:00216130	704	100.00
-func_L00_00216B40	src/overlays/shared/hero_steering_and_tilt.c	differs	00:002163F0	452	0.00
+func_L00_00216B40	src/versions/us/overlays/shared/hero_steering_and_tilt/func_L00_00216B40.c	match	00:002163F0	452	100.00
 func_L00_00216D40	src/overlays/shared/hero_steering_and_tilt.c	match	00:002165B8	344	100.00
 func_L00_00216E98	src/overlays/shared/hero_steering_and_tilt.c	match	00:00216710	188	100.00
 func_L00_00216F58	src/overlays/shared/hero_steering_and_tilt.c	match	00:002167D0	1560	100.00
@@ -2138,7 +2138,7 @@ func_L00_00244AE0	src/overlays/shared/level_gameplay_loading.c	differs	00:002441
 func_L00_00245B88	src/overlays/shared/level_gameplay_loading.c	match	00:002451B8	184	100.00
 func_L00_00245E98	src/overlays/shared/level_gameplay_loading.c	match	00:002454C8	248	100.00
 func_L00_00245FE0	src/overlays/shared/level_gameplay_loading.c	match	00:00245610	268	100.00
-func_L00_002465F8	src/overlays/shared/level_runtime_and_menus.c	differs	00:00245C28	2176	0.00
+func_L00_002465F8	src/versions/us/overlays/shared/level_runtime_and_menus/func_L00_002465F8.c	match	00:00245C28	2176	100.00
 func_L00_00246EC0	src/overlays/shared/level_runtime_and_menus.c	match	00:002464A8	1040	100.00
 func_L00_002472D0	src/overlays/shared/level_runtime_and_menus.c	match	00:002468B8	424	100.00
 func_L00_00247478	src/overlays/shared/level_runtime_and_menus.c	match	00:00246A60	76	100.00
@@ -2421,8 +2421,8 @@ func_L00_00265050	src/overlays/shared/moby_path_and_manipulators.c	match	00:0026
 func_L00_002653A0	src/overlays/shared/moby_path_and_manipulators.c	match	00:00264328	156	100.00
 func_L00_00265558	src/overlays/shared/help_message_removal.c	match	00:002644E0	96	100.00
 func_L00_002657B8	src/overlays/shared/help_message_removal.c	match	00:00264740	260	100.00
-func_L00_002664B0	src/overlays/shared/music_track_requests.c	differs	01:0027A248	68	0.00
-func_L00_002664F4	-	differs	01:0027A28C	16	0.00
+func_L00_002664B0	src/versions/us/overlays/shared/music_track_requests/func_L00_002664B0.c	match	01:0027A248	68	100.00
+func_L00_002664F4	-	joined	01:0027A28C	16	100.00
 func_L00_002666C8	src/overlays/shared/music_track_requests.c	match	00:00265880	64	100.00
 func_L00_002670E0	src/overlays/shared/npc_dialog_and_pad_history.c	match	00:00266298	64	100.00
 func_L00_00267120	src/overlays/shared/npc_dialog_and_pad_history.c	match	00:002662D8	12	100.00
@@ -2757,7 +2757,7 @@ func_L00_002B9A90	src/overlays/shared/visibomb_and_pyrocitor.c	match	00:002B8798
 func_L00_002B9AA8	-	joined	00:002B87B0	48	100.00
 func_L00_002B9AD8	src/overlays/shared/visibomb_and_pyrocitor.c	match	00:002B87E0	2860	100.00
 func_L00_002BA608	src/overlays/shared/visibomb_and_pyrocitor.c	match	00:002B9310	444	100.00
-func_L00_002BA7C8	src/overlays/shared/walloper_and_beam_effects.c	differs	00:002B94D0	5280	0.00
+func_L00_002BA7C8	src/versions/us/overlays/shared/walloper_and_beam_effects/func_L00_002BA7C8.c	match	00:002B94D0	5280	100.00
 func_L00_002BBC78	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BA970	368	100.00
 func_L00_002BBDE8	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BAAE0	1488	100.00
 func_L00_002BC3B8	src/overlays/shared/walloper_and_beam_effects.c	match	00:002BB0B0	688	100.00
@@ -2822,7 +2822,7 @@ func_L00_002C9DC8	src/overlays/shared/morphoray_chicken_and_drones.c	match	00:00
 func_L00_002CA6B8	src/overlays/shared/morphoray_chicken_and_drones.c	match	00:002C92D8	112	100.00
 func_L00_002CA728	src/overlays/shared/morphoray_chicken_and_drones.c	match	00:002C9348	1168	100.00
 func_L00_002CABB8	-	asm	boot:00204788	4	100.00
-func_L00_002CABC0	src/overlays/shared/morphoray_chicken_and_drones.c	differs	00:002C97E0	5600	0.00
+func_L00_002CABC0	src/versions/us/overlays/shared/morphoray_chicken_and_drones/func_L00_002CABC0.c	match	00:002C97E0	5600	100.00
 func_L00_002CC210	src/overlays/shared/morphoray_chicken_and_drones.c	match	00:002CADC0	76	100.00
 func_L00_002CC2B0	src/overlays/shared/morphoray_chicken_and_drones.c	match	00:002CAE60	176	100.00
 func_L00_002CC360	src/overlays/shared/morphoray_chicken_and_drones.c	match	00:002CAF10	44	100.00
