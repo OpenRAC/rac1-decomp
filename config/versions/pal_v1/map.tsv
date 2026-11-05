@@ -2722,7 +2722,7 @@ func_L00_002ADE90	src/overlays/shared/mine_bomb_and_debris.c	match	00:002AC598	6
 func_L00_002AE110	src/overlays/shared/mine_bomb_and_debris.c	match	00:002AC818	360	100.00
 func_L00_002AE278	src/overlays/shared/mine_bomb_and_debris.c	match	00:002AC980	1076	100.00
 func_L00_002AE6B0	src/overlays/shared/mine_bomb_and_debris.c	match	00:002ACDB8	1820	100.00
-func_L00_002AEDD0	src/overlays/shared/mine_bomb_and_debris.c	differs	00:002AD4D8	6432	0.00
+func_L00_002AEDD0	src/versions/pal_v1/overlays/shared/mine_bomb_and_debris/func_L00_002AEDD0.c	match	00:002AD4D8	6432	100.00
 func_L00_002B0738	src/overlays/shared/mine_bomb_and_debris.c	match	00:002AEDF8	356	100.00
 func_L00_002B08A0	src/overlays/shared/mine_bomb_and_debris.c	match	00:002AEF60	760	100.00
 func_L00_002B0B98	src/overlays/shared/mine_bomb_and_debris.c	match	00:002AF258	404	100.00
