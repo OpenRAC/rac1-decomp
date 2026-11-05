@@ -28,7 +28,7 @@ void morphoray_update(Moby *m) {
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_CROUCH ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_JUMP ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_LAND)) &&
-        (*(int *)D_0013CBE0 & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
+        (*(int *)pad_held & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
             start_equipped_item_animation();
         }
@@ -64,7 +64,7 @@ void morphoray_update(Moby *m) {
             transform_vector_by_basis(&v0, &v0, ((Hero *)g_hero_r)->basis[0].f);
         }
         p->yaw = fast_atan2(v0.x, v0.y);
-        p->pitch = fast_atan2(func_001F9CE8(&v0), v0.z);
+        p->pitch = fast_atan2(vector_length_xy(&v0), v0.z);
         *(u128_2BDAF0 *)&v[0] = *(u128_2BDAF0 *)p->pos;
         hit = select_morphoray_target_and_adjust_aim_r(m, &v[0], &p->yaw, &p->pitch);
         fast_dec_timer(&p->delay);
@@ -107,7 +107,7 @@ void morphoray_update(Moby *m) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53D6, -1);
+                queue_dialogue_message(0x53D6, -1);
             }
             spawn_morphoray_chicken(p->target);
             p->target = 0;

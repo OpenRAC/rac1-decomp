@@ -1470,7 +1470,7 @@ void initialize_tfrag_render_data(FontHdr *hdr, char *tbl) {
 
 extern int disc_table[];
 extern char D_1FF7FF0[];
-extern int func_002175C8(int, int, int);
+extern int submit_audio_stream_io_request(int, int, int);
 
 /* Starts the disc read of the level chunk into the top of memory below D_1FF7FF0, sized from the
    disc table, and returns 1. */
@@ -1480,7 +1480,7 @@ int load_level_chunk_from_disc(void) {
 
     level_root = (int *)(((int)D_1FF7FF0 - want) & -0x10);
     *level_root = 0x60;
-    func_002175C8((int)level_root + *level_root, hdr[0x13E], hdr[0x13F]);
+    submit_audio_stream_io_request((int)level_root + *level_root, hdr[0x13E], hdr[0x13F]);
     return 1;
 }
 
@@ -1707,7 +1707,7 @@ struct TransferState {
 };
 
 extern struct TransferState render_sequence_t __asm__("D_0018CC20") NOT_SDA;
-extern struct GlobalIndex D_0013E130;
+extern struct GlobalIndex level_render_state;
 extern struct Hero g_hero;
 extern int g_game_mode MACRO_ADDR;
 extern int cutscene_moby_ids_by_content_variant[];
@@ -1756,7 +1756,7 @@ void update_world_object_animation(void *arg0) {
         endp = (int)rec + sp[0];
         sp = (int *)((unsigned char *)sp + 4);
         if (g_game_mode == 6 && i == 0 && id == 0x215) {
-            id = cutscene_moby_ids_by_content_variant[D_0013E130.slot];
+            id = cutscene_moby_ids_by_content_variant[level_render_state.slot];
         }
         mob = render_sequence_t.slots[i];
         if (mob == 0) {

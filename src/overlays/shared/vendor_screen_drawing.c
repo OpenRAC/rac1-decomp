@@ -51,7 +51,7 @@ typedef struct {
     char pad5c[0x74];
     DRow rows[16];
 } DMenu;
-extern int D_L00_001CA7C0[];
+extern int vendor_menu[];
 #define MENU (*(DMenu *)D_L00_001CA7C0)
 extern Row item_price_table[] NOT_SDA;
 extern int weapon_ammo_counts[] NOT_SDA;
@@ -268,7 +268,7 @@ extern struct Quad vendor_hologram_cone_quads[];
 extern float vendor_hologram_vertex_offsets[][4];
 extern float vendor_hologram_vertex_uvs[][2];
 extern int vendor_hologram_cone_colors[];
-extern int D_L00_001CA7C0[];
+extern int vendor_menu[];
 extern float vendor_screen_uv_scroll SDATA(vendor_screen_uv_scroll);
 
 struct HoloPacket {
@@ -292,27 +292,27 @@ void draw_vendor_hologram_cone(void) {
     s.hdr[1] = GetEffectTex(0x18);
     for (i = 0; i < 4; i++) {
         transform_vector_by_basis(v[0], vendor_hologram_vertex_offsets[vendor_hologram_cone_quads[i].a],
-                                  (char *)D_L00_001CA7C0[7] + 0xC0);
+                                  (char *)vendor_menu[7] + 0xC0);
         transform_vector_by_basis(
             v[1], vendor_hologram_vertex_offsets[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)],
-            (char *)D_L00_001CA7C0[7] + 0xC0);
+            (char *)vendor_menu[7] + 0xC0);
         transform_vector_by_basis(
             v[2], vendor_hologram_vertex_offsets[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)],
-            (char *)D_L00_001CA7C0[7] + 0xC0);
+            (char *)vendor_menu[7] + 0xC0);
         transform_vector_by_basis(v[3], vendor_hologram_vertex_offsets[vendor_hologram_cone_quads[i].d],
-                                  (char *)D_L00_001CA7C0[7] + 0xC0);
-        s.pos[0][0] = *(float *)((char *)D_L00_001CA7C0[7] + 0x10) + v[0][0];
-        s.pos[0][1] = *(float *)((char *)D_L00_001CA7C0[7] + 0x14) + v[0][1];
-        s.pos[0][2] = *(float *)((char *)D_L00_001CA7C0[7] + 0x18) + v[0][2];
-        s.pos[1][0] = *(float *)((char *)D_L00_001CA7C0[7] + 0x10) + v[1][0];
-        s.pos[1][1] = *(float *)((char *)D_L00_001CA7C0[7] + 0x14) + v[1][1];
-        s.pos[1][2] = *(float *)((char *)D_L00_001CA7C0[7] + 0x18) + v[1][2];
-        s.pos[2][0] = *(float *)((char *)D_L00_001CA7C0[7] + 0x10) + v[2][0];
-        s.pos[2][1] = *(float *)((char *)D_L00_001CA7C0[7] + 0x14) + v[2][1];
-        s.pos[2][2] = *(float *)((char *)D_L00_001CA7C0[7] + 0x18) + v[2][2];
-        s.pos[3][0] = *(float *)((char *)D_L00_001CA7C0[7] + 0x10) + v[3][0];
-        s.pos[3][1] = *(float *)((char *)D_L00_001CA7C0[7] + 0x14) + v[3][1];
-        s.pos[3][2] = *(float *)((char *)D_L00_001CA7C0[7] + 0x18) + v[3][2];
+                                  (char *)vendor_menu[7] + 0xC0);
+        s.pos[0][0] = *(float *)((char *)vendor_menu[7] + 0x10) + v[0][0];
+        s.pos[0][1] = *(float *)((char *)vendor_menu[7] + 0x14) + v[0][1];
+        s.pos[0][2] = *(float *)((char *)vendor_menu[7] + 0x18) + v[0][2];
+        s.pos[1][0] = *(float *)((char *)vendor_menu[7] + 0x10) + v[1][0];
+        s.pos[1][1] = *(float *)((char *)vendor_menu[7] + 0x14) + v[1][1];
+        s.pos[1][2] = *(float *)((char *)vendor_menu[7] + 0x18) + v[1][2];
+        s.pos[2][0] = *(float *)((char *)vendor_menu[7] + 0x10) + v[2][0];
+        s.pos[2][1] = *(float *)((char *)vendor_menu[7] + 0x14) + v[2][1];
+        s.pos[2][2] = *(float *)((char *)vendor_menu[7] + 0x18) + v[2][2];
+        s.pos[3][0] = *(float *)((char *)vendor_menu[7] + 0x10) + v[3][0];
+        s.pos[3][1] = *(float *)((char *)vendor_menu[7] + 0x14) + v[3][1];
+        s.pos[3][2] = *(float *)((char *)vendor_menu[7] + 0x18) + v[3][2];
         s.col[0] = vendor_hologram_cone_colors[vendor_hologram_cone_quads[i].a];
         s.col[1] = vendor_hologram_cone_colors[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)];
         s.col[2] = vendor_hologram_cone_colors[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)];

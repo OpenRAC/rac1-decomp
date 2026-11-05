@@ -14,7 +14,7 @@
 
 extern char dir_lights[];
 extern float camera_lighting_reference_angle;
-extern char D_0019C2C0[];
+extern char point_lights[];
 extern char point_light_data[];
 
 extern void CreatePointLight(int);
@@ -39,7 +39,7 @@ void UpdateAllPointLights(void) {
     *(float *)(l + 0x358) = -0.5f;
     *(int *)(l + 0x35C) = 0;
     for (i = 0; i < 8; i++) {
-        char *src = D_0019C2C0 + i * 0x20;
+        char *src = point_lights + i * 0x20;
         char *dst = point_light_data + i * 0x30;
 
         if (*(int *)(dst + 0x10) != 0 && fast_vec_dist(src + 0x10, dst + 0x20) > 8.0f) {
@@ -109,7 +109,7 @@ void CreatePointLight(int i) {
     slot = &((LtSlot *)point_light_data)[i];
     p = slot->buf;
     end = p + 0x200;
-    def = &((LtDef *)D_0019C2C0)[i];
+    def = &((LtDef *)point_lights)[i];
     qcopy(&sphere, &def->sphere);
     sphere.v[3] += 8.0f;
     if (p < end) {

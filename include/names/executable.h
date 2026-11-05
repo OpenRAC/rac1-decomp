@@ -488,6 +488,7 @@
 #define get_moby_joint_matrices                                func_002116A0
 #define moby_anim_eval_chain                                   func_00211808
 #define assign_moby_class_data                                 func_00213BB8
+#define update_visible_resident_objects                        func_00213C78
 #define MobySetAnimation                                       func_00213D28
 #define MobyBlendAnimation                                     func_00213DE0
 #define blend_moby_animation_ex                                func_00213F28
@@ -525,6 +526,7 @@
 #define music_start_track_by_id                                func_002167C0
 #define continue_audio_stream_if_ready                         func_00216960
 #define request_audio_stream_break                             func_00217588
+#define submit_audio_stream_io_request                         func_002175C8
 #define start_audio_stream_read                                func_00217628
 #define update_audio_stream_until_idle                         func_00217748
 #define finish_audio_stream_read                               func_002177F0
@@ -573,6 +575,7 @@
 #define calculate_voice_pan                                    func_0022DB48
 #define initialize_gameplay_sound_system                       func_0022DBE8
 #define load_audio_bank_by_location                            func_0022EA20
+#define release_voice_slot                                     func_0022EAB0
 #define allocate_voice_slot                                    func_0022EB08
 #define Moby_PlaySound                                         func_0022ED80
 #define allocate_voice_for_bank_entry                          func_0022EE28
@@ -619,6 +622,7 @@
 #define gHavePersuader                                         D_0013D5EB
 #define gGalaxyList                                            D_0013D618
 #define gGoldSuckCannon                                        D_0013E629
+#define hero_pos                                               D_0013F4D0
 #define gBolts                                                 D_0015EE98
 #define hero_max_health                                        D_0015EEA0
 #define gCheats                                                D_0015EEB0
@@ -695,7 +699,7 @@
 #define initialize_level_render_state                          func_001E9EC8
 #define switch_active_camera_record                            func_001EC2B8
 #define refresh_camera_control_flags                           func_001EDCE8
-#define Font_EnableColorCodes                                  func_001F6598
+#define enable_font_color_codes                                func_001F6598
 #define disable_font_color_codes                               func_001F65A8
 #define font_print_window_small                                func_001F75D0
 #define configure_graphics_render_target_and_projection        func_001F7A50
@@ -838,7 +842,7 @@
 #define map_filter_l11_4                                       func_00208160
 #define map_filter_l11_5                                       func_002081F8
 #define map_filter_l12_0                                       func_00208208
-#define MenuL12_IsAlwaysActive1                                func_00208238
+#define map_filter_l12_1                                       func_00208238
 #define map_filter_l12_2                                       func_00208240
 #define map_filter_l15_0                                       func_00208248
 #define map_filter_l16_0                                       func_002082E8
@@ -957,6 +961,7 @@
 #define g_frame_scale_sq                                       D_0015EE64
 #define g_controller_state                                     D_0013CA40
 #define g_current_level_index                                  D_0015EE84
+#define vector_length_xy                                       func_001F9CE8
 #define frame_scale                                            D_0015EE60
 #define g_render_packet_cursor                                 D_00161000
 #define multiply_global_factor                                 func_001F9878
@@ -1336,6 +1341,7 @@
 #define tie_point_light_missing_message                        D_001E7E80
 #define tfrag_point_light_missing_message                      D_001E7EA0
 #define shrub_point_light_missing_message                      D_001E7EC8
+#define decoder_thread                                         D_00161310
 #define movie_frame_count                                      D_00161318
 #define gp_base                                                D_00166D00
 #define dialogue_track_table_by_lang                           D_0011C278
@@ -2409,6 +2415,20 @@
 #define draw_framebuffer_rect_tail                             func_001FBC78
 #define memcard_save_file_name_buffer                          D_001A09A0
 #define kFindAddress_tail                                      func_0011DA90
+#define font_vu_program_tag                                    D_0010E800
+#define font_vu_program                                        D_0010E810
+#define pad_held                                               D_0013CBE0
+#define menu_item_enabled_19                                   D_0013D4AF
+#define level_render_state                                     D_0013E130
+#define level_moby_killed                                      D_0014C290
+#define bolt_source_stats                                      D_0014D690
+#define invert52                                               D_0015EEDC
+#define surface_height_tiles                                   D_00161290
+#define decoder_state                                          D_0016130C
+#define cam_trans_state                                        D_001872B0
+#define point_lights                                           D_0019C2C0
+#define selected_level_index                                   D_001A0414
+#define pause_default_action_list                              D_001D2678
 #define noop_callback_a                                        func_001E9770
 #define noop_callback_d                                        func_001E9788
 #define noop_callback_e                                        func_001E9790

@@ -36,7 +36,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (d->f1AC != 0 && ((Flags *)gSkillPoints)->b11 == 0) {
                 ((Flags *)gSkillPoints)->b11 = 1;
                 PlayBankSound_r(1, 0, 0);
-                func_L00_00264DB8(0x542D, -1);
+                queue_dialogue_message(0x542D, -1);
             }
         }
         if (d->h26 != 0 && r->b28 == 0) {
@@ -60,7 +60,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             }
         }
         if (r->h2A == 0x47) {
-            *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)D_0013F4D0;
+            *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)hero_pos;
             *(u128_2E52B0 *)&vB = *(u128_2E52B0 *)((V_2E52B0 *)&m->pos);
             vA.z += 1.0f;
             vB.z += 1.0f;

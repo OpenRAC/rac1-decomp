@@ -14,7 +14,7 @@
 #include "game/math/fastfunc.h"
 #include "game/system/space.h"
 #include "game/moby/mobyutil.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char hero_vehicle_mode[];
 extern char gSpecialItems[];
 extern Hero g_hero;

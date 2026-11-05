@@ -320,7 +320,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     a[2] = a[2] + f2;
     qcopy(b, base);
     b[2] = b[2] + f2 * 0.3f;
-    if (arg != 0 || func_001F9CE8(base + 0x60) < 0.01f) {
+    if (arg != 0 || vector_length_xy(base + 0x60) < 0.01f) {
         h1 = base - 0x80;
         c[0] = FastCos(*(float *)(h1 + 0x98)) * f21;
         c[1] = FastSin(*(float *)(h1 + 0x98)) * f21;
@@ -331,7 +331,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     } else {
         qcopy(c, base + 0x60);
         c[2] = 0.0f;
-        FastVecScale(c, c, f21 / func_001F9CE8(c));
+        FastVecScale(c, c, f21 / vector_length_xy(c));
         qcopy(d, c);
         FastVecScale(d, d, 1.4f);
     }
@@ -348,7 +348,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     if (coll_line(a, c, 4, *(int *)&((struct Hero *)b2)->moby, 0)) {
         char *q = quartu_coll_hit;
         if (*(int *)(q + 0x1C) > 0)
-            f20 = fast_atan2(*(float *)(q + 0x48), func_001F9CE8(q + 0x40));
+            f20 = fast_atan2(*(float *)(q + 0x48), vector_length_xy(q + 0x40));
     }
     if (f20 >= 0.87266463f || r18 == 8 || r18 == 12) {
         float f;

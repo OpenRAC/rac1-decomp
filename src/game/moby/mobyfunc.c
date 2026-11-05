@@ -281,7 +281,7 @@ void update_moby_voice(unsigned char *s) {
         if (*(unsigned char **)(e + 0x88) != s) {
             s[0x7D] = 0xFF;
         } else if (*(short *)(e + 0x7E) != s[0x7C]) {
-            func_0022EAB0(id);
+            release_voice_slot(id);
             s[0x7D] = 0xFF;
         }
     } else if (s[0x7C] != 0xFF) {

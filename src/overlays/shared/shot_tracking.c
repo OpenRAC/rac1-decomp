@@ -86,11 +86,11 @@ void effect_slots_fire(char *slots, float *position, float *direction, float dis
     if (travel < 4.0f)
         first_count = 1;
     for (i = 0; i < n + first_count; i++) {
-        func_L00_00258DB0(offset, 0.0f,
-                          (((l02_effect_particle_full_travel_spread) - (l02_effect_particle_zero_travel_spread)) *
-                               (travel / distance) +
-                           (l02_effect_particle_zero_travel_spread)) *
-                              g_frame_time);
+        random_vector(offset, 0.0f,
+                      (((l02_effect_particle_full_travel_spread) - (l02_effect_particle_zero_travel_spread)) *
+                           (travel / distance) +
+                       (l02_effect_particle_zero_travel_spread)) *
+                          g_frame_time);
         FastVecAdd(offset, offset, adjusted);
         FastVecScale(velocity, adjusted, random_float_between(0.0f, 1.0f));
         FastVecAdd(velocity, velocity, origin);
@@ -113,7 +113,7 @@ void effect_slots_fire(char *slots, float *position, float *direction, float dis
         float sp2 = random_float_between(10.0f, 30.0f);
         sp2 = multiply_global_factor(sp2);
         ((Slots *)slots)->timer = truncate_float_to_s32(sp2);
-        func_L00_00258DB0(offset, 0.0f, g_frame_time + g_frame_time);
+        random_vector(offset, 0.0f, g_frame_time + g_frame_time);
         FastVecScale(velocity, adjusted, random_float_between(0.5f, 0.1f));
         FastVecAdd(velocity, velocity, offset);
         velocity[3] = 0.0f;

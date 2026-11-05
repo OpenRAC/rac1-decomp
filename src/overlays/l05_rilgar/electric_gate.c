@@ -552,7 +552,7 @@ extern Lid_0030FCC0 *CreateMoby_r(int) __asm__("func_0020D348");
 
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern int D_L05_0015F6A8 MACRO_ADDR;
+extern int game_mode MACRO_ADDR;
 extern float l05_drain_cover_gravity SDATA(D_L05_00161E6C);
 extern float l05_drain_cover_hover_acceleration SDATA(D_L05_00161E70);
 extern int drain_cover_spray_life SDATA(drain_cover_spray_life);
@@ -617,7 +617,7 @@ void drain_cover_update(Moby *moby) {
             break;
         case 1:
             update_drain_cover_tilt((char *)moby, 0.0f, 8.0f);
-            if (D_L05_0015F6A8 == 0 && vec_distance_xy(&moby->pos, &g_hero.motion.pos) < 24.0f &&
+            if (game_mode == 0 && vec_distance_xy(&moby->pos, &g_hero.motion.pos) < 24.0f &&
                 fast_dec_timer(&d->timer) != 0) {
                 moby->state = 2;
                 clear_u64_value(d->vel);
@@ -881,7 +881,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
                     transform_vector_by_basis(dir, dir, &moby->rot_row0);
                     for (j = 0; j < 10; j++) {
                         float size;
-                        func_L00_00258DB0(drift, g_frame_time * 1.5f, g_frame_time * 2.0f);
+                        random_vector(drift, g_frame_time * 1.5f, g_frame_time * 2.0f);
                         FastVecScale(pos, drift, 5.0f);
                         FastVecAdd(pos, pos, dir);
                         FastVecAdd(pos, pos, &moby->pos);
@@ -1588,7 +1588,7 @@ void update_hoverboard_girl_boobs_animation(char *moby, int data_addr) {
             value = FastSin(value * 3.1415927f);
             e->trail.pulse = value * 0.61086524f;
         }
-        func_L00_00263950(moby, (char *)&e->trail, i + 2, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.3f);
+        update_joint_animation(moby, (char *)&e->trail, i + 2, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.3f);
     }
 }
 typedef struct {
@@ -1606,7 +1606,7 @@ extern void update_hoverboard_girl_boobs_animation(char *, int);
 
 /* For every moby sharing this one's class: arms the marker record, and notifies it while the level flag is set. */
 void update_hoverboard_girl_cutscene_instances(char *arg) {
-    if (D_L05_0015F6A8 == 2 && (gCheats[0] != 0 || g_breast_growth_count != 0)) {
+    if (game_mode == 2 && (gCheats[0] != 0 || g_breast_growth_count != 0)) {
         int i;
         for (i = 0; i < rilgar_cutscene_state.n; i++) {
             char *moby = rilgar_cutscene_state.m[i];
@@ -1681,7 +1681,6 @@ extern unsigned char gCheats[];
 extern void update_hoverboard_girl_cutscene_instances();
 
 #define breast_growth_count_gp_q (*(int *)&D_L05_00161F90)
-#define game_mode D_L05_0015F6A8
 #define frame_number D_L05_0015F6B0
 #define race_entries_r D_L05_001B1E78
 #define race_girl_name D_L05_00161F98
@@ -1699,10 +1698,10 @@ extern void update_hoverboard_girl_cutscene_instances();
 #define initialize_npc_dialogue ((void (*)(Moby *, HGState *))(func_L00_002676E8))
 #define initialize_moby_grounding_r ((void (*)(Moby *))(func_L02_0025D750))
 #define update_npc_dialogue ((int (*)(Moby *, HGState *))(func_L00_00267290))
-#define begin_dialogue_camera_transition ((void (*)(float, Moby *))(func_L01_00279398))
-#define set_race_camera ((void (*)(HGVec *, HGVec *, int, int))(func_L00_00217718))
+#define begin_dialogue_camera_transition_fn ((void (*)(float, Moby *))(func_L01_00279398))
+#define set_race_camera_fn ((void (*)(HGVec *, HGVec *, int, int))(func_L00_00217718))
 #define set_race_camera_mode ((void (*)(int, int))(func_L00_002664B0))
-#define queue_dialogue_message ((void (*)(int, int))(func_L00_00264DB8))
+#define queue_dialogue_message_fn ((void (*)(int, int))(func_L00_00264DB8))
 #define func_0020BFC8_x ((void (*)(int, int))(func_0020BFC8))
 #define vector_distance ((float (*)(void *, void *))(func_001F9D48))
 #define angle_from_xy ((float (*)(float, float))(func_L00_001FF860))
@@ -1713,8 +1712,8 @@ extern void update_hoverboard_girl_cutscene_instances();
 #define add_vector ((void (*)(void *, void *, void *))(func_001F9BD8))
 #define subtract_vector ((void (*)(void *, void *, void *))(func_001F9BF0))
 #define signed_angle_difference ((float (*)(float, float))(func_001FA790))
-#define vector_length_xy ((float (*)(void *))(func_001F9CE8))
-#define update_joint_animation ((void (*)(Moby *, HGJoint *, int, float, float))(func_L00_00263950))
+#define vector_length_xy_fn ((float (*)(void *))(func_001F9CE8))
+#define update_joint_animation_fn ((void (*)(Moby *, HGJoint *, int, float, float))(func_L00_00263950))
 #define update_hoverboard_girl_cutscene_instances_r ((void (*)(Moby *))(func_L05_00317E58))
 #define update_hoverboard_girl_boobs_animation_r ((void (*)(Moby *, HGState *))(func_L05_00317CD8))
 #define func_0022EE28_x ((void (*)(int, int, int))(func_0022EE28))
@@ -1755,7 +1754,7 @@ void hoverboard_girl_update(Moby *moby) {
         case 1:
             if ((*(Hero *)&g_hero.rot_matrix[0]).state.current != 0x1D) {
                 if (update_npc_dialogue(moby, state) != 0) {
-                    begin_dialogue_camera_transition(2.0f, moby);
+                    begin_dialogue_camera_transition_fn(2.0f, moby);
                     moby->state = 3;
                 }
                 if (state->dialogue_state == 3) {
@@ -1763,7 +1762,7 @@ void hoverboard_girl_update(Moby *moby) {
                     state->dialogue_state = 2;
                     state->dialogue_state_frame = frame_number;
                     moby->command = 0;
-                    set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
+                    set_race_camera_fn(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
                     qcopy(&((HGVec *)(g_hero.saved_pos_rot))[0], &race_camera_vectors[2]);
                     qcopy(&((HGVec *)(g_hero.saved_pos_rot))[1], &race_camera_vectors[3]);
                     (*(Hero *)&g_hero.rot_matrix[0]).item_use_locked = 1;
@@ -1771,7 +1770,7 @@ void hoverboard_girl_update(Moby *moby) {
                 }
             }
             if (moby->command == 1) {
-                set_race_camera(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
+                set_race_camera_fn(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
                 set_race_camera_mode(0, 8);
                 if ((*(unsigned char *)(special_items_base + 0x13B)) == 0) {
                     state->previous_dialogue_state = state->dialogue_state;
@@ -1783,13 +1782,13 @@ void hoverboard_girl_update(Moby *moby) {
             }
             if (moby->command == 2) {
                 set_race_camera_mode(0, 8);
-                set_race_camera(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
+                set_race_camera_fn(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
                 moby->command = 0;
             }
             if (moby->command == 3) {
                 set_race_camera_mode(0, 8);
                 moby->command = 0;
-                set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
+                set_race_camera_fn(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
                 qcopy(&((HGVec *)(g_hero.saved_pos_rot))[0], &race_camera_vectors[2]);
                 qcopy(&((HGVec *)(g_hero.saved_pos_rot))[1], &race_camera_vectors[3]);
             }
@@ -1810,10 +1809,10 @@ void hoverboard_girl_update(Moby *moby) {
                 moby->state = 1;
                 if (state->previous_dialogue_state == 4) {
                     (*(unsigned char *)(special_items_base + 0x13B)) = 1;
-                    queue_dialogue_message(0x1395, scale_frame_count(300));
+                    queue_dialogue_message_fn(0x1395, scale_frame_count(300));
                     if (menu_item_enabled_115[0xA] != 0) {
                         func_0022EE28_x(1, 0, 0);
-                        queue_dialogue_message(0x53DB, -1);
+                        queue_dialogue_message_fn(0x53DB, -1);
                     }
                     func_0020BFC8_x(0, -1);
                 }
@@ -1821,7 +1820,7 @@ void hoverboard_girl_update(Moby *moby) {
             break;
         default:
             if (moby->command != 0) {
-                set_race_camera(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
+                set_race_camera_fn(&race_camera_vectors[2], &race_camera_vectors[3], 0, 1);
                 moby->command = 0;
             }
             break;
@@ -1866,7 +1865,7 @@ void hoverboard_girl_update(Moby *moby) {
         head_position.component[2] += 1.0f;
         subtract_vector(&direction, &target_position, &head_position);
         yaw = signed_angle_difference(angle_from_xy(direction.component[0], direction.component[1]), moby->rot.z);
-        pitch = -angle_from_xy(vector_length_xy(&direction), direction.component[2]);
+        pitch = -angle_from_xy(vector_length_xy_fn(&direction), direction.component[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -1903,17 +1902,17 @@ void hoverboard_girl_update(Moby *moby) {
         update_hoverboard_girl_boobs_animation_r(moby, state);
         if ((gCheats[0]) != 0)
             state->joints[0].target_scale = 2.75f;
-        update_joint_animation(moby, &state->joints[0], 0, rotation_step * frame_scale_sq,
-                               rotation_limit * frame_scale_sq);
+        update_joint_animation_fn(moby, &state->joints[0], 0, rotation_step * frame_scale_sq,
+                                  rotation_limit * frame_scale_sq);
         {
             float fs = frame_scale_sq;
-            update_joint_animation(moby, &state->joints[1], 1, rotation_step * fs, rotation_limit * fs);
+            update_joint_animation_fn(moby, &state->joints[1], 1, rotation_step * fs, rotation_limit * fs);
         }
     }
 }
 
 #undef breast_growth_count_gp_q
-#undef game_mode
+#undef D_L05_0015F6A8
 #undef frame_number
 #undef race_entries_r
 #undef race_girl_name
@@ -1931,10 +1930,10 @@ void hoverboard_girl_update(Moby *moby) {
 #undef initialize_npc_dialogue
 #undef initialize_moby_grounding_r
 #undef update_npc_dialogue
-#undef begin_dialogue_camera_transition
-#undef set_race_camera
+#undef begin_dialogue_camera_transition_fn
+#undef set_race_camera_fn
 #undef set_race_camera_mode
-#undef queue_dialogue_message
+#undef queue_dialogue_message_fn
 #undef func_0020BFC8_x
 #undef vector_distance
 #undef angle_from_xy
@@ -1945,8 +1944,8 @@ void hoverboard_girl_update(Moby *moby) {
 #undef add_vector
 #undef subtract_vector
 #undef signed_angle_difference
-#undef vector_length_xy
-#undef update_joint_animation
+#undef vector_length_xy_fn
+#undef update_joint_animation_fn
 #undef update_hoverboard_girl_cutscene_instances_r
 #undef update_hoverboard_girl_boobs_animation_r
 #undef func_0022EE28_x
@@ -2026,7 +2025,7 @@ void qwarks_bouncer_update(char *m) {
             break;
         case QWARKS_BOUNCER_UPDATE_DIALOGUE:
             if (Npc_TryStartDialog(m, bouncer_data))
-                func_L01_00279398(2.5f, m);
+                begin_dialogue_camera_transition(2.5f, m);
             if (bouncer_data->sub == 5) {
                 unlock_planet(7);
                 memcard_Save(0, -1);
@@ -2088,7 +2087,7 @@ void qwarks_bouncer_update(char *m) {
         s_eye[2] += 1.0f;
         FastVecSub(s_delta, s_target, s_eye);
         yaw = FastSubRots(fast_atan2(s_delta[0], s_delta[1]), bouncer_moby->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(s_delta), s_delta[2]);
+        pitch = -fast_atan2(vector_length_xy(s_delta), s_delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -2103,8 +2102,8 @@ void qwarks_bouncer_update(char *m) {
     }
     if (gCheats[0] != 0)
         bouncer_data->body.height = 2.75f;
-    func_L00_00263950(m, &bouncer_data->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
-    func_L00_00263950(m, &bouncer_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    update_joint_animation(m, &bouncer_data->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    update_joint_animation(m, &bouncer_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 
 extern char shady_salesman_dialogue_name[];
@@ -2115,7 +2114,7 @@ typedef struct ShadySalesmanNpc {
     u8 pad_06[0x1A];
     void *ptr20; /* 0x20 */
     u8 pad_24[0x1C];
-    u8 body[0x64]; /* 0x40: body joint record, passed to update_joint_animation */
+    u8 body[0x64]; /* 0x40: body joint record, passed to update_joint_animation_fn */
     f32 pitch; /* 0xA4 */
     f32 yaw; /* 0xA8 */
     u8 pad_AC[0x4];
@@ -2172,10 +2171,10 @@ void shady_salesman_update(char *m) {
             break;
         case 1:
             if (Npc_TryStartDialog(m, npc_data))
-                func_L01_00279398(2.0f, m);
+                begin_dialogue_camera_transition(2.0f, m);
             if (npc_data->sub >= 3 && npc_data->sub <= 4) {
                 grant_inventory_item(0x17, 1);
-                func_L00_00264DB8(0x1396, -1);
+                queue_dialogue_message(0x1396, -1);
                 memcard_Save(0, -1);
                 DeleteMoby(m);
                 return;
@@ -2230,7 +2229,7 @@ void shady_salesman_update(char *m) {
         s_eye[2] += 1.0f;
         FastVecSub(s_delta, s_target, s_eye);
         yaw = FastSubRots(fast_atan2(s_delta[0], s_delta[1]), moby->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(s_delta), s_delta[2]);
+        pitch = -fast_atan2(vector_length_xy(s_delta), s_delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -2245,8 +2244,8 @@ void shady_salesman_update(char *m) {
     }
     if (gCheats[0] != 0)
         npc_data->height = 2.75f;
-    func_L00_00263950(m, npc_data->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
-    func_L00_00263950(m, npc_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    update_joint_animation(m, npc_data->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    update_joint_animation(m, npc_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 extern int hero_inside_clip_volume MACRO_ADDR;
 extern float hero_clip_volume_bounds[4] MACRO_ADDR;
@@ -2283,7 +2282,7 @@ void hero_clip_volume_outputs_update(char *m) {
     }
 }
 
-extern int D_L05_0015F6A8;
+extern int game_mode;
 extern float television_scale_multiplier_gp SDATA(D_L05_00161FC8);
 
 // Per-frame update: spin a value in the data block and bob the moby's Y with it.
@@ -2301,7 +2300,7 @@ void television_update(unsigned char *moby) {
             *(float *)(data + 4) = m->pos.z;
             break;
         case TELEVISION_UPDATE_BOBBING:
-            g = D_L05_0015F6A8;
+            g = game_mode;
             if (g == 2) {
                 m->visible = 0;
                 m->flags |= 1;
@@ -2579,7 +2578,7 @@ void select_taxi_route(char *moby) {
 }
 // Updates trailer visibility and flag bit from the current mode.
 void qwarks_trailer_update(char *moby) {
-    if (D_L05_0015F6A8 == 2) {
+    if (game_mode == 2) {
         moby[0x31] = 0;
         *(unsigned short *)(moby + 0x34) |= 1;
     } else {
@@ -2681,7 +2680,7 @@ typedef struct {
 #define FUN_L00_00203908 func_L00_00203F20
 #define FUN_L00_002d5830 func_L00_002D6CE0
 #define FUN_001f99f8 ((void (*)(void *))func_001F9BC0)
-extern char D_0013F4D0[];
+extern char hero_pos[];
 #define D_0013F3D0 D_0013F4D0
 #define hero_a (&D_0013F450)
 extern int hero_control_mode[];
@@ -2853,7 +2852,7 @@ void Moby1550Update(unsigned char *m) {
             m[0x20] = 1;
             break;
         case 1:
-            if (D_L05_0015F6A8 == 2) {
+            if (game_mode == 2) {
                 g = &rilgar_cutscene_state;
                 t = *(int *)((char *)g + 0x30) - 10;
                 if (t < 2) {

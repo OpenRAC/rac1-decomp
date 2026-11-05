@@ -43,7 +43,7 @@
 #include "overlays/shared/moby_drops_and_death.h"
 #include "core/libc/printf_rand.h"
 extern char cd_read_state[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char hero_motion_rotation_for_local_pivot[];
 extern char pad0_pressed[];
 extern char saved_mission_state[];
@@ -51,7 +51,7 @@ extern Hero g_hero;
 
 extern char g_controller_state[];
 extern char g_screen_extent[];
-extern int D_0013CBE0;
+extern int pad_held;
 extern char voice_pool[];
 
 /* Volume trigger: while the hero is inside the clip volume it sets the *_in states, outside the *_out states. */
@@ -564,8 +564,8 @@ void blarg_turret_update(Moby *m) {
                 (data->volume == -1 || is_point_inside_clip_volume(&g_hero.motion.body_center, data->volume) != 0)) {
                 data->f68 = 8.0f;
                 if (m->prev_seq != 1) {
-                    int a = func_L00_00258BC8(0, 3);
-                    MobyBlendAnimation(m, 1, a, func_L00_00258BC8(7, 13));
+                    int a = random_int_between(0, 3);
+                    MobyBlendAnimation(m, 1, a, random_int_between(7, 13));
                 }
                 m->state = 3;
             }
@@ -575,7 +575,7 @@ void blarg_turret_update(Moby *m) {
                 (unsigned char)data->gun->state == 0xFE || (unsigned char)data->gun->state == 0xFD ||
                 (unsigned char)data->gun->state == 2) {
                 if (m->prev_seq != 0) {
-                    MobyBlendAnimation(m, 0, 0, func_L00_00258BC8(7, 13));
+                    MobyBlendAnimation(m, 0, 0, random_int_between(7, 13));
                 }
                 data->f64 = 1.0f;
                 m->state = 5;
@@ -586,7 +586,7 @@ void blarg_turret_update(Moby *m) {
             if (r >= 1.5707964f || vec_distance_xy(&m->pos, &t->pos) > 22.0f ||
                 (data->volume != -1 && is_point_inside_clip_volume(&g_hero.motion.body_center, data->volume) == 0)) {
                 if (m->prev_seq != 0) {
-                    MobyBlendAnimation(m, 0, 0, func_L00_00258BC8(7, 13));
+                    MobyBlendAnimation(m, 0, 0, random_int_between(7, 13));
                 }
                 m->state = 1;
             } else {
@@ -607,7 +607,7 @@ void blarg_turret_update(Moby *m) {
                     (unsigned char)data->gun->state == 0xFE || (unsigned char)data->gun->state == 0xFD ||
                     (unsigned char)data->gun->state == 2) {
                     if (m->prev_seq != 0) {
-                        MobyBlendAnimation(m, 0, 0, func_L00_00258BC8(7, 13));
+                        MobyBlendAnimation(m, 0, 0, random_int_between(7, 13));
                     }
                     data->f64 = 1.0f;
                     m->state = 5;
@@ -616,7 +616,7 @@ void blarg_turret_update(Moby *m) {
             break;
         case 4: {
             Vec4A v;
-            func_L00_00258DB0(&v.x, 0.5f, 1.0f);
+            random_vector(&v.x, 0.5f, 1.0f);
             SetDeathBits(m, 0, -1);
             spawn_explosion_r(m, &v, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(m);
@@ -810,19 +810,19 @@ void blarg_gunner_update(unsigned char *raw) {
         case BLARG_GUNNER_STATE_ACTIVE:
             if (moby_vars->parent[0x20] == 3) {
                 if (moby->prev_seq != 2) {
-                    int x = func_L00_00258BC8(0, 3);
-                    int y = func_L00_00258BC8(7, 0xC);
+                    int x = random_int_between(0, 3);
+                    int y = random_int_between(7, 0xC);
                     MobyBlendAnimation(moby, 2, x, y);
                 }
             } else {
                 if (moby->prev_seq >= 2 || (moby->anim_flags & 2)) {
                     if (!random_integer_below(7)) {
                         if (moby->prev_seq != 1) {
-                            MobyBlendAnimation(moby, 1, 0, func_L00_00258BC8(7, 0xD));
+                            MobyBlendAnimation(moby, 1, 0, random_int_between(7, 0xD));
                         }
                     } else {
                         if (moby->prev_seq != 0) {
-                            MobyBlendAnimation(moby, 0, 0, func_L00_00258BC8(7, 0xD));
+                            MobyBlendAnimation(moby, 0, 0, random_int_between(7, 0xD));
                         }
                     }
                     moby->anim_speed = random_float_between(0.8f, 1.2f);
@@ -1170,7 +1170,7 @@ void robosquawker_update(Moby *m) {
             update_robosquawker_particle((unsigned char *)m, (char *)v);
             FastVecSub(&va, &tgt, &m->pos);
             d = probe_ground_height(&m->pos, 0x120, 0.5f);
-            if (d > 1.0f && func_001F9CE8(&va) < v->f1FC + 4.0f && absolute_float(m->pos.z - tgt.pos.f[2]) < 10.0f &&
+            if (d > 1.0f && vector_length_xy(&va) < v->f1FC + 4.0f && absolute_float(m->pos.z - tgt.pos.f[2]) < 10.0f &&
                 random_integer_below(0x13) == 0) {
                 if (m->prev_seq != 0) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(3));
@@ -1205,7 +1205,7 @@ void robosquawker_update(Moby *m) {
             } else if (fast_dec_timer(&v->w20C) != 0) {
                 int i;
 
-                v->w20C = scale_ticks(func_L00_00258BC8(0x28, 0x78));
+                v->w20C = scale_ticks(random_int_between(0x28, 0x78));
                 for (i = 0; i < 10; i++) {
                     float r;
                     float a;
@@ -1310,7 +1310,7 @@ void robosquawker_update(Moby *m) {
                 qcopy(&v->v1E0, path + v->w224 * 16 + 16);
                 v->v1E0.f[2] = v->v1E0.f[2] + random_float_between(-0.2f, 0.2f);
                 g = probe_ground_height(&m->pos, 0x120, 0.5f);
-                if (g > 1.0f && func_001F9CE8(&vb) < v->f1FC + 4.0f &&
+                if (g > 1.0f && vector_length_xy(&vb) < v->f1FC + 4.0f &&
                     absolute_float(m->pos.z - tgt.pos.f[2]) < 10.0f && random_integer_below(0x13) == 0) {
                     if (m->prev_seq != 0) {
                         MobyBlendAnimation(m, 0, 0, scale_ticks(3));
@@ -2534,7 +2534,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
         kb = frame_scale * 0.25f;
         a = h->stick_x;
         b = h->stick_y;
-        if (D_0013CBE0 & 0x200) {
+        if (pad_held & 0x200) {
             a = a / (frame_scale * 0.012271847f);
             a = a * (frame_scale * 0.015707964f);
             b = b / (frame_scale * 0.012271847f);
@@ -2663,8 +2663,8 @@ void PlayerFighterFlight(void *a0, void *a1) {
             qcopy(m->pos, p + 0x30);
             reflect_vector(dir, dir, p + 0x40);
             o->f38 = FastAddRots(o->f38, FastSubRots(fast_atan2(dir[0], dir[1]), o->f38) * (frame_scale * 0.1f));
-            o->f34 = FastAddRots(o->f34,
-                                 FastSubRots(-fast_atan2(func_001F9CE8(dir), dir[2]), o->f34) * (frame_scale * 0.1f));
+            o->f34 = FastAddRots(o->f34, FastSubRots(-fast_atan2(vector_length_xy(dir), dir[2]), o->f34) *
+                                             (frame_scale * 0.1f));
             o->speed = o->speed * 0.7f;
             if (*(char **)(p + 0x18) != 0) {
                 if (o->iDC == 0) {
@@ -2812,7 +2812,7 @@ extern void PlayerFighterFlight(void *, void *);
 /* Handles fighter entry, flight, damage, exit, palette setup and audio cleanup. */
 void JetFighterUpdateL13(Jet47 *m) {
     JetData47 *d;
-    JVec47 impulse;
+    JVec47 impulse_value;
     int state, initial_state;
     if (((JetPlayer47 *)(hero_globals_base + 0xE1D))->state == 0x72)
         return;
@@ -2833,24 +2833,26 @@ void JetFighterUpdateL13(Jet47 *m) {
                     jet_camera47_r.flash = 1.0f;
                     jet_camera47_r.ticks = scale_ticks(4);
                     weight = hit->damage * 0.05f;
-                    BuildSphericalOffset(impulse, d->speed, d->angles[2], -d->angles[1]);
+                    BuildSphericalOffset(impulse_value, d->speed, d->angles[2], -d->angles[1]);
                     clamp_vec_length(hit->velocity, hit->velocity, g_frame_time * 3.0f);
                     FastVecAdd(m->position, m->position, hit->velocity);
-                    reflect_vector(impulse, impulse, hit->velocity);
-                    yaw_delta = FastSubRots(fast_atan2(impulse[0], impulse[1]), d->angles[2]);
+                    reflect_vector(impulse_value, impulse_value, hit->velocity);
+                    yaw_delta = FastSubRots(fast_atan2(impulse_value[0], impulse_value[1]), d->angles[2]);
                     d->angles[2] = FastAddRots(d->angles[2], yaw_delta * (frame_scale * 0.1f) * weight);
-                    pitch_delta = FastSubRots(fast_atan2(func_001F9CE8(impulse), impulse[2]), d->angles[1]);
+                    pitch_delta =
+                        FastSubRots(fast_atan2(vector_length_xy(impulse_value), impulse_value[2]), d->angles[1]);
                     d->angles[1] = FastAddRots(d->angles[1], pitch_delta * (frame_scale * 0.1f) * weight);
                 }
             } else {
-                BuildSphericalOffset(impulse, d->speed, d->angles[2], -d->angles[1]);
+                BuildSphericalOffset(impulse_value, d->speed, d->angles[2], -d->angles[1]);
                 if (hit->source && (unsigned int)(hit->source->class_id - 0x52) < 2)
                     d->hit_class = (short)hit->source->class_id + 10000;
                 jet_camera47_r.flash = 0.2f;
                 jet_camera47_r.ticks = scale_ticks(5);
                 ((JetPlayer47 *)(hero_globals_base + 0xE1D))->health = 0.0f;
                 m->flags |= 0x41;
-                spawn_explosion_v(m, impulse, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                spawn_explosion_v(m, impulse_value, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1,
+                                  -1, 0);
                 m->animation = 0;
                 d->death_timer = scale_ticks(240);
                 m->state = 6;
@@ -2958,7 +2960,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             if (d->blend == 1.0f) {
                 if (d->entry_path != -1) {
                     JetPath47 *path = &gemlik_scene_points[d->entry_path];
-                    func_L00_00217718(path->position, path->rotation, 50, 1);
+                    set_race_camera(path->position, path->rotation, 50, 1);
                     {
                         int index = d->entry_path;
                         JetPath47 *paths = gemlik_scene_points;
@@ -3061,9 +3063,9 @@ void JetFighterUpdateL13(Jet47 *m) {
             jet_group_flag(0x102, 0);
             if (d->exit_path != -1) {
                 JetPath47 *path = &gemlik_scene_points[d->exit_path];
-                func_L00_00217718(path->position, path->rotation, 0, 1);
+                set_race_camera(path->position, path->rotation, 0, 1);
             } else
-                func_L00_00217718(d->spawn_position, gemlik_scene_points[d->destination_path].rotation, 0, 1);
+                set_race_camera(d->spawn_position, gemlik_scene_points[d->destination_path].rotation, 0, 1);
             {
                 int id = d->engine_sound;
                 unsigned char *audio;
@@ -3173,7 +3175,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 jet_group_switch(&jet_boarding_group_ids_b, 1, -1, -1);
                 jet_group_flag(0x102, 0);
                 path = &gemlik_scene_points[d->destination_path];
-                func_L00_00217718(path->position, path->rotation, 0, 1);
+                set_race_camera(path->position, path->rotation, 0, 1);
             }
             if (m->persistent != 0xFF)
                 jet_clear_persistent(m->persistent);

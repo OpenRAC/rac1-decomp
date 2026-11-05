@@ -40,7 +40,7 @@
 #include "overlays/shared/moby_context_table.h"
 #include "asm_functions/level_03.h"
 #include "overlays/shared/moby_drops_and_death.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -639,7 +639,7 @@ void mine_layer_mine_update(struct Moby *m) {
                     switch (kind) {
                         case 0:
                             mine_debris(r, dir, 0x1F101820, 0x101010, random_float_between(200000.0f, 300000.0f),
-                                        func_L00_00258BC8(scale_ticks(0xB4), scale_ticks(0xF0)), 0);
+                                        random_int_between(scale_ticks(0xB4), scale_ticks(0xF0)), 0);
                             break;
                         case 1:
                             mine_debris(r, dir, 0x3F081020, 0x0F081020, random_float_between(50000.0f, 100000.0f),
@@ -647,7 +647,7 @@ void mine_layer_mine_update(struct Moby *m) {
                             break;
                         case 2:
                             mine_debris(r, dir, random_integer_below(100) < 0x28 ? 0x5FF8F8F8 : 0x2F486078, 0x0F000020,
-                                        150000.0f, func_L00_00258BC8(scale_ticks(0x1E), scale_ticks(0x2D)), 2);
+                                        150000.0f, random_int_between(scale_ticks(0x1E), scale_ticks(0x2D)), 2);
                             break;
                         case 3: {
                             int c1 =
@@ -657,7 +657,7 @@ void mine_layer_mine_update(struct Moby *m) {
                             BuildSphericalOffset(dir, random_float_between(0.0f, 1.0f) * g_frame_time, ang,
                                                  random_angle_radians());
                             mine_debris(r, dir, c1, c2, random_float_between(200000.0f, 300000.0f),
-                                        func_L00_00258BC8(scale_ticks(0xF0), scale_ticks(0x12C)), 3);
+                                        random_int_between(scale_ticks(0xF0), scale_ticks(0x12C)), 3);
                             break;
                         }
                     }
@@ -717,7 +717,7 @@ char *spawn_mine_layer_projectile(char *parent_moby, void *pos, float *launch_ve
     frame_scale_squared = g_frame_scale_sq;
     spawned_moby_vars->unk_10 = frame_scale_squared * 0.008f;
     spawned_moby_vars->unk_14 = frame_scale_squared * 0.0005f;
-    spawned_moby_vars->unk_18 = func_001F9CE8(launch_velocity);
+    spawned_moby_vars->unk_18 = vector_length_xy(launch_velocity);
     spawned_moby_vars->unk_1C = launch_velocity[2];
     spawned_moby_vars->unk_20 = 0x400;
     spawned_moby_vars->unk_28 = 1.0f;
@@ -794,7 +794,7 @@ extern s32 D_L03_00161B84_D4560 SDATA(D_L03_00161B84);
 extern f32 D_L03_00161B88_D4560 SDATA(D_L03_00161B88);
 extern f32 D_L03_00161B90_D4560 SDATA(D_L03_00161B90);
 extern f32 D_L03_00161B98_D4560 SDATA(D_L03_00161B98);
-extern s32 D_0014C290[][64];
+extern s32 level_moby_killed[][64];
 extern s32 D_0015EE84_D4560 SDATA(D_0015EE84);
 extern L03LevelState l03_save_state;
 extern u32 pad0_pressed;
@@ -848,7 +848,7 @@ void rail_taxi_update(struct Moby *m) {
             m->state = 1;
             m->collision = 0;
             if (l03_save_state.collected[(s16)m->save_id] != 0 ||
-                (D_0014C290[D_0015EE84_D4560][(s16)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
+                (level_moby_killed[D_0015EE84_D4560][(s16)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
                 DeleteMoby_r3(m);
                 return;
             }
@@ -989,7 +989,7 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
                          kerwan_rail_taxi_max_speed * g_frame_time);
     vec_scale_to_length(&movement_delta, &movement_delta, rail_flyer_vars->speed);
     FastVecAdd(position, &movement_delta, position);
-    target_pitch = -fast_atan2(func_001F9CE8(&movement_delta), movement_delta.z);
+    target_pitch = -fast_atan2(vector_length_xy(&movement_delta), movement_delta.z);
     if (target_pitch > 0.261799395f)
         target_pitch = 0.261799395f;
     else if (target_pitch < -0.261799395f)
@@ -1187,10 +1187,10 @@ void homing_rocket_update(struct Moby *m) {
             side.q = trail.q;
             vec_scale_to_length(&back, v, -0.2f);
             add_vectors(&trail, &back, pos);
-            spawn_effect(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks(func_L00_00258BC8(0xF, 0x16)), 0x28,
-                         func_L00_00258BC8(0x14, 0x23), 1);
-            spawn_effect(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(func_L00_00258BC8(0x1E, 0x3C)), 0x28,
-                         func_L00_00258BC8(0x32, 0x4B), 0);
+            spawn_effect(&back, &side, 0x6F00AFFF, 0xFF, scale_ticks(random_int_between(0xF, 0x16)), 0x28,
+                         random_int_between(0x14, 0x23), 1);
+            spawn_effect(&back, &side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(random_int_between(0x1E, 0x3C)), 0x28,
+                         random_int_between(0x32, 0x4B), 0);
             if (target.found != 0) {
                 pitch = -fast_atan2(vec_distance_xy(pos, &target.pos), target.pos.f[2] - m->pos.z);
                 m->rot.y = SpringTurn(&v->turn_vel, m->rot.y, pitch, g_frame_time_sq_r * 0.7853982f,
@@ -1358,7 +1358,7 @@ void helga_update(struct Moby *m) {
             break;
         case 1:
             if (Npc_TryStartDialog(m, talk)) {
-                func_L01_00279398(2.3f, m);
+                begin_dialogue_camera_transition(2.3f, m);
                 m->state = 2;
                 if (v->link != -1) {
                     LINK_HELPER(m, v)
@@ -1380,7 +1380,7 @@ void helga_update(struct Moby *m) {
                 m->state = 1;
                 if (v->talk.mode == 2) {
                     grant_inventory_item(0xC, 1);
-                    func_L00_00264DB8(0xBC8, -1);
+                    queue_dialogue_message(0xBC8, -1);
                     if (v->reward != -1) {
                         l03_moby_collection_state
                             .collected[(s16)((struct Moby *)((v->reward << 8) + (int)kerwan_mobys))->save_id] =
@@ -1463,7 +1463,7 @@ void helga_update(struct Moby *m) {
         eye[2] += 1.0f;
         FastVecSub(delta, scratch_target, eye);
         yaw = FastSubRots(fast_atan2(delta[0], delta[1]), m->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(delta), delta[2]);
+        pitch = -fast_atan2(vector_length_xy(delta), delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -1477,8 +1477,8 @@ void helga_update(struct Moby *m) {
     }
     if (gCheats[0])
         v->height = 2.75f;
-    func_L00_00263950(m, v->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
-    func_L00_00263950(m, v->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    update_joint_animation(m, v->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    update_joint_animation(m, v->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 struct Manip_DC3E8;
 struct GifEntry_DC3E8;
@@ -1750,7 +1750,7 @@ void big_al_update(struct Moby *m) {
                     m->rot.z = FastAddRots(m->rot.z, 3.1415927f);
                     v->turned = 1;
                 }
-                func_L01_00279398(2.7f, m);
+                begin_dialogue_camera_transition(2.7f, m);
                 m->anim_speed = 0.0f;
                 m->state = 2;
             }
@@ -1778,7 +1778,7 @@ void big_al_update(struct Moby *m) {
                 break;
             }
             grant_inventory_item(2, 1);
-            func_L00_00264DB8(0xBC7, -1);
+            queue_dialogue_message(0xBC7, -1);
             if (v->reward != -1) {
                 t = (struct Moby *)((v->reward << 8) + (int)kerwan_mobys);
                 if (t->oclass == MOBY_CLASS_GARAGE_DOOR && t->state == 0) {
@@ -1803,7 +1803,7 @@ void big_al_update(struct Moby *m) {
                 jet_reset_camera(WT + v->warp * 128 + 0x30, WT + v->warp * 128 + 0x70);
             }
             ((int (*)(int, int))memcard_Save)(0, -1);
-            func_L00_00217718(WT + v->warp * 128 + 0x30, WT + v->warp * 128 + 0x70, 0, 1);
+            set_race_camera(WT + v->warp * 128 + 0x30, WT + v->warp * 128 + 0x70, 0, 1);
             break;
     }
     rate = 0.02f;
@@ -1845,7 +1845,7 @@ void big_al_update(struct Moby *m) {
         eye[2] += 1.0f;
         FastVecSub(delta, scratch_target, eye);
         yaw = FastSubRots(fast_atan2(delta[0], delta[1]), m->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(delta), delta[2]);
+        pitch = -fast_atan2(vector_length_xy(delta), delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -1859,8 +1859,8 @@ void big_al_update(struct Moby *m) {
     }
     if (gCheats[0])
         v->head.height = 2.75f;
-    func_L00_00263950(m, &v->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
-    func_L00_00263950(m, &v->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    update_joint_animation(m, &v->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
+    update_joint_animation(m, &v->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 /* Only registers, scheduling, the frame layout and the order of independent stores differ from retail; the reads,
    writes, calls, their arguments and order, and the float multiply order are retail's (the unset w lanes of the two
@@ -1920,7 +1920,8 @@ void robot_qwark_update(unsigned char *m) {
         ((Moby *)m)->shadow_range = 21;
     }
     if (SAVEFLAGS->collected[(short)((Moby *)m)->save_id] != 0 ||
-        (D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) & 1) {
+        (level_moby_killed[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) &
+            1) {
         if (((Moby *)m)->state != 3) {
             ((Moby *)m)->state = 3;
             MobySetAnimation(m, 1, 0);
@@ -1929,13 +1930,15 @@ void robot_qwark_update(unsigned char *m) {
     hit = (Hit_DD158 *)MobyGetHitMessage(m, -1, 0);
     if (hit != 0 && hit->source != 0 && (type = hit->type) == 3 &&
         SAVEFLAGS->collected[(short)((Moby *)m)->save_id] == 0 &&
-        (((D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) ^ 1) &
+        (((level_moby_killed[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >>
+           (((Moby *)m)->save_id & 0x1F)) ^
+          1) &
          1)) {
         unsigned char *p5 = gSkillPoints;
         if (p5[5] == 0) {
             p5[5] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53DB, -1);
+            queue_dialogue_message(0x53DB, -1);
         }
         *(u128_DD158 *)pos = *(u128_DD158 *)&((Moby *)m)->pos;
         pos[2] += 1.0f;
@@ -1943,7 +1946,8 @@ void robot_qwark_update(unsigned char *m) {
         spawn_explosion(m, vel, pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
         ((Moby *)m)->state = type;
         MobySetAnimation(m, 1, 0);
-        D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
+        level_moby_killed[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |= 1
+                                                                                      << (((Moby *)m)->save_id & 0x1F);
         kerwan_moby_killed_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
     }
     ((Moby *)m)->hit_slot = 0xFF;
@@ -1963,7 +1967,7 @@ void robot_qwark_update(unsigned char *m) {
         case 1:
             if (Npc_TryStartDialog(m, (unsigned char *)d)) {
                 menu_item_enabled_9[4] = 1;
-                func_L01_00279398(2.7f, m);
+                begin_dialogue_camera_transition(2.7f, m);
                 ((Moby *)m)->state = 2;
             }
             break;
@@ -1989,7 +1993,7 @@ void robot_qwark_update(unsigned char *m) {
             add_vectors(tmp, pos, &((Moby *)m)->pos);
             if (random_integer_below(3) == 0) {
                 spawn_effect_particle_with_target_scalar(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f,
-                                                         scale_ticks(func_L00_00258BC8(0x3C, 0x78)));
+                                                         scale_ticks(random_int_between(0x3C, 0x78)));
             }
             break;
     }
@@ -2551,7 +2555,7 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 if (q[3] == 0) {
                     q[3] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53DB, -1);
+                    queue_dialogue_message(0x53DB, -1);
                 }
             }
             break;
@@ -2607,10 +2611,10 @@ void kerwan_cutscene_effects_update(char *m) {
             moby_point_position(moby, 1, to);
             spawn_effect_particle_with_target_scalar(from, &zero, 0x7F7F7F7F, 0x7F7F7F,
                                                      random_float_between(0.25f, 0.5f) * 210000.0f,
-                                                     scale_ticks(func_L00_00258BC8(45, 60)));
+                                                     scale_ticks(random_int_between(45, 60)));
             spawn_effect_particle_with_target_scalar(to, &zero, 0x407F7F7F, 0x7F7F7F,
                                                      random_float_between(0.25f, 0.5f) * 210000.0f,
-                                                     scale_ticks(func_L00_00258BC8(45, 60)));
+                                                     scale_ticks(random_int_between(45, 60)));
             break;
     }
 }

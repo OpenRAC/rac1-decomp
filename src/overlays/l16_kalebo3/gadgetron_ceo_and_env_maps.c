@@ -31,7 +31,7 @@
 #include "game/system/memcard.h"
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/l16_kalebo3/test_dummies_and_conveyors.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char help_records[];
@@ -164,7 +164,7 @@ void gadgetron_ceo_update(Moby *m) {
             if (((L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D))->state != 29 &&
                 Npc_TryStartDialog(m, (char *)d + 0x20)) {
                 m->rot.z = d->initial_yaw;
-                func_L01_00279398(3.5f, m);
+                begin_dialogue_camera_transition(3.5f, m);
                 m->state = 2;
             }
             if (!gHaveMorphORay[9] && vec_distance_xy(&g_hero.motion.pos, &m->pos) < 3.5f) {
@@ -191,7 +191,7 @@ void gadgetron_ceo_update(Moby *m) {
                 activation->pending = pending;
                 m->command = 0;
                 pose = gadgetron_ceo_hero_and_camera_pose;
-                func_L00_00217718(pose, pose + 0x10, 0, 1);
+                set_race_camera(pose, pose + 0x10, 0, 1);
                 camera = g_hero.saved_pos_rot;
                 qcopy(camera, pose + 0x20);
                 qcopy(camera + 0x10, pose + 0x30);
@@ -232,7 +232,7 @@ void gadgetron_ceo_update(Moby *m) {
                 if (!flags[0x1A]) {
                     flags[0x1A] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53DB, -1);
+                    queue_dialogue_message(0x53DB, -1);
                 }
                 if (race_best_records_challenge[1] < 4500)
                     race_best_records_challenge[1] = player->points;
@@ -244,7 +244,7 @@ void gadgetron_ceo_update(Moby *m) {
             event = m->command;
             if (event == 1) {
                 m->state = event;
-                func_L00_00217718(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
+                set_race_camera(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
                 m->command = 0;
                 if (!race_gates_base[0xA]) {
                     int pending;
@@ -260,7 +260,7 @@ void gadgetron_ceo_update(Moby *m) {
             }
             if (m->command == 2) {
                 m->state = 1;
-                func_L00_00217718(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
+                set_race_camera(gadgetron_ceo_hero_return_pose, gadgetron_ceo_hero_return_pose + 0x10, 0, 1);
                 m->command = 0;
                 restore_gadgetron_ceo_non_challenge_environment((char *)m);
             }
@@ -268,7 +268,7 @@ void gadgetron_ceo_update(Moby *m) {
                 char *camera;
                 char *pose = gadgetron_ceo_hero_and_camera_pose;
                 m->command = 0;
-                func_L00_00217718(pose, pose + 0x10, 0, 1);
+                set_race_camera(pose, pose + 0x10, 0, 1);
                 camera = g_hero.saved_pos_rot;
                 qcopy(camera, pose + 0x20);
                 qcopy(camera + 0x10, pose + 0x30);
@@ -318,7 +318,7 @@ void gadgetron_ceo_update(Moby *m) {
         scratch.eye[2] += 1.0f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
         yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), m->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(scratch.delta), scratch.delta[2]);
+        pitch = -fast_atan2(vector_length_xy(scratch.delta), scratch.delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -399,7 +399,7 @@ void clip_volume_dialogue_trigger_update(char *moby) {
                 if (f[0x19] == 0) {
                     f[0x19] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53DB, -1);
+                    queue_dialogue_message(0x53DB, -1);
                 }
             }
             break;
@@ -790,8 +790,8 @@ void ElevatorPlatformUpdate(Moby *m) {
 
 extern float elevator_ring_quad_uvs[][2];
 extern short elevator_max_speed, l16_elevator_ring_tint_start_color, l16_elevator_ring_tint_end_color;
-extern short l16_elevator_ring_blend_color_b_selector, l16_elevator_ring_blend_color_a_selector, D_L16_00161F94,
-    D_L16_00161F98;
+extern short l16_elevator_ring_blend_color_b_selector, l16_elevator_ring_blend_color_a_selector,
+    l16_elevator_ring_blend_alpha_selector, D_L16_00161F98;
 extern short elevator_ring_half_height, elevator_ring_outer_radius, elevator_ring_segment_angle_degrees;
 typedef float L16RingVector[4] __attribute__((aligned(16)));
 typedef struct {
@@ -964,7 +964,7 @@ void chicken_relocator_update(char *moby) {
     switch ((unsigned char)moby[0x20]) {
         case 0:
             moby[0x20] = 1;
-            ((struct RepositionCycleVars *)data)->timer = scale_ticks(func_L00_00258BC8(0xB4, 0x168));
+            ((struct RepositionCycleVars *)data)->timer = scale_ticks(random_int_between(0xB4, 0x168));
             break;
         case 1:
             if (vec_distance_xy(g, target + 0x10) > 3.0f) {
@@ -972,7 +972,7 @@ void chicken_relocator_update(char *moby) {
                     if (fast_dec_timer(&((struct RepositionCycleVars *)data)->timer)) {
                         moby[0x20] = 2;
                         request_target_reposition(target);
-                        ((struct RepositionCycleVars *)data)->timer = scale_ticks(func_L00_00258BC8(0xB4, 0x168));
+                        ((struct RepositionCycleVars *)data)->timer = scale_ticks(random_int_between(0xB4, 0x168));
                     }
                 }
             }

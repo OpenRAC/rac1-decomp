@@ -48,8 +48,8 @@
 #include "overlays/shared/moby_drops_and_death.h"
 #include "core/libc/printf_rand.h"
 extern char g_hero[];
-extern char D_0014C290[];
-extern char D_0013E130[];
+extern char level_moby_killed[];
+extern char level_render_state[];
 extern char voice_pool[];
 
 /* Part attached to a joint of a source moby (spawn_moby_joint_attachment). */
@@ -349,10 +349,10 @@ s3:
     e = ((unsigned char *)p)[0xFE] ^ 1;
     ((unsigned char *)p)[0xFE] = e;
     if (!e) {
-        ((unsigned char *)p)[0xFD] = func_L00_00258BC8(4, 6);
+        ((unsigned char *)p)[0xFD] = random_int_between(4, 6);
         ((Moby *)moby)->state = 4;
     } else {
-        ((unsigned char *)p)[0xFD] = func_L00_00258BC8(0x14, 0x32);
+        ((unsigned char *)p)[0xFD] = random_int_between(0x14, 0x32);
         ((Moby *)moby)->state = 3;
     }
     *(int *)(p + 0xF8) = scale_ticks(0x78);
@@ -404,10 +404,10 @@ s2:
     e = ((unsigned char *)p)[0xFE] ^ 1;
     ((unsigned char *)p)[0xFE] = e;
     if (!e) {
-        ((unsigned char *)p)[0xFD] = func_L00_00258BC8(4, 6);
+        ((unsigned char *)p)[0xFD] = random_int_between(4, 6);
         ((Moby *)moby)->state = 4;
     } else {
-        ((unsigned char *)p)[0xFD] = func_L00_00258BC8(0x14, 0x32);
+        ((unsigned char *)p)[0xFD] = random_int_between(0x14, 0x32);
         ((Moby *)moby)->state = 3;
     }
     *(int *)(p + 0xF8) = scale_ticks(0x3C);
@@ -721,7 +721,7 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
                 data->iF8 = scale_ticks(0x14);
                 moby->state = STARFIGHTER_STATE_FOLLOW_COMMAND_PATH;
                 data->s9C = select_point_index_by_distance(moby->pos, walker_paths[data->paths[data->b13B]], 0.0f);
-                data->s9C = *(unsigned short *)&data->s9C + func_L00_00258BC8(3, 7);
+                data->s9C = *(unsigned short *)&data->s9C + random_int_between(3, 7);
                 data->s9C = data->s9C % *(int *)walker_paths[data->paths[data->b13B]];
                 data->s9E = data->s9C - 1;
                 if (data->s9E < 0) {
@@ -748,7 +748,7 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
                     data->b13B = qwarks_starfighter_command_path_slots[moby->bBC];
                     data->s9C = select_point_index_by_distance(
                         moby->pos, walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]], 0.0f);
-                    data->s9C = *(unsigned short *)&data->s9C + func_L00_00258BC8(3, 7);
+                    data->s9C = *(unsigned short *)&data->s9C + random_int_between(3, 7);
                     data->s9C =
                         data->s9C % *(int *)walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]];
                     data->s9E = data->s9C - 1;
@@ -811,7 +811,7 @@ void qwarks_starfighter_update(QwarksStarfighterPart388 *moby) {
                         data->s9C = select_point_index_by_distance(
                             moby->pos, walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]],
                             0.0f);
-                        data->s9C = *(unsigned short *)&data->s9C + func_L00_00258BC8(3, 7);
+                        data->s9C = *(unsigned short *)&data->s9C + random_int_between(3, 7);
                         data->s9C = data->s9C %
                                     *(int *)walker_paths[data->paths[qwarks_starfighter_command_path_slots[moby->bBC]]];
                         data->s9E = data->s9C - 1;
@@ -1457,7 +1457,7 @@ void forcefield_update(Moby *moby) {
             if (d->link != -1) {
                 char *p = moby_base + (d->link << 8);
                 if (p == 0 || (unsigned char)p[0x20] == 0xFE || (unsigned char)p[0x20] == 0xFD ||
-                    (*(int *)(D_0014C290 +
+                    (*(int *)(level_moby_killed +
                               (((short)*(unsigned short *)(p + 0xB2) >> 5) * 4 + (g_current_level_index_m << 8))) >>
                      (*(unsigned short *)(p + 0xB2) & 0x1F)) &
                         1) {
@@ -1503,7 +1503,7 @@ void forcefield_update(Moby *moby) {
 
 /* Clear a vendor moby's field and set its flags unless it is the current target. */
 void Moby_ClearUnlessTargeted(Moby *moby) {
-    if (*(void **)D_0013E130 != moby) {
+    if (*(void **)level_render_state != moby) {
         moby->collision = 0;
         moby->flags |= 3;
     }
@@ -2044,7 +2044,7 @@ char *spawn_gemlik_projectile(float speed, float *pos, float *dir, void *arg) {
         ((Moby *)m)->draw_dist = 0x7F;
         ((Moby *)m)->visible = 1;
         p = (struct GemlikProjectileVars *)((Moby *)m)->pvars;
-        d = func_001F9CE8(dir);
+        d = vector_length_xy(dir);
         ((Moby *)m)->rot.y = -fast_atan2(d, dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         qcopy(&((Moby *)m)->pos, pos);
@@ -2187,7 +2187,7 @@ void gemlik_projectile_update(struct Moby *moby) {
             vec_scale_to_length(&work.direction, &work.direction,
                                 random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
             PartType27Spawn(&moby->pos, &work.direction, 0x7F2F4F6F,
-                            func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
+                            random_int_between(scale_ticks(10), scale_ticks(15)), 30000.0f);
         }
     }
     {
@@ -2222,7 +2222,7 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
     float offset[4];
     float pos[4];
     float random_direction[4];
-    float random_vector[4];
+    float random_vec[4];
     int colors[6];
     int second_colors[6];
     float distance;
@@ -2260,10 +2260,10 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
     distance = FastVecLength(direction);
 
     for (i = 0; i < 10; i++) {
-        *(u128 *)random_vector = 0;
-        random_vector[0] = random_float_between(-1.0f, 1.0f);
-        random_vector[1] = random_float_between(-1.0f, 1.0f);
-        *(V4A *)random_direction = *(V4A *)random_vector;
+        *(u128 *)random_vec = 0;
+        random_vec[0] = random_float_between(-1.0f, 1.0f);
+        random_vec[1] = random_float_between(-1.0f, 1.0f);
+        *(V4A *)random_direction = *(V4A *)random_vec;
         amount = FastVecDot(random_direction, axis);
         vec_scale_to_length(offset, axis, amount);
         FastVecSub(random_direction, random_direction, offset);
@@ -2275,15 +2275,15 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
         FastVecAdd(random_direction, random_direction, velocity);
         lo = scale_ticks(0x3C);
         hi = scale_ticks(0x78);
-        spawn_poison_vessel_fragment(pos, random_direction, func_L00_00258BC8(lo, hi), 0);
+        spawn_poison_vessel_fragment(pos, random_direction, random_int_between(lo, hi), 0);
     }
 
     lift = distance + distance;
     for (j = 0; j < 4; j++) {
-        *(u128 *)random_vector = 0;
-        random_vector[0] = random_float_between(-1.0f, 1.0f);
-        random_vector[1] = random_float_between(-1.0f, 1.0f);
-        *(V4A *)random_direction = *(V4A *)random_vector;
+        *(u128 *)random_vec = 0;
+        random_vec[0] = random_float_between(-1.0f, 1.0f);
+        random_vec[1] = random_float_between(-1.0f, 1.0f);
+        *(V4A *)random_direction = *(V4A *)random_vec;
         amount = FastVecDot(random_direction, axis);
         vec_scale_to_length(offset, axis, amount);
         FastVecSub(random_direction, random_direction, offset);
@@ -2295,22 +2295,22 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
         FastVecAdd(random_direction, random_direction, velocity);
         lo2 = scale_ticks(0x3C);
         hi = scale_ticks(0x5A);
-        spawn_poison_vessel_fragment(pos, random_direction, func_L00_00258BC8(lo2, hi), 1);
+        spawn_poison_vessel_fragment(pos, random_direction, random_int_between(lo2, hi), 1);
     }
 
-    *(u128 *)random_vector = 0;
-    random_vector[0] = random_float_between(-1.0f, 1.0f);
-    random_vector[1] = random_float_between(-1.0f, 1.0f);
-    random_vector[2] = random_float_between(-1.0f, 1.0f);
+    *(u128 *)random_vec = 0;
+    random_vec[0] = random_float_between(-1.0f, 1.0f);
+    random_vec[1] = random_float_between(-1.0f, 1.0f);
+    random_vec[2] = random_float_between(-1.0f, 1.0f);
     direction[2] = direction[2] + distance * 0.5f;
-    *(V4A *)random_direction = *(V4A *)random_vector;
+    *(V4A *)random_direction = *(V4A *)random_vec;
     vec_scale_to_length(random_direction, random_direction, (distance / 5.0f) * g_frame_time);
     vec_scale_to_length(direction, direction, lift * g_frame_time);
     FastVecAdd(random_direction, random_direction, direction);
     clamp_vec_length(random_direction, random_direction, 10.0f * g_frame_time);
     lo3 = scale_ticks(0x3C);
     hi = scale_ticks(0x5A);
-    spawn_poison_vessel_fragment(pos, random_direction, func_L00_00258BC8(lo3, hi), 1);
+    spawn_poison_vessel_fragment(pos, random_direction, random_int_between(lo3, hi), 1);
 
     if (distance < 6.0f) {
         n = truncate_float_to_s32(distance) + 1;
@@ -2335,10 +2335,10 @@ void spawn_poison_vessel_destruction_effects(void *moby, void *data) {
         second_color = &second_colors[random_integer_below(6)];
         lo4 = scale_ticks(0xF);
         hi = scale_ticks(0x14);
-        duration = func_L00_00258BC8(lo4, hi);
+        duration = random_int_between(lo4, hi);
         lo5 = scale_ticks(0x19);
         hi = scale_ticks(0x1E);
-        duration2 = func_L00_00258BC8(lo5, hi);
+        duration2 = random_int_between(lo5, hi);
         PartType11Spawn(pos, velocity, *color, *second_color, speed, duration, duration2, 0, 0, spread);
     }
 
@@ -3033,7 +3033,7 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
                 if (moby->state < 0xF) {
                     char *g = coll_hit_1638;
 
-                    if (fast_atan2(*(float *)(g + 0x48), func_001F9CE8(g + 0x40)) > 0.6981317f) {
+                    if (fast_atan2(*(float *)(g + 0x48), vector_length_xy(g + 0x40)) > 0.6981317f) {
                         vec_scale_to_length(push, g + 0x40, 0.05f);
                         FastVecAdd(&moby->pos, &moby->pos, push);
                     }

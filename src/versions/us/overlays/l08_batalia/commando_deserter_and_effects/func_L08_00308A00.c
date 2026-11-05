@@ -16,7 +16,7 @@ void Moby1349Update(char *m) {
             } else if (is_point_inside_clip_volume(&hero_p.motion.pos, data->fourth) && unl_p[0xB] == 0) {
                 unl_p[0xB] = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53D6, -1);
+                queue_dialogue_message(0x53D6, -1);
             }
             break;
     }

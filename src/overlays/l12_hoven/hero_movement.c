@@ -39,7 +39,7 @@
 #include "overlays/shared/bolts_and_wrench.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
-extern int D_0013CBE0;
+extern int pad_held;
 
 /* Level 12 pickup/ability state update. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l12/ui_help_0022de30.c, FUN_L12_0022de30. */
 void update_hero_ground_material_flags(void) {
@@ -603,7 +603,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -813,9 +813,9 @@ void Hero_UpdateStatePhysicsL12(void) {
                 vec[1][2] += g_frame_time * 2.0f;
                 PartType34Spawn(vec[0], vec[1], 25200.0f, -1.0f);
                 if (random_integer_below(0x64) < 40.0f) {
-                    g_hero.puff_timer = func_L00_00258BC8(scale_ticks(4), scale_ticks(0xB));
+                    g_hero.puff_timer = random_int_between(scale_ticks(4), scale_ticks(0xB));
                 } else {
-                    g_hero.puff_timer = func_L00_00258BC8(scale_ticks(0x28), scale_ticks(0x5A));
+                    g_hero.puff_timer = random_int_between(scale_ticks(0x28), scale_ticks(0x5A));
                 }
             }
             if (g_hero.state.current == 0x35) {
@@ -918,7 +918,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -930,7 +930,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -957,9 +957,9 @@ void Hero_UpdateStatePhysicsL12(void) {
                 vec[1][2] += g_frame_time * 2.0f;
                 PartType34Spawn(vec[0], vec[1], 25200.0f, -1.0f);
                 if (g_hero.state_timer < scale_ticks(0x28)) {
-                    g_hero.puff_timer = func_L00_00258BC8(scale_ticks(2), scale_ticks(5)) + g_hero.state_timer / 5;
+                    g_hero.puff_timer = random_int_between(scale_ticks(2), scale_ticks(5)) + g_hero.state_timer / 5;
                 } else if (g_hero.state_timer > scale_ticks(0x46)) {
-                    g_hero.puff_timer = func_L00_00258BC8(scale_ticks(0xA), scale_ticks(0x14));
+                    g_hero.puff_timer = random_int_between(scale_ticks(0xA), scale_ticks(0x14));
                 }
             }
             if (g_hero.drown_sink_speed > 0.0f) {
@@ -1285,7 +1285,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                 float len;
 
                 lim = g_frame_time * 14.0f;
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 if (len < lim) {
                     Spring(&len, &g_hero.swing_push_speed, lim, g_frame_scale_sq * 0.047f, g_frame_scale_sq * 0.3f,
                            0.0f);
@@ -1531,7 +1531,7 @@ void Hero_UpdateStatePhysicsL12(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (D_0013CBE0 & 0xA) {
+                    if (pad_held & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -2082,7 +2082,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.100000024f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -2306,7 +2306,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                     if (g_hero.state.current == 0x12) {
                         float len;
 
-                        len = func_001F9CE8(g_hero.motion.velocity.f);
+                        len = vector_length_xy(g_hero.motion.velocity.f);
                         if (len > g_frame_time * 3.7f) {
                             len = g_frame_time * 3.7f;
                         }
@@ -2365,7 +2365,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             float len;
             float dec;
 
-            len = func_001F9CE8(g_hero.motion.velocity.f);
+            len = vector_length_xy(g_hero.motion.velocity.f);
             dec = g_frame_time_sq * 4.0f;
             if (g_hero.air_frames.s == 0 && g_hero.state_timer > scale_ticks(0xA)) {
                 dec = g_frame_time_sq * 10.0f;
@@ -2386,7 +2386,7 @@ void Hero_UpdateStatePhysicsL12(void) {
 
             FastVecSub(vec[0], g_hero.target_pose.f, g_hero.motion.pos.f);
             g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
-            len = func_001F9CE8(vec[0]);
+            len = vector_length_xy(vec[0]);
             if (len > 0.2f) {
                 g_hero.stick_magnitude = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
@@ -2526,7 +2526,7 @@ void Hero_UpdateStatePhysicsL12(void) {
             float len;
 
             vel = g_hero.motion.velocity.f;
-            len = func_001F9CE8(vel);
+            len = vector_length_xy(vel);
             clamp_vec_length_xy(
                 (g_hero.air_frames.s != 0 ? frame_scale * -0.00999999f : frame_scale * -0.07999998f) * len + len,
                 g_hero.motion.velocity.f, g_hero.motion.velocity.f);

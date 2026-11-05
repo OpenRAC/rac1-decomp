@@ -262,7 +262,7 @@ void update_metropolis_train_motion(char *moby) {
         if (distance_margin < 0.0f) {
             coupling_data->fFC = 0.0f;
         }
-        func_L01_002F6540(coupling);
+        gunship_follow_path(coupling);
         BuildSphericalOffset(delta, data->fC8, FastAddRots(m->rot.z, 3.14159265f), m->rot.y);
         vec_scale_to_length(delta, delta, data->fC8);
         FastVecAdd(&m->pos, &m->pos, delta);
@@ -507,7 +507,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
             place_metropolis_train((char *)moby, v, 0.0f);
             od->f74 = d->fA4;
             od->fFC = d->fC0;
-            func_L01_002F6540((char *)other);
+            gunship_follow_path((char *)other);
             moby->command = 2;
             break;
         case 2:
@@ -557,7 +557,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
             }
             if (fast_dec_timer(&d->f104) != 0) {
                 Moby_PlaySound(0, 0, (int)moby);
-                d->f104 = func_L00_00258BC8(scale_ticks(0x384), scale_ticks(0x190));
+                d->f104 = random_int_between(scale_ticks(0x384), scale_ticks(0x190));
             }
             if (g_hero.air_frames.s != 0 && g_hero.state.control_mode != HERO_MODE_LEDGE) {
                 find_nearest_path_point_r(od->f70, &g_hero.motion.pos, v, &idx, &t, 0, 999.0f, 5.0f, 0.0f);
@@ -646,7 +646,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 od->fF0 = 1.0f;
                 d->fC0 = d->fC0 * 2.0f;
                 od->fFC = d->fC0;
-                func_L01_002F6540((char *)other);
+                gunship_follow_path((char *)other);
                 moby->command = 5;
                 request_music_track(0, 8);
                 return;
@@ -661,7 +661,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
             }
             if (fast_dec_timer(&d->f104) != 0) {
                 Moby_PlaySound(0, 0, (int)moby);
-                d->f104 = func_L00_00258BC8(scale_ticks(0x384), scale_ticks(0x190));
+                d->f104 = random_int_between(scale_ticks(0x384), scale_ticks(0x190));
             }
             if (od->f60 >= d->fD4) {
                 float lim;
@@ -1045,7 +1045,7 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
             }
             r = scale_ticks(7);
             r2 = scale_ticks(0x14);
-            data->emit_timer_a = func_L00_00258BC8(r, r2);
+            data->emit_timer_a = random_int_between(r, r2);
             return;
         case MOBY_CLASS_FIFTEEN_PARTICLE_BURST_EMITTER:
             if (a2 != 0)
@@ -1068,7 +1068,7 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
             }
             r = scale_ticks(7);
             r2 = scale_ticks(0x14);
-            data->emit_timer_a = func_L00_00258BC8(r, r2);
+            data->emit_timer_a = random_int_between(r, r2);
             return;
         case MOBY_CLASS_ALTERNATE_COLOR_CHILD_EFFECT_EMITTER:
         case MOBY_CLASS_DEFAULT_COLOR_CHILD_EFFECT_EMITTER:
@@ -1116,7 +1116,7 @@ void update_spline_moby_orientation(char *m) {
     yaw_step = y * (1.0f / moby_data->step_div * frame_scale);
     moby->rot.z = FastAddRots(yaw_step, moby->rot.z);
     FastVecSub(position_delta, &moby_data->cur_pos, &moby_data->prev_pos);
-    z = fast_atan2(func_001F9CE8(position_delta), position_delta[2]);
+    z = fast_atan2(vector_length_xy(position_delta), position_delta[2]);
     moby->rot.y = SpringTurn(
         &moby_data->yaw_vel, moby->rot.y, -z, moby_data->yaw_gain * 10.0f * 0.017453292f * g_frame_time_sq,
         moby_data->yaw_gain * 5.0f * 0.017453292f * g_frame_time_sq, moby_data->yaw_gain * 0.017453292f * g_frame_time);
@@ -1145,7 +1145,7 @@ void update_emitter_intermittent_sound(char *moby) {
         case MOBY_CLASS_DEFAULT_COLOR_CHILD_EFFECT_EMITTER:
             if (data->sound_timer == -1) {
                 int lo = data->sound_min;
-                data->sound_timer = scale_ticks(func_L00_00258BC8(lo, lo + data->sound_range));
+                data->sound_timer = scale_ticks(random_int_between(lo, lo + data->sound_range));
             } else {
                 int x, y;
                 if (!FastDecTimer(&data->sound_timer)) {
@@ -1157,7 +1157,7 @@ void update_emitter_intermittent_sound(char *moby) {
                 }
                 x = scale_ticks(0x898);
                 y = scale_ticks(0x898);
-                data->sound_timer = scale_ticks(func_L00_00258BC8(x, y + scale_ticks(0x3E8)));
+                data->sound_timer = scale_ticks(random_int_between(x, y + scale_ticks(0x3E8)));
             }
             break;
     }
@@ -1292,7 +1292,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         if (((Moby *)moby)->oclass == MOBY_CLASS_BLIMP && gSkillPoints_r[4] == 0) {
             gSkillPoints_r[4] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53DB, -1);
+            queue_dialogue_message(0x53DB, -1);
         }
         allocate_voice_for_group_entry_r(0, 0, moby);
     }
@@ -1455,7 +1455,7 @@ void red_ship_1_update(char *moby) {
             *(OvlQuad *)&data->tangent1.x = *(OvlQuad *)&data->p1.x =
                 *(OvlQuad *)(*(char **)(pm + 0x10) + *(int *)pm * 0x10 + 0x10);
             ((Moby *)moby)->rot.x = 0.0f;
-            ((Moby *)moby)->rot.y = -fast_atan2(func_001F9CE8(cur0), data->tangent0.z);
+            ((Moby *)moby)->rot.y = -fast_atan2(vector_length_xy(cur0), data->tangent0.z);
             ((Moby *)moby)->rot.z = fast_atan2(data->tangent0.x - zero[0], data->tangent0.y - zero[1]);
             data->pitch_vel = 0.0f;
             data->yaw_vel = 0.0f;
@@ -2257,8 +2257,8 @@ void kerwan_path_enemy_update(Moby *m) {
         } else if (d->look1.f68 < -0.7853982f) {
             d->look1.f68 = -0.7853982f;
         }
-        func_L00_00263950((char *)m, (char *)&d->look0, 2, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
-        func_L00_00263950((char *)m, (char *)&d->look1, 3, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
+        update_joint_animation((char *)m, (char *)&d->look0, 2, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
+        update_joint_animation((char *)m, (char *)&d->look1, 3, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
     }
     switch (m->state) {
         case 0:
@@ -2774,7 +2774,7 @@ void kerwan_path_enemy_update(Moby *m) {
                 float speed;
                 float want;
                 q->f8 = q->f8 - q->f10;
-                speed = func_001F9CE8(q);
+                speed = vector_length_xy(q);
                 want = 0.0f;
                 if (q->s3E != 2) {
                     want = q->f4C;

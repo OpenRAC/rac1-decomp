@@ -29,9 +29,9 @@ void suck_cannon_update(Moby *moby) {
             if (eudora_game_mode_r == 2)
                 break;
             if (!*(gHaveHeliPack_r + 7))
-                func_L00_00264DB8(0xFA7, -1);
+                queue_dialogue_message(0xFA7, -1);
             else
-                func_L00_00264DB8(0x53DF, -1);
+                queue_dialogue_message(0x53DF, -1);
             dialogue_message_duration_frames_r = 0xB4;
             grant_inventory_item(9, 1);
             if (vars->exitMoby != -1) {

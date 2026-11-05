@@ -318,7 +318,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
         }
         a = FastSin(d->aim_phase) * 0.08726646f;
         a = FastAddRots(fast_atan2(v[0], v[1]), a);
-        b = -fast_atan2(func_001F9CE8(v), v[2]);
+        b = -fast_atan2(vector_length_xy(v), v[2]);
         if (b > 0.34906584f) {
             b = 0.34906584f;
         } else if (b < -0.7853982f) {

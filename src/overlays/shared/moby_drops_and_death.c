@@ -10,7 +10,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/system/stub.h"
-extern int D_0014C290[][64];
+extern int level_moby_killed[][64];
 
 ASM_FUNC("asm/overlays", func_L00_00251A78);
 ASM_FUNC("asm/overlays", func_L00_00251B58);
@@ -60,7 +60,7 @@ int ChooseDropItem(struct Moby *m, int *item) {
 
     if (*item <= 0 ||
         (m != 0 &&
-         ((*(int *)((char *)&D_0014C290 + ((short)m->save_id >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
+         ((*(int *)((char *)&level_moby_killed + ((short)m->save_id >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
            (m->save_id & 31)) &
           1))) {
         {
@@ -127,9 +127,9 @@ int ChooseDropItem(struct Moby *m, int *item) {
 extern int g_current_level_index MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int free_moby_slot_count MACRO_ADDR;
-extern int D_0014C290[][64];
+extern int level_moby_killed[][64];
 extern unsigned char saved_mission_state[][16];
-extern short D_0014D690[][64][2];
+extern short bolt_source_stats[][64][2];
 
 typedef struct {
     unsigned char p[0x454];
@@ -166,7 +166,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
         return;
     }
     lvl = g_current_level_index;
-    D_0014C290[lvl][*(short *)&((struct Moby *)m)->save_id >> 5] |= 1 << (((struct Moby *)m)->save_id & 0x1F);
+    level_moby_killed[lvl][*(short *)&((struct Moby *)m)->save_id >> 5] |= 1 << (((struct Moby *)m)->save_id & 0x1F);
     session_moby_killed[*(short *)&((struct Moby *)m)->save_id >> 5] |= 1 << (((struct Moby *)m)->save_id & 0x1F);
     current_level_state.a[*(short *)&((struct Moby *)m)->save_id] = ((struct Moby *)m)->mission + 2;
     k = ((struct Moby *)m)->mission;
@@ -178,7 +178,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     }
     if ((signed char)((struct Moby *)m)->unkB1 >= 0) {
         int n1 = ((struct Moby *)m)->unkB6;
-        d = n1 - D_0014D690[g_current_level_index_r][((struct Moby *)m)->unkB1][1];
+        d = n1 - bolt_source_stats[g_current_level_index_r][((struct Moby *)m)->unkB1][1];
         {
             int x = (n1 + 1) / 2 < d ? d : 0;
             if (x) {

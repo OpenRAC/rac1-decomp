@@ -1,6 +1,6 @@
 void JetFighterUpdateL13(Jet47 *m) {
     JetData47 *d;
-    JVec47 impulse;
+    JVec47 impulse_value;
     int state, initial_state;
     if (((JetPlayer47 *)(hero_globals_base + 0xE1D))->state == 0x72)
         return;
@@ -21,24 +21,26 @@ void JetFighterUpdateL13(Jet47 *m) {
                     jet_camera47_r.flash = 1.0f;
                     jet_camera47_r.ticks = scale_ticks(4);
                     weight = hit->damage * 0.05f;
-                    BuildSphericalOffset(impulse, d->speed, d->angles[2], -d->angles[1]);
+                    BuildSphericalOffset(impulse_value, d->speed, d->angles[2], -d->angles[1]);
                     clamp_vec_length(hit->velocity, hit->velocity, g_frame_time * 3.0f);
                     FastVecAdd(m->position, m->position, hit->velocity);
-                    reflect_vector(impulse, impulse, hit->velocity);
-                    yaw_delta = FastSubRots(fast_atan2(impulse[0], impulse[1]), d->angles[2]);
+                    reflect_vector(impulse_value, impulse_value, hit->velocity);
+                    yaw_delta = FastSubRots(fast_atan2(impulse_value[0], impulse_value[1]), d->angles[2]);
                     d->angles[2] = FastAddRots(d->angles[2], yaw_delta * (frame_scale * 0.1f) * weight);
-                    pitch_delta = FastSubRots(fast_atan2(func_001F9CE8(impulse), impulse[2]), d->angles[1]);
+                    pitch_delta =
+                        FastSubRots(fast_atan2(vector_length_xy(impulse_value), impulse_value[2]), d->angles[1]);
                     d->angles[1] = FastAddRots(d->angles[1], pitch_delta * (frame_scale * 0.1f) * weight);
                 }
             } else {
-                BuildSphericalOffset(impulse, d->speed, d->angles[2], -d->angles[1]);
+                BuildSphericalOffset(impulse_value, d->speed, d->angles[2], -d->angles[1]);
                 if (hit->source && (unsigned int)(hit->source->class_id - 0x52) < 2)
                     d->hit_class = (short)hit->source->class_id + 10000;
                 jet_camera47_r.flash = 0.2f;
                 jet_camera47_r.ticks = scale_ticks(5);
                 ((JetPlayer47 *)(hero_globals_base + 0xE1D))->health = 0.0f;
                 m->flags |= 0x41;
-                spawn_explosion_v(m, impulse, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                spawn_explosion_v(m, impulse_value, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1,
+                                  -1, 0);
                 m->animation = 0;
                 d->death_timer = scale_ticks(240);
                 m->state = 6;
@@ -144,7 +146,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             if (d->blend == 1.0f) {
                 if (d->entry_path != -1) {
                     JetPath47 *path = &gemlik_scene_points[d->entry_path];
-                    func_L00_00217718(path->position, path->rotation, 50, 1);
+                    set_race_camera(path->position, path->rotation, 50, 1);
                     {
                         int index = d->entry_path;
                         JetPath47 *paths = gemlik_scene_points;
@@ -247,9 +249,9 @@ void JetFighterUpdateL13(Jet47 *m) {
             jet_group_flag(0x102, 0);
             if (d->exit_path != -1) {
                 JetPath47 *path = &gemlik_scene_points[d->exit_path];
-                func_L00_00217718(path->position, path->rotation, 0, 1);
+                set_race_camera(path->position, path->rotation, 0, 1);
             } else
-                func_L00_00217718(d->spawn_position, gemlik_scene_points[d->destination_path].rotation, 0, 1);
+                set_race_camera(d->spawn_position, gemlik_scene_points[d->destination_path].rotation, 0, 1);
             {
                 int id = d->engine_sound;
                 unsigned char *audio;
@@ -359,7 +361,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 jet_group_switch(&jet_boarding_group_ids_b, 1, -1, -1);
                 jet_group_flag(0x102, 0);
                 path = &gemlik_scene_points[d->destination_path];
-                func_L00_00217718(path->position, path->rotation, 0, 1);
+                set_race_camera(path->position, path->rotation, 0, 1);
             }
             if (m->persistent != 0xFF)
                 jet_clear_persistent(m->persistent);

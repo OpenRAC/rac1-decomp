@@ -89,6 +89,6 @@ src/overlays/shared/trigger_switches_and_hoverboard.c	breakable_lamp_update	mark
 src/overlays/shared/walloper_and_beam_effects.c	build_beam_and_arc_points	marked	a never-taken branch (cprop proves dead == 0, then jump deletes it). Retail
 src/overlays/shared/water_pool_and_sand_mouse.c	activate_smaller_amoeboid	marked	volatile: nops stay in the delay slots (28/296 bytes differ without it)
 src/overlays/shared/water_pool_and_sand_mouse.c	activate_smaller_amoeboid	marked	volatile: nops stay in the delay slots (28/296 bytes differ without it)
-src/overlays/shared/water_pool_and_sand_mouse.c	func_L01_002F6540	marked	duplicating the reset preserves retail's voice-call argument scheduling
-src/overlays/shared/water_pool_and_sand_mouse.c	func_L01_002F6540	marked	the never-taken call keeps gcse from propagating &off[1] into the call, so dir
+src/overlays/shared/water_pool_and_sand_mouse.c	gunship_follow_path	marked	duplicating the reset preserves retail's voice-call argument scheduling
+src/overlays/shared/water_pool_and_sand_mouse.c	gunship_follow_path	marked	the never-taken call keeps gcse from propagating &off[1] into the call, so dir
 src/overlays/shared/weapon_hud_and_counters.c	select_moby_context	marked	without volatile, only this store moves, from here to near the end

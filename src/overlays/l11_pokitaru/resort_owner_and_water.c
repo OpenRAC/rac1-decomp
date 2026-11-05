@@ -287,7 +287,7 @@ void bob_update(char *m) {
         case 1:
             if (is_point_inside_clip_volume(&g_hero.motion.pos, moby_vars->region) != 0) {
                 if (Npc_TryStartDialog(m, moby_vars) != 0) {
-                    func_L01_00279398(2.7f, m);
+                    begin_dialogue_camera_transition(2.7f, m);
                     moby->state = 2;
                 }
             }
@@ -353,7 +353,7 @@ void bob_update(char *m) {
             eye[2] = eye[2] + 1.0f;
             FastVecSub(delta, target, eye);
             yaw = FastSubRots(fast_atan2(delta[0], delta[1]), moby->rot.z);
-            pitch = -fast_atan2(func_001F9CE8(delta), delta[2]);
+            pitch = -fast_atan2(vector_length_xy(delta), delta[2]);
             if (yaw > 1.5707964f)
                 yaw = 1.5707964f;
             else if (yaw < -1.5707964f)
@@ -457,7 +457,7 @@ void update_resort_owner_state_actions(char *m) {
                 tgt = d->target;
                 FastVecSub(v, tgt, m + 0x10);
                 FastVecScale(v, v, 1.0f / (float)scale_ticks(0x3C));
-                d->velocity[2] = jump_speed_4318((float *)(m + 0x10), (float *)tgt, 0, func_001F9CE8(v),
+                d->velocity[2] = jump_speed_4318((float *)(m + 0x10), (float *)tgt, 0, vector_length_xy(v),
                                                  -(g_frame_time_sq_d * 10.8f));
                 boss->anim_speed = 0.6666667f;
             }
@@ -655,7 +655,7 @@ void update_resort_owner_state_transitions(void *mp) {
         case 1:
             if (d->f56 == 0) {
                 if (g_hero.air_frames.s == 0 && Npc_TryStartDialog(moby, d->f20)) {
-                    func_L01_00279398(2.5f, moby);
+                    begin_dialogue_camera_transition(2.5f, moby);
                     set_resort_owner_state_r(moby, 2);
                 }
             } else if (vec_distance_xy(&moby->pos, &g_hero.motion.pos) < 6.0f) {
@@ -750,7 +750,7 @@ void update_resort_owner_state_transitions(void *mp) {
                 qcopy(pokitaru_cutscene_pose_request.a, v);
                 qcopy(pokitaru_cutscene_pose_request.b, w);
                 pokitaru_cutscene_pose_request.f3A = 1;
-                func_L01_00279398(2.5f, moby);
+                begin_dialogue_camera_transition(2.5f, moby);
                 set_resort_owner_state_r(moby, 0xD);
             }
             break;
@@ -794,7 +794,7 @@ void update_resort_owner_state_transitions(void *mp) {
         case 14:
             if (saved_mission_state[d->f118 + (g_current_level_index << 4)] == 0xFF && g_hero.state.current != 0x32 &&
                 Npc_TryStartDialog(moby, d->f20)) {
-                func_L01_00279398(2.5f, moby);
+                begin_dialogue_camera_transition(2.5f, moby);
                 set_resort_owner_state_r(moby, 0xF);
             }
             break;
@@ -1058,7 +1058,7 @@ typedef struct {
     char head[0x68];
     float head_yaw;
 } WD11b;
-extern char D_0013F4D0[];
+extern char hero_pos[];
 
 void func_L11_002D3970_r(WM11_2D3970 *m) __asm__("func_L11_002D3970");
 
@@ -1084,7 +1084,7 @@ void func_L11_002D3970_r(WM11_2D3970 *m) {
         case 14:
         case 16:
             tracking = 1;
-            qcopy(scratch.target, D_0013F4D0);
+            qcopy(scratch.target, hero_pos);
             break;
         default:
             tracking = 0;
@@ -1097,7 +1097,7 @@ void func_L11_002D3970_r(WM11_2D3970 *m) {
         scratch.eye[2] += 1.0f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
         yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), m->yaw);
-        pitch = -fast_atan2(func_001F9CE8(scratch.delta), scratch.delta[2]);
+        pitch = -fast_atan2(vector_length_xy(scratch.delta), scratch.delta[2]);
         if (yaw > 1.2217305f)
             yaw = 1.2217305f;
         else if (yaw < -1.2217305f)
@@ -1185,7 +1185,7 @@ void fred_pokitaru_update(char *m) {
             break;
         case 1:
             if (Npc_TryStartDialog(m, (char *)moby_vars)) {
-                func_L01_00279398(3.0f, m);
+                begin_dialogue_camera_transition(3.0f, m);
                 moby->state = 2;
             }
             if (special_items_base_r[0x13C] == 0 && gHavePersuader[0] == 0 &&
@@ -1220,7 +1220,7 @@ void fred_pokitaru_update(char *m) {
                     special_items_base_r[0x13C] = 0;
                     gHavePersuader[0] = 1;
                     race_gates_base[0xE] = 1;
-                    func_L00_00264DB8(0x2B06, scale_ticks(300));
+                    queue_dialogue_message(0x2B06, scale_ticks(300));
                     memcard_Save(0, -1);
                     help_request(0x2AF9, 0x3B);
                 }
@@ -1267,7 +1267,7 @@ void fred_pokitaru_update(char *m) {
         s_eye[2] += 1.0f;
         FastVecSub(s_delta, s_target, s_eye);
         yaw = FastSubRots(fast_atan2(s_delta[0], s_delta[1]), moby->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(s_delta), s_delta[2]);
+        pitch = -fast_atan2(vector_length_xy(s_delta), s_delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -1400,7 +1400,7 @@ void teleporter_318_update(struct Moby *moby) {
                 td = (struct TeleporterVars *)((Moby *)t)->pvars;
                 qcopy(v, t + 0x10);
                 v[2] += 0.2f;
-                func_L00_00217718(v, t + 0x40, 0, 1);
+                set_race_camera(v, t + 0x40, 0, 1);
                 g_hero_field_20a5 = 1;
                 if (data->music_track != -1 && data->music_slot != -1) {
                     request_music_track(data->music_track, data->music_slot);
@@ -1775,7 +1775,7 @@ void pokitaru_boat_update(Moby *m) {
                     if (d->fC4->nodes[d->fD4].w == 37.0f)
                         d->fC0 = 1;
                 }
-            } else if (func_001F9CE8(&W.v.e) < 0.001f) {
+            } else if (vector_length_xy(&W.v.e) < 0.001f) {
                 if (voice_is_playing(m, d->fCC)) {
                     if (d->fCC != -1) {
                         VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fCC * 0x70);
@@ -2003,7 +2003,7 @@ extern Moby *pokitaru_class_481_mobys[4] MACRO_ADDR;
 extern Moby *pokitaru_class_482_mobys[4] MACRO_ADDR;
 extern Moby *pokitaru_class_483_mobys[4] MACRO_ADDR;
 extern char *pokitaru_mobys_r __asm__("D_L11_00160058") MACRO_ADDR;
-extern char *D_L11_0016016C MACRO_ADDR;
+extern char *path_points_14b0 MACRO_ADDR;
 extern float pokitaru_fade_level MACRO_ADDR;
 
 extern float l11_child_set_fold_rotation_x_progress SDATA(D_L11_00161F54);
@@ -2119,8 +2119,9 @@ void child_sets_controller_update(Moby *moby) {
                 a[2] = probe_ground_height(a, 0, 0.5f);
                 clear_u64_value(b);
                 b[2] = fast_atan2(moby->pos.x - a[0], moby->pos.y - a[1]);
-                func_L00_00217718(a, b, 0x72, 1);
-                jet_mount(D_L11_0016016C + (data->f4 << 7) + 0x30, D_L11_0016016C + (data->f8 << 7) + 0x70, 1, 0, 0);
+                set_race_camera(a, b, 0x72, 1);
+                jet_mount(path_points_14b0 + (data->f4 << 7) + 0x30, path_points_14b0 + (data->f8 << 7) + 0x70, 1, 0,
+                          0);
                 for (m = 0; m < 6; m++) {
                     l11_three_per_side_child_mobys[m]->flags &= ~1;
                     l11_three_per_side_child_mobys[m]->visible = 1;
@@ -2194,9 +2195,9 @@ void child_sets_controller_update(Moby *moby) {
             ApproachWithVelocity_f(&l11_child_sets_camera_pose_blend_progress,
                                    &l11_child_sets_camera_pose_blend_progress_step, 1.0f, g_frame_time_sq * 0.2f,
                                    g_frame_time_sq * 0.2f, g_frame_time * 0.2f);
-            lerp_vector(a, D_L11_0016016C + (data->f4 << 7) + 0x30, D_L11_0016016C + (data->f8 << 7) + 0x30,
+            lerp_vector(a, path_points_14b0 + (data->f4 << 7) + 0x30, path_points_14b0 + (data->f8 << 7) + 0x30,
                         l11_child_sets_camera_pose_blend_progress);
-            lerp_vector(b, D_L11_0016016C + (data->f4 << 7) + 0x70, D_L11_0016016C + (data->f8 << 7) + 0x70,
+            lerp_vector(b, path_points_14b0 + (data->f4 << 7) + 0x70, path_points_14b0 + (data->f8 << 7) + 0x70,
                         l11_child_sets_camera_pose_blend_progress);
             set_camera_position(a);
             set_camera_rotation(b);
@@ -2210,7 +2211,7 @@ void child_sets_controller_update(Moby *moby) {
                 update_child_set_poses(moby);
                 moby->state = 4;
                 jet_end_mount(3);
-                func_L00_00217718(g_hero.motion.pos.f, g_hero.motion.rot.f, 0, 1);
+                set_race_camera(g_hero.motion.pos.f, g_hero.motion.rot.f, 0, 1);
                 ((Flags *)gSpecialItems)->f56 = 1;
             }
             break;
@@ -2472,8 +2473,8 @@ void child_grid_controller_update(char *m) {
             if (old < 0.0f) {
                 if (0.0f <= d->f78) {
                     struct Moby *link = (struct Moby *)(D_L11_00160058_m + (d->w60 << 8));
-                    func_L00_00217718(&link->pos, &link->rot, 0x72, 1);
-                    source_pose_point = D_L11_0016016C + (d->w64 << 7);
+                    set_race_camera(&link->pos, &link->rot, 0x72, 1);
+                    source_pose_point = path_points_14b0 + (d->w64 << 7);
                     jet_mount(source_pose_point + 0x30, source_pose_point + 0x70, 1, 0, 0);
                     break;
                 }
@@ -2521,7 +2522,7 @@ void child_grid_controller_update(char *m) {
             *(float *)&pokitaru_fade_level = f20;
             if (old < 0.0f) {
                 if (0.0f <= d->f78) {
-                    func_L00_00217718(&g_hero.motion.pos, &g_hero.motion.rot, 0, 1);
+                    set_race_camera(&g_hero.motion.pos, &g_hero.motion.rot, 0, 1);
                     jet_end_mount(3);
                     break;
                 }

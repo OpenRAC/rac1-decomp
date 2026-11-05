@@ -24,7 +24,7 @@
 #include "overlays/shared/level_gameplay_loading.h"
 #include "asm_functions/shared_levels.h"
 extern char cd_read_state[];
-extern char *D_0013E130;
+extern char *level_render_state;
 
 extern int ship_level_entry_active SDATA(ship_level_entry_active);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -58,10 +58,10 @@ void initialize_moby_state_record(char *m) {
 }
 /* Hides and deactivates the recorded moby, if any. */
 void deactivate_recorded_moby(void) {
-    char *m = D_0013E130;
+    char *m = level_render_state;
     if (m != 0) {
         *(unsigned short *)(m + 0x34) |= 3;
-        *(int *)(D_0013E130 + 0x94) = 0;
+        *(int *)(level_render_state + 0x94) = 0;
     }
 }
 typedef struct {
@@ -222,7 +222,7 @@ extern short transition_sequence_positions;
 
 /* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
 void prepare_target_level_transition(int dest) {
-    char *g = (char *)&D_0013E130;
+    char *g = (char *)&level_render_state;
     char *h;
     int base;
     int *q;

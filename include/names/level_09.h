@@ -133,6 +133,7 @@
 #define seeker_hurt_knockback_xy_scale                              D_L09_00161488
 #define seeker_fatal_knockback_xy_scale                             D_L09_00161490
 #define seeker_fatal_knockback_z_scale                              D_L09_0016148C
+#define impulse                                                     D_L09_00161948
 #define ground_melee_enemy_knock_up                                 D_L09_0016194C
 #define ground_melee_enemy_settings                                 D_L09_00161958
 #define barrier_radial_effect_count_reduction_control               D_L09_0015F6B8

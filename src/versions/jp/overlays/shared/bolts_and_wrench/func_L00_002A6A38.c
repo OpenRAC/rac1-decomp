@@ -39,7 +39,7 @@ void vendor_update(char *moby) {
             if (*(float *)(p + 0x90) <= 0.0f)
                 *(unsigned short *)(*(char **)(p + 0xC) + 0x34) |= 1;
             if ((level_frame_counter & 7) == 0) {
-                char *g = D_0013F4D0;
+                char *g = hero_pos;
                 if (vec_distance_xy(moby + 0x10, g) <= 16.0f) {
                     if (absolute_float(*(float *)(moby + 0x18) - *(float *)(g + 8)) <= 8.0f) {
                         *(unsigned char *)(moby + 0x20) = 2;
@@ -69,7 +69,7 @@ void vendor_update(char *moby) {
             int r;
             if (*(float *)(p + 0x90) < 1.0f)
                 *(float *)(p + 0x90) += 0.1f;
-            g = D_0013F4D0;
+            g = hero_pos;
             dist = vec_distance_xy(moby + 0x10, g);
             dz = absolute_float(*(float *)(moby + 0x18) - *(float *)(g + 8));
             if ((level_frame_counter & 7) == 0) {

@@ -60,7 +60,7 @@ void process_unlock_code_input(void) {
             if (!*q) {
                 *q = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53D6, -1);
+                queue_dialogue_message(0x53D6, -1);
             }
         }
     } else {

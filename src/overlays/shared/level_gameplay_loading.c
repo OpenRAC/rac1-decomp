@@ -489,7 +489,7 @@ extern float level_fog_far_distance MACRO_ADDR;
 extern float level_fog_near_intensity MACRO_ADDR;
 extern float level_fog_far_intensity MACRO_ADDR;
 extern float veldin1_hero_fall_state_height MACRO_ADDR;
-extern Ship D_0013E130;
+extern Ship level_render_state;
 extern float level_tfrag_draw_distance MACRO_ADDR;
 extern float level_tie_draw_distance MACRO_ADDR;
 extern float shrub_draw_distance MACRO_ADDR;
@@ -533,7 +533,7 @@ extern short gameplay_moby_index_remap[];
 extern unsigned char checkpoint_level_state_moby_flags[];
 extern unsigned char mission_state[] MACRO_ADDR;
 
-extern int D_0014C290[][64];
+extern int level_moby_killed[][64];
 extern int g_current_level_index MACRO_ADDR;
 extern int level_moby_groups[];
 extern int moby_group_count MACRO_ADDR;
@@ -641,9 +641,9 @@ char *load_level_gameplay(int arg0) {
         ship = (float *)(p + 5);
         c = p + 9;
         p += 12;
-        D_0013E130.f30 = c[0];
-        D_0013E130.f34 = c[1];
-        D_0013E130.f38 = c[2];
+        level_render_state.f30 = c[0];
+        level_render_state.f34 = c[1];
+        level_render_state.f38 = c[2];
     }
     UpdateFog();
     level_tfrag_draw_distance = 512000.0f;
@@ -1059,7 +1059,7 @@ char *load_level_gameplay(int arg0) {
                         }
                     } else {
                         if (flags & 1) {
-                            if ((D_0014C290[g_current_level_index][uid >> 5] >> (uid & 0x1F)) & 1) {
+                            if ((level_moby_killed[g_current_level_index][uid >> 5] >> (uid & 0x1F)) & 1) {
                                 b2 = (bolts + 1) / 2;
                             }
                         } else {
@@ -1071,7 +1071,7 @@ char *load_level_gameplay(int arg0) {
                         skip = 1;
                     }
                 } else if ((flags & 0xC) == 4) {
-                    if ((D_0014C290[g_current_level_index][uid >> 5] >> (uid & 0x1F)) & 1) {
+                    if ((level_moby_killed[g_current_level_index][uid >> 5] >> (uid & 0x1F)) & 1) {
                         skip = 1;
                     }
                 }
@@ -1527,14 +1527,14 @@ char *load_level_gameplay(int arg0) {
     particle_pool_field_4 = 0;
     particle_pool_field_c = 0;
     FastMemZero16(particle_slot_bitmap, 0x200);
-    D_0013E130.f0 = 0;
+    level_render_state.f0 = 0;
     if (0.0f < ship[0]) {
         Moby *m;
 
-        if (g_current_level_index == LEVEL_GEMLIK && D_0013E130.f26 == 2) {
+        if (g_current_level_index == LEVEL_GEMLIK && level_render_state.f26 == 2) {
             if (ship_level_entry_active != 0) {
                 for (m = moby_array_start; m->state != 0xFF; m++) {
-                    if (m->oclass == first_class_ids[D_0013E130.f26]) {
+                    if (m->oclass == first_class_ids[level_render_state.f26]) {
                         initialize_moby_state_record((char *)m);
                         MobySetAnimation(m, 1, 0);
                         break;
@@ -1542,10 +1542,10 @@ char *load_level_gameplay(int arg0) {
                 }
             }
         }
-        if (D_0013E130.f0 == 0) {
+        if (level_render_state.f0 == 0) {
             float rot;
 
-            m = CreateMoby(first_class_ids[D_0013E130.f26]);
+            m = CreateMoby(first_class_ids[level_render_state.f26]);
             m->pos.x = ship[0];
             m->pos.y = ship[1];
             m->pos.z = ship[2];
@@ -1557,7 +1557,7 @@ char *load_level_gameplay(int arg0) {
             m->flags &= ~2;
             MobySetAnimation(m, 1, 0);
             moby_build_matrix(m);
-            D_0013E130.f0 = m;
+            level_render_state.f0 = m;
             store_current_level_table_value((int)m, 0);
         }
     }
@@ -1715,7 +1715,7 @@ char *load_level_gameplay(int arg0) {
     setup_level_cameras();
     Camera_UpdateFrame();
     reset_pad_history();
-    Font_EnableColorCodes();
+    enable_font_color_codes();
     active_homing_missiles[0] = 0;
     thrown_mine_list[0] = 0;
     decoy_list[0] = 0;
@@ -1729,8 +1729,8 @@ char *load_level_gameplay(int arg0) {
         }
     }
     glove_of_doom_ring_index = 0;
-    if (D_0013E130.f0 != 0) {
-        *(long *)((int *)&D_0013E130.f0->spawn_frame) = *(long *)((int *)&g_hero.moby->spawn_frame);
+    if (level_render_state.f0 != 0) {
+        *(long *)((int *)&level_render_state.f0->spawn_frame) = *(long *)((int *)&g_hero.moby->spawn_frame);
     }
     switch (g_current_level_index) {
         case LEVEL_ARIDIA:

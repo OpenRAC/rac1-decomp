@@ -50,7 +50,7 @@ extern Hero g_hero;
 extern char pad0_pressed[];
 extern char gSpecialItems[];
 extern char help_records[];
-extern int D_0013CBE0;
+extern int pad_held;
 extern char ship_substate[];
 extern char voice_pool[];
 
@@ -541,7 +541,7 @@ void emit_toxic_gas_vent_sparks(char *moby) {
     i21 = truncate_float_to_s32((float)r);
     FastVecScale(v80, v60, random_float_between(0.0f, 1.0f));
     FastVecAdd(v50, pos, v80);
-    func_L00_00258DB0(v90, 0.0f, spark_spread * g_frame_time);
+    random_vector(v90, 0.0f, spark_spread * g_frame_time);
     FastVecAdd(v90, v90, v70);
     PartType02Spawn(v50, v60, v90, spark_color0, spark_color1, i30, i23, i21, 0x30);
 
@@ -551,7 +551,7 @@ void emit_toxic_gas_vent_sparks(char *moby) {
         multiply_global_factor(random_float_between((float)spark_fade_min, (float)spark_fade_max)));
     FastVecScale(v80, v60, random_float_between(0.0f, 1.0f));
     FastVecAdd(v50, pos, v80);
-    func_L00_00258DB0(v90, 0.0f, spark_spread * g_frame_time);
+    random_vector(v90, 0.0f, spark_spread * g_frame_time);
     FastVecAdd(v90, v90, v70);
     PartType02Spawn(v50, v60, v90, spark_color0, spark_color1, i30, i23, i21, 0x30);
 }
@@ -886,7 +886,7 @@ void drawbridge_update(Moby *m) {
             ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks(20));
             blarg_fade_level = 1.0f - absolute_float(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
-                func_L00_00217718(&g_hero.motion.pos, &g_hero.motion.rot, 0x72, 1);
+                set_race_camera(&g_hero.motion.pos, &g_hero.motion.rot, 0x72, 1);
                 jet_mount(blarg_scene_points_r + (s->i60 << 7) + 0x30, blarg_scene_points_r + (s->i60 << 7) + 0x70, 1,
                           0, 0);
             } else if (1.0f <= s->f6C) {
@@ -960,7 +960,7 @@ void drawbridge_update(Moby *m) {
             } else if (1.0f <= s->f6C) {
                 m->state = 6;
                 help_request(0x1776, 0x2D);
-                func_L00_00264DB8(0x177C, -1);
+                queue_dialogue_message(0x177C, -1);
                 memcard_Save(0, -1);
             }
             break;
@@ -1333,8 +1333,8 @@ void beam_barrier_update(char *m) {
                                               (float)beam_barrier_burst_lifetime_max_frames_gp);
                     w = truncate_float_to_s32(y2);
                     kf = g_frame_time;
-                    func_L00_00258DB0(V.effect, beam_barrier_burst_drift_min_speed_gp * kf,
-                                      beam_barrier_burst_drift_max_speed_gp * kf);
+                    random_vector(V.effect, beam_barrier_burst_drift_min_speed_gp * kf,
+                                  beam_barrier_burst_drift_max_speed_gp * kf);
                     life = (unsigned char)scale_ticks(w);
                     bb = (unsigned char)random_integer_below(0xFF);
                     ((void (*)(float *, char *, int, float, unsigned char, unsigned char,
@@ -1478,7 +1478,7 @@ void animate_beam_barrier_strands(struct Moby *moby) {
             for (k = 0; k < 30; k++) {
                 set_vec_to_origin_point(&l06_beam_barrier_strand_local_points[i][k]);
                 l06_beam_barrier_strand_local_points[i][k].f[1] = y;
-                func_L00_00258DB0(&jitter[k], 0.0f, D_L06_00161E94_F8430 * g_frame_time);
+                random_vector(&jitter[k], 0.0f, D_L06_00161E94_F8430 * g_frame_time);
                 y += step;
             }
             for (k = 1; k < 29; k++) {
@@ -2648,7 +2648,7 @@ void alien_queen_update(unsigned char *moby) {
                 return;
             flag[0xA] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53DB, -1);
+            queue_dialogue_message(0x53DB, -1);
             return;
         }
         case 15: {
@@ -2786,7 +2786,7 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
         moby[0x20] = 14;
         return;
     }
-    if ((unsigned char)moby[0x20] >= 2 && g_hero.items[0].item_id != 8 && (D_0013CBE0 & 0x20))
+    if ((unsigned char)moby[0x20] >= 2 && g_hero.items[0].item_id != 8 && (pad_held & 0x20))
         data->unk_178 = 1;
     timer = data->timer2;
     if (timer != 0 && data->unk_170 != 0) {
@@ -2811,7 +2811,7 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
                 moby[0x20] = 5;
                 data->unk_170 = 0;
                 base = blarg_scene_points + (data->unk_F8 << 7);
-                func_L00_00217718(base + 0x30, base + 0x70, 0x72, 1);
+                set_race_camera(base + 0x30, base + 0x70, 0x72, 1);
                 qcopy(moby + 0x10, &data->home_x);
                 ((Moby *)moby)->rot.z = fast_atan2(g_hero.motion.pos.f[0] - ((Moby *)moby)->pos.x,
                                                    g_hero.motion.pos.f[1] - ((Moby *)moby)->pos.y);
@@ -2859,7 +2859,7 @@ void start_alien_queen_intro(char *moby) {
     struct AlienQueenVars *data = (struct AlienQueenVars *)((Moby *)moby)->pvars;
     char *base = blarg_scene_points + (data->unk_F8 << 7);
     *(int *)&data->cam_t = 0;
-    func_L00_00217718(base + 0x30, base + 0x70, 0x72, 0);
+    set_race_camera(base + 0x30, base + 0x70, 0x72, 0);
     qcopy(v0, moby + 0x10);
     v0[2] = g_hero.motion.pos.f[2] + 2.0f;
     vec_scale_to_length(v1, moby + 0xC0, 8.0f);
@@ -3344,7 +3344,7 @@ void CallableLiftUpdate(Moby *moby) {
                         restore_hero_from_vehicle_mode();
                         {
                             char *b = blarg_scene_points + (d->f7C << 7);
-                            func_L00_00217718(b + 0x30, b + 0x70, 0, 1);
+                            set_race_camera(b + 0x30, b + 0x70, 0, 1);
                         }
                         request_music_track(0, 10);
                         ((Moby *)level_mobys_q)[d->f6C].flags |= 1;
@@ -3366,7 +3366,7 @@ void CallableLiftUpdate(Moby *moby) {
                         ((Moby *)level_mobys_q)[d->f6C].flags &= 0xFFFE;
                         {
                             char *b = blarg_scene_points + (d->f80 << 7);
-                            func_L00_00217718(b + 0x30, b + 0x70, 0, 1);
+                            set_race_camera(b + 0x30, b + 0x70, 0, 1);
                         }
                         enter_hero_vehicle_mode_and_set_moby(1, 0x43, (int)(level_mobys_q + (d->f6C << 8)));
                         request_music_track(2, 7);
@@ -3379,7 +3379,7 @@ void CallableLiftUpdate(Moby *moby) {
                         d->f94 = 1;
                         {
                             char *b = blarg_scene_points + (d->f80 << 7);
-                            func_L00_00217718(b + 0x30, b + 0x70, 0, 1);
+                            set_race_camera(b + 0x30, b + 0x70, 0, 1);
                         }
                     } else {
                         FadeToBlack(scale_ticks(0x10));
@@ -3390,7 +3390,7 @@ void CallableLiftUpdate(Moby *moby) {
                         d->f94 = 0;
                         {
                             char *b = blarg_scene_points + (d->f7C << 7);
-                            func_L00_00217718(b + 0x30, b + 0x70, 0, 1);
+                            set_race_camera(b + 0x30, b + 0x70, 0, 1);
                         }
                     }
                 }

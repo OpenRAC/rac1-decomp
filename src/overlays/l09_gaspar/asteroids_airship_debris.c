@@ -46,11 +46,11 @@ extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
 extern char voice_pool[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char gSkillPoints[];
 extern char g_controller_state[];
 extern char help_records[];
-extern char D_0014C290[];
+extern char level_moby_killed[];
 extern u32 pad0_pressed;
 extern char sound_probe_ignore[];
 
@@ -112,8 +112,8 @@ extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
 extern int textured_grid_view_settings_mode MACRO_ADDR;
 extern u64 scaled_entries_texture_register_value MACRO_ADDR;
-extern unsigned short D_0010E800[];
-extern int D_0010E810[];
+extern unsigned short font_vu_program_tag[];
+extern int font_vu_program[];
 extern int scaled_entries_gs_setup_packet[];
 extern float gaspar_camera_pos[];
 extern float level09_view_context[];
@@ -157,7 +157,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     set_scale_matrix_v(1024.0f, matrix);
     FastVecScale_r(-1024.0f, offset, gaspar_camera_pos);
     offset[3] = 1.0f;
-    VU1_addDataRef(D_0010E810, D_0010E800[0]);
+    VU1_addDataRef(font_vu_program, font_vu_program_tag[0]);
     {
         int *packet;
         int *packet_end;
@@ -478,7 +478,7 @@ void airship_part_update(Moby *moby) {
             } else if (moby->command == 1) {
                 int i;
                 moby->update_dist = 0xFF;
-                d->h2A = func_L00_00258BC8(scale_ticks(G161448_3858), scale_ticks(G16144C_3858));
+                d->h2A = random_int_between(scale_ticks(G161448_3858), scale_ticks(G16144C_3858));
                 for (i = 0; i < 9; i++) {
                     if (d->parts[i] != 0) {
                         d->parts[i]->update_dist = 0xFF;
@@ -538,8 +538,8 @@ void airship_part_update(Moby *moby) {
                 clear_u64_value(vec);
                 buf.pair = airship_part_smoke_colors;
                 PartType11Spawn_v(((f32 *)&moby->pos), vec, 0x2F3F3F7F, buf.pair.v[random_integer_below(2)],
-                                  func_L00_00258BC8(scale_ticks(0xF), scale_ticks(0x14)),
-                                  func_L00_00258BC8(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, 400000.0f,
+                                  random_int_between(scale_ticks(0xF), scale_ticks(0x14)),
+                                  random_int_between(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, 400000.0f,
                                   random_float_between(8.0f, 16.0f) * g_frame_time);
             }
             if (moby->pos.z < 25.0f) {
@@ -884,11 +884,11 @@ void update_falling_asteroid(Moby *m) {
                     pb = &B.v[random_integer_below(6)];
                     {
                         int lo = scale_ticks(15), hi = scale_ticks(20);
-                        a = func_L00_00258BC8(lo, hi);
+                        a = random_int_between(lo, hi);
                     }
                     {
                         int lo = scale_ticks(25), hi = scale_ticks(30);
-                        b = func_L00_00258BC8(lo, hi);
+                        b = random_int_between(lo, hi);
                     }
                     PartType11Spawn_v(d->pos, v4, *pa, *pb, a, b, 0, 0, 400000.0f, sc);
                 }
@@ -955,11 +955,11 @@ void update_falling_asteroid(Moby *m) {
                     pb = &B.v[random_integer_below(6)];
                     {
                         int lo = scale_ticks(15), hi = scale_ticks(20);
-                        a = func_L00_00258BC8(lo, hi);
+                        a = random_int_between(lo, hi);
                     }
                     {
                         int lo = scale_ticks(25), hi = scale_ticks(30);
-                        b = func_L00_00258BC8(lo, hi);
+                        b = random_int_between(lo, hi);
                     }
                     PartType11Spawn_v(v3, v2, *pa, *pb, a, b, 0, 0, 1200000.0f, sc);
                 }
@@ -1023,11 +1023,11 @@ void update_falling_asteroid(Moby *m) {
                 pb = &B.v[random_integer_below(6)];
                 {
                     int lo = scale_ticks(15), hi = scale_ticks(20);
-                    a = func_L00_00258BC8(lo, hi);
+                    a = random_int_between(lo, hi);
                 }
                 {
                     int lo = scale_ticks(25), hi = scale_ticks(30);
-                    b = func_L00_00258BC8(lo, hi);
+                    b = random_int_between(lo, hi);
                 }
                 PartType11Spawn_v(v3, v2, *pa, *pb, a, b, 0, 0, 1200000.0f, sc);
             }
@@ -1345,7 +1345,7 @@ void destructible_prop_update(char *m) {
                 FastVecAdd(&effect_velocity_or_spawn_position, &v, &effect_velocity_or_spawn_position);
                 vec_scale_to_length(&effect_velocity_or_spawn_position, &effect_velocity_or_spawn_position,
                                     random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                moby_vars_or_random_frames = (char *)func_L00_00258BC8(scale_ticks(5), scale_ticks(10));
+                moby_vars_or_random_frames = (char *)random_int_between(scale_ticks(5), scale_ticks(10));
                 PartType27Spawn(pos, (char *)&effect_velocity_or_spawn_position, 0x5F7F4F2F,
                                 (int)moby_vars_or_random_frames, random_float_between(20000.0f, 50000.0f));
             }
@@ -1422,7 +1422,7 @@ void tumbling_debris_update(Moby *moby) {
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time_r2 * 3.0f, g_frame_time_r2 * 6.0f));
-            PartType27Spawn(&moby->pos, q, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
+            PartType27Spawn(&moby->pos, q, 0x7F2F4F6F, random_int_between(scale_ticks(10), scale_ticks(15)), 30000.0f);
         }
         DeleteMoby(moby);
         return;
@@ -1499,7 +1499,7 @@ char *spawn_tumbling_debris(char *owner, void *pos, void *vec, int base, float f
             float y = g_frame_time * 6.2831855f;
             d->roll = random_float_between(-y, y);
         }
-        d->timer = scale_ticks(func_L00_00258BC8(0x5A, 0x6E));
+        d->timer = scale_ticks(random_int_between(0x5A, 0x6E));
         moby_build_matrix(m);
     }
     return (char *)m;
@@ -1540,7 +1540,7 @@ void shrinking_tumbling_debris_update(struct Moby *moby) {
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-            PartType27Spawn(&moby->pos, q, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 100000.0f);
+            PartType27Spawn(&moby->pos, q, 0x7F2F4F6F, random_int_between(scale_ticks(10), scale_ticks(15)), 100000.0f);
         }
         DeleteMoby(moby);
         return;
@@ -1780,7 +1780,7 @@ void Moby1000Update(char *moby) {
             if (q[0xE] == 0) {
                 q[0xE] = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53DB, -1);
+                queue_dialogue_message(0x53DB, -1);
                 airship_parts_alive_count = 0;
             } else {
                 airship_parts_alive_count = 0;
@@ -1856,9 +1856,10 @@ void PathPlatformL09_Update(unsigned char *moby) {
         unsigned short id;
         if (is_point_inside_clip_volume(&g_hero.motion.pos, data->clip_volume) ||
             l09_moby_collection_state.collected[(short)(id = m->save_id)] != 0 ||
-            ((*(int *)(D_0014C290 + (g_current_level_index << 8) + (((short)id >> 5) << 2))) >> (id & 0x1F)) & 1) {
+            ((*(int *)(level_moby_killed + (g_current_level_index << 8) + (((short)id >> 5) << 2))) >> (id & 0x1F)) &
+                1) {
             if (data->clip_volume != -1) {
-                (*(int *)(D_0014C290 + (g_current_level_index << 8) + (((short)m->save_id >> 5) << 2))) |=
+                (*(int *)(level_moby_killed + (g_current_level_index << 8) + (((short)m->save_id >> 5) << 2))) |=
                     1 << (m->save_id & 0x1F);
                 elevator_activation_save_id_bits[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                 data->clip_volume = -1;
@@ -2456,7 +2457,7 @@ typedef struct {
     u32 pressed;
 } CtlPad_6030;
 #define ctl ((CtlPad_6030 *)g_controller_state)
-extern s32 D_0015EEDC MACRO_ADDR;
+extern s32 invert52 MACRO_ADDR;
 extern short turret_camera_offset_length_gp;
 #define D_L09_00161D30_f (*(float *)&D_L09_00161D30)
 extern short turret_camera_z_offset_gp;
@@ -2643,7 +2644,7 @@ void turret_update(struct Moby *moby) {
                 stick_y = hero.stick_y;
             }
             tmp.f[1] = stick_y;
-            len = func_001F9CE8(&tmp);
+            len = vector_length_xy(&tmp);
             if (len > 1.0f) {
                 divide_vector_xyz(&tmp, &tmp, len);
             }
@@ -2687,11 +2688,11 @@ void turret_update(struct Moby *moby) {
                             FastVecAdd(&dir, &shot, &dir);
                             vec_scale_to_length(&dir, &dir,
                                                 random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                            a_26EBC0(&muzzle, &dir, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)),
+                            a_26EBC0(&muzzle, &dir, 0x5F2F4F6F, random_int_between(scale_ticks(5), scale_ticks(10)),
                                      50000.0f);
                         }
                         vec_scale_to_length(&shot, &shot, g_frame_time * 0.5f);
-                        a_26EBC0(&muzzle, &shot, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)),
+                        a_26EBC0(&muzzle, &shot, 0x2F4F7F7F, random_int_between(scale_ticks(4), scale_ticks(7)),
                                  500000.0f);
                     } else if (moby->anim_flags & 2) {
                         MobyBlendAnimation(moby, 4, 0, 1);
@@ -2719,11 +2720,11 @@ void turret_update(struct Moby *moby) {
                             FastVecAdd(&dir, &shot, &dir);
                             vec_scale_to_length(&dir, &dir,
                                                 random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                            a_26EBC0(&muzzle, &dir, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)),
+                            a_26EBC0(&muzzle, &dir, 0x5F2F4F6F, random_int_between(scale_ticks(5), scale_ticks(10)),
                                      50000.0f);
                         }
                         vec_scale_to_length(&shot, &shot, g_frame_time * 0.5f);
-                        a_26EBC0(&muzzle, &shot, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)),
+                        a_26EBC0(&muzzle, &shot, 0x2F4F7F7F, random_int_between(scale_ticks(4), scale_ticks(7)),
                                  500000.0f);
                     } else if (moby->anim_flags & 2) {
                         MobyBlendAnimation(moby, 3, 0, 1);
@@ -3130,7 +3131,7 @@ typedef struct {
 #define FUN_L00_00262b00 ((void (*)(float, float, char *, float *, float *))func_L00_00263B78)
 #define FUN_L00_00262b80 ((void (*)(void *, char *, char *, float, float, float))func_L00_00263BF8)
 #define allocate_voice_for_target_entry ((int (*)(int, int, void *))func_0022ED80)
-#define release_voice_slot ((void (*)(int))func_L00_0028EBF0)
+#define release_voice_slot_fn ((void (*)(int))func_L00_0028EBF0)
 #define is_point_inside_clip_volume ((int (*)(void *, int))func_00215570)
 #define add_vector_xyz ((void (*)(void *, void *, void *))func_001F9BD8)
 #define atan2_f ((f32 (*)(f32, f32))func_L00_001FF860)
@@ -3241,7 +3242,7 @@ void shuttle_1766_update(struct Moby *moby) {
                 if (voice != -1) {
                     u8 *entry = voice_pool + voice * 0x70;
                     if (*(struct Moby **)(entry + 0x88) == moby && entry[0x74] != 0)
-                        release_voice_slot(voice);
+                        release_voice_slot_fn(voice);
                 }
                 *(s32 *)((u8 *)vars + 0xC4) = -1;
                 vars->lag = 0.0f;

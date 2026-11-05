@@ -6,12 +6,12 @@ void DoSpaceTransition(void) {
     lvl = 5;
     coll_output.f10 |= 0x80000000;
     g_game_mode = 6;
-    D_0013E130.set = 0;
+    level_render_state.set = 0;
     if (level_available_b.f8 != 0 || space_load_level >= 8) {
-        D_0013E130.set = 1;
+        level_render_state.set = 1;
     }
     if (level_available_b.fE != 0 || space_load_level >= 14) {
-        D_0013E130.set = 2;
+        level_render_state.set = 2;
     }
     flush_cache(0);
     snd_set_reverb_ex(2, 0, 0, 0, 0);

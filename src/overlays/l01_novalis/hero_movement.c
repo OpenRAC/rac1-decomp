@@ -141,7 +141,7 @@ void HeroMovePipeline(void) {
     vec_scale_to_length(vertical, plane.f, magnitude);
     motion_player = (Hero *)((char *)position - 0x110);
     motion_player->motion.speed_xy = FastVecLength(position);
-    magnitude = func_001F9CE8(position);
+    magnitude = vector_length_xy(position);
     work.q = *(Q_2343F8 *)position;
     motion_player->motion.flat_speed = magnitude;
     motion_player->motion.forward_speed = forward_component(work.f);
@@ -284,7 +284,7 @@ void update_hero_airborne_planar_motion(void) {
         if (g_hero.target_speed < novalis_hero_speed_bands_6[0] * g_frame_time * 0.2f) {
             if (g_hero.state.control_mode == HERO_MODE_FALL) {
                 d = g_hero.stickless_decel;
-                speed = func_001F9CE8(g_hero.motion.velocity.f);
+                speed = vector_length_xy(g_hero.motion.velocity.f);
                 ApproachValue(&speed, 0.0f, d);
                 vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, speed);
                 return;
@@ -533,7 +533,7 @@ void HeroStatePhysics(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -743,9 +743,9 @@ void HeroStatePhysics(void) {
                 vec[1][2] += g_frame_time * 2.0f;
                 PartType34Spawn(vec[0], vec[1], 25200.0f, -1.0f);
                 if (random_integer_below(0x64) < 40.0f) {
-                    g_hero.puff_timer = func_L00_00258BC8(scale_ticks(4), scale_ticks(0xB));
+                    g_hero.puff_timer = random_int_between(scale_ticks(4), scale_ticks(0xB));
                 } else {
-                    g_hero.puff_timer = func_L00_00258BC8(scale_ticks(0x28), scale_ticks(0x5A));
+                    g_hero.puff_timer = random_int_between(scale_ticks(0x28), scale_ticks(0x5A));
                 }
             }
             if (g_hero.state.current == 0x35) {
@@ -848,7 +848,7 @@ void HeroStatePhysics(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -860,7 +860,7 @@ void HeroStatePhysics(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -887,9 +887,9 @@ void HeroStatePhysics(void) {
                 vec[1][2] += g_frame_time * 2.0f;
                 PartType34Spawn(vec[0], vec[1], 25200.0f, -1.0f);
                 if (g_hero.state_timer < scale_ticks(0x28)) {
-                    g_hero.puff_timer = func_L00_00258BC8(scale_ticks(2), scale_ticks(5)) + g_hero.state_timer / 5;
+                    g_hero.puff_timer = random_int_between(scale_ticks(2), scale_ticks(5)) + g_hero.state_timer / 5;
                 } else if (g_hero.state_timer > scale_ticks(0x46)) {
-                    g_hero.puff_timer = func_L00_00258BC8(scale_ticks(0xA), scale_ticks(0x14));
+                    g_hero.puff_timer = random_int_between(scale_ticks(0xA), scale_ticks(0x14));
                 }
             }
             if (g_hero.drown_sink_speed > 0.0f) {
@@ -1630,7 +1630,7 @@ void HeroStatePhysics(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.100000024f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -1833,7 +1833,7 @@ void HeroStatePhysics(void) {
                     if (g_hero.state.current == 0x12) {
                         float len;
 
-                        len = func_001F9CE8(g_hero.motion.velocity.f);
+                        len = vector_length_xy(g_hero.motion.velocity.f);
                         if (len > g_frame_time * 3.7f) {
                             len = g_frame_time * 3.7f;
                         }
@@ -1892,7 +1892,7 @@ void HeroStatePhysics(void) {
             float len;
             float dec;
 
-            len = func_001F9CE8(g_hero.motion.velocity.f);
+            len = vector_length_xy(g_hero.motion.velocity.f);
             dec = g_frame_time_sq * 4.0f;
             if (g_hero.air_frames.s == 0 && g_hero.state_timer > scale_ticks(0xA)) {
                 dec = g_frame_time_sq * 10.0f;
@@ -1913,7 +1913,7 @@ void HeroStatePhysics(void) {
 
             FastVecSub(vec[0], g_hero.target_pose.f, g_hero.motion.pos.f);
             g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
-            len = func_001F9CE8(vec[0]);
+            len = vector_length_xy(vec[0]);
             if (len > 0.2f) {
                 g_hero.stick_magnitude = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
@@ -2053,7 +2053,7 @@ void HeroStatePhysics(void) {
             float len;
 
             vel = g_hero.motion.velocity.f;
-            len = func_001F9CE8(vel);
+            len = vector_length_xy(vel);
             clamp_vec_length_xy(
                 (g_hero.air_frames.s != 0 ? frame_scale * -0.00999999f : frame_scale * -0.07999998f) * len + len,
                 g_hero.motion.velocity.f, g_hero.motion.velocity.f);

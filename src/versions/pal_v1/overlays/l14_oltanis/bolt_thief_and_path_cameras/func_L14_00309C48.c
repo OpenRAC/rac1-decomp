@@ -7,7 +7,7 @@ void SkillPointUpdate(unsigned char *moby) {
             if (gSkillPoints[0x17] == 0) {
                 gSkillPoints[0x17] = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53D6, -1);
+                queue_dialogue_message(0x53D6, -1);
             }
         }
     }

@@ -40,7 +40,7 @@
 extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
-extern char D_0014C290[];
+extern char level_moby_killed[];
 
 /* Class 0x53 shot: flies along velocity until the timer ends. */
 typedef struct ProjectileVars {
@@ -844,21 +844,21 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
     moby_point_position(m, 3, point_3_position);
     if (gemlik_frame_count_r & 1) {
         spawn_effect(point_2_position, downward_effect_vector, 0xCF0000FF, 0xCF,
-                     scale_ticks(func_L00_00258BC8(0x12, 0x16)), 0x32, -0xA, 1);
+                     scale_ticks(random_int_between(0x12, 0x16)), 0x32, -0xA, 1);
         spawn_effect(point_3_position, downward_effect_vector, 0xCF0000FF, 0xCF,
-                     scale_ticks(func_L00_00258BC8(0x12, 0x16)), 0x32, -0xA, 1);
+                     scale_ticks(random_int_between(0x12, 0x16)), 0x32, -0xA, 1);
     } else {
         spawn_effect(point_2_position, downward_effect_vector, 0x6000FFFF, 0x80,
-                     scale_ticks(func_L00_00258BC8(0x14, 0x18)), 0x64, -0xA, 1);
+                     scale_ticks(random_int_between(0x14, 0x18)), 0x64, -0xA, 1);
         spawn_effect(point_3_position, downward_effect_vector, 0x6000FFFF, 0x80,
-                     scale_ticks(func_L00_00258BC8(0x14, 0x18)), 0x64, -0xA, 1);
+                     scale_ticks(random_int_between(0x14, 0x18)), 0x64, -0xA, 1);
     }
     {
-        int ra = func_L00_00258BC8(0xA, 0x19);
-        int rb = func_L00_00258BC8(0xA, 0xF);
+        int ra = random_int_between(0xA, 0x19);
+        int rb = random_int_between(0xA, 0xF);
         spawn_effect(point_2_position, downward_effect_vector, 0xEFFF7F4F, 0xFF0000, scale_ticks(rb), ra, -ra, 1);
-        ra = func_L00_00258BC8(0xA, 0x19);
-        rb = func_L00_00258BC8(0xA, 0xF);
+        ra = random_int_between(0xA, 0x19);
+        rb = random_int_between(0xA, 0xF);
         spawn_effect(point_3_position, downward_effect_vector, 0xEFFF7F4F, 0xFF0000, scale_ticks(rb), ra, -ra, 1);
     }
     m->scale = m->pclass->scale * D_L13_00161520_2C3FB8;
@@ -970,7 +970,7 @@ void process_blarg_space_fighter_damage(unsigned char *moby, unsigned char *d, f
                 RerollEffectCounter(moby, (short *)(d + 0x60));
                 vec_scale_to_length(vec, &t->unk_10, 0.1f);
                 FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, vec);
-                func_L00_00258DB0(vec, -0.1f, 0.1f);
+                random_vector(vec, -0.1f, 0.1f);
                 FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, vec);
             }
             ((Moby *)moby)->hit_slot = 0xFF;
@@ -1792,10 +1792,10 @@ void emit_forcefield_tower_destruction_effects(unsigned char *a0, void *a1, int 
             pb = (int *)(vH.b + rb * 4);
             A = scale_ticks(15);
             B = scale_ticks(20);
-            C = func_L00_00258BC8(A, B);
+            C = random_int_between(A, B);
             D = scale_ticks(25);
             E = scale_ticks(30);
-            F = func_L00_00258BC8(D, E);
+            F = random_int_between(D, E);
             PartType11Spawn_v(pA, vC, *pa, *pb, C, F, 0, 1200000.0f, 0, yv);
         } while (j != 0);
     }
@@ -1952,7 +1952,7 @@ void forcefield_tower_update(char *moby) {
             rnd = g_current_level_index;
             d->voice = -1;
             h = ((Moby *)moby)->save_id;
-            w = *(int *)(D_0014C290 + ((short)h >> 5) * 4 + (rnd << 8));
+            w = *(int *)(level_moby_killed + ((short)h >> 5) * 4 + (rnd << 8));
             if ((w >> (h & 0x1F)) & 1) {
                 if (d->linked_slot != -1)
                     linked_state_flags[d->linked_slot] = 1;
@@ -2138,9 +2138,9 @@ void process_asteroid_hit(Moby *m, char *d, float s) {
     }
     m->unk72 = 0;
     if (*(short *)(d + 0x4E) > 0) {
-        for (i = 0; i < func_L00_00258BC8(1, 2); i++) {
+        for (i = 0; i < random_int_between(1, 2); i++) {
             float part = m->scale * random_float_between(0.25f, 0.75f);
-            func_L00_00258DB0(v, g_frame_time * 5.0f, g_frame_time * 10.0f);
+            random_vector(v, g_frame_time * 5.0f, g_frame_time * 10.0f);
             FastVecScale(d, d, 0.75f);
             FastVecAdd(v, v, d);
             vec_scale_to_length(p, v, 0.5f);
@@ -2861,17 +2861,17 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
             s = m->scale / (m->pclass->scale * 4.0f);
             moby_point_position(m, gated_effect_joint_indices[i], a);
             if (gemlik_frame_count_r & 1) {
-                r = scale_ticks(func_L00_00258BC8(0xF, 0x14));
+                r = scale_ticks(random_int_between(0xF, 0x14));
                 spawn_effect(a, &zv, 0xCF0000FF, 0xCF, r, truncate_float_to_s32_r2(s * 350.0f), -100, 1);
             } else if (m->command == 0 ||
                        l13_starfighter_attachment_slot_indices_by_command[m->command - 1] !=
                            joint_effect_gate_slot_indices[i] ||
                        random_integer_below(9) == 0) {
-                r = scale_ticks(func_L00_00258BC8(0xF, 0x16));
+                r = scale_ticks(random_int_between(0xF, 0x16));
                 spawn_effect(a, &zv, 0x6000FFFF, 0x80, r, truncate_float_to_s32_r2(s * 600.0f), -100, 1);
             }
             k = truncate_float_to_s32_r2(random_float_between(100.0f, 250.0f) * s);
-            r = scale_ticks(func_L00_00258BC8(8, 0xC));
+            r = scale_ticks(random_int_between(8, 0xC));
             spawn_effect(a, &zv, 0xEFFF7F4F, 0xFF0000, r, k, -k, 1);
         }
     }
@@ -2897,7 +2897,7 @@ void emit_randomized_moby_joint_effects(Moby *moby) {
         moby_point_position(moby, randomized_effect_joint_indices[i], a);
         add_random_offset_to_vector_xyz(a, s * 1.4f);
         if (gemlik_frame_count & 1) {
-            r = scale_ticks(func_L00_00258BC8(0x14, 0x3C));
+            r = scale_ticks(random_int_between(0x14, 0x3C));
             k = truncate_float_to_s32_r_r(random_float_between(450.0f, 550.0f) * s);
             spawn_effect(a, z, 0xDF000FFF, 0xCF, r, k, -100, 1);
         } else {
@@ -2905,7 +2905,7 @@ void emit_randomized_moby_joint_effects(Moby *moby) {
                 if (random_integer_below(0xC) != 0)
                     continue;
             }
-            r = scale_ticks(func_L00_00258BC8(0x14, 0x32));
+            r = scale_ticks(random_int_between(0x14, 0x32));
             k = truncate_float_to_s32_r_r(random_float_between(600.0f, 800.0f) * s);
             spawn_effect(a, z, 0x8000FFFF, 0x80, r, k, -100, 1);
         }
@@ -3054,7 +3054,7 @@ int advance_moby_along_selected_path(char *m, char *d, int idx, int turn) {
     vec_scale_to_length(d + 0x70, d + 0x70, *(float *)(d + 0xAC));
     FastVecAdd(&((Moby *)m)->pos, &((Moby *)m)->pos, d + 0x70);
     yaw = fast_atan2(v[0], v[1]);
-    pitch = -fast_atan2(func_001F9CE8(v), v[2]);
+    pitch = -fast_atan2(vector_length_xy(v), v[2]);
     if (((Moby *)m)->state == 5) {
         struct Hero *g = &g_hero;
         yaw = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
@@ -3067,7 +3067,7 @@ int advance_moby_along_selected_path(char *m, char *d, int idx, int turn) {
     return wrapped;
 }
 
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern int advance_moby_along_selected_path(char *, char *, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e9408. */
@@ -3086,13 +3086,13 @@ int update_moby_path_following_away_from_hero(struct Moby *m, char *d, int idx, 
             n = 0;
         }
         qcopy(ahead, path + n * 16 + 0x10);
-        a = fast_vec_dist(ahead, D_0013F4D0);
+        a = fast_vec_dist(ahead, hero_pos);
         k = *(short *)(d + 0x9C) - 1;
         if (k < 0) {
             k = *(int *)path - 1;
         }
         qcopy(behind, path + k * 16 + 0x10);
-        b = fast_vec_dist(behind, D_0013F4D0);
+        b = fast_vec_dist(behind, hero_pos);
         if (a < b) {
             dir = -1;
         } else if (b < a) {
@@ -3110,7 +3110,7 @@ int update_moby_path_following_away_from_hero(struct Moby *m, char *d, int idx, 
                 *(short *)(d + 0x9E) = cur;
             }
         } else {
-            float dist = fast_vec_dist(&m->pos, D_0013F4D0);
+            float dist = fast_vec_dist(&m->pos, hero_pos);
             float s = 1.0f;
             float sp;
             if (m->command == 4) {
@@ -3646,7 +3646,7 @@ unsigned char *fire_mine_83_projectile(char *a, char *b) {
         vec_scale_to_length(v4, v4, random_float_between(g_frame_time * 5.0f, g_frame_time * 30.0f));
         FastVecAdd(v1, v1, v4);
     } else {
-        func_L00_00258DB0(v1, g_frame_time * 0.0f, g_frame_time * 30.0f);
+        random_vector(v1, g_frame_time * 0.0f, g_frame_time * 30.0f);
     }
     FastVecAdd(v1, v1, b + 0x70);
     r = spawn_mine_83_projectile(a, (char *)v0, (char *)v1);

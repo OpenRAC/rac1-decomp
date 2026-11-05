@@ -240,7 +240,7 @@ void Hero_ChooseStateTransition(void) {
                                     if (0.55850536f > kalebo3_hero_bones.f258 &&
                                         kalebo3_hero_bones.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                         g_hero.slot3_anim_timer =
-                                            func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
+                                            random_int_between(scale_ticks(0x6E), scale_ticks(0x10E));
                                         blend_hero_slot3_animation_pair();
                                     }
                                 }
@@ -800,7 +800,7 @@ void Hero_ChooseStateTransition(void) {
                             break;
                         } else if (g_hero.state.current == 0x73) {
                             if (g_controller_state.no_direction != 0) {
-                                if (func_001F9CE8(g_hero.motion.velocity.f) < g_frame_time * 3.2f) {
+                                if (vector_length_xy(g_hero.motion.velocity.f) < g_frame_time * 3.2f) {
                                     if (Hero_TryMoveState(HERO_STATE_IDLE, 0)) {
                                         set_hero_animation(get_hero_idle_animation_index(0), 0, scale_ticks(0x11));
                                     }
@@ -1108,8 +1108,8 @@ void Hero_ChooseStateTransition(void) {
                                 ice = 1;
                                 g_hero.coll_hit_moby[0xBC] = 1;
                             }
-                            if (func_001F9CE8(g_hero.motion.displacement.f) <
-                                    func_001F9CE8(g_hero.motion.velocity.f) * 0.5f ||
+                            if (vector_length_xy(g_hero.motion.displacement.f) <
+                                    vector_length_xy(g_hero.motion.velocity.f) * 0.5f ||
                                 ice || g_hero.unk5BE != 0) {
                                 int ok = 1;
 
@@ -2277,7 +2277,7 @@ void Hero_ChooseStateTransition(void) {
                         if (g_hero.anim_flags & 2) {
                             compute_hero_hoverboard_respawn_transform(v0, v1);
                             g_hero.board_air_yaw = v1[2];
-                            func_L00_00217718(v0, v1, 0x6B, 1);
+                            set_race_camera(v0, v1, 0x6B, 1);
                         }
                         break;
                     case 110:
@@ -2285,14 +2285,14 @@ void Hero_ChooseStateTransition(void) {
                             g_hero.state_timer > g_hero.board_respawn_delay) {
                             compute_hero_hoverboard_respawn_transform(v0, v1);
                             g_hero.board_air_yaw = v1[2];
-                            func_L00_00217718(v0, v1, 0x6B, 1);
+                            set_race_camera(v0, v1, 0x6B, 1);
                         }
                         break;
                     case 111:
                         if (g_hero.anim_flags & 2) {
                             compute_hero_hoverboard_respawn_transform(v0, v1);
                             g_hero.board_air_yaw = v1[2];
-                            func_L00_00217718(v0, v1, 0x6B, 1);
+                            set_race_camera(v0, v1, 0x6B, 1);
                         }
                         break;
                     case HERO_STATE_VEHICLE_MODE_3_IDLE:

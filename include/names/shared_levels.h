@@ -68,6 +68,7 @@
 #define draw_weapon_ammo_hud_panel                                           func_L00_0023B140
 #define update_hud_elements                                                  func_L00_0023B610
 #define update_weapon_hud_state                                              func_L00_0023B750
+#define hud_frame                                                            func_L00_0023BAB8
 #define draw_cropped_hud_sprite                                              func_L00_0023C058
 #define draw_rotated_hud_sprite                                              func_L00_0023C458
 #define hud_weapon_update                                                    func_L00_0023D750
@@ -89,7 +90,9 @@
 #define env_zone_lookup                                                      func_L00_00257E18
 #define apply_env_zone_lighting                                              func_L00_0025805C
 #define SetDeathBits                                                         func_L00_002584A8
+#define random_int_between                                                   func_L00_00258BC8
 #define randf_sym                                                            func_L00_00258C80
+#define random_vector                                                        func_L00_00258DB0
 #define SpringTurn                                                           func_L00_00259148
 #define MobySpringTurn                                                       func_L00_002592B0
 #define MobyGetHitMessage                                                    func_L00_0025B478
@@ -103,6 +106,7 @@
 #define grant_inventory_item                                                 func_L00_002618D8
 #define queue_planet_unlock_message                                          func_L00_00263DB0
 #define spawn_ground_contact_effect_particle                                 func_L00_00264570
+#define queue_dialogue_message                                               func_L00_00264DB8
 #define queue_formatted_dialogue_message                                     func_L00_00264E28
 #define SpawnBreakFragment                                                   func_L00_00265050
 #define update_timed_hud_visibility                                          func_L00_002653A0
@@ -563,6 +567,7 @@
 #define allocate_hero_voice_for_entry                                        func_L00_00217570
 #define release_voice_slot_cf                                                func_L00_002175D0
 #define update_hero_delayed_voice_requests                                   func_L00_00217698
+#define set_race_camera                                                      func_L00_00217718
 #define spawn_hero_radial_particle_burst                                     func_L00_00217BD8
 #define hero_update_movement                                                 func_L00_002180F8
 #define update_hero_timers_and_reach_state                                   func_L00_00221D50
@@ -706,6 +711,7 @@
 #define resolve_point_path_segment_clearance                                 func_L00_002630A8
 #define initialize_moby_transform_history                                    func_L00_00263578
 #define create_moby_transform_history_entry                                  func_L00_002635A0
+#define update_joint_animation                                               func_L00_00263950
 #define AddSphericalOffset                                                   func_L00_00263D68
 #define draw_offset_textured_effect_quad                                     func_L00_00264690
 #define cutscene_set_camera_target                                           func_L00_00264870
@@ -2530,6 +2536,8 @@
 #define l00_suck_beam_ring_source_offsets                                    D_L00_001E4E90
 #define suck_beam_segment_turn_spring_states                                 D_L00_001E6330
 #define level_15_mine_77_respawn_flag                                        D_L00_0015F684
+#define coll_hit_normal                                                      D_L00_00173F80
+#define vendor_menu                                                          D_L00_001CA7C0
 #define draw_timed_text                                                      func_L00_001FCC50
 #define fast_subtract_rotations_cf                                           func_L00_001FEF78
 #define divide_vector_xyz                                                    func_L00_001FF328

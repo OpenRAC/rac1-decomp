@@ -38,7 +38,7 @@ void TutorialHintUpdate(unsigned char *moby) {
                 if (q[1] == 0) {
                     q[1] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x542D, -1);
+                    queue_dialogue_message(0x542D, -1);
                 }
             }
             break;
@@ -73,7 +73,7 @@ void TutorialHintUpdate(unsigned char *moby) {
                 help_request(0x4E22, 0x4C);
             }
         }
-        if (D_0015EEDC[0] != 0 && opt_cam_invert[0] != 0) {
+        if (invert52[0] != 0 && opt_cam_invert[0] != 0) {
             char *b = help_stats_base + 0x34D;
             if (!(*(unsigned int *)(b + 0x3B4) & (1 << g_current_level_index))) {
                 help_request(0x4E2C, 0x76);

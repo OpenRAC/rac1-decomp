@@ -336,7 +336,7 @@ void update_object_wander_movement(Moby *moby, struct WanderState *d, float a, f
     if (d->wandering == 0) {
         pos = (char *)&moby->pos;
         d->heading = d->heading + randf_sym(0.7853982f, 2.6179938f);
-        d->timer = func_L00_00258BC8(d->timer_min, d->timer_max);
+        d->timer = random_int_between(d->timer_min, d->timer_max);
         d->wandering = 1;
     } else {
         step_angle_toward_target(&moby->rot.z, 0, d->heading, d->turn_rate);
@@ -353,7 +353,7 @@ void update_object_wander_movement(Moby *moby, struct WanderState *d, float a, f
     if (r == 0 || d->max_dist < dist) {
         d->heading = fast_atan2(d->home_x - moby->pos.x, d->home_y - moby->pos.y);
         t = scale_ticks(0x1E);
-        d->timer = func_L00_00258BC8(t, scale_ticks(0x5A));
+        d->timer = random_int_between(t, scale_ticks(0x5A));
         d->wandering = 1;
     } else {
         char *g = &g_hero.motion.pos;
@@ -824,7 +824,7 @@ struct ManipState {
 /* Eases a moby's per-axis offsets toward zero and applies them and its scale to the held object, resetting when
    settled.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_state_00261968.c, FUN_L00_002628d8. */
-void func_L00_00263950(int m, struct ManipState *p, int c, float fa, float fb) {
+void update_joint_animation(int m, struct ManipState *p, int c, float fa, float fb) {
     unsigned char *o = *(unsigned char **)&p->target;
     float f;
     if (!o) {
@@ -881,7 +881,7 @@ void AddSphericalOffset(void *a, void *b, float r, float y, float z) {
     BuildSphericalOffset(v, r, y, z);
     FastVecAdd(a, v, b);
 }
-extern void func_L00_00264DB8(int arg0, int arg1);
+extern void queue_dialogue_message(int arg0, int arg1);
 extern char l00_planet_unlock_dialogue_message_ids[];
 typedef struct {
     int v[19];
@@ -894,7 +894,7 @@ void queue_planet_unlock_message(int a) {
         a = 0;
     if (a > 18)
         a = 18;
-    func_L00_00264DB8(t.v[a], scale_ticks(0x49C));
+    queue_dialogue_message(t.v[a], scale_ticks(0x49C));
 }
 LINKER_REMNANT("asm/overlays", func_L00_00264130);
 extern struct Hero g_hero;
@@ -925,7 +925,7 @@ struct Moby *select_auto_aim_target_moby(void *ignore, Vec4 *pos_in, Vec4 *dir_i
     pos.q = pos_in->q;
     dir.q = dir_in->q;
     *yaw = fast_atan2(dp->f[0], dp->f[1]);
-    *pitch = -fast_atan2(func_001F9CE8(dp), dp->f[2]);
+    *pitch = -fast_atan2(vector_length_xy(dp), dp->f[2]);
 
     for (m = suck_moby_list; m != 0; m = m->next) {
         MobyBound *b;
@@ -1013,7 +1013,7 @@ void spawn_ground_contact_effect_particle(V *v) {
         if (coll_line(&t, &u, 0x12, 0, 0)) {
             FastVecSub(&d, &collision_hit_point, &b->pos);
             spawn_timed_effect_particle((char *)&collision_hit_point,
-                                        (unsigned char)(int)(func_001F9CE8(&d) / 60.0f * 191.0f + 64.0f));
+                                        (unsigned char)(int)(vector_length_xy(&d) / 60.0f * 191.0f + 64.0f));
         }
     }
 }
@@ -1241,7 +1241,7 @@ extern int banner_display_ticks MACRO_ADDR;
 extern char l00_dialogue_message_text_buffer[];
 
 /* Shows message arg0 in the on-screen text box for arg1 ticks. */
-void func_L00_00264DB8(int arg0, int arg1) {
+void queue_dialogue_message(int arg0, int arg1) {
     if (arg1 == -1) {
         arg1 = scale_ticks(0xB4);
     }
@@ -1250,7 +1250,7 @@ void func_L00_00264DB8(int arg0, int arg1) {
 }
 extern char l00_dialogue_message_text_buffer[] NOT_SDA;
 
-/* Like queue_dialogue_message, but draws message a with parameter b. */
+/* Like queue_dialogue_message_fn, but draws message a with parameter b. */
 void queue_formatted_dialogue_message(int a, int b, int c) {
     if (c == -1)
         c = scale_ticks(0xB4);
@@ -1337,7 +1337,7 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
         }
         if (FastVecLength(v11) == 0.0f) {
             float g = g_frame_time;
-            func_L00_00258DB0(t, g * 3.1415927f, g * 6.2831855f);
+            random_vector(t, g * 3.1415927f, g * 6.2831855f);
             qcopy(&d->velocity, t);
         } else {
             qcopy(&d->velocity, v11);

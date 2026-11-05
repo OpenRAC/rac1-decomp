@@ -423,7 +423,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     a0.z = a0.z + sa;
     qcopy(&a1, r);
     a1.z = a1.z + sa * 0.3f;
-    if (arg != 0 || func_001F9CE8(r + 0x60) < 0.01f) {
+    if (arg != 0 || vector_length_xy(r + 0x60) < 0.01f) {
         G98 *gg = (G98 *)(r - 0x80);
         u.x = FastCos(gg->ang) * sb;
         u.y = FastSin(gg->ang) * sb;
@@ -434,7 +434,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     } else {
         qcopy(&u, r + 0x60);
         u.z = 0.0f;
-        FastVecScale(&u, &u, sb / func_001F9CE8(&u));
+        FastVecScale(&u, &u, sb / vector_length_xy(&u));
         qcopy(&w, &u);
         FastVecScale(&w, &w, 1.4f);
     }
@@ -453,7 +453,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
         if (coll_line(&a0, &u, 4, *(int *)&g2->moby, 0) != 0) {
             char *q = blarg_coll_hit;
             if (*(int *)(q + 0x1C) > 0) {
-                f = fast_atan2(*(float *)(q + 0x48), func_001F9CE8(q + 0x40));
+                f = fast_atan2(*(float *)(q + 0x48), vector_length_xy(q + 0x40));
             }
         }
     }

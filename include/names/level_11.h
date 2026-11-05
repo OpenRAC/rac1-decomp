@@ -496,6 +496,7 @@
 #define rocket_smoke_texture                                      D_L11_001B2D80
 #define raritanium_acquired_text                                  D_L11_0021ABF0
 #define count_group_puffoid_mobys_in_states_13_to_17_loop_tail    func_L11_00317518
+#define path_points_14b0                                          D_L11_0016016C
 #define fighter_jet_missile_update                                func_L11_00309DA0
 #define append_rotated_textured_screen_quad                       func_L11_003121C0
 #define level_frame                                               D_L11_0015F6B0

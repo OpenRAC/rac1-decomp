@@ -21,7 +21,7 @@ void rocket_strike_fighter_update(Moby *m) {
                 if (fighter_skill_hit_count_r2 >= 3 && ((Skill_2FE038 *)gSkillPoints_r)->f18 == 0) {
                     ((Skill_2FE038 *)gSkillPoints_r)->f18 = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x542D, -1);
+                    queue_dialogue_message(0x542D, -1);
                 }
             }
             m->state = 3;

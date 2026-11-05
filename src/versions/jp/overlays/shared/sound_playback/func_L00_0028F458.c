@@ -24,11 +24,11 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (*(short *)(d + 0xC) != 0) {
             transform_vector_by_basis(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
-            if (fast_vec_dist(tmp, D_0013F4D0) > 4.1f) {
+            if (fast_vec_dist(tmp, hero_pos) > 4.1f) {
                 *(short *)(d + 0xC) = 0;
             }
         } else {
-            q = D_0013F4D0;
+            q = hero_pos;
             if (vec_distance_xy(p, q) < 6.0f) {
                 transform_vector_by_basis(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
                 FastVecAdd(tmp, tmp, p);

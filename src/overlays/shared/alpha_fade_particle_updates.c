@@ -19,7 +19,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "core/libc/printf_rand.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern Hero g_hero;
 extern char g_hero_body_center[];
 extern char g_hero_platform_carry[];
@@ -789,7 +789,7 @@ void update_color_tween_emitter_particle(struct PartBase *p) {
             if (FastDecTimer(&p->timer)) {
                 KillPart(p);
             }
-            c = D_0013F4D0;
+            c = hero_pos;
             if (vec_distance_xy(&p->pos, c) < 0.3f) {
                 g = (struct Hero *)(c - 0x80);
                 if (g->motion.pos.f[2] < p->pos.f[2] + 1.2f) {
@@ -834,7 +834,7 @@ unsigned char *spawn_timed_hero_relative_particle(float f, void *pos, int a1, un
         char *v = (unsigned char *)((struct PartBase *)r)->data;
         *(int *)(v + 0x10) = mode;
         if (mode == 1) {
-            FastVecSub(v, pos, D_0013F4D0);
+            FastVecSub(v, pos, hero_pos);
         }
         qcopy(&((struct PartBase *)r)->pos, pos);
         ((struct PartBase *)r)->color = a1;
@@ -857,7 +857,7 @@ unsigned char *spawn_timed_hero_relative_particle(float f, void *pos, int a1, un
 void update_timed_hero_relative_particle(struct PartBase *m) {
     char *v = (char *)m->data;
     if (*(int *)(v + 0x10) == 1) {
-        FastVecAdd(&m->pos, D_0013F4D0, v);
+        FastVecAdd(&m->pos, hero_pos, v);
     }
     if (FastDecTimer(&m->timer)) {
         KillPart(m);
@@ -1099,7 +1099,7 @@ unsigned char *spawn_gravity_floor_burst_particle(void *pos, void *vel, float sc
     if (r != 0) {
         u = &r->m;
         qcopy(&r->pos, pos);
-        if (vec_distance_xy(D_0013F4D0, pos) < 80.0f) {
+        if (vec_distance_xy(hero_pos, pos) < 80.0f) {
             r->unk9 = truncate_float_to_s32(1.0f) + 0x30;
         } else {
             r->unk9 = truncate_float_to_s32(1.0f) + 0x20;
@@ -1150,7 +1150,7 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
         m->vel.f[2] *= random_float_between(-1.0f, -1.5f);
         f = p->size;
         f *= 0.5f;
-        n = func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x78));
+        n = random_int_between(scale_ticks(0x3C), scale_ticks(0x78));
         spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&p->pos, &m->vel, p->color, m->color2, f, n,
                                                                           0, p->tex, p->blend);
     } else {
@@ -1160,7 +1160,7 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
         m->vel.f[2] *= random_float_between(-0.5f, -1.0f);
         f = p->size;
         f *= 0.25f;
-        n = func_L00_00258BC8(scale_ticks(0x1E), scale_ticks(0x3C));
+        n = random_int_between(scale_ticks(0x1E), scale_ticks(0x3C));
         spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&p->pos, &m->vel, p->color, m->color2, f, n,
                                                                           0, p->tex, p->blend);
     }
@@ -1183,7 +1183,7 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
             t.q = p->pos.q;
             t.f[2] -= 1.5f;
             f = random_float_between(420000.0f, 630000.0f);
-            n = func_L00_00258BC8(scale_ticks(0x5A), scale_ticks(0x96));
+            n = random_int_between(scale_ticks(0x5A), scale_ticks(0x96));
             mine_debris(&t, &m->vel, c1, c2, f, n, 3);
         }
     }
@@ -1479,7 +1479,7 @@ unsigned char *spawn_mode_controlled_rotating_alpha_fade_particle(void *a, void 
         r->size = random_float_between(8000.0f, 50000.0f);
         r->spin = random_integer_below(0x100);
         r->texture = *part_type69_textures;
-        x = scale_ticks(func_L00_00258BC8(10, 30));
+        x = scale_ticks(random_int_between(10, 30));
         r->timer = x;
         t = IntToFloat((short)x);
         v->moby = (struct Moby *)d;
@@ -1789,7 +1789,7 @@ void update_gravity_damped_resizing_particle(struct PartBase *m) {
     *(char *)&m->spin += v[0x12];
     FastVecAdd(&m->pos, &m->pos, v);
     *(float *)(v + 8) -= g_frame_scale_sq * 0.003f;
-    t = func_001F9CE8(v);
+    t = vector_length_xy(v);
     s = ((t * 0.97f - 1.0f) * frame_scale + 1.0f) / t;
     *(float *)((char *)m + 0x20) *= s;
     *(float *)(v + 4) *= s;

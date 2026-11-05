@@ -120,7 +120,7 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
             disable_font_color_codes();
             func_J_001F6EE8(x + (*(s32 *)&text_shadow_x), y + (*(s32 *)&text_shadow_y), 0x80000000L, text_id, -1,
                             GetEffectTex(font_texture_index), glyphs);
-            Font_EnableColorCodes();
+            enable_font_color_codes();
             if (menu->flags & 0x80) {
                 disable_font_color_codes();
             }
@@ -134,14 +134,14 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
                 func_J_001F6EE8(shadow_x, shadow_y, 0x80000000L, secondary_text, -1, GetEffectTex(font_texture_index),
                                 glyphs);
                 if (!(menu->flags & 0x80)) {
-                    Font_EnableColorCodes();
+                    enable_font_color_codes();
                 }
                 func_J_001F6EE8(x, y, color, msg_string_r(menu->items[entry_index].secondary_text_id), -1,
                                 GetEffectTex(font_texture_index), glyphs);
                 y += row_height;
             }
             if (menu->flags & 0x80) {
-                Font_EnableColorCodes();
+                enable_font_color_codes();
             }
             entry_index++;
             selection_index++;

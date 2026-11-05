@@ -9,6 +9,6 @@ int play_mpeg_movie(int a, int b, int c, char *state, int e) {
     }
     termAll();
     decoder_buffer_address = 0;
-    D_0016130C = 0;
+    decoder_state = 0;
     return 0;
 }

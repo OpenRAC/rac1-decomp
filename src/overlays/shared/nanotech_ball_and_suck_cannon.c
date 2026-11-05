@@ -42,7 +42,7 @@
 #include "overlays/shared/moby_drops_and_death.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
-extern int D_0013CBE0;
+extern int pad_held;
 extern char voice_pool[];
 /* Class 0x326 moby: the moby it is linked to. */
 struct LinkedMobyVars {
@@ -588,7 +588,7 @@ void nanotech_ball_update(Moby *m) {
                                 dst->z = src->z;
                             }
                             x->h1E = x->h1C =
-                                scale_ticks(func_L00_00258BC8(D_L00_00161B14_2D9EA0, D_L00_00161B18_2D9EA0));
+                                scale_ticks(random_int_between(D_L00_00161B14_2D9EA0, D_L00_00161B18_2D9EA0));
                         }
                     }
                 }
@@ -1567,7 +1567,7 @@ void suckcannon_update(M40 *self) {
                         yaw = hero40.aim_yaw;
                     else
                         yaw = fast_atan2(work.fire.velocity.f.x, work.fire.velocity.f.y);
-                    pitch = -fast_atan2(func_001F9CE8(&work.fire.velocity), work.fire.velocity.f.z);
+                    pitch = -fast_atan2(vector_length_xy(&work.fire.velocity), work.fire.velocity.f.z);
                     m = moby_head40;
                     while (m) {
                         if (m->state >= 0 && m != stored) {
@@ -1984,7 +1984,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
         FastVecAdd(e, e, b);
         {
             int h = scale_ticks(60);
-            SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, func_L00_00258BC8(h, scale_ticks(120)), 0,
+            SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, random_int_between(h, scale_ticks(120)), 0,
                               gold_weapon_purchased[9]);
         }
     }
@@ -2002,7 +2002,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
         FastVecAdd(e, e, b);
         {
             int h = scale_ticks(60);
-            SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, func_L00_00258BC8(h, scale_ticks(90)), 1,
+            SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, random_int_between(h, scale_ticks(90)), 1,
                               gold_weapon_purchased[9]);
         }
     }
@@ -2018,7 +2018,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
     clamp_vec_length(e, e, g_frame_time * 10.0f);
     {
         int h = scale_ticks(60);
-        SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, func_L00_00258BC8(h, scale_ticks(90)), 1,
+        SpawnFallingSpark((char *)&((Moby *)self)->pos, (char *)e, random_int_between(h, scale_ticks(90)), 1,
                           gold_weapon_purchased[9]);
     }
     if (f23 < 6.0f) {
@@ -2041,8 +2041,8 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
             A = swap_packed_color_channels(t1.v[random_integer_below(6)], gold_weapon_purchased[9]);
             B = swap_packed_color_channels(t2.v[random_integer_below(6)], gold_weapon_purchased[9]);
             big = f22 * 400000.0f;
-            r1 = func_L00_00258BC8(scale_ticks(15), scale_ticks(20));
-            r2 = func_L00_00258BC8(scale_ticks(25), scale_ticks(30));
+            r1 = random_int_between(scale_ticks(15), scale_ticks(20));
+            r2 = random_int_between(scale_ticks(25), scale_ticks(30));
             PartType11Spawn(&((Moby *)self)->pos, b, A, B, big, r1, r2, 0, 0, sh);
         } while (--cnt);
     }
@@ -2182,7 +2182,7 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern unsigned char gGoldSuckCannon_r2[] __asm__("D_0013E629");
 extern unsigned char hero_gadget_switch_lock[];
 extern Hero g_hero_r4 __asm__("D_0013F450");
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char hero_basis[];
 extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
 extern char suckstate_death_obsolete_msg[];
@@ -2424,7 +2424,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                     self->collision_disable = m->i88;
                     m->state = 6;
                     if (0.87266463f < fast_atan2(((Coll *)coll_hit_result_r)->v40.z,
-                                                 func_001F9CE8(&((Coll *)coll_hit_result_r)->v40))) {
+                                                 vector_length_xy(&((Coll *)coll_hit_result_r)->v40))) {
                         if (m->h9E >= 0)
                             Moby_PlaySound_r(m->h9E, 0, self);
                         finalize_suck_cannon_moby_r(self, m, 1);
@@ -2443,7 +2443,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                     finalize_suck_cannon_moby_r(self, m, 1);
                     return 0;
                 }
-                if (60.0f < vec_distance_xy(&self->pos, D_0013F4D0)) {
+                if (60.0f < vec_distance_xy(&self->pos, hero_pos)) {
                     finalize_suck_cannon_moby_r(self, m, 1);
                     return 0;
                 }
@@ -3296,7 +3296,7 @@ void hydrodisplacer_update(Moby *m) {
             if (pad_pressed_within(g_hero.items[0].button_mask, scale_ticks(8), 0) == 0) {
                 break;
             }
-            if ((D_0013CBE0 & g_hero.items[0].button_mask) == 0) {
+            if ((pad_held & g_hero.items[0].button_mask) == 0) {
                 break;
             }
             if (g_hero.ground_moby == 0 || g_hero.air_frames.s != 0 ||

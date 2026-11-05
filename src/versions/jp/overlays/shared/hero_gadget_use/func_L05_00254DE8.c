@@ -93,7 +93,7 @@ void update_hero_hoverboard_race_progress(void) {
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
                 g_hero.off_course_frames = 0;
                 g_hero.board_air_yaw = v1[2];
-                func_L00_00217718(v0, v1, 0x6B, 1);
+                set_race_camera(v0, v1, 0x6B, 1);
                 if (((Path *)g_hero.race_path) != 0) {
                     int r = select_point_index_by_distance(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
@@ -167,7 +167,7 @@ void update_hero_hoverboard_race_progress(void) {
             if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
                 ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x542D, -1);
+                queue_dialogue_message(0x542D, -1);
             }
         }
         if (d->f28 == -1) {

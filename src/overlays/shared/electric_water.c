@@ -35,9 +35,9 @@
 #include "overlays/shared/sentrybot.h"
 #include "overlays/l15_quartu/gates_helicopters_ultramechs.h"
 #include "overlays/shared/effect_particle_updates.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char gSpecialItems[];
-extern int D_0014C290[];
+extern int level_moby_killed[];
 extern char saved_mission_state[];
 /* Electric water countdown timer display. */
 struct ElectricWaterCountdownVars {
@@ -90,7 +90,7 @@ typedef struct {
 } Light;
 
 extern Hero g_hero;
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern unsigned char voice_pool[];
 extern unsigned char *quartu_moby_array MACRO_ADDR;
 extern char *quartu_cuboids MACRO_ADDR;
@@ -100,7 +100,7 @@ extern float electric_water_off_duration_seconds SDATA(electric_water_off_durati
 extern float electric_water_path_arc_inhibit_gp SDATA(electric_water_path_arc_inhibit_gp);
 extern unsigned char quartu_current_level_state_moby_flags[];
 extern unsigned char quartu_checkpoint_level_state_moby_flags[];
-extern int D_0014C290[];
+extern int level_moby_killed[];
 extern int quartu_moby_killed[];
 extern char quartu_lights[];
 extern unsigned char l15_fog_color[] MACRO_ADDR;
@@ -186,7 +186,7 @@ void electric_water_update(unsigned char *m) {
     unsigned short save_id;
     float distance, theta, phi, radius;
 
-    if (moby->state != 0 && is_point_inside_clip_volume(D_0013F4D0, vars->active_area) == 0) {
+    if (moby->state != 0 && is_point_inside_clip_volume(hero_pos, vars->active_area) == 0) {
         if (vars->owner != 0) {
             RELEASE_2D7C00(vars);
         }
@@ -210,7 +210,7 @@ void electric_water_update(unsigned char *m) {
                     quartu_checkpoint_level_state_moby_flags
                         [*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
                     save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
-                    *(int *)((((short)save_id >> 5) << 2) + (g_current_level_index << 8) + (int)D_0014C290) &=
+                    *(int *)((((short)save_id >> 5) << 2) + (g_current_level_index << 8) + (int)level_moby_killed) &=
                         ~(1 << (save_id & 0x1F));
                     save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
                     *(int *)((((short)save_id >> 5) << 2) + (int)quartu_moby_killed) &= ~(1 << (save_id & 0x1F));
@@ -239,7 +239,7 @@ void electric_water_update(unsigned char *m) {
                 }
             }
             for (area = 0; area < 12; area++) {
-                if (is_point_inside_clip_volume(D_0013F4D0, vars->water_areas[area]) != 0) {
+                if (is_point_inside_clip_volume(hero_pos, vars->water_areas[area]) != 0) {
                     inside = 1;
                     break;
                 }
@@ -252,7 +252,7 @@ void electric_water_update(unsigned char *m) {
                 }
             } else {
                 for (lamp = 0; lamp < 3; lamp++) {
-                    int v = func_L00_00258BC8(0x40, 0x7F);
+                    int v = random_int_between(0x40, 0x7F);
                     if (vars->lamps[lamp] != -1) {
                         set_moby_color(MOBYP_2D7C00(vars->lamps[lamp]), v, v, v);
                     }
@@ -267,8 +267,8 @@ void electric_water_update(unsigned char *m) {
                         continue;
                     }
                     if (best != 0) {
-                        distance = fast_vec_dist(CUBP_2D7C00(best[0]) + 0x30, D_0013F4D0);
-                        if (!(fast_vec_dist(CUBP_2D7C00(line[0]) + 0x30, D_0013F4D0) < distance)) {
+                        distance = fast_vec_dist(CUBP_2D7C00(best[0]) + 0x30, hero_pos);
+                        if (!(fast_vec_dist(CUBP_2D7C00(line[0]) + 0x30, hero_pos) < distance)) {
                             continue;
                         }
                     }
@@ -283,7 +283,7 @@ void electric_water_update(unsigned char *m) {
                         }
                     }
                     if (length >= 2) {
-                        line = (int *)((func_L00_00258BC8(0, length - 2) << 2) + (int)best);
+                        line = (int *)((random_int_between(0, length - 2) << 2) + (int)best);
                         vars->bolt_start = *(Q_2D7C00 *)(CUB_2D7C00(line[0]) + 0x30);
                         vars->bolt_aim = vars->bolt_end = *(Q_2D7C00 *)(CUB_2D7C00(line[1]) + 0x30);
                         if (vars->light == -1) {
@@ -476,7 +476,7 @@ void electric_water_update(unsigned char *m) {
     }
 
     {
-        char *pos = D_0013F4D0;
+        char *pos = hero_pos;
         Hero *g = (Hero *)(pos - 0x80);
         for (level_area = 0; level_area < 4; level_area++) {
             if (is_point_inside_clip_volume(pos, vars->water_level_areas[level_area]) != 0 &&
@@ -814,7 +814,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
     FastVecScale(&s[5], &s[0], electric_water_bolt_particle_motion_length_scale_gp * frame_scale);
     build_look_at_matrix(&s[5], &s[5], &s[6], f20);
     build_look_at_matrix(&s[5], &s[5], &s[7], scale);
-    r = func_L00_00258BC8(1, 8);
+    r = random_int_between(1, 8);
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.2f, 0.6f);
@@ -822,7 +822,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
                     r, &s[5], 0.0f);
     r = -r;
     PartType53Spawn(&data->a, scale_ticks(15), f20 * 0.15f, f20 * 0.5f, 0x307F7F7F, 0, r, &s[5], 0.0f);
-    r = func_L00_00258BC8(1, 8);
+    r = random_int_between(1, 8);
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.15f, 3.0f);
@@ -1023,7 +1023,7 @@ char *spawn_sentrybot_projectile(char *src, float *v, char *pos) {
         ((struct Moby *)m)->alpha = 0x30;
         ((Moby *)m)->flags |= 0x200;
         ((Moby *)m)->rot.z = fast_atan2(v[0], v[1]);
-        ((Moby *)m)->rot.y = -fast_atan2(func_001F9CE8(v), v[2]);
+        ((Moby *)m)->rot.y = -fast_atan2(vector_length_xy(v), v[2]);
         moby_build_matrix(m);
         spawn_source_attached_fading_effect_particle(m, 0x600040FF, 0x80, -1, 170000.0f);
     }
@@ -1065,7 +1065,7 @@ void underwater_ring_update(unsigned char *moby) {
     int near_parent = 0;
 
     if ((unsigned char)(((Moby *)moby)->state - 1) < 2) {
-        FastVecSub(delta, moby + 0x10, D_0013F4D0);
+        FastVecSub(delta, moby + 0x10, hero_pos);
         if (FastVecLength(delta) < vars->distance) {
             matrix_from_basis_rows(matrix, moby + 0xC0);
             transform_vector(delta, delta, matrix);
@@ -1107,7 +1107,7 @@ void underwater_ring_update(unsigned char *moby) {
             save_byte -= -(short)save_id;
             if (save_byte[0x454] != 0 ||
                 ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) +
-                                          (unsigned char *)(&D_0014C290))) >>
+                                          (unsigned char *)(&level_moby_killed))) >>
                   (save_id & 31)) &
                  1) != 0) {
                 if (vars->enabled != 0) {
@@ -1181,7 +1181,7 @@ void underwater_ring_update(unsigned char *moby) {
             }
             save_id = ((Moby *)moby)->save_id;
             bits = (unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) +
-                                    (unsigned char *)(&D_0014C290));
+                                    (unsigned char *)(&level_moby_killed));
             *bits |= 1U << (save_id & 31);
             save_id = ((Moby *)moby)->save_id;
             quartu_moby_killed[(short)save_id >> 5] |= 1U << (save_id & 31);
@@ -1250,7 +1250,7 @@ void codebot_update(unsigned char *moby) {
                 break;
             case CODEBOT_RECORD_COLLECTION:
                 if (quartu_game_mode != 2) {
-                    func_L00_00264DB8(0x426A, -1);
+                    queue_dialogue_message(0x426A, -1);
                     quartu_dialogue_message_duration = scale_ticks(0xB4);
                     collection_flags = gSpecialItems;
                     collection_flags[2] = 1;
@@ -1366,7 +1366,7 @@ void giant_clank_pad_update(char *m) {
             V[2] = f + 0.1f;
             if (g_current_level_index == LEVEL_QUARTU)
                 jet_reset_camera(V, m + 0x40);
-            func_L00_00217718(V, m + 0x40, 0, 1);
+            set_race_camera(V, m + 0x40, 0, 1);
             o3 = (char *)other->pclass;
             other->collision = *(int *)(o3 + 0x10);
             other->visible = 1;

@@ -49,7 +49,7 @@ void gold_bolt_update(Moby *moby) {
             }
             if (vars->unkC != 0) {
                 novalis_banner_display_ticks_r = scale_ticks(180);
-                func_L00_00264DB8(0x540A, -1);
+                queue_dialogue_message(0x540A, -1);
                 gold_bolts_collected_r[vars->id + g_current_level_index_r * 4] = 1;
                 save_00309078(0, -1);
             remove:
@@ -66,7 +66,7 @@ void gold_bolt_update(Moby *moby) {
             if (hero_00309078.vehicle_mode == 3) {
                 exit_hero_vehicle_mode_and_restore_moby();
             }
-            func_L00_00217718(&at, &look, 0x72, 0);
+            set_race_camera(&at, &look, 0x72, 0);
             voice_00309078(0, 0, moby);
             at2.x = FastCos(vars->home.w) * 1.25f;
             at2.y = FastSin(vars->home.w) * 1.25f;
@@ -122,10 +122,10 @@ void gold_bolt_update(Moby *moby) {
                 return;
             }
             novalis_banner_display_ticks_r = scale_ticks(180);
-            func_L00_00264DB8(0x540A, -1);
+            queue_dialogue_message(0x540A, -1);
             gold_bolts_collected_r[vars->id + g_current_level_index_r * 4] = 1;
             cutscene_active_r = 0;
-            func_L00_00217718(&h->motion.pos, &h->motion.rot, 0, 0);
+            set_race_camera(&h->motion.pos, &h->motion.rot, 0, 0);
             jet_end_mount(0);
             save_00309078(0, -1);
             DeleteMoby(moby);

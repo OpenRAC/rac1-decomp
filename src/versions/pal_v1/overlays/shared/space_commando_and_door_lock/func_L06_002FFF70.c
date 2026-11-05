@@ -30,7 +30,7 @@ void process_blarg_space_commando_hits(char *m) {
             *(short *)(*(char **)(t + 0x20) + 0xA6) == 0x31A && gSkillPoints[0x11] == 0) {
             gSkillPoints[0x11] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53D6, -1);
+            queue_dialogue_message(0x53D6, -1);
         }
         f = *(float *)(d + 0x20) - dt;
         *(float *)(d + 0x20) = f;

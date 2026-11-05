@@ -33,14 +33,14 @@
 #include "overlays/shared/follow_camera_angle_blend.h"
 extern char g_hero[];
 extern u8 hero_gravity_dir[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char g_controller_state[];
 extern float g_controller_state_analog;
 extern char g_hero_moby[];
 extern int hero_control_mode;
 extern int hero_current_state;
 extern unsigned char hero_vehicle_mode NOT_SDA;
-extern char D_0013CBE0[];
+extern char pad_held[];
 
 /* Hydrodisplacer effect emitter: only a spawn countdown. */
 struct HydroEffectVars {
@@ -137,8 +137,8 @@ void emit_hydrodisplacer_effect(Moby *m) {
         b[0] += pad->motion.displacement.f[0] * 0.8f;
         b[1] += pad->motion.displacement.f[1] * 0.8f;
         b[2] += pad->motion.displacement.f[2] + random_float_between(g_frame_time * -0.5f, g_frame_time + g_frame_time);
-        PartType35Spawn(a, b, 2, func_L00_00258BC8(0x5A, 0x78));
-        d->spawn_timer = func_L00_00258BC8(scale_ticks(5), scale_ticks(0xF));
+        PartType35Spawn(a, b, 2, random_int_between(0x5A, 0x78));
+        d->spawn_timer = random_int_between(scale_ticks(5), scale_ticks(0xF));
     }
 }
 extern u8 *moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
@@ -255,7 +255,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
             break;
         case 1:
             emit_moby_color_cycling_particles_r(m);
-            g = D_0013F4D0;
+            g = hero_pos;
             if (vec_distance_xy((char *)m + 0x10, g) < 3.0f) {
                 g -= 0x80;
                 if (absolute_float(m->z - *(f32 *)(g + 0x88)) < 2.0f && *(s32 *)(g + 0x22A8)) {
@@ -272,7 +272,7 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
             if (cinematic_mode == 2)
                 return;
             STUB_printf(pilots_helmet_acquired_message);
-            func_L00_00264DB8(0x232A, -1);
+            queue_dialogue_message(0x232A, -1);
             banner_display_ticks = 0xB4;
             grant_inventory_item(7, 1);
             if (pilots_helmet_help_record[0] == 0)
@@ -1029,8 +1029,8 @@ void pterodactyl_update(unsigned char *m) {
 
 // Grass moby update: plays an animation when the player is near and leaves.
 void red_plant_update(Moby *m) {
-    if (fast_vec_dist(D_0013F4D0, &m->pos) < 1.0f) {
-        if (FastVecLength(D_0013F4D0 + 0x80) > g_frame_time + g_frame_time) {
+    if (fast_vec_dist(hero_pos, &m->pos) < 1.0f) {
+        if (FastVecLength(hero_pos + 0x80) > g_frame_time + g_frame_time) {
             if (m->prev_seq != 1) {
                 MobyBlendAnimation(m, 1, 0, scale_ticks(6));
             }
@@ -1048,7 +1048,7 @@ extern void spawn_explosion_v(void *, void *, void *, float, float, int, float, 
 extern int coll_sphere_s(void *, float, int, void *) __asm__("func_L00_001F10E0");
 
 extern char veldin1_zero_vec[] MACRO_ADDR;
-extern float D_L00_00173F80[] NOT_SDA;
+extern float coll_hit_normal[] NOT_SDA;
 
 /* Update of an effect-group moby: state machine over its life, then it steers a sprite along its path and bounces it
    off surfaces. */
@@ -1111,7 +1111,7 @@ void tumbling_part_update(Moby *m) {
     FastVecAdd(a80, a80, &m->pos);
     if (coll_sphere_s(a80, r, 0, m)) {
         float f21, f20;
-        q = D_L00_00173F80;
+        q = coll_hit_normal;
         vec_scale_to_length(q, q, 1.0f);
         f21 = FastVecLength(&d->velocity);
         f20 = FastVecDot(&d->velocity, q);
@@ -1130,7 +1130,7 @@ void tumbling_part_update(Moby *m) {
 }
 // copies a vector out of the game block into the second argument
 void follow_camera_hero_target(char *a, void *out) {
-    qcopy(out, D_0013F4D0);
+    qcopy(out, hero_pos);
 }
 typedef struct {
     float f[4];
@@ -3635,7 +3635,7 @@ typedef struct {
 } S_2E9E60;
 extern float g_controller_state_analog_r[] __asm__("D_0013CB40");
 extern int opt_cam_invert MACRO_ADDR;
-extern int D_0015EEDC MACRO_ADDR;
+extern int invert52 MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern f32 D_L00_0015F044_2E9E60 SDATA(D_L00_0015F044);
 extern s32 D_L00_00161E5C_2E9E60 SDATA(D_L00_00161E5C);
@@ -3686,7 +3686,7 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
     } else {
         float t = g_controller_state_analog_r[1];
         *b = -t;
-        if (D_0015EEDC == 0) {
+        if (invert52 == 0) {
             *b = t;
         }
         if (*b == 0.0f) {
@@ -3864,7 +3864,7 @@ void follow_camera_build_view(int a_) {
     q40 = q + 0x40;
     q20 = q + 0x20;
     if (q40[0xC4] == 0xB) {
-        FastVecSub((float *)p, (float *)D_0013F4D0, (float *)(p + 0x30));
+        FastVecSub((float *)p, (float *)hero_pos, (float *)(p + 0x30));
         p10 = p + 0x10;
         vec_scale_to_length(p, p, 1.0f);
         p20 = p + 0x20;

@@ -230,7 +230,7 @@ void HeroL05_UpdateStateTransitions(void) {
                                     if (0.55850536f > rilgar_lean_state.f258 && rilgar_lean_state.f254 < 0.34906584f &&
                                         g_hero.items[3].state == 2) {
                                         g_hero.slot3_anim_timer =
-                                            func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
+                                            random_int_between(scale_ticks(0x6E), scale_ticks(0x10E));
                                         blend_hero_slot3_animation_pair();
                                     }
                                 }
@@ -789,7 +789,7 @@ void HeroL05_UpdateStateTransitions(void) {
                             break;
                         } else if (g_hero.state.current == 0x73) {
                             if (g_controller_state.no_direction != 0) {
-                                if (func_001F9CE8(g_hero.motion.velocity.f) < g_frame_time * 3.2f) {
+                                if (vector_length_xy(g_hero.motion.velocity.f) < g_frame_time * 3.2f) {
                                     if (Hero_TryMoveStateL05(HERO_STATE_IDLE, 0)) {
                                         set_hero_animation(get_hero_idle_animation_index(0), 0, scale_ticks(0x11));
                                     }
@@ -1932,7 +1932,7 @@ void HeroL05_UpdateStateTransitions(void) {
                         if (g_hero.anim_flags & 2) {
                             compute_hero_hoverboard_respawn_transform(v0, v1);
                             g_hero.board_air_yaw = v1[2];
-                            func_L00_00217718(v0, v1, 0x6B, 1);
+                            set_race_camera(v0, v1, 0x6B, 1);
                         }
                         break;
                     case 110:
@@ -1940,14 +1940,14 @@ void HeroL05_UpdateStateTransitions(void) {
                             g_hero.state_timer > g_hero.board_respawn_delay) {
                             compute_hero_hoverboard_respawn_transform(v0, v1);
                             g_hero.board_air_yaw = v1[2];
-                            func_L00_00217718(v0, v1, 0x6B, 1);
+                            set_race_camera(v0, v1, 0x6B, 1);
                         }
                         break;
                     case 111:
                         if (g_hero.anim_flags & 2) {
                             compute_hero_hoverboard_respawn_transform(v0, v1);
                             g_hero.board_air_yaw = v1[2];
-                            func_L00_00217718(v0, v1, 0x6B, 1);
+                            set_race_camera(v0, v1, 0x6B, 1);
                         }
                         break;
                     case HERO_STATE_VEHICLE_MODE_3_IDLE:

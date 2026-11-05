@@ -13,7 +13,7 @@ void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
         moby_point_position(moby, i, m);
         FastVecScale(v0, mat, background_ship_2_level_10_first_spark_position_delta_scale_gp);
         FastVecScale(v1, mat, background_ship_2_level_10_second_spark_position_delta_scale_gp);
-        func_L00_00258DB0(v2, 0.0f, background_ship_2_level_10_spark_random_offset_radius_scale_gp * g_frame_time);
+        random_vector(v2, 0.0f, background_ship_2_level_10_spark_random_offset_radius_scale_gp * g_frame_time);
         FastVecAdd(v1, v1, v2);
         v0[3] = random_float_between(background_ship_2_first_spark_fourth_component_range_start_gp,
                                      background_ship_2_first_spark_fourth_component_range_end_gp) /

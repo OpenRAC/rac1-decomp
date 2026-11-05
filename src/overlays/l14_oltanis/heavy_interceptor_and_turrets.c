@@ -36,7 +36,7 @@
 #include "overlays/l14_oltanis/bolt_thief_and_path_cameras.h"
 #include "overlays/l14_oltanis/ribbon_effects.h"
 #include "overlays/shared/moby_drops_and_death.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
    aim path, calls the turrets of its group when the beam finds the hero. */
@@ -321,9 +321,9 @@ void KeyframePlatformUpdate(unsigned char *moby) {
 
         if (vars->trigger == -1 || is_point_inside_clip_volume(&hero.motion.pos, vars->trigger) ||
             oltanis_collected_flags_base.collected[(s16)(id = m->save_id)] != 0 ||
-            (D_0014C290[g_current_level_index][(s16)id >> 5] >> (id & 0x1F)) & 1) {
+            (level_moby_killed[g_current_level_index][(s16)id >> 5] >> (id & 0x1F)) & 1) {
             if (vars->trigger != -1) {
-                D_0014C290[g_current_level_index][(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
+                level_moby_killed[g_current_level_index][(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                 oltanis_moby_killed_bits[(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                 vars->trigger = -1;
             }
@@ -983,7 +983,7 @@ void blarg_heavy_interceptor_update(struct Moby *m) {
                 return;
             }
             spawn_burst(&m->pos, oltanis_zero_vector_r, 0x4F007FFF, 0x1FFFFFFF,
-                        func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
+                        random_int_between(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
             for (i = 0; i < 2; i++) {
                 int a = random_integer_below(6);
                 float size;
@@ -994,7 +994,7 @@ void blarg_heavy_interceptor_update(struct Moby *m) {
                     a = -a;
                 }
                 size = random_float_between(40000.0f, 100000.0f);
-                c = func_L00_00258BC8(0x30, 0xFF);
+                c = random_int_between(0x30, 0xFF);
                 p = PartType23Spawn_r(&m->pos, 0.025f, 1.0f, 1.0f, a, oltanis_zero_vector_r, size,
                                       c | (0x60000000 | (c << 16) | (c << 8)));
                 if (p != 0) {
@@ -1214,7 +1214,7 @@ void draw_blarg_heavy_interceptor_spinning_beam(char *moby) {
     mat[3][3] = 1.0f;
     FastVecSub(v, oltanis_camera_pos, mat[3]);
     rot[2] = fast_atan2(v[0], v[1]);
-    rot[1] = -fast_atan2(func_001F9CE8(v), v[2]);
+    rot[1] = -fast_atan2(vector_length_xy(v), v[2]);
     rot[0] = 0.0f;
     euler_rotation_basis(rm, rot);
     qcopy(mat[0], rm[0]);
@@ -1311,7 +1311,7 @@ void draw_blarg_heavy_interceptor_camera_facing_glow(char *moby) {
     FastVecSub(glow_to_camera_vector, oltanis_camera_pos, glow_quad_transform[3]);
     f = fast_atan2(glow_to_camera_vector[0], glow_to_camera_vector[1]);
     camera_facing_angles[2] = f;
-    f = fast_atan2(func_001F9CE8(glow_to_camera_vector), glow_to_camera_vector[2]);
+    f = fast_atan2(vector_length_xy(glow_to_camera_vector), glow_to_camera_vector[2]);
     camera_facing_angles[1] = -f;
     camera_facing_angles[0] = 0.0f;
     euler_rotation_basis(glow_quad_transform, camera_facing_angles);
@@ -1617,7 +1617,7 @@ int update_blarg_heavy_interceptor_aim_transforms(char *moby, int flag) {
             FastSubRots(fast_atan2(half_span_vector[0], half_span_vector[1]), ((struct Moby *)moby)->rot.z);
         build_axis_rotation_quaternion(&data->yaw_rot, 2, rotation_angle);
         data->yaw = rotation_angle;
-        rotation_angle = -fast_atan2(func_001F9CE8(half_span_vector), half_span_vector[2]);
+        rotation_angle = -fast_atan2(vector_length_xy(half_span_vector), half_span_vector[2]);
         build_axis_rotation_quaternion(&data->pitch_rot, 1, rotation_angle);
         data->pitch = rotation_angle;
         qcopy(&data->glow_pos, &data->aim_point);
@@ -2673,7 +2673,7 @@ void emit_minibomber_bomb_release_effects(char *m, float *input, float angle) {
         if (random_integer_below(2))
             sign = -sign;
         life = random_float_between(40000.0f, 150000.0f);
-        color = func_L00_00258BC8(10, 127);
+        color = random_int_between(10, 127);
         {
             int hi = (color << 8) | 0x7F000000;
             color = color | ((color << 16) | hi);
@@ -2909,7 +2909,7 @@ void flying_debris_update(struct Moby *m) {
     FastVecAdd(at, joint, ofs);
     FastVecSub(dir, joint, &m->pos);
     vec_scale_to_length(dir, dir, 0.05f);
-    spawn_burst(at, dir, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 40000.0f);
+    spawn_burst(at, dir, 0x4F007FFF, 0x1FFFFFFF, random_int_between(scale_ticks(10), scale_ticks(20)), 1, 40000.0f);
     for (i = 0; i < 3; i++) {
         if (i != 2) {
             FastVecScale(ofs, (char *)m + 0xC0, randf_sym(0.01f, 0.5f));
@@ -2921,7 +2921,7 @@ void flying_debris_update(struct Moby *m) {
         if (random_integer_below(2) != 0)
             n = -n;
         size = random_float_between(20000.0f, 100000.0f);
-        c = func_L00_00258BC8(0x10, 0xFF);
+        c = random_int_between(0x10, 0xFF);
         p = PartType23Spawn_r(at, 0.025f, 1.0f, 1.0f, n, oltanis_zero_vector_r, size,
                               c | (0x60000000 | (c << 16) | (c << 8)));
         if (p != NULL) {
@@ -3271,7 +3271,7 @@ void reset_racer_group_to_hero_path_position(struct Moby *m) {
             rot[3] = 0.0f;
             g_hero.f564 = idx;
             g_hero.f568 = 0.0f;
-            func_L00_00217718(path + (idx * 16 + 0x10), rot, 0x28, 0);
+            set_race_camera(path + (idx * 16 + 0x10), rot, 0x28, 0);
         }
         *out++ = o;
     } while ((short)*p++ >= 0);

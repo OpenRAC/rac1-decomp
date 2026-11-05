@@ -173,7 +173,7 @@ extern T_210ce8 l18_moby_hurt_response_records[];
 extern s32 g_current_level_index MACRO_ADDR;
 
 extern s32 hero_hit_count MACRO_ADDR;
-extern u8 D_0013F4D0[];
+extern u8 hero_pos[];
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
@@ -243,7 +243,7 @@ s32 HeroL18_TryTakeHit(s32 arg) {
             flag = 1;
         }
     } else if (tbl->p20 != 0) {
-        FastVecSub(&v, D_0013F4D0, tbl->p20 + 0x10);
+        FastVecSub(&v, hero_pos, tbl->p20 + 0x10);
     } else {
         v.f[0] = FastCos(FastAddRots(g_hero.motion.rot.f[2], 3.1415927f));
         v.f[1] = FastSin(FastAddRots(g_hero.motion.rot.f[2], 3.1415927f));

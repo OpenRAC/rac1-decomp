@@ -52,7 +52,7 @@ extern int cd_read_wait_frames MACRO_ADDR;
 extern int cd_read_slowdown_applied MACRO_ADDR;
 
 /* Start a CD stream read of arg2 sectors from arg1 into arg0 at the current spindle speed. */
-int func_002175C8(int arg0, int arg1, int arg2) {
+int submit_audio_stream_io_request(int arg0, int arg1, int arg2) {
     StreamHdr hdr = cd_read_request_mode_template;
 
     hdr.b[1] = cd_read_spindle_speed[0];

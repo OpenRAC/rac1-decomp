@@ -887,7 +887,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                             if (flags[0xD] == 0) {
                                 flags[0xD] = one;
                                 allocate_voice_for_bank_entry(1, 0, 0);
-                                func_L00_00264DB8(0x53DB, -1);
+                                queue_dialogue_message(0x53DB, -1);
                             }
                         }
                     }
@@ -1377,7 +1377,7 @@ void water_surface_update(struct Moby *moby) {
         v.f[0] = FastCos(ang) * k;
         v.f[1] = FastSin(ang) * k;
         v.f[2] = random_float_between(g_frame_time_r2 * 3.0f, g_frame_time_r2 * 6.5f);
-        n = func_L00_00258BC8(0x5A, 0x78);
+        n = random_int_between(0x5A, 0x78);
         PartType35Spawn(&pos, &v, random_integer_below(2), n);
     }
     for (i = 0; i < 16; i++) {
@@ -1424,17 +1424,17 @@ void spawn_particle_line_effect(struct Moby *moby, void *from, void *to, int cou
         vel.f[1] = randf_sym(0.0f, 0.005f);
         vel.f[2] = random_float_between((line_puff_initial_z_velocity_range_end_gp) * 0.1f,
                                         (line_puff_initial_z_velocity_range_end_gp));
-        alpha = func_L00_00258BC8(0x30, 0x70);
-        grey = func_L00_00258BC8(0x30, 0x7F);
+        alpha = random_int_between(0x30, 0x70);
+        grey = random_int_between(0x30, 0x7F);
         grey |= (grey << 16) | (grey << 8);
         size = random_float_between(1.0f, 1.02f);
-        puff = PartType23Spawn(&pos, (line_puff_position_jitter_range_end_gp), 1.0f, size, func_L00_00258BC8(-2, 2),
+        puff = PartType23Spawn(&pos, (line_puff_position_jitter_range_end_gp), 1.0f, size, random_int_between(-2, 2),
                                &vel, grow + size0 * 210000.0f, (alpha << 24) | grey);
         if (puff) {
             tail = puff + 0x20;
             if (random_integer_below(2)) {
                 puff[3] = 0x44;
-                grey = func_L00_00258BC8(0x60, 0xE0);
+                grey = random_int_between(0x60, 0xE0);
                 grey |= (grey << 16) | (grey << 8);
                 *(u32 *)(puff + 4) = (alpha << 24) | grey;
             }
@@ -1448,12 +1448,12 @@ void spawn_particle_line_effect(struct Moby *moby, void *from, void *to, int cou
     vel.f[1] = FastSin(random_angle_radians()) * 0.05f;
     vel.f[2] = 0.0f;
     vel.f[2] = random_float_between(0.01f, 0.03f);
-    spawn_burst(from, &vel, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 10000.0f);
+    spawn_burst(from, &vel, 0x4F007FFF, 0x1FFFFFFF, random_int_between(scale_ticks(10), scale_ticks(20)), 1, 10000.0f);
     vel.f[0] = FastCos(random_angle_radians()) * 0.05f;
     vel.f[1] = FastSin(random_angle_radians()) * 0.05f;
     vel.f[2] = 0.0f;
     vel.f[2] = random_float_between(0.01f, 0.03f);
-    spawn_burst(to, &vel, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
+    spawn_burst(to, &vel, 0x4F007FFF, 0x1FFFFFFF, random_int_between(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
 }
 
 /* Picks the best candidate moby from the moby's list by heading and distance.
@@ -2345,7 +2345,7 @@ void bomber_tank_bomb_update(struct Moby *moby) {
                         float size = random_float_between(200000.0f, 300000.0f);
                         color = scale_ticks(60);
                         color2 = scale_ticks(120);
-                        alpha = func_L00_00258BC8(color, color2);
+                        alpha = random_int_between(color, color2);
                         mine_debris(record.pos, position, 0x1f101820, 0x101010, size, alpha, 0);
                     } break;
                     case 2: {
@@ -2354,7 +2354,7 @@ void bomber_tank_bomb_update(struct Moby *moby) {
                         color2 = scale_ticks(30);
                         alpha = scale_ticks(45);
                         mine_debris(record.pos, position, color, 0x0f000020, 150000.0f,
-                                    func_L00_00258BC8(color2, alpha), 2);
+                                    random_int_between(color2, alpha), 2);
                     } break;
                     case 3: {
                         int color, color2, alpha;
@@ -2364,7 +2364,7 @@ void bomber_tank_bomb_update(struct Moby *moby) {
                         BuildSphericalOffset(position, radius, angle, random_angle_radians());
                         radius = random_float_between(150000.0f, 200000.0f);
                         alpha = scale_ticks(60);
-                        alpha = func_L00_00258BC8(alpha, scale_ticks(120));
+                        alpha = random_int_between(alpha, scale_ticks(120));
                         mine_debris(record.pos, position, color, color2, radius, alpha, 3);
                     } break;
                     case 1:
@@ -2503,7 +2503,7 @@ void GuidedRocketUpdate(M46 *m) {
             ClampVectorLength(accel, rocket_guidance_velocity_correction_limit_gp * g_frame_time_sq);
             FastVecAdd(d->velocity, d->velocity, accel);
             FastVecAdd(m->position, m->position, d->velocity);
-            m->rotation[1] = -fast_atan2(func_001F9CE8(d->velocity), d->velocity[2]);
+            m->rotation[1] = -fast_atan2(vector_length_xy(d->velocity), d->velocity[2]);
             m->rotation[2] = fast_atan2(d->velocity[0], d->velocity[1]);
             if (FastDiffRots(yaw, d->yaw) < 0.08726646f && FastDiffRots(pitch, d->pitch) < 0.08726646f)
                 m->state = 2;
@@ -2537,7 +2537,7 @@ void GuidedRocketUpdate(M46 *m) {
             ClampVectorLength(accel, rocket_guidance_velocity_correction_limit_gp * 4.0f * g_frame_time_sq);
             FastVecAdd(d->velocity, d->velocity, accel);
             FastVecAdd(m->position, m->position, d->velocity);
-            m->rotation[1] = -fast_atan2(func_001F9CE8(d->velocity), d->velocity[2]);
+            m->rotation[1] = -fast_atan2(vector_length_xy(d->velocity), d->velocity[2]);
             m->rotation[2] = fast_atan2(d->velocity[0], d->velocity[1]);
             if (fast_vec_dist(m->position, d->target->position) < rocket_target_hit_distance_gp) {
                 t->health -= 60;
@@ -2599,8 +2599,8 @@ void GuidedRocketUpdate(M46 *m) {
                 effect[2] = random_float_between(-1.0f, 1.0f);
                 *(Q46 *)accel = *(Q46 *)effect;
                 ClampVectorLength(accel, g_frame_time + g_frame_time);
-                life0 = scale_ticks(func_L00_00258BC8(30, 45));
-                size1 = func_L00_00258BC8(40, 70);
+                life0 = scale_ticks(random_int_between(30, 45));
+                size1 = random_int_between(40, 70);
                 spawn_effect(m->position, accel, 0x6F00AFFF, 0xFF, life0, 40, size1, 1);
                 *(Q46 *)aux = (Q46)0;
                 aux[0] = random_float_between(-1.0f, 1.0f);
@@ -2608,8 +2608,8 @@ void GuidedRocketUpdate(M46 *m) {
                 aux[2] = random_float_between(-1.0f, 1.0f);
                 *(Q46 *)effect = *(Q46 *)aux;
                 ClampVectorLength(effect, g_frame_time + g_frame_time);
-                life1 = scale_ticks(func_L00_00258BC8(60, 120));
-                size1 = func_L00_00258BC8(100, 150);
+                life1 = scale_ticks(random_int_between(60, 120));
+                size1 = random_int_between(100, 150);
                 spawn_effect(m->position, effect, 0x1FFFFFFF, 0x4F4F4F, life1, 40, size1, 0);
                 return;
             } else {
@@ -2884,7 +2884,7 @@ void path_following_moby_update(char *m) {
             d->velocity.z = d->velocity.z - g_frame_time_sq * c15;
             dd = FastAddRots(((Moby *)m)->rot.x, g);
             ((Moby *)m)->rot.x = ((Moby *)m)->rot.x + dd;
-            ((Moby *)m)->rot.y = -fast_atan2(func_001F9CE8(v), d->velocity.z);
+            ((Moby *)m)->rot.y = -fast_atan2(vector_length_xy(v), d->velocity.z);
             FastVecAdd(pos, pos, v);
             if (((Moby *)m)->pos.z < c10) {
                 DeleteMoby(m);
@@ -2909,7 +2909,7 @@ void path_following_moby_update(char *m) {
         if (hero_current_state == 0x32 && gSkillPoints[0xC] == 0) {
             gSkillPoints[0xC] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53DB, -1);
+            queue_dialogue_message(0x53DB, -1);
         }
         FastVecSub(b, &((struct Moby *)m)->pos, a);
         qcopy(&d->velocity, b);
@@ -2961,7 +2961,7 @@ void spawn_moby_motion_spark(char *m, char *pos) {
     FastVecAdd(v50, v50, m + 0x10);
     FastVecScale(v10, v30, moby_motion_spark_first_displacement_scale_gp);
     FastVecScale(v20, v30, moby_motion_spark_second_displacement_scale_gp);
-    func_L00_00258DB0(v40, 0.0f, moby_motion_spark_jitter_magnitude_range_end_gp * g_frame_time);
+    random_vector(v40, 0.0f, moby_motion_spark_jitter_magnitude_range_end_gp * g_frame_time);
     FastVecAdd(v20, v20, v40);
     v10[3] = random_float_between(moby_motion_spark_first_vector_w_range_start_gp,
                                   moby_motion_spark_first_vector_w_range_end_gp);

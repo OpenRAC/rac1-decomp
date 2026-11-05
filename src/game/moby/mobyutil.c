@@ -66,7 +66,7 @@ LINKER_REMNANT("asm/remnants/text", func_00213C70);
 
 extern void *visible_moby_list MACRO_ADDR;
 
-void func_00213C78(void) {
+void update_visible_resident_objects(void) {
     char *m;
 
     visible_moby_list = build_resident_visibility_list();
@@ -1157,7 +1157,7 @@ void sample_camera_path(Path *path, int wrap, void *pos, float *rot, int flags, 
     }
     FastVecSub(&d, &b, &a);
     yaw = fast_arc_tan(d.v[0], d.v[1]);
-    pitch = fast_arc_tan(func_001F9CE8(&d), d.v[2]);
+    pitch = fast_arc_tan(vector_length_xy(&d), d.v[2]);
     roll = a.v[3];
     if (clamp) {
         yaw2 = yaw;
@@ -1167,7 +1167,7 @@ void sample_camera_path(Path *path, int wrap, void *pos, float *rot, int flags, 
         qcopy(&c, &path->pts[k]);
         FastVecSub(&d, &c, &b);
         yaw2 = fast_arc_tan(d.v[0], d.v[1]);
-        pitch2 = fast_arc_tan(func_001F9CE8(&d), d.v[2]);
+        pitch2 = fast_arc_tan(vector_length_xy(&d), d.v[2]);
         roll2 = b.v[3];
     }
     rot[0] = 0.0f;

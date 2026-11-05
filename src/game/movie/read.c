@@ -4,7 +4,7 @@
 #include "game/movie/audiodec.h"
 #include "game/movie/movie.h"
 
-extern char *D_0016130C MACRO_ADDR;
+extern char *decoder_state MACRO_ADDR;
 extern char pts_buffer_overflow_message[];
 
 extern int cpy2area(char *, int, char *, int, char *, int, char *, int);
@@ -25,16 +25,17 @@ int videoCallback(void *unused, char *entry, char *buffer) {
     if (total < first)
         first = total;
     remaining = total - first;
-    videoDecBeginPut(D_0016130C + 0xD9048, &spans.p1, &spans.n1, &spans.p2, &spans.n2);
+    videoDecBeginPut(decoder_state + 0xD9048, &spans.p1, &spans.n1, &spans.p2, &spans.n2);
     copied = cpy2area((char *)(((unsigned int)spans.p1 & 0xFFFFFFF) | 0x20000000), spans.n1,
                       (char *)(((unsigned int)spans.p2 & 0xFFFFFFF) | 0x20000000), spans.n2, source, first, buffer,
                       remaining);
     if (copied > 0) {
-        if (!videoDecPutTs(D_0016130C + 0xD9048, *(long *)(entry + 0x10), *(long *)(entry + 0x18), spans.p1, copied)) {
+        if (!videoDecPutTs(decoder_state + 0xD9048, *(long *)(entry + 0x10), *(long *)(entry + 0x18), spans.p1,
+                           copied)) {
             ErrMessage(pts_buffer_overflow_message);
         }
     }
-    videoDecEndPut(D_0016130C + 0xD9048, copied);
+    videoDecEndPut(decoder_state + 0xD9048, copied);
     return copied > 0;
 }
 
@@ -58,9 +59,9 @@ int pcmCallback(void *unused, char *entry, char *buffer) {
         first = total;
     ring = buffer;
     rest = total - first;
-    audioDecBeginPut(D_0016130C + 0xD9100, &dst0, &len0, &dst1, &len1);
+    audioDecBeginPut(decoder_state + 0xD9100, &dst0, &len0, &dst1, &len1);
     copied = cpy2area(dst0, len0, dst1, len1, src, first, ring, rest);
-    audioDecEndPut(D_0016130C + 0xD9100, copied);
+    audioDecEndPut(decoder_state + 0xD9100, copied);
     return copied > 0;
 }
 extern void *libc_memcpy(void *dest, const void *src, int n);

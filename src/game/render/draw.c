@@ -283,7 +283,7 @@ void update_render_debug_menu(void) {
                                 float v[4];
                                 occl_cam_state.flags8 = 0;
                                 FastVecSub(v, g_hero.motion.pos.f, gCamera.pos.f);
-                                occl_cam_state.f8C = func_001F9CE8(v);
+                                occl_cam_state.f8C = vector_length_xy(v);
                                 occl_cam_state.f88 = FastSubRots(fast_arc_tan(v[0], v[1]), gCamera.rot.f[2]);
                                 occl_cam_state.f90 = g_hero.motion.pos.f[2] - gCamera.pos.f[2];
                                 occl_cam_state.f84 = FastSubRots(g_hero.motion.rot.f[2], gCamera.rot.f[2]);
@@ -1509,7 +1509,7 @@ extern int draw_callback2_count MACRO_ADDR;
 extern int draw_callback3_count MACRO_ADDR;
 extern int draw_callback4_count MACRO_ADDR;
 extern int effect_quad_count MACRO_ADDR;
-extern int D_00161290 MACRO_ADDR;
+extern int surface_height_tiles MACRO_ADDR;
 extern int occl_cell_table MACRO_ADDR;
 extern int occl_cell_count MACRO_ADDR;
 extern int local_surface_region_enabled MACRO_ADDR;
@@ -1529,7 +1529,7 @@ void ResetDrawGlobals(void) {
     draw_unused_reset_flag = 0;
     *(int *)&occl_debug_overlay_enabled = 0;
     occl_fallback_mode = 0;
-    D_00161290 = 0;
+    surface_height_tiles = 0;
     occl_cell_table = 0;
     occl_cell_count = 0;
     local_surface_region_enabled = 0;
@@ -2814,7 +2814,7 @@ void draw_outlined_rect(int a0, int a1, int a2, int a3, int a4) {
 extern int font_color_codes_enabled MACRO_ADDR;
 
 /* Sets the word flag at font_color_codes_enabled to 1. */
-void Font_EnableColorCodes(void) {
+void enable_font_color_codes(void) {
     *(int *)&font_color_codes_enabled = 1;
 }
 
@@ -3327,8 +3327,8 @@ void queue_framebuffer_upload(unsigned int source) {
 }
 
 extern short font_depth_bias; /* SDA, gp -0x78B8 */
-extern unsigned short D_0010E800 NOT_SDA;
-extern char D_0010E810[];
+extern unsigned short font_vu_program_tag NOT_SDA;
+extern char font_vu_program[];
 extern char camera_position[];
 
 /* Build the VU1 setup packet: load microprogram 7 if another is
@@ -3348,7 +3348,7 @@ void font_queue_vu_state(void) {
     FastVecScale(&m[12], cam, -1024.0f);
     m[15] = 1.0f;
     if (font_state != 7) {
-        VU1_addDataRef(D_0010E810, D_0010E800);
+        VU1_addDataRef(font_vu_program, font_vu_program_tag);
         font_state = 7;
     }
     g_render_packet_cursor[0] = 0x10000000;

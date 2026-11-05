@@ -97,7 +97,7 @@ void ultramech_scientist_update(char *moby) {
         ULTRAMECH_SCIENTIST_SAVE_AND_DISABLE = 8
     };
     struct UltramechScientistVars *data;
-    char *hero_pos;
+    char *hero_position;
     Moby *other;
     int control_mode;
 
@@ -171,11 +171,11 @@ void ultramech_scientist_update(char *moby) {
             }
             break;
         case ULTRAMECH_SCIENTIST_WAIT_FOR_DIALOGUE:
-            hero_pos = &g_hero.motion.pos;
-            if (is_point_inside_clip_volume(hero_pos, data->clip_volume) == 0) {
+            hero_position = &g_hero.motion.pos;
+            if (is_point_inside_clip_volume(hero_position, data->clip_volume) == 0) {
                 break;
             }
-            control_mode = *(int *)(hero_pos + 0x200C);
+            control_mode = *(int *)(hero_position + 0x200C);
             if ((unsigned int)control_mode >= 2 && control_mode != 9) {
                 break;
             }
@@ -269,7 +269,7 @@ void ultramech_scientist_update(char *moby) {
             if (data->hero_path != -1) {
                 char *paths = quartu_cuboids;
                 char *paths_again;
-                func_L00_00217718(paths + (data->hero_path << 7) + 0x30, paths + (data->hero_path << 7) + 0x70, 0, 1);
+                set_race_camera(paths + (data->hero_path << 7) + 0x30, paths + (data->hero_path << 7) + 0x70, 0, 1);
                 paths_again = quartu_cuboids;
                 jet_reset_camera(paths_again + (data->hero_path << 7) + 0x30,
                                  paths_again + (data->hero_path << 7) + 0x70);
@@ -368,7 +368,7 @@ void ultramech_scientist_update(char *moby) {
             FastVecSub(eye_to_target_vector, target, eye);
             value = fast_atan2(eye_to_target_vector[0], eye_to_target_vector[1]);
             yaw = FastSubRots(value, ((struct Moby *)moby)->rot.z);
-            value = func_001F9CE8(eye_to_target_vector);
+            value = vector_length_xy(eye_to_target_vector);
             value = fast_atan2(value, eye_to_target_vector[2]);
             pitch = -value;
             if (yaw > 1.5707964f) {
@@ -388,10 +388,10 @@ void ultramech_scientist_update(char *moby) {
         if (gCheats[0] != 0) {
             data->unk_1D0 = 2.75f;
         }
-        func_L00_00263950(moby, (char *)&data->manip_160, 1, ease_rate * g_frame_scale_sq,
-                          ease_limit * g_frame_scale_sq);
-        func_L00_00263950(moby, (char *)&data->manip_1E0, 0, ease_rate * g_frame_scale_sq,
-                          ease_limit * g_frame_scale_sq);
+        update_joint_animation(moby, (char *)&data->manip_160, 1, ease_rate * g_frame_scale_sq,
+                               ease_limit * g_frame_scale_sq);
+        update_joint_animation(moby, (char *)&data->manip_1E0, 0, ease_rate * g_frame_scale_sq,
+                               ease_limit * g_frame_scale_sq);
     }
 }
 typedef struct Talk {

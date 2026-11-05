@@ -89,7 +89,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         if (*(short *)(moby + 0xA6) == 0x31B && gSkillPoints_r[4] == 0) {
             gSkillPoints_r[4] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x542D, -1);
+            queue_dialogue_message(0x542D, -1);
         }
         allocate_voice_for_group_entry_r(0, 0, moby);
     }

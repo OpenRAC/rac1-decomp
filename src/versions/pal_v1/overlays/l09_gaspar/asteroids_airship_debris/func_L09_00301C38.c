@@ -10,7 +10,7 @@ void Moby1000Update(char *moby) {
             if (q[0xE] == 0) {
                 q[0xE] = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53D6, -1);
+                queue_dialogue_message(0x53D6, -1);
                 airship_parts_alive_count = 0;
             } else {
                 airship_parts_alive_count = 0;
@@ -30,7 +30,7 @@ void Moby1000Update(char *moby) {
             *(unsigned short *)(b + 0x2DA) = scale_ticks(gameplay_event_frame_count) / 600;
         }
         *(int *)(b + 0x2DC) = *(int *)(b + 0x2DC) | (1 << g_current_level_index_m) | 0x80000000;
-        if (is_point_inside_clip_volume(D_0013F4D0, *data) != 0) {
+        if (is_point_inside_clip_volume(hero_pos, *data) != 0) {
             help_request(0x2329, 0x5B);
         }
     }

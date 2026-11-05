@@ -158,7 +158,7 @@ void apply_level_specific_cutscene_moby_effects(void) {
                 BuildSphericalOffset(v, random_float_between(g_frame_time * 0.7f, g_frame_time * 2.2f), a, b);
                 r = scale_ticks(0xC);
                 spawn_effect_particle_with_target_scalar_v(buf, v, 0x80808080, 0x808080,
-                                                           func_L00_00258BC8(r, scale_ticks(0x23)), 147000.0f);
+                                                           random_int_between(r, scale_ticks(0x23)), 147000.0f);
             }
         }
     }

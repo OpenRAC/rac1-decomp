@@ -37,12 +37,12 @@
 #include "asm_functions/level_08.h"
 #include "overlays/l17_fleet/hero_idle_and_items.h"
 #include "overlays/shared/moby_drops_and_death.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
 extern char saved_mission_state[];
 extern Hero g_hero;
-extern char D_0014C290[];
+extern char level_moby_killed[];
 extern int pad0_pressed;
 
 /* Robot dog: speed and turn state, plus the three glow points (also AimData_1BB0 below). */
@@ -123,7 +123,7 @@ struct FleetCraftVars {
     u32 unk_94; /* 0x94 */
     s32 unk_98; /* 0x98 */
     u8 pad_9C[0x14];
-    Vec4A hero_pos; /* 0xB0: hero position last frame */
+    Vec4A hero_position; /* 0xB0: hero position last frame */
 };
 
 typedef int q128_2F1558 __attribute__((mode(TI)));
@@ -281,7 +281,7 @@ int cancel_suck_cannon_suction_and_set_state_12(char *a) {
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 
-/* The turret's eased part (update_joint_animation's second argument) and where it sits in the moby's data. */
+/* The turret's eased part (update_joint_animation_fn's second argument) and where it sits in the moby's data. */
 typedef struct {
     char pad0[0x64];
     float pitch;
@@ -306,7 +306,7 @@ void update_robot_dog_aim_joint(char *moby) {
     tmp[2] += 0.5f;
     FastVecSub(v, &g_hero.motion.body_center, tmp);
     yaw = FastSubRots(fast_atan2(v[0], v[1]), ((Moby *)moby)->rot.z);
-    pitch = -fast_atan2(func_001F9CE8(v), v[2]);
+    pitch = -fast_atan2(vector_length_xy(v), v[2]);
     if (yaw > 1.0471976f) {
         yaw = 1.0471976f;
     } else if (yaw < -1.0471976f) {
@@ -319,7 +319,7 @@ void update_robot_dog_aim_joint(char *moby) {
     }
     d->part.pitch = pitch;
     d->part.yaw = yaw;
-    func_L00_00263950(moby, (char *)&d->part, 0, accel * g_frame_scale_sq, speed * g_frame_scale_sq);
+    update_joint_animation(moby, (char *)&d->part, 0, accel * g_frame_scale_sq, speed * g_frame_scale_sq);
 }
 
 extern void draw_three_moby_effect_quads(char *);
@@ -711,7 +711,8 @@ void shuttle_1448_update(unsigned char *m) {
     switch (((Moby *)m)->state) {
         case 0:
             if (l17_save_id_collection_state.collected[(short)((Moby *)m)->save_id] != 0 ||
-                (*(int *)(D_0014C290 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
+                (*(int *)(level_moby_killed +
+                          (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                  (((Moby *)m)->save_id & 0x1F)) &
                     1) {
                 v->sel = 0;
@@ -790,10 +791,10 @@ void shuttle_1448_update(unsigned char *m) {
                 set_selected_object_float_triplets(0.001f, 1.0f, 1.0f, 0.001f, 1.0f, 1.0f);
                 set_camera_position(a);
                 set_camera_rotation(rot);
-                func_L00_00217718(fleet_camera_points + (v->cut << 7) + 0x30,
-                                  fleet_camera_points + (v->cut << 7) + 0x70, 0x72, 0);
+                set_race_camera(fleet_camera_points + (v->cut << 7) + 0x30, fleet_camera_points + (v->cut << 7) + 0x70,
+                                0x72, 0);
             } else if (l17_save_id_collection_state.collected[(short)((Moby *)m)->save_id] != 0 ||
-                       (*(int *)(D_0014C290 +
+                       (*(int *)(level_moby_killed +
                                  (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                         (((Moby *)m)->save_id & 0x1F)) &
                            1) {
@@ -832,10 +833,10 @@ void shuttle_1448_update(unsigned char *m) {
                 FastVecAdd(b, b, a);
                 clear_u64_value(rot);
                 rot[2] = FastAddRots(((Moby *)m)->rot.z, 3.1415927f);
-                func_L00_00217718(b, rot, 0, 0);
+                set_race_camera(b, rot, 0, 0);
                 jet_end_mount(0);
-                *(int *)(D_0014C290 + (((short)((Moby *)m)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |=
-                    1 << (((Moby *)m)->save_id & 0x1F);
+                *(int *)(level_moby_killed + (((short)((Moby *)m)->save_id >> 5) * 4 +
+                                              (g_current_level_index_m << 8))) |= 1 << (((Moby *)m)->save_id & 0x1F);
                 shuttle_travel_completion_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
             }
             break;
@@ -936,7 +937,7 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
     set_camera_position(pos);
     {
         char *base = fleet_camera_points + (d->e84 << 7);
-        func_L00_00217718(base + 0x30, base + 0x70, 0x72, 0);
+        set_race_camera(base + 0x30, base + 0x70, 0x72, 0);
     }
     if (i3 > 0) {
         ang = fast_atan2(c3->p[i3].x - c3->p[i3 - 1].x, c3->p[i3].y - c3->p[i3 - 1].y);
@@ -1024,7 +1025,7 @@ void fleet_camera_box_watcher_update(char *moby) {
                 if (gSkillPoints[0x1C] == 0) {
                     gSkillPoints[0x1C] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53DB, -1);
+                    queue_dialogue_message(0x53DB, -1);
                 }
             }
             break;
@@ -1047,7 +1048,7 @@ void fleet_camera_box_watcher_update(char *moby) {
                 if (d->scan_count == 0 && sk[0x1B] == 0) {
                     sk[0x1B] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53DB, -1);
+                    queue_dialogue_message(0x53DB, -1);
                 }
                 d->scan_index = 0;
                 d->scan_count = 0;
@@ -1556,8 +1557,8 @@ void blarg_ship_1843_update(unsigned char *moby) {
             }
             euler_rotation_basis(rotation_basis_row0, clamped_euler_angles);
             FastVecSub(hero_position_delta, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                       &moby_pvars->hero_pos);
-            qcopy(&moby_pvars->hero_pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                       &moby_pvars->hero_position);
+            qcopy(&moby_pvars->hero_position, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
             FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, hero_position_delta);
             offset_angle = FastAddRots(0.7853982f, (float)moby_pvars->quadrant * 1.5707964f);
             vec_scale_to_length(scratch_vector, rotation_basis_row1, FastSin(offset_angle) * 8.0f);
@@ -1598,7 +1599,7 @@ void blarg_ship_1843_update(unsigned char *moby) {
                 ang = fast_atan2(hero_relative_position[0], hero_relative_position[1]);
                 SteerAngleWithVelocity(yaw, &moby_pvars->yaw_vel, ang, g_frame_time_sq * 12.566371f,
                                        g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
-                ang = -fast_atan2(func_001F9CE8(hero_relative_position), hero_relative_position[2]);
+                ang = -fast_atan2(vector_length_xy(hero_relative_position), hero_relative_position[2]);
                 SteerAngleWithVelocity(pitch, &moby_pvars->pitch_vel, ang, g_frame_time_sq * 12.566371f,
                                        g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
                 if (fleet_frame_count % 10 == 0) {
@@ -1620,7 +1621,7 @@ void blarg_ship_1843_update(unsigned char *moby) {
                     if (firing_moby) {
                         FastVecSub(firing_direction, firing_direction, hero_position_delta);
                         *(float *)(firing_moby + 0x44) =
-                            -fast_atan2(func_001F9CE8(firing_direction), firing_direction[2]);
+                            -fast_atan2(vector_length_xy(firing_direction), firing_direction[2]);
                         *(float *)(firing_moby + 0x48) = fast_atan2(firing_direction[0], firing_direction[1]);
                     }
                 }
@@ -1633,8 +1634,8 @@ void blarg_ship_1843_update(unsigned char *moby) {
             break;
         case BLARG_SHIP_BURST_AND_DEACTIVATE:
             FastVecSub(scratch_vector, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                       &moby_pvars->hero_pos);
-            qcopy(&moby_pvars->hero_pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                       &moby_pvars->hero_position);
+            qcopy(&moby_pvars->hero_position, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
             FastVecAdd(&((Moby *)moby)->pos, &((Moby *)moby)->pos, scratch_vector);
             cart_burst(moby, &((Moby *)moby)->pos, -1, 2.0f, 13.0f);
             if (random_integer_below(2)) {

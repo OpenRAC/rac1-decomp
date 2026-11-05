@@ -86,7 +86,7 @@ void transition_do_transition(void) {
             continue;
         stop:
             if (is_active_BB48(transition_sound_cues[i].voice, transition_sound_cues[i].sound) != 0) {
-                func_0022EAB0(transition_sound_cues[i].voice);
+                release_voice_slot(transition_sound_cues[i].voice);
             }
             transition_sound_cues[i].voice = -1;
         }

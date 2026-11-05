@@ -82,7 +82,7 @@ int draw_hud_text_panel(char *e) {
             qcopy(&point, &points[1]);
         }
         pt = &point;
-        if (fast_vec_dist(D_0013F4D0, pt) < 5.0f) {
+        if (fast_vec_dist(hero_pos, pt) < 5.0f) {
             race_record_panel_end_y = y + 100;
             elapsed = race_best_times[g_current_level_index == LEVEL_KALEBO3 ? 1 : 0];
             score = race_best_records[g_current_level_index == LEVEL_KALEBO3 ? 1 : 0];

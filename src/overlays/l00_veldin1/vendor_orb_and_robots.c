@@ -308,8 +308,8 @@ void veldin_robot_enemy_update(Moby *moby) {
     target = vars->target;
     manipulator_set_scale(vars->unk120, 2.5f);
     if (draw_map51[3] != 0) {
-        func_L00_00263950((char *)moby, (char *)vars->unk120, 2, *(float *)&g_frame_scale_sq * 0.03f,
-                          *(float *)&g_frame_scale_sq * 0.3f);
+        update_joint_animation((char *)moby, (char *)vars->unk120, 2, *(float *)&g_frame_scale_sq * 0.03f,
+                               *(float *)&g_frame_scale_sq * 0.3f);
     }
     if (moby->visible != 0 && fast_vec_dist(&moby->pos, g_debug_camera) < 27.0f) {
         set_ground_height_band(moby);
@@ -598,7 +598,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
     }
     if (vars->unk38 != 0) {
         vars->unk38 = 0;
-        vars->unk1DA = scale_ticks(func_L00_00258BC8(0xB4, 0x12C));
+        vars->unk1DA = scale_ticks(random_int_between(0xB4, 0x12C));
     }
     FastDecTimer(&vars->unk1DA);
     anim = vars->unk60;
@@ -862,15 +862,15 @@ void phase_effect_controller_update(M2 *m) {
                         moby_point_position(p, 0, buf);
                         draw_trail(buf, buf, veldin1_zero_vec, 120000.0f, 50000.0f);
                         for (i = 0; i < 10; i++) {
-                            col = (func_L00_00258BC8(0x40, 0x80) << 24) | 0x787878;
-                            h = func_L00_00258BC8(0, 4);
+                            col = (random_int_between(0x40, 0x80) << 24) | 0x787878;
+                            h = random_int_between(0, 4);
                             if (random_integer_below(2))
                                 h = -h;
                             q = PartType23Spawn_v(buf, h, veldin1_zero_vec_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
                             if (q) {
                                 q[3] = 0x44;
                                 r = q + 0x20;
-                                q[8] = func_L00_00258BC8(0, 0xFF);
+                                q[8] = random_int_between(0, 0xFF);
                                 *(short *)(q + 0xA) = scale_ticks(0x3C);
                                 *(int *)(r + 4) = 2;
                                 r[0xA] = col >> 24;

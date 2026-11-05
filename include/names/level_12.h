@@ -291,6 +291,7 @@
 #define hoven_pool_draw_param_48                                                   D_L12_00161294
 #define water_tile_direction_inputs                                                D_L12_001803C0
 #define hoven_hero_speed_bands_field_18                                            D_L12_0017C2D0
+#define emit_phase_selected_moby_effects                                           func_L12_0030A880
 #define draw_hoven_jittered_quad_layers                                            func_L12_00309730
 #define hoven_anklebiter_nonlethal_knockback_z_scale_gp                            D_L12_00161950
 #define hoven_anklebiter_nonlethal_knockback_scale_gp                              D_L12_00161954

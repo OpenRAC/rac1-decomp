@@ -54,13 +54,13 @@ struct SkidMcMarxVars {
     u8 pad_10[0x10];
     char *dialogue_name; /* 0x20 */
     u8 pad_24[0x1C];
-    u8 body_manip[0x64]; /* 0x40: update_joint_animation block for the body */
+    u8 body_manip[0x64]; /* 0x40: update_joint_animation_fn block for the body */
     f32 body_pitch; /* 0xA4 */
     f32 body_yaw; /* 0xA8 */
     u8 pad_AC[0x4];
     f32 unk_B0; /* 0xB0: set to 2.75 by the cheat */
     u8 pad_B4[0xC];
-    u8 head_manip[0x68]; /* 0xC0: update_joint_animation block for the head */
+    u8 head_manip[0x68]; /* 0xC0: update_joint_animation_fn block for the head */
     f32 head_yaw; /* 0x128 */
     u8 pad_12C[0x3E];
     s16 blink_timer; /* 0x16A */
@@ -188,7 +188,7 @@ void skids_agent_update(Moby *m) {
                 d->fC = 3.7f;
             }
             if (Npc_TryStartDialog(m, d) != 0) {
-                func_L01_00279398(2.2f, m);
+                begin_dialogue_camera_transition(2.2f, m);
                 m->state = 2;
             } else if (gHaveHeliPack[3] == 0 &&
                        vec_distance_xy(((float *)&m->pos),
@@ -348,7 +348,7 @@ void skids_agent_update(Moby *m) {
         v1[2] += 1.0f;
         FastVecSub(v2, v0, v1);
         yaw = FastSubRots(fast_atan2(v2[0], v2[1]), m->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(v2), v2[2]);
+        pitch = -fast_atan2(vector_length_xy(v2), v2[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -409,7 +409,7 @@ void SkidMcMarxAridiaUpdate(char *m) {
                 d->talk_range = 2.5f;
             }
             if (Npc_TryStartDialog(m, ((char *)d))) {
-                func_L01_00279398(2.5f, m);
+                begin_dialogue_camera_transition(2.5f, m);
                 ((Moby *)m)->state = 2;
             }
             if (d->dialog_result == 2) {
@@ -487,7 +487,7 @@ void SkidMcMarxAridiaUpdate(char *m) {
         s_eye[2] += 2.0f;
         FastVecSub(s_delta, s_target, s_eye);
         yaw = FastSubRots(fast_atan2(s_delta[0], s_delta[1]), ((Moby *)m)->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(s_delta), s_delta[2]);
+        pitch = -fast_atan2(vector_length_xy(s_delta), s_delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -505,7 +505,7 @@ void SkidMcMarxAridiaUpdate(char *m) {
     EaseManipulatorOffsets_r2(m, d->body_manip, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     EaseManipulatorOffsets_r2(m, d->head_manip, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char *aridia_mobys MACRO_ADDR;
 
 /* Three-state controller (data+0x180): 0 waits for its trigger, 1 runs timed effects until released, then moves the
@@ -542,7 +542,7 @@ void update_skid_mcmarx_relocation_sequence(char *moby) {
     float yaw;
     char *table;
     if (data->state == 1) {
-        if (is_point_inside_clip_volume(D_0013F4D0, data->clip_volume) == 0) {
+        if (is_point_inside_clip_volume(hero_pos, data->clip_volume) == 0) {
             data->state = 0;
             set_animation_parameter(data->hud_bar_a, 0);
             data->hud_bar_a = -1;
@@ -571,7 +571,7 @@ void update_skid_mcmarx_relocation_sequence(char *moby) {
         fx_pos[1] += FastSin(m->rot.z) * 1.5f;
         clear_u64_value(fx_rot);
         fx_rot[2] = FastAddRots(m->rot.z, 3.1415927f);
-        func_L00_00217718(fx_pos, fx_rot, 0, 1);
+        set_race_camera(fx_pos, fx_rot, 0, 1);
         {
             int i0 = data->slot_a;
             int i1 = data->slot_b;
@@ -583,7 +583,7 @@ void update_skid_mcmarx_relocation_sequence(char *moby) {
             data->unk08 = 1;
         }
     } else if (data->state == 0) {
-        if (is_point_inside_clip_volume(D_0013F4D0, data->clip_volume) != 0) {
+        if (is_point_inside_clip_volume(hero_pos, data->clip_volume) != 0) {
             data->state = 1;
             data->hud_bar_b =
                 queue_animation_update(0x15, 0x7D0, initialize_numeric_hud_timer_and_base_dimensions,
@@ -810,7 +810,7 @@ void rocket_launcher_projectile_update(struct Moby *m) {
     }
     FastVecAdd(&m->pos, &m->pos, &v->vel);
     ApproachValue_r(&v->vel.z, 0.0f, (*(f32 *)&D_L02_00161FE8_ED358) * g_frame_time_sq_r);
-    m->rot.y = 1.5707964f - fast_atan2(func_001F9CE8(&v->vel), v->vel.z);
+    m->rot.y = 1.5707964f - fast_atan2(vector_length_xy(&v->vel), v->vel.z);
     qcopy(&p, &m->pos);
     FastVecScale(&half, &v->vel, 0.5f);
     FastVecScale(&back, &v->vel, -0.1f);
@@ -824,7 +824,7 @@ void rocket_launcher_projectile_update(struct Moby *m) {
             q[9] = truncate_float_to_s32_r(4.0f) - 0x80;
         }
         FastVecAdd(&p, &p, &half);
-        func_L00_00258DB0(&jit, 0.5f, 1.5f);
+        random_vector(&jit, 0.5f, 1.5f);
         FastVecAdd(&p, &p, &jit);
     }
     q = PartType44Spawn(&m->pos, &back, scale_ticks(6), shard_debris_head_color >> 24,
@@ -856,7 +856,7 @@ char *spawn_projectile_moby(char *src, void *pos, float *dir) {
         *(short *)&((Moby *)moby)->flags = *(unsigned short *)(src + 0x34);
         qcopy(moby + 0x10, pos);
         ((Moby *)moby)->rot.z = fast_atan2(dir[0], dir[1]);
-        ((Moby *)moby)->rot.y = fast_atan2(func_001F9CE8(dir), dir[2]);
+        ((Moby *)moby)->rot.y = fast_atan2(vector_length_xy(dir), dir[2]);
         moby[0x20] = 1;
         data = (struct ProjectileVars *)((Moby *)moby)->pvars;
         qcopy(&data->dir, dir);
@@ -883,7 +883,7 @@ extern unsigned short usage_stats_entry20_count NOT_SDA;
 extern unsigned short item_usage_entry36_last_time NOT_SDA;
 extern unsigned short usage_stats_entry8_count NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
-extern unsigned char D_0015EEDC[4] MACRO_ADDR;
+extern unsigned char invert52[4] MACRO_ADDR;
 extern unsigned char opt_cam_invert[4] MACRO_ADDR;
 
 /* UpdateMoby_1324: tutorial hint triggers around the player */
@@ -927,7 +927,7 @@ void TutorialHintUpdate(unsigned char *moby) {
                 if (q[1] == 0) {
                     q[1] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53DB, -1);
+                    queue_dialogue_message(0x53DB, -1);
                 }
             }
             break;
@@ -962,7 +962,7 @@ void TutorialHintUpdate(unsigned char *moby) {
                 help_request(0x4E22, 0x4C);
             }
         }
-        if (D_0015EEDC[0] != 0 && opt_cam_invert[0] != 0) {
+        if (invert52[0] != 0 && opt_cam_invert[0] != 0) {
             char *b = help_stats_base + 0x34D;
             if (!(*(unsigned int *)(b + 0x3B4) & (1 << g_current_level_index))) {
                 help_request(0x4E2C, 0x76);
@@ -1191,7 +1191,7 @@ void smoke_vent_update(Moby *m) {
                     random_float_between((float)D_L02_0016219C_2F0458, (float)D_L02_001621A0_2F0458)));
                 cnt = random_integer_below(7) ? 1 : random_integer_below(5) + 5;
                 for (i = 0; i < cnt; i++) {
-                    func_L00_00258DB0(&C, 0.0f, D_L02_00162168_2F0458 * g_frame_time_r);
+                    random_vector(&C, 0.0f, D_L02_00162168_2F0458 * g_frame_time_r);
                     vec_scale_to_length(
                         &A, &*(V_2F0458 *)&m->rot_row0,
                         D_L02_00162158_2F0458 *
@@ -1280,7 +1280,7 @@ void smoke_vent_update(Moby *m) {
                     random_float_between((float)D_L02_001621EC_2F0458, (float)D_L02_001621F0_2F0458)));
                 cnt = random_integer_below(7) ? 1 : random_integer_below(5) + 5;
                 for (i = 0; i < cnt; i++) {
-                    func_L00_00258DB0(&C, 0.0f, D_L02_001621B8_2F0458 * g_frame_time_r);
+                    random_vector(&C, 0.0f, D_L02_001621B8_2F0458 * g_frame_time_r);
                     vec_scale_to_length(
                         &A, &*(V_2F0458 *)&m->rot_row0,
                         D_L02_001621A8_2F0458 *

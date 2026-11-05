@@ -121,7 +121,7 @@ void calculate_voice_pan(void *arg0, void *arg1, void *arg2) {
 
     FastVecSub(v, arg1, camera_position_a);
     transform_vector(v, v, arg2);
-    t = clamp_float(func_001F9CE8(v) - 1.0f, 0.0f, 1.0f);
+    t = clamp_float(vector_length_xy(v) - 1.0f, 0.0f, 1.0f);
     truncate_float_to_s32(-fast_arc_tan(v[0], v[1]) * 180.0f * t * 0.31830987f);
 }
 
@@ -646,7 +646,7 @@ int load_audio_bank_by_location(void *arg0) {
 __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 
 /* Stop a voice slot: free a queued one at once, else mark it for stopping (idx < 0: no-op). */
-void func_0022EAB0(int idx) {
+void release_voice_slot(int idx) {
     if (idx >= 0) {
         char *e = voice_pool + idx * 0x70;
         unsigned char st = *(unsigned char *)(e + 0x74);

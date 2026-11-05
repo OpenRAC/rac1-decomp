@@ -25,7 +25,7 @@ void magnetboots_update(Moby *m) {
             break;
         case 2:
             if (orxon_cinematic_mode_r != 2) {
-                func_L00_00264DB8(0x271B, -1);
+                queue_dialogue_message(0x271B, -1);
                 dialogue_message_duration_r = 0xB4;
                 grant_inventory_item(0x1C, 1);
                 if (*(int *)(d + 4) != -1) {

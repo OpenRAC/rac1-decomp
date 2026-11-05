@@ -35,7 +35,7 @@ void fleet_camera_box_watcher_update(char *moby) {
                 if (gSkillPoints[0x1C] == 0) {
                     gSkillPoints[0x1C] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53D6, -1);
+                    queue_dialogue_message(0x53D6, -1);
                 }
             }
             break;
@@ -58,7 +58,7 @@ void fleet_camera_box_watcher_update(char *moby) {
                 if (*(int *)(d + 0x74) == 0 && sk[0x1B] == 0) {
                     sk[0x1B] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53D6, -1);
+                    queue_dialogue_message(0x53D6, -1);
                 }
                 *(int *)(d + 0x70) = 0;
                 *(int *)(d + 0x74) = 0;

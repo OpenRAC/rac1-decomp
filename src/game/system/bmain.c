@@ -148,7 +148,7 @@ extern SoundSlot *level_sound_defs MACRO_ADDR;
 extern s32 level_sound_def_count MACRO_ADDR;
 extern u8 requested_video_mode[] MACRO_ADDR;
 extern s32 space_load_level MACRO_ADDR;
-extern u8 D_0013E130[];
+extern u8 level_render_state[];
 
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
 
@@ -288,7 +288,7 @@ void startlevel(void) {
         SetPalMode();
         PutDispBuffer();
     }
-    p = D_0013E130;
+    p = level_render_state;
     space_load_level = g_current_level_index;
     *(s16 *)(p + 0x2A) = 1;
     g_current_level_index = -1;

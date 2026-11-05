@@ -121,13 +121,13 @@ struct HoverDummyVars {
     u8 pad_2A;
     u8 unk_2B; /* 0x2B */
     u8 pad_2C[0x34];
-    u8 manip_a[0x68]; /* 0x60: update_joint_animation 0 */
+    u8 manip_a[0x68]; /* 0x60: update_joint_animation_fn 0 */
     f32 rate_a; /* 0xC8 */
     u8 pad_CC[0x14];
-    u8 manip_b[0x64]; /* 0xE0: update_joint_animation 2 */
+    u8 manip_b[0x64]; /* 0xE0: update_joint_animation_fn 2 */
     f32 rate_b; /* 0x144 */
     u8 pad_148[0x18];
-    u8 manip_c[0x68]; /* 0x160: update_joint_animation 1 */
+    u8 manip_c[0x68]; /* 0x160: update_joint_animation_fn 1 */
     f32 rate_c; /* 0x1C8 */
     u8 pad_1CC[0x14];
     u8 manip_d[0x68]; /* 0x1E0 */
@@ -2078,7 +2078,7 @@ void update_hoverboard_dummy_jump_animation_and_pitch(Moby *m) {
             (float)scale_ticks(27) < duration) {
             short sequence;
             int chosen;
-            chosen = func_L00_00258BC8(0, 3) + 1;
+            chosen = random_int_between(0, 3) + 1;
             d->sequence = chosen;
             sequence = chosen;
             DefaultVtbl_DeleteMoby(m, sequence, 3, scale_ticks(7));
@@ -2386,7 +2386,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
             qcopy(spray, ahead);
             spray[3] = 120000.0f;
             if (*(short *)&d->unk_2F6 == 0) {
-                int ticks = func_L00_00258BC8(scale_ticks(10), scale_ticks(13));
+                int ticks = random_int_between(scale_ticks(10), scale_ticks(13));
 
                 spawn_effect(impact, spray, hoverboard_dummy_spray_initial_color, hoverboard_dummy_spray_final_color,
                              ticks, 15, 15, 1);
@@ -2394,9 +2394,9 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
                 int ticks;
 
                 FastVecScale(dust, ahead, 0.92f);
-                ticks = func_L00_00258BC8(scale_ticks(15), scale_ticks(18));
+                ticks = random_int_between(scale_ticks(15), scale_ticks(18));
                 spawn_effect(impact, dust, 0x5032F0D2, hoverboard_dummy_spray_final_color, ticks, 30, 20, 1);
-                ticks = func_L00_00258BC8(scale_ticks(8), scale_ticks(17));
+                ticks = random_int_between(scale_ticks(8), scale_ticks(17));
                 spawn_burst(impact, spray, hoverboard_dummy_spray_initial_color, hoverboard_dummy_spray_final_color,
                             ticks, 1, 15000.0f);
             }
@@ -2645,8 +2645,8 @@ void test_dummy_challenge_update(char *m) {
             moby->state = 4;
             moby->flags &= 0xFFFE;
             jet_end_mount(3);
-            func_L00_00217718(kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x30,
-                              kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x70, 0, 1);
+            set_race_camera(kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x30,
+                            kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x70, 0, 1);
             MobySphereHitDirectional((int)m, 5.0f, kalebo3_level_cuboids_m + (scene_data->pose << 7) + 0x30, 0x10000,
                                      50.0f, 1.0f, 0, 1, 0);
             ((L16ObjectiveEntry *)(gSpecialItems + scene_data->objective))->complete = 1;
@@ -2837,7 +2837,7 @@ void help_desk_lady_update(Moby *moby) {
             if (kalebo3_game_mode != 2) {
                 char *player;
                 moby->state = 1;
-                func_L00_00217718(help_desk_hero_reset_pose, help_desk_hero_reset_pose + 4, 0, 1);
+                set_race_camera(help_desk_hero_reset_pose, help_desk_hero_reset_pose + 4, 0, 1);
                 help_request(0x3E82, 0x84);
                 grant_inventory_item(0x21, 1);
                 jet_clear_persistent(moby->mission);
@@ -2899,7 +2899,7 @@ void help_desk_lady_update(Moby *moby) {
         scratch.eye[2] += 1.5f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
         yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), moby->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(scratch.delta), scratch.delta[2]);
+        pitch = -fast_atan2(vector_length_xy(scratch.delta), scratch.delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)

@@ -19,7 +19,7 @@ extern void FontPrintLarge(int, int, long, void *, int);
 extern void FontPrintSmall(int, int, long, void *, int);
 extern void FontSetWindow(void *, int, int, int, int, int, int, int, int);
 extern void func_001F65A8(void);
-extern void Font_EnableColorCodes(void);
+extern void func_001F6598(void);
 extern void InitViewContext(void);
 extern void func_001F2560(void *, int);
 extern void func_001F2558(void *, int);

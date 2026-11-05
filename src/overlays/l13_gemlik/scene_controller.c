@@ -24,7 +24,7 @@
 #include "overlays/shared/moby_path_advance.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 extern Hero g_hero;
-extern char D_0013E130[];
+extern char level_render_state[];
 extern char gSkillPoints[];
 extern char gSpecialItems[];
 
@@ -149,7 +149,7 @@ void gemlik_scene_controller_update(Moby *moby) {
             if (data->f8 != -1 && data->f10 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f10];
                 qcopy_nc(&e->pos, gemlik_scene_points[data->f8].f30);
-                func_L00_00217718(gemlik_scene_points[data->f8].f30, gemlik_scene_points[data->f8].f70, 0, 1);
+                set_race_camera(gemlik_scene_points[data->f8].f30, gemlik_scene_points[data->f8].f70, 0, 1);
                 g_hero_field_20a5[0] = 1;
                 ((MobyData *)e->pvars)->f7C = 0.99f;
                 gemlik_fade_level = 0.99f;
@@ -174,7 +174,7 @@ void gemlik_scene_controller_update(Moby *moby) {
                 Moby *e = &gemlik_moby_array_start_r[data->f10];
                 e->flags |= 2;
             }
-            func_L00_00217718(gemlik_scene_points[data->f8].f30, gemlik_scene_points[data->f8].f70, 0x72, 1);
+            set_race_camera(gemlik_scene_points[data->f8].f30, gemlik_scene_points[data->f8].f70, 0x72, 1);
             ((Flags *)gSpecialItems)->f66 = 1;
             if (data->f20 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
@@ -208,10 +208,10 @@ void gemlik_scene_controller_update(Moby *moby) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags &= 0xFFBE;
                 initialize_moby_state_record(e);
-                ((Cam *)D_0013E130)->f60 = 464.66f;
-                ((Cam *)D_0013E130)->f64 = 580.68f;
-                ((Cam *)D_0013E130)->f68 = 316.72f;
-                ((Cam *)D_0013E130)->f78 = 2.77f;
+                ((Cam *)level_render_state)->f60 = 464.66f;
+                ((Cam *)level_render_state)->f64 = 580.68f;
+                ((Cam *)level_render_state)->f68 = 316.72f;
+                ((Cam *)level_render_state)->f78 = 2.77f;
             }
             gemlik_scripted_camera_active = 0;
             moby->state = 11;
@@ -452,7 +452,7 @@ char *spawn_poison_vessel_fragment(void *a, void *b, int c, int d) {
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
         ((Moby *)m)->visible = 1;
-        ((Moby *)m)->alpha = func_L00_00258BC8(0x40, 0x80);
+        ((Moby *)m)->alpha = random_int_between(0x40, 0x80);
         set_moby_color(m, 0x20, 0x60, 0x10);
         qcopy(m + 0x10, a);
         qcopy(data, b);
@@ -640,7 +640,7 @@ extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, in
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int g_current_level_index MACRO_ADDR;
 
-extern int D_0014C290[][64] NOT_SDA;
+extern int level_moby_killed[][64] NOT_SDA;
 extern int blarg_ship_destroyed_save_id_bits[];
 extern float gemlik_zero_vec[] MACRO_ADDR;
 
@@ -657,7 +657,8 @@ void blarg_ship_1805_update(void *moby) {
     float tmp[4];
     int k, n;
 
-    if ((D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) & 1) {
+    if ((level_moby_killed[g_current_level_index][(short)((Moby *)m)->save_id >> 5] >> (((Moby *)m)->save_id & 0x1F)) &
+        1) {
         DeleteMoby(moby);
         return;
     }
@@ -692,13 +693,14 @@ void blarg_ship_1805_update(void *moby) {
                     if (t[0x16] == 0) {
                         t[0x16] = r;
                         allocate_voice_for_bank_entry(1, 0, 0);
-                        func_L00_00264DB8(0x53DB, -1);
+                        queue_dialogue_message(0x53DB, -1);
                     }
                 }
             }
             Moby_PlaySound(0, 0, (int)moby);
             spawn_proximity_gated_bolts(moby);
-            D_0014C290[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
+            level_moby_killed[g_current_level_index][(short)((Moby *)m)->save_id >> 5] |=
+                1 << (((Moby *)m)->save_id & 0x1F);
             blarg_ship_destroyed_save_id_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
             for (n = 0; n < 2; n++) {
                 for (k = 0x709; k < 0x70D; k++) {

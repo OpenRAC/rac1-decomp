@@ -30,7 +30,7 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu *menu) {
     draw_menu_selection_marker_r(0xB, draw_y + 9, count_skill_points() == 0x1E);
     sprintf_r(text_buffer, msg_string_r5(0x5287), count_skill_points(), 0x1E);
     func_J_001F6EE8(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(1), glyphs);
-    Font_EnableColorCodes();
+    enable_font_color_codes();
     DoGifPaging();
     return 2;
 }

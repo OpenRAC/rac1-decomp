@@ -34,14 +34,14 @@
 #include "overlays/shared/gadgebot_containers_and_frog.h"
 #include "overlays/l10_orxon/platforms_doors_and_bombthrower.h"
 #include "overlays/shared/moby_drops_and_death.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 
 extern char gSkillPoints[];
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
 extern struct Hero g_hero;
-extern int D_0014C290[][64];
+extern int level_moby_killed[][64];
 extern int pad0_pressed;
 
 /* Configurable spark emitter: one burst source at the moby, or one per point of a path. */
@@ -229,7 +229,7 @@ void toxic_crab_update(Moby *m) {
                 char *base = orxon_mobys_c;
                 Moby *p = (Moby *)(base + (d->i1BC << 8));
                 if (p == 0 || p->state == 0xFE || p->state == 0xFD ||
-                    (((*(int *)((char *)&D_0014C290 +
+                    (((*(int *)((char *)&level_moby_killed +
                                 (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                        (p->save_id & 0x1F)) &
                       1) &&
@@ -249,7 +249,8 @@ void toxic_crab_update(Moby *m) {
                 char *base = orxon_mobys_c;
                 Moby *p = (Moby *)(base + (d->i1BC << 8));
                 if (p == 0 || p->state == 0xFE || p->state == 0xFD ||
-                    ((*(int *)((char *)&D_0014C290 + (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
+                    ((*(int *)((char *)&level_moby_killed +
+                               (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                       (p->save_id & 0x1F)) &
                      1)) {
                     m->state = 2;
@@ -946,7 +947,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (d->f1AC != 0 && ((Flags *)gSkillPoints)->b11 == 0) {
                 ((Flags *)gSkillPoints)->b11 = 1;
                 PlayBankSound_r(1, 0, 0);
-                func_L00_00264DB8(0x53DB, -1);
+                queue_dialogue_message(0x53DB, -1);
             }
         }
         if (d->h26 != 0 && r->b28 == 0) {
@@ -1709,7 +1710,7 @@ void nanotech_upgrade_vendor_update(char *m) {
         case 1:
             if (orxon_cinematic_mode != 2) {
                 memcard_Save(0, -1);
-                func_L00_00264DB8(msgSel(), -1);
+                queue_dialogue_message(msgSel(), -1);
                 dialogue_message_duration = 0xB4;
                 *(int *)(d + 4) = scale_ticks(0xF0);
                 moby->state = 0;
@@ -1905,7 +1906,7 @@ state_zero: {
     save_id = moby->save_id;
     signed_save_id = (short)save_id;
     if (l10_save_state.collected[(short)save_id] != 0 ||
-        ((*(int *)((char *)&D_0014C290 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >>
+        ((*(int *)((char *)&level_moby_killed + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >>
           (save_id & 31)) &
          1) != 0) {
         moby->state = 3;
@@ -1929,7 +1930,7 @@ state_two: {
     save_id = moby->save_id;
     signed_save_id = (short)save_id;
     if (l10_save_state.collected[(short)save_id] != 0 ||
-        ((*(int *)((char *)&D_0014C290 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >>
+        ((*(int *)((char *)&level_moby_killed + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >>
           (save_id & 31)) &
          1) != 0) {
         moby->state = 3;
@@ -2029,8 +2030,8 @@ remove_candidate:
     if (candidate != 0)
         DeleteMoby(candidate);
     save_id = moby->save_id;
-    bits =
-        (int *)((char *)&D_0014C290 + (((int)((unsigned int)save_id << 16) >> 21) * 4 + (g_current_level_index << 8)));
+    bits = (int *)((char *)&level_moby_killed +
+                   (((int)((unsigned int)save_id << 16) >> 21) * 4 + (g_current_level_index << 8)));
     *bits |= 1 << (save_id & 31);
     save_id = moby->save_id;
     orxon_moby_killed[(int)((unsigned int)save_id << 16) >> 21] |= 1 << (save_id & 31);
@@ -2064,7 +2065,7 @@ void gate_1_update(struct Moby *moby) {
             if (hero_vehicle_mode[0] == 0) {
                 save_id = moby->save_id;
                 if (l10_save_state.collected[(short)save_id] == 0 &&
-                    ((D_0014C290[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) & 1) == 0) {
+                    ((level_moby_killed[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) & 1) == 0) {
                     vars->home_yaw = moby->rot.y;
                     moby->state = 1;
                     return;
@@ -2078,7 +2079,7 @@ void gate_1_update(struct Moby *moby) {
                 goto open;
             save_id = moby->save_id;
             if (l10_save_state.collected[(short)save_id] != 0 ||
-                ((D_0014C290[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) & 1) != 0) {
+                ((level_moby_killed[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) & 1) != 0) {
             open:
                 moby->rot.y = FastAddRots(moby->rot.y, -1.3962634f);
                 moby->state = 3;
@@ -2089,7 +2090,7 @@ void gate_1_update(struct Moby *moby) {
             if (vars->unk0 <= 0 || vars->sound <= 0)
                 return;
             save_id = moby->save_id;
-            D_0014C290[g_current_level_index][(short)save_id >> 5] |= 1 << (save_id & 31);
+            level_moby_killed[g_current_level_index][(short)save_id >> 5] |= 1 << (save_id & 31);
             save_id = moby->save_id;
             orxon_moby_killed[(short)save_id >> 5] |= 1 << (save_id & 31);
             if (is_point_inside_clip_volume(&g_hero.motion.pos, vars->clip_volume))
@@ -2108,7 +2109,7 @@ void gate_1_update(struct Moby *moby) {
             save_id = moby->save_id;
             if (l10_save_state.collected[(short)save_id] != 0)
                 return;
-            if ((((D_0014C290[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) ^ 1) & 1) == 0)
+            if ((((level_moby_killed[g_current_level_index][(short)save_id >> 5] >> (save_id & 31)) ^ 1) & 1) == 0)
                 return;
             moby->rot.y = FastAddRots(moby->rot.y, 1.3962634f);
             moby->state = 0;
@@ -2366,7 +2367,7 @@ void emit_burst_spark_particle(void *pos, short *timer, short *burst) {
         return;
     clear_u64_value(vel);
     vel[2] = *(float *)&burst_spark_vertical_vector_z_scale_gp * g_frame_time;
-    func_L00_00258DB0(acc, 0.0f, *(float *)&burst_spark_random_vector_radius_scale_gp * g_frame_time);
+    random_vector(acc, 0.0f, *(float *)&burst_spark_random_vector_radius_scale_gp * g_frame_time);
     acc[2] += *(float *)&burst_spark_random_vector_z_bias_scale_gp * g_frame_time;
     vel[3] = random_float_between(*(float *)&burst_spark_vertical_vector_fourth_component_min_gp,
                                   *(float *)&burst_spark_vertical_vector_fourth_component_max_gp);
@@ -2413,7 +2414,7 @@ void emit_timed_spark_particle(void *pos, short *timer) {
         return;
     clear_u64_value(vel);
     vel[2] = *(float *)&orxon_smoke_start_speed_z * g_frame_time;
-    func_L00_00258DB0(acc, 0.0f, *(float *)&orxon_smoke_jitter * g_frame_time);
+    random_vector(acc, 0.0f, *(float *)&orxon_smoke_jitter * g_frame_time);
     acc[2] += *(float *)&orxon_smoke_end_speed_z * g_frame_time;
     vel[3] = random_float_between(*(float *)&orxon_smoke_start_size_min, *(float *)&orxon_smoke_start_size_max);
     acc[3] = random_float_between(*(float *)&orxon_smoke_end_size_min, *(float *)&orxon_smoke_end_size_max);
@@ -2478,7 +2479,7 @@ void emit_height_adjusted_burst_spark_particle(void *pos, short *timer, short *b
                     (*(float *)&height_adjusted_spark_vector_z_adjustment_scale_gp * g_frame_time_sq)) *
         *(float *)&height_adjusted_spark_height_derived_frame_count_scale_gp * s);
     clear_u64_value(vel);
-    func_L00_00258DB0(acc, 0.0f, *(float *)&height_adjusted_spark_random_vector_radius_scale_gp * g_frame_time);
+    random_vector(acc, 0.0f, *(float *)&height_adjusted_spark_random_vector_radius_scale_gp * g_frame_time);
     acc[2] -= *(float *)&height_adjusted_spark_vector_z_adjustment_scale_gp * g_frame_time_sq * (float)c;
     vel[3] = random_float_between(*(float *)&height_adjusted_spark_first_vector_fourth_component_min_gp,
                                   *(float *)&height_adjusted_spark_first_vector_fourth_component_max_gp);

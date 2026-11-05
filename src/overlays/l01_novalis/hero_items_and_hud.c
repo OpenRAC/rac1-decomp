@@ -225,7 +225,7 @@ void HeroL01_UpdateStateTransitions(void) {
                                     if (0.55850536f > novalis_lean_state.f258 &&
                                         novalis_lean_state.f254 < 0.34906584f && g_hero.items[3].state == 2) {
                                         g_hero.slot3_anim_timer =
-                                            func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
+                                            random_int_between(scale_ticks(0x6E), scale_ticks(0x10E));
                                         blend_hero_slot3_animation_pair();
                                     }
                                 }
@@ -774,7 +774,7 @@ void HeroL01_UpdateStateTransitions(void) {
                             break;
                         } else if (g_hero.state.current == 0x73) {
                             if (g_controller_state.no_direction != 0) {
-                                if (func_001F9CE8(g_hero.motion.velocity.f) < g_frame_time * 3.2f) {
+                                if (vector_length_xy(g_hero.motion.velocity.f) < g_frame_time * 3.2f) {
                                     if (l01_hero_set_state(HERO_STATE_IDLE, 0)) {
                                         set_hero_animation(get_hero_idle_animation_index(0), 0, scale_ticks(0x11));
                                     }

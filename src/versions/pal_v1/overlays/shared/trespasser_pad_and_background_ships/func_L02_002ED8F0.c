@@ -81,7 +81,7 @@ void background_ship_1_update(char *moby) {
                     if (p[2] == 0) {
                         p[2] = 1;
                         allocate_voice_for_bank_entry(1, 0, 0);
-                        func_L00_00264DB8(0x53D6, -1);
+                        queue_dialogue_message(0x53D6, -1);
                     }
                 }
             }
@@ -93,7 +93,7 @@ void background_ship_1_update(char *moby) {
                         if (p[0xF] == 0) {
                             p[0xF] = 1;
                             allocate_voice_for_bank_entry(1, 0, 0);
-                            func_L00_00264DB8(0x53D6, -1);
+                            queue_dialogue_message(0x53D6, -1);
                         }
                     }
                 }

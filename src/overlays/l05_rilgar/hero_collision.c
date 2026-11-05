@@ -18,7 +18,7 @@
 #include "overlays/l05_rilgar/hero_idle_and_items.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyutil.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern unsigned char g_hero[] NOT_SDA;
 
 extern unsigned char g_hero[] NOT_SDA;
@@ -426,9 +426,9 @@ int Camera_MoveWithCollision(int mode) {
             tmp[2] = a->capsule_bottom;
         }
     }
-    FastVecAdd(D_0013F4D0, D_0013F4D0, tmp);
+    FastVecAdd(hero_pos, hero_pos, tmp);
     r = 0x24;
-    if (*(int *)(D_0013F4D0 + 0x2004) == 0x7F)
+    if (*(int *)(hero_pos + 0x2004) == 0x7F)
         r = 0xD24;
     for (i = 0; i < 8; i++) {
         a = (struct Hero *)g_hero;
@@ -456,7 +456,7 @@ int Camera_MoveWithCollision(int mode) {
                     break;
             }
         }
-        p = D_0013F4D0;
+        p = hero_pos;
         qcopy(p, rilgar_coll_resolved_pos);
         qcopy(p + 0x180, rilgar_coll_resolved_pos + 0x10);
         qcopy(p + 0x190, rilgar_coll_resolved_pos - 0x10);
@@ -464,7 +464,7 @@ int Camera_MoveWithCollision(int mode) {
         *(unsigned char *)(p + 0x257) = 1;
         *(int *)(p + 0x23C) = *(int *)(rilgar_coll_resolved_pos - 0x18);
     }
-    b = D_0013F4D0;
+    b = hero_pos;
     FastVecSub(b, b, tmp);
     FastVecSub(d, b, saved);
     len = FastVecLength(d);
@@ -554,7 +554,7 @@ void integrate_hero_motion_with_collisions(void) {
                     float limit;
 
                     position = player->motion.velocity.f;
-                    length = func_001F9CE8(position);
+                    length = vector_length_xy(position);
                     limit = player->capsule_radius - 0.02f;
                     if (limit < length)
                         vec_set_length_xy(position, position, limit);
@@ -622,7 +622,7 @@ void integrate_hero_motion_with_collisions(void) {
     vec_scale_to_length(vertical, plane.f, magnitude);
     motion_player = (Hero *)((char *)delta - 0x110);
     motion_player->motion.speed_xy = FastVecLength(delta);
-    motion_player->motion.flat_speed = func_001F9CE8(delta);
+    motion_player->motion.flat_speed = vector_length_xy(delta);
     work.q = *(Q *)delta;
     motion_player->motion.forward_speed = forward_component(work.f);
     if (motion_player->motion.forward_speed < 0.0f)

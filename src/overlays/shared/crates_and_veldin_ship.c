@@ -729,7 +729,7 @@ void break_crate(void *mv, int a1, int av) {
         v70[2] = random_float_between(0.0f, 1.0f);
         FastVecAdd(v70, v70, &((Moby *)m)->pos);
         f = random_float_between(6.0f, 12.0f) * g_frame_time;
-        func_L00_00258DB0(v60, f, f);
+        random_vector(v60, f, f);
         if (v60[2] < 0.0f)
             v60[2] = -v60[2];
         f = random_angle_radians();
@@ -782,10 +782,10 @@ void break_crate(void *mv, int a1, int av) {
                 q2 = tB0 + random_integer_below(6);
                 a = scale_ticks(0xF);
                 b = scale_ticks(0x14);
-                c1 = func_L00_00258BC8(a, b);
+                c1 = random_int_between(a, b);
                 dd = scale_ticks(0x19);
                 ee = scale_ticks(0x1E);
-                c2 = func_L00_00258BC8(dd, ee);
+                c2 = random_int_between(dd, ee);
                 PartType11Spawn_v(v60, v80, *q1, *q2, c1, c2, 0, 4e5f, 0, f20);
             }
         }
@@ -1146,7 +1146,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
             hit = 0;
             FastSubRots(((Moby *)h->moby)->rot.z, fast_atan2(launch[0], launch[1]));
             heading = fast_atan2(launch[0], launch[1]);
-            pitch = fast_atan2(func_001F9CE8(launch), launch[2]);
+            pitch = fast_atan2(vector_length_xy(launch), launch[2]);
             if (0.593411922f < pitch)
                 pitch = 0.593411922f;
             if (pitch < -1.39626336f)
@@ -1154,7 +1154,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
             BuildSphericalOffset(launch, (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f, heading,
                                  pitch);
             qcopy(origin_copy, player_camera_r + 0x140);
-            length = func_001F9CE8(launch);
+            length = vector_length_xy(launch);
             {
                 float z = launch[2];
                 if (length != 0.0f) {
@@ -2322,7 +2322,7 @@ void horny_toad_update(Moby *moby) {
         }
         case 5:
             if (moby->prev_seq != 4) {
-                int n = func_L00_00258BC8(0, 5);
+                int n = random_int_between(0, 5);
                 if (moby->prev_seq != 4)
                     MobyBlendAnimation(moby, 4, n, scale_ticks(10));
                 moby->anim_speed = random_float_between(0.92f, 1.08f);
@@ -2897,7 +2897,7 @@ extern s32 truncate_float_to_s32(f32);
 
 extern Path *toad_paths[];
 extern u8 level_available[];
-extern Player D_0013F4D0;
+extern Player hero_pos;
 extern s32 cinematic_mode MACRO_ADDR;
 /* Store each path segment's length in the w of its start point. */
 static inline void measure_path(Path *path) {
@@ -2989,7 +2989,7 @@ void infobot_update(struct Moby *moby) {
                 ((void (*)(struct Moby *))DeleteMoby_v)(moby);
                 return;
             }
-            if (fast_vec_dist(&D_0013F4D0, &moby->pos) < range && D_0013F4D0.active != 0) {
+            if (fast_vec_dist(&hero_pos, &moby->pos) < range && hero_pos.active != 0) {
                 moby->state = 8;
             }
             break;
@@ -3129,7 +3129,7 @@ void infobot_update(struct Moby *moby) {
                 &infobot->spin[2]);
             FastVecAdd(&step, &offset, &p->pts[p->count - 1]);
             MPOS(moby)->q = step.q;
-            if (fast_vec_dist(&D_0013F4D0, &p->pts[p->count - 1]) < 2.0f && D_0013F4D0.active != 0) {
+            if (fast_vec_dist(&hero_pos, &p->pts[p->count - 1]) < 2.0f && hero_pos.active != 0) {
                 moby->state = 8;
             }
             moby->rot.y = ((f32 (*)(f32, f32, f32, f32, f32, f32 *))SpringTurn)(
@@ -3415,14 +3415,14 @@ void particle_spawner_smoke_fire_update(P *p) {
                     a.y = randf_sym(0.0f, g_frame_time * 0.25f);
                     a.z = q->f20 * g_frame_time;
                     f = random_float_between(q->f24, q->f28);
-                    col = func_L00_00258BC8(q->h2C, q->h2E) << 24 | (smoke_fire_emitted_particle_base_color_gp);
-                    r = func_L00_00258BC8((smoke_fire_emitted_particle_sign_randomized_sample_min_gp),
-                                          (smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
+                    col = random_int_between(q->h2C, q->h2E) << 24 | (smoke_fire_emitted_particle_base_color_gp);
+                    r = random_int_between((smoke_fire_emitted_particle_sign_randomized_sample_min_gp),
+                                           (smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
                     ent = PartType23Spawn_v(&b, r, (smoke_fire_emitted_particle_position_spread_gp), 1.0f, &a,
                                             (smoke_fire_emitted_particle_random_scalar_upper_bound_gp), col, f);
                     if (ent) {
                         sub = &ent->sub;
-                        ent->h0A = scale_ticks_r(func_L00_00258BC8(q->x30, q->x34));
+                        ent->h0A = scale_ticks_r(random_int_between(q->x30, q->x34));
                         sub->x04 = 3;
                         sub->b0A = col >> 24;
                         sub->b0B = ent->h0A;

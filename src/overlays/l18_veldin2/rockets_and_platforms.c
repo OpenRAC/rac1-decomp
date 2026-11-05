@@ -238,7 +238,7 @@ void rocket_tank_rocket_update(char *moby) {
         if (f20 < f1) {
             vec_scale_to_length(&data->vel_x, &data->vel_x, f20);
             ((Moby *)moby)->rot.z = fast_atan2(*(float *)((char *)data), data->vel_y);
-            ((Moby *)moby)->rot.y = -fast_atan2(func_001F9CE8(&data->vel_x), data->vel_z);
+            ((Moby *)moby)->rot.y = -fast_atan2(vector_length_xy(&data->vel_x), data->vel_z);
         } else if (f1 < 0.1f) {
             DeleteMoby(moby);
             return;
@@ -264,7 +264,7 @@ void rocket_tank_rocket_update(char *moby) {
     } else {
         unsigned char *r;
         qcopy(moby + 0x10, a);
-        func_L00_00258DB0(d, g_frame_time * 0.1f, g_frame_time * 0.2f);
+        random_vector(d, g_frame_time * 0.1f, g_frame_time * 0.2f);
         FastVecScale(e, &data->vel_x, random_float_between(0.0f, 1.0f));
         FastVecAdd(e, e, moby + 0x10);
         r = PartType44Spawn(e, d, scale_ticks(10), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f, -0.0002f, 0.0f);
@@ -297,7 +297,7 @@ char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3) {
         data->homing = arg3;
         data->owner = owner;
         ((Moby *)moby)->rot.z = fast_atan2(vec[0], vec[1]);
-        ((Moby *)moby)->rot.y = -fast_atan2(func_001F9CE8(vec), vec[2]);
+        ((Moby *)moby)->rot.y = -fast_atan2(vector_length_xy(vec), vec[2]);
     }
     return moby;
 }
@@ -362,7 +362,7 @@ void rocket_moby_update(char *moby) {
         spawn_rocket_trail_effects(moby, movement_step);
         FastVecAdd(&((struct Moby *)moby)->pos, &((struct Moby *)moby)->pos, movement_step);
         ((struct Moby *)moby)->rot.z = fast_atan2(movement_step[0], movement_step[1]);
-        pitch_angle_or_remaining_frames = fast_atan2(func_001F9CE8(movement_step), movement_step[2]);
+        pitch_angle_or_remaining_frames = fast_atan2(vector_length_xy(movement_step), movement_step[2]);
         k = g_frame_time;
         ((struct Moby *)moby)->rot.y = -pitch_angle_or_remaining_frames;
         ((struct Moby *)moby)->rot.x = FastAddRots(((struct Moby *)moby)->rot.x, k * 18.849556f);
@@ -415,7 +415,7 @@ char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b
         data->half_frames = frames >> 1;
         data->kind = kind;
         ((Moby *)moby)->rot.z = fast_atan2(dir[0], dir[1]);
-        ((Moby *)moby)->rot.y = -fast_atan2(func_001F9CE8(dir), dir[2]);
+        ((Moby *)moby)->rot.y = -fast_atan2(vector_length_xy(dir), dir[2]);
         Moby_PlaySound(0, 0, (int)moby);
     }
     return moby;
@@ -429,7 +429,7 @@ void spawn_rocket_trail_effects(void *mobyp, void *vec) {
     float v10[4];
     float a20[4];
     unsigned char *p;
-    func_L00_00258DB0(a0, g_frame_time * 0.1f, g_frame_time * 0.2f);
+    random_vector(a0, g_frame_time * 0.1f, g_frame_time * 0.2f);
     FastVecScale(v10, vec, random_float_between(0.0f, 1.0f));
     FastVecAdd(v10, v10, moby + 0x10);
     p = PartType44Spawn(v10, a0, scale_ticks(0x14), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f, -0.0002f, 0.0f);
@@ -604,12 +604,12 @@ void update_mine_568_moby(unsigned char *raw) {
                     qcopy(previous_position, &moby->pos);
                     FastVecSub(v, *(char **)(target_search_output + 0x40) + 0x10, &moby->pos);
                     v[2] = -(g_frame_time_sq_b * 10.0f);
-                    if (horizontal_steering_increment_limit < func_001F9CE8(v)) {
+                    if (horizontal_steering_increment_limit < vector_length_xy(v)) {
                         vec_set_length_xy(v, v, horizontal_steering_increment_limit);
                     }
                     movement_step = (char *)data->step;
                     FastVecAdd(movement_step, movement_step, v);
-                    if (movement_step_limit < func_001F9CE8(movement_step)) {
+                    if (movement_step_limit < vector_length_xy(movement_step)) {
                         vec_set_length_xy(movement_step, movement_step, movement_step_limit);
                     }
                     MoveMobyWithCollision((int)moby, (int)movement_step, 0.0f, 0.5f, 0.0f, 0);
@@ -691,7 +691,7 @@ char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float 
         ((Moby *)moby)->rot.y = -r;
         p7[2] = p7[2] + 0.75f;
         FastVecSub(v, p7, p6);
-        vec_set_length_xy(v, v, func_001F9CE8(v) - mine_launch_pitch_and_setback_gp);
+        vec_set_length_xy(v, v, vector_length_xy(v) - mine_launch_pitch_and_setback_gp);
         FastVecAdd(v, v, p6);
         data = (struct LaunchedMobyVars *)((Moby *)moby)->pvars;
         qcopy(&data->land_x, v);
@@ -1446,7 +1446,7 @@ void SinkingPlatformUpdate(struct Moby *moby) {
         case 4:
             if (moby->visible != 0 && fast_dec_timer(&data->sound_timer) != 0) {
                 spawn_floating_platform_sparks_r(moby);
-                data->sound_timer = scale_ticks(func_L00_00258BC8(0x5A, 0x78));
+                data->sound_timer = scale_ticks(random_int_between(0x5A, 0x78));
             }
             if (g_hero_r3.ground_moby == moby && g_hero_r3.air_frames.s == 0) {
                 data->sound_timer = 0;
@@ -1464,7 +1464,7 @@ void SinkingPlatformUpdate(struct Moby *moby) {
         case 5:
             if (moby->visible != 0 && fast_dec_timer(&data->sound_timer) != 0) {
                 spawn_floating_platform_sparks_r(moby);
-                data->sound_timer = scale_ticks(func_L00_00258BC8(0xF, 0x1E));
+                data->sound_timer = scale_ticks(random_int_between(0xF, 0x1E));
             }
             sink =
                 (IntToFloat((*(int *)&sinking_platform_fall_count)) - (floating_platform_motion_scale_input_start_gp)) /
@@ -1613,8 +1613,7 @@ void spawn_floating_platform_sparks(char *moby) {
     set_vector_unit_z(m);
     transform_vector_by_basis(m, m, mat);
     for (i = 0; i < n; i++) {
-        func_L00_00258DB0(c, 0.0f,
-                          (*(float *)&(floating_platform_spark_vector_offset_range_end_rate_gp)) * g_frame_time);
+        random_vector(c, 0.0f, (*(float *)&(floating_platform_spark_vector_offset_range_end_rate_gp)) * g_frame_time);
         vec_scale_to_length(a, m,
                             (*(float *)&(floating_platform_spark_first_vector_length_base_rate_gp)) *
                                 (random_float_between(
@@ -1707,9 +1706,9 @@ void drek_boss_ring_projectile_update(char *moby) {
             for (; i < ring_projectile_spark_count; i++) {
                 cc = spark_vector_offset;
                 FastVecScale(first_spark_vector, moby_vars, ring_projectile_spark_speed_scale);
-                func_L00_00258DB0(cc, 0.0f, ballistic_ring_trail_vector_offset_rate_gp * g_frame_time);
+                random_vector(cc, 0.0f, ballistic_ring_trail_vector_offset_rate_gp * g_frame_time);
                 FastVecAdd(first_spark_vector, cc, first_spark_vector);
-                func_L00_00258DB0(spark_spawn_position, 0.0f, 0.5f);
+                random_vector(spark_spawn_position, 0.0f, 0.5f);
                 FastVecAdd(spark_spawn_position, spark_spawn_position, &((struct Moby *)moby)->pos);
                 clear_u64_value(second_spark_vector);
                 first_spark_vector[3] = random_float_between(ballistic_ring_trail_first_spark_w_range_start_gp,
@@ -2208,7 +2207,7 @@ void boss_camera_transition_update(char *moby) {
                     camera_transition_active = 1;
                     clear_u64_value(v);
                     v[2] = data->hero_w;
-                    func_L00_00217718(&data->hero_x, v, 0x72, 1);
+                    set_race_camera(&data->hero_x, v, 0x72, 1);
                     jet_mount(((char *)data), &data->rot_a_x, 1, 0, 0);
                     if (data->mode == 1) {
                         help_request(0x4650, 0x85);
@@ -2240,13 +2239,13 @@ void boss_camera_transition_update(char *moby) {
                     camera_transition_active = 0;
                     clear_u64_value(v + 8);
                     v[10] = data->hero_w;
-                    func_L00_00217718(&data->hero_x, v + 8, 0, 0);
+                    set_race_camera(&data->hero_x, v + 8, 0, 0);
                     jet_end_mount(2);
                     moby[0x20] = 5;
                 } else if (g_hero.state.current != 0x72) {
                     clear_u64_value(v + 8);
                     v[10] = data->hero_w;
-                    func_L00_00217718(&data->hero_x, v + 8, 0x72, 1);
+                    set_race_camera(&data->hero_x, v + 8, 0x72, 1);
                     return;
                 }
             }
@@ -2274,14 +2273,14 @@ void boss_camera_transition_update(char *moby) {
                     data->t = 1.0f;
                     clear_u64_value(v + 8);
                     v[10] = data->hero_w;
-                    func_L00_00217718(&data->hero_x, v + 8, 0, 0);
+                    set_race_camera(&data->hero_x, v + 8, 0, 0);
                     jet_end_mount(3);
                     moby[0x20] = 5;
                 }
             } else if (g_hero.state.current != 0x72) {
                 clear_u64_value(v + 8);
                 v[10] = data->hero_w;
-                func_L00_00217718(&data->hero_x, v + 8, 0x72, 1);
+                set_race_camera(&data->hero_x, v + 8, 0x72, 1);
                 return;
             } else {
                 ApproachValue(&data->fade, 0.0f, g_frame_time * 4.0f);
@@ -2427,11 +2426,11 @@ void destructible_scenery_update(char *moby) {
                     ca = u.s1.a + random_integer_below(6);
                     cb = b1 + random_integer_below(6);
                     PartType11Spawn_v(u.s1.v, veldin2_zero_vec_r, *ca, *cb, 1500000.0f,
-                                      func_L00_00258BC8(scale_ticks(15), scale_ticks(20)),
-                                      func_L00_00258BC8(scale_ticks(30), scale_ticks(45)), s, 0, 0);
+                                      random_int_between(scale_ticks(15), scale_ticks(20)),
+                                      random_int_between(scale_ticks(30), scale_ticks(45)), s, 0, 0);
                     PartType11Spawn_v(u.s1.v, veldin2_zero_vec_r, 0x7FFFFFFF, 0xFFFFFF, 1500000.0f,
-                                      func_L00_00258BC8(scale_ticks(5), scale_ticks(10)),
-                                      func_L00_00258BC8(scale_ticks(15), scale_ticks(20)), s * 0.5f, 0, 0);
+                                      random_int_between(scale_ticks(5), scale_ticks(10)),
+                                      random_int_between(scale_ticks(15), scale_ticks(20)), s * 0.5f, 0, 0);
                 }
                 for (j = 0; j < 10.0f;) {
                     int *a2 = u.s2.a;
@@ -2454,7 +2453,7 @@ void destructible_scenery_update(char *moby) {
                         cb = b2 + random_integer_below(6);
                     }
                     spawn_particle_alt_9768(u.s2.pos, u.s2.vel, *ca, *cb,
-                                            func_L00_00258BC8(scale_ticks(30), scale_ticks(45)), 500000.0f);
+                                            random_int_between(scale_ticks(30), scale_ticks(45)), 500000.0f);
                 }
                 DeleteMoby(moby);
                 return;
@@ -2468,7 +2467,7 @@ void destructible_scenery_update(char *moby) {
                            &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
                 data[6] = 0.0f;
                 vec_scale_to_length(data + 4, data + 4, s);
-                func_L00_00258DB0(u.tmp, s, s);
+                random_vector(u.tmp, s, s);
                 FastVecAdd(data + 4, data + 4, u.tmp);
                 data[6] = absolute_float(data[6]);
                 data[7] = ((struct Moby *)moby)->pos.z;
@@ -2529,7 +2528,7 @@ void drek_boss_electric_ball_update(char *moby) {
             FastVecSub(buf, d, p);
             len = FastVecLength(buf);
             spawn_sparks_along_target_direction(moby);
-            func_L00_00258DB0(q, homing_spark_bolt_jitter * d[9], homing_spark_bolt_jitter * d[9]);
+            random_vector(q, homing_spark_bolt_jitter * d[9], homing_spark_bolt_jitter * d[9]);
             FastVecAdd(q, q, p);
             initialize_electric_bolt_effect_if_requested(moby);
             update_electric_bolt_geometry_and_particles(moby);
@@ -2704,7 +2703,7 @@ void spawn_sparks_along_target_direction(char *moby) {
     k3 = (*(float *)&(target_direction_spark_downward_z_rate_range_start_gp)) * g_frame_time;
     k4 = (*(float *)&(target_direction_spark_downward_z_rate_range_end_gp)) * g_frame_time;
     for (i = 0; i < 3; i++) {
-        func_L00_00258DB0(v20, k1, k2);
+        random_vector(v20, k1, k2);
         FastVecScale(v30, v20, (*(float *)&(target_direction_spark_second_vector_scale_gp)));
         v30[2] -= random_float_between(k3, k4);
         a = truncate_float_to_s32_r(multiply_global_factor(
@@ -2816,10 +2815,10 @@ void spawn_explosion_burst(void *source_moby) {
         color1 = explosion_burst_particle_first_color_choices[random_integer_below(6)];
         color2 = explosion_burst_particle_second_color_choices[random_integer_below(6)];
         scale = F(explosion_burst_particle_scale_multiplier_gp) * 400000.0f;
-        a = scale_ticks(func_L00_00258BC8(I(explosion_burst_particle_frame_count_range_start_gp),
-                                          I(explosion_burst_particle_frame_count_range_end_gp)));
-        b = scale_ticks(func_L00_00258BC8(I(explosion_burst_particle_second_frame_count_range_start_gp),
-                                          I(explosion_burst_particle_second_frame_count_range_end_gp)));
+        a = scale_ticks(random_int_between(I(explosion_burst_particle_frame_count_range_start_gp),
+                                           I(explosion_burst_particle_frame_count_range_end_gp)));
+        b = scale_ticks(random_int_between(I(explosion_burst_particle_second_frame_count_range_start_gp),
+                                           I(explosion_burst_particle_second_frame_count_range_end_gp)));
         PartType11Spawn_v(offset, &velocity, color1, color2, scale, a, b, speed, 0, 0);
     }
     if (F(explosion_burst_first_glow_scale_multiplier_gp) > 0.0f) {
@@ -3121,7 +3120,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     FastVecScale(&s[5], &s[0], electric_bolt_particle_direction_scale_gp * frame_scale);
     build_look_at_matrix(&s[5], &s[5], &s[6], f20);
     build_look_at_matrix(&s[5], &s[5], &s[7], scale);
-    r = func_L00_00258BC8(1, 8);
+    r = random_int_between(1, 8);
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.2f, 0.6f);
@@ -3129,7 +3128,7 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
                 0.0f);
     r = -r;
     spawn_ec290((char *)moby + 0x10, scale_ticks(15), f20 * 0.15f, f20 * 0.5f, 0x307F7F7F, 0, r, &s[5], 0.0f);
-    r = func_L00_00258BC8(1, 8);
+    r = random_int_between(1, 8);
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.15f, 3.0f);
@@ -3268,7 +3267,7 @@ void drek_fight_missile_update(char *moby) {
             lerp_vector(v, &missile_vars->wander_vx, v, missile_vars->blend);
             FastVecAdd((void *)&m->pos, (void *)&m->pos, v);
             m->rot.z = fast_atan2(v[0], v[1]);
-            m->rot.y = -fast_atan2(func_001F9CE8(v), v[2]);
+            m->rot.y = -fast_atan2(vector_length_xy(v), v[2]);
             vec_scale_to_length(w, (void *)&m->rot_row0, 1.0f);
             FastVecAdd(w, w, (void *)&m->pos);
             update_drek_fight_missile_trail_and_queue_effects(moby);
@@ -3370,7 +3369,7 @@ int update_drek_fight_missile_wander_movement(char *moby, float *vec) {
     p = *(char **)&d->owner;
     if (p) {
         FastVecSub(v, moby + 0x10, p + 0x10);
-        if (!(func_001F9CE8(v) < 4.5f)) {
+        if (!(vector_length_xy(v) < 4.5f)) {
             return 0;
         }
         vec_set_length_xy(v, v, random_float_between(15.0f, 20.0f));

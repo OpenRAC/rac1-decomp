@@ -734,7 +734,7 @@ typedef struct {
     unsigned short h;
 } ZoneBox;
 extern ZoneBox *occl_cell_table MACRO_ADDR;
-extern char *D_00161290 MACRO_ADDR;
+extern char *surface_height_tiles MACRO_ADDR;
 extern int occl_cell_count MACRO_ADDR;
 extern float surface_height_grid[];
 extern int truncate_float_to_s32_i(float) __asm__("func_001FA898");
@@ -761,7 +761,7 @@ int find_zone_at_point(float x, float y, float z) {
         if (ix >= b->x + b->w || iy >= b->y + b->h || iz >= b->z + 0x800) {
             continue;
         }
-        zn = D_00161290 + i * 0x1190;
+        zn = surface_height_tiles + i * 0x1190;
         cx = truncate_float_to_s32_i((x - (*(float *)(zn + 0) + surface_height_grid[2])) / surface_height_grid[4]);
         cy = truncate_float_to_s32_i((y - (*(float *)(zn + 4) + surface_height_grid[3])) / surface_height_grid[5]);
         bit = 1 << (((cx >> 2) & 3) | (cy & 0xC));

@@ -34,7 +34,7 @@
 
 extern char g_hero[];
 extern char item_usage[];
-extern char D_0013CBE0[];
+extern char pad_held[];
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -264,7 +264,7 @@ void build_beam_and_arc_points(u8 *o) {
                 if (!GetFlaggedPvarWord(candidate))
                     continue;
                 FastVecSub(&target0, &candidate->position, v);
-                distance_w16 = func_001F9CE8(&target0);
+                distance_w16 = vector_length_xy(&target0);
                 if (tesla_beam_length < distance_w16)
                     continue;
                 length_w3 = FastDiffRots(camera[0x56], fast_atan2(candidate->position.v.x - camera[0x50],
@@ -584,7 +584,7 @@ void build_beam_and_arc_points(u8 *o) {
     FastVecScale(&target_delta, &direction, D_L00_001616F8 * frame_scale);
     build_look_at_matrix(&target_delta, &target_delta, &hero43.row1, phase);
     build_look_at_matrix(&target_delta, &target_delta, &hero43.row2, angle);
-    spin = func_L00_00258BC8(1, 8);
+    spin = random_int_between(1, 8);
     if (random_integer_below(2))
         spin = -spin;
     amplitude = random_float_between(0.2f, 0.6f);
@@ -593,7 +593,7 @@ void build_beam_and_arc_points(u8 *o) {
     spin = -spin + (*(unsigned char *)v >> 8) + (((unsigned char *)v)[1] >> 8);
     PartType53Spawn(v, scale_ticks(15), amplitude * 0.15f, amplitude * 0.5f, 0x307f7f7f, 0, spin,
                     (float *)&target_delta, 0.0f);
-    spin = func_L00_00258BC8(1, 8);
+    spin = random_int_between(1, 8);
     if (random_integer_below(2))
         spin = -spin;
     amplitude = random_float_between(0.15f, 3.0f);
@@ -1488,7 +1488,7 @@ void morphoray_update(Moby *m) {
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_CROUCH ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_JUMP ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_LAND)) &&
-        (*(int *)D_0013CBE0 & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
+        (*(int *)pad_held & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
             start_equipped_item_animation();
         }
@@ -1524,7 +1524,7 @@ void morphoray_update(Moby *m) {
             transform_vector_by_basis(&v0, &v0, ((Hero *)g_hero_r)->basis[0].f);
         }
         p->yaw = fast_atan2(v0.x, v0.y);
-        p->pitch = fast_atan2(func_001F9CE8(&v0), v0.z);
+        p->pitch = fast_atan2(vector_length_xy(&v0), v0.z);
         *(u128_2BDAF0 *)&v[0] = *(u128_2BDAF0 *)p->pos;
         hit = select_morphoray_target_and_adjust_aim_r(m, &v[0], &p->yaw, &p->pitch);
         fast_dec_timer(&p->delay);
@@ -1567,7 +1567,7 @@ void morphoray_update(Moby *m) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53DB, -1);
+                queue_dialogue_message(0x53DB, -1);
             }
             spawn_morphoray_chicken(p->target);
             p->target = 0;
@@ -2445,7 +2445,7 @@ float probe_moby_landing_height(Vx *a, void *b) {
     }
     return 0.0f;
 }
-extern char D_0013F4D0[];
+extern char hero_pos[];
 
 extern int coll_line_r2(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
@@ -2501,7 +2501,7 @@ char *select_class5_target_or_hero(char *self, float *position, float *angles, i
         }
     }
     if (best == 0) {
-        char *playerPosition = D_0013F4D0;
+        char *playerPosition = hero_pos;
         if (vec_distance_xy(self + 0x10, playerPosition) > 3.2f)
             best = *(char **)(playerPosition + 0x2000);
     }
@@ -2757,7 +2757,7 @@ extern float calculate_triangular_corrected_scalar_r(void *a, void *b, int *out,
 extern void accumulate_local_vector_steps_r(void *a, void *b, int n, int c, int d, int e, float g,
                                             int f) __asm__("func_L00_002C0B18");
 extern int coll_line_r4(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern char D_L00_00173F80[];
+extern char coll_hit_normal[];
 extern void *g_coll_hit_moby_r2 __asm__("D_L00_00173F58");
 
 /* Tries a hop of the moby toward q: probes the ground at the landing point and the path to it, and sets the jump
@@ -2779,7 +2779,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
     clamp_vec_length_xy(m->f2C * 5.2f / m->p24->f24, d, d);
     FastVecAdd(land, m->pos, d);
     FastVecScale(half, d, 0.5f);
-    len = func_001F9CE8(half);
+    len = vector_length_xy(half);
     FastVecAdd(half, m->pos, half);
     if (!(0.5f < len)) {
         ok = 0;
@@ -2798,7 +2798,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
         }
         return 0;
     }
-    qcopy(mid, D_L00_00173F80);
+    qcopy(mid, coll_hit_normal);
     vec_scale_to_length(mid, mid, 1.0f);
     sum = absolute_float(mid[0]);
     sum = sum + absolute_float(mid[1]);

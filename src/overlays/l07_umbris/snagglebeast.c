@@ -396,7 +396,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                     data->f67 = 0x78;
                     RerollEffectCounter(moby, data->anim);
                     if (moby->prev_seq != 2) {
-                        MobyBlendAnimation(moby, 2, 0, func_L00_00258BC8(10, 13));
+                        MobyBlendAnimation(moby, 2, 0, random_int_between(10, 13));
                     }
                     if (hero_current_state_r == 0x78) {
                         HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
@@ -426,8 +426,8 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                             HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
                         }
                         if (moby->prev_seq != 2) {
-                            int a = func_L00_00258BC8(0, 2);
-                            MobyBlendAnimation(moby, 2, a, func_L00_00258BC8(0x14, 0x16));
+                            int a = random_int_between(0, 2);
+                            MobyBlendAnimation(moby, 2, a, random_int_between(0x14, 0x16));
                         }
                         data->f1C8 = 0.0f;
                         data->f1C5 = 1;
@@ -589,13 +589,13 @@ int start_snagglebeast_turn_toward_target(unsigned char *m, unsigned char *obj, 
         qcopy(obj + 0xC0, vec);
         if (fast_atan2(vec[0] - ((Moby *)m)->pos.x, vec[1] - ((Moby *)m)->pos.y) < 0.0f) {
             if (((Moby *)m)->prev_seq != 3) {
-                int r = func_L00_00258BC8(0, 1);
-                MobyBlendAnimation(m, 3, r, func_L00_00258BC8(0xF, 0x14));
+                int r = random_int_between(0, 1);
+                MobyBlendAnimation(m, 3, r, random_int_between(0xF, 0x14));
             }
         } else {
             if (((Moby *)m)->prev_seq != 0xE) {
-                int r = func_L00_00258BC8(0, 1);
-                MobyBlendAnimation(m, 0xE, r, func_L00_00258BC8(0xF, 0x14));
+                int r = random_int_between(0, 1);
+                MobyBlendAnimation(m, 0xE, r, random_int_between(0xF, 0x14));
             }
         }
         ((Moby *)m)->state = 7;
@@ -623,7 +623,7 @@ void update_snagglebeast_target_joint_animation(char *moby, char *d, float *t) {
     }
     k = g_frame_scale_sq;
     *(float *)(d + 0x264) = *(float *)(d + 0x1FC);
-    func_L00_00263950(moby, d + 0x200, 0xB, k * 0.030f, k * 0.3f);
+    update_joint_animation(moby, d + 0x200, 0xB, k * 0.030f, k * 0.3f);
 }
 typedef struct {
     char pad0[0x44];
@@ -964,8 +964,8 @@ void snagglebeast_update(unsigned char *m) {
             if (((Moby *)m)->anim_flags & 2) {
                 if (((Moby *)m)->prev_seq != (func_001160D8() & 1)) {
                     int r1 = func_001160D8() & 1;
-                    int r2 = func_L00_00258BC8(0, 0xF);
-                    MobyBlendAnimation(m, r1, r2, func_L00_00258BC8(0x1E, 0x2A));
+                    int r2 = random_int_between(0, 0xF);
+                    MobyBlendAnimation(m, r1, r2, random_int_between(0x1E, 0x2A));
                 }
             }
             if (fast_dec_timer(&d->phase_timer)) {
@@ -973,8 +973,8 @@ void snagglebeast_update(unsigned char *m) {
                     d->phase = 0;
                     d->phase_timer = 0;
                     if (((Moby *)m)->prev_seq != 5) {
-                        int r = func_L00_00258BC8(0, 2);
-                        MobyBlendAnimation(m, 5, r, func_L00_00258BC8(0x12, 0x14));
+                        int r = random_int_between(0, 2);
+                        MobyBlendAnimation(m, 5, r, random_int_between(0x12, 0x14));
                     }
                     ((Moby *)m)->state = 4;
                 }
@@ -982,8 +982,8 @@ void snagglebeast_update(unsigned char *m) {
                     if (((Moby *)m)->state != 5 || random_integer_below(4) == 0) {
                         d->phase = 0;
                         if (((Moby *)m)->prev_seq != 4) {
-                            int r = func_L00_00258BC8(0, 9);
-                            MobyBlendAnimation(m, 4, r, func_L00_00258BC8(0x14, 0x28));
+                            int r = random_int_between(0, 9);
+                            MobyBlendAnimation(m, 4, r, random_int_between(0x14, 0x28));
                         }
                         ((Moby *)m)->state = 3;
                         ((Moby *)m)->anim_speed = 1.0f;
@@ -991,8 +991,8 @@ void snagglebeast_update(unsigned char *m) {
                 }
                 if (a) {
                     if (((Moby *)m)->prev_seq != 6) {
-                        int r = func_L00_00258BC8(0, 2);
-                        MobyBlendAnimation(m, 6, r, func_L00_00258BC8(0xF, 0x19));
+                        int r = random_int_between(0, 2);
+                        MobyBlendAnimation(m, 6, r, random_int_between(0xF, 0x19));
                     }
                     d->phase = 0;
                     d->rope_len = 0.0f;
@@ -1003,16 +1003,16 @@ void snagglebeast_update(unsigned char *m) {
                 }
                 if (b) {
                     if (((Moby *)m)->prev_seq != 9) {
-                        int r = func_L00_00258BC8(0, 2);
-                        MobyBlendAnimation(m, 9, r, func_L00_00258BC8(0x11, 0x19));
+                        int r = random_int_between(0, 2);
+                        MobyBlendAnimation(m, 9, r, random_int_between(0x11, 0x19));
                     }
                     ((Moby *)m)->state = 2;
                 }
             }
             if (see && ((Moby *)m)->state != 8) {
                 if (((Moby *)m)->prev_seq != 0xA) {
-                    int r = func_L00_00258BC8(0, 4);
-                    MobyBlendAnimation(m, 0xA, r, func_L00_00258BC8(0x14, 0x1E));
+                    int r = random_int_between(0, 4);
+                    MobyBlendAnimation(m, 0xA, r, random_int_between(0x14, 0x1E));
                 }
                 ((Moby *)m)->anim_speed = 1.5f;
                 d->unk_298 = 0;
@@ -1032,13 +1032,13 @@ void snagglebeast_update(unsigned char *m) {
                              g_frame_time_sq * 0.6981317f, g_frame_time * 2.0943952f);
             if (FastDiffRots(((Moby *)m)->rot.z, rot) > g_frame_time * 0.17453292f) {
                 if (((Moby *)m)->prev_seq != 0xD) {
-                    int r = func_L00_00258BC8(0, 1);
-                    MobyBlendAnimation(m, 0xD, r, func_L00_00258BC8(0xF, 0x16));
+                    int r = random_int_between(0, 1);
+                    MobyBlendAnimation(m, 0xD, r, random_int_between(0xF, 0x16));
                 }
             } else {
                 if (((Moby *)m)->prev_seq != 9) {
-                    int r = func_L00_00258BC8(0, 1);
-                    MobyBlendAnimation(m, 9, r, func_L00_00258BC8(0xF, 0x16));
+                    int r = random_int_between(0, 1);
+                    MobyBlendAnimation(m, 9, r, random_int_between(0xF, 0x16));
                 }
             }
             if (((Moby *)m)->seq == 9 || ((Moby *)m)->seq == 0xD)
@@ -1089,8 +1089,8 @@ void snagglebeast_update(unsigned char *m) {
                 ((Moby *)m)->anim_speed = 1.0f;
                 if (((Moby *)m)->prev_seq != (func_001160D8() & 1)) {
                     int r1 = func_001160D8() & 1;
-                    int r2 = func_L00_00258BC8(0, 0xF);
-                    MobyBlendAnimation(m, r1, r2, func_L00_00258BC8(0x1E, 0x2A));
+                    int r2 = random_int_between(0, 0xF);
+                    MobyBlendAnimation(m, r1, r2, random_int_between(0x1E, 0x2A));
                 }
                 ((Moby *)m)->state = 1;
             }
@@ -1203,8 +1203,8 @@ void snagglebeast_update(unsigned char *m) {
                 d->unk_1F5 = 1;
                 qcopy(&d->target_x, &va);
                 if (((Moby *)m)->prev_seq != 3) {
-                    int r = func_L00_00258BC8(0, 1);
-                    MobyBlendAnimation(m, 3, r, func_L00_00258BC8(0xF, 0x16));
+                    int r = random_int_between(0, 1);
+                    MobyBlendAnimation(m, 3, r, random_int_between(0xF, 0x16));
                 }
                 ((Moby *)m)->state = 7;
             } else {
@@ -1223,8 +1223,8 @@ void snagglebeast_update(unsigned char *m) {
                     d->unk_1F7 = scale_ticks(0x5A);
                     if (((Moby *)m)->prev_seq != (func_001160D8() & 1)) {
                         int r1 = func_001160D8() & 1;
-                        int r2 = func_L00_00258BC8(0, 9);
-                        MobyBlendAnimation(m, r1, r2, func_L00_00258BC8(0x14, 0x28));
+                        int r2 = random_int_between(0, 9);
+                        MobyBlendAnimation(m, r1, r2, random_int_between(0x14, 0x28));
                     }
                     d->unk_1A8 = -1;
                     ((Moby *)m)->state = 1;
@@ -1232,10 +1232,10 @@ void snagglebeast_update(unsigned char *m) {
                 }
                 if (((Moby *)m)->prev_seq != 0xA) {
                     if (!near && (((Moby *)m)->anim_flags & 2))
-                        MobyBlendAnimation(m, 0xA, 5, func_L00_00258BC8(0xA, 0xD));
+                        MobyBlendAnimation(m, 0xA, 5, random_int_between(0xA, 0xD));
                 } else {
                     if (near && (((Moby *)m)->anim_flags & 2))
-                        MobyBlendAnimation(m, 0xC, 5, func_L00_00258BC8(0xA, 0xD));
+                        MobyBlendAnimation(m, 0xC, 5, random_int_between(0xA, 0xD));
                 }
                 if (fast_dec_timer(&d->phase_timer)) {
                     if (t19A) {
@@ -1243,16 +1243,16 @@ void snagglebeast_update(unsigned char *m) {
                         d->phase_timer = 0;
                         ((Moby *)m)->anim_speed = 1.0f;
                         if (((Moby *)m)->prev_seq != 5) {
-                            int r = func_L00_00258BC8(0, 2);
-                            MobyBlendAnimation(m, 5, r, func_L00_00258BC8(0x14, 0x19));
+                            int r = random_int_between(0, 2);
+                            MobyBlendAnimation(m, 5, r, random_int_between(0x14, 0x19));
                         }
                         ((Moby *)m)->state = 4;
                     }
                     if (t194) {
                         d->phase = 0;
                         if (((Moby *)m)->prev_seq != 4) {
-                            int r = func_L00_00258BC8(0, 5);
-                            MobyBlendAnimation(m, 4, r, func_L00_00258BC8(0x14, 0x28));
+                            int r = random_int_between(0, 5);
+                            MobyBlendAnimation(m, 4, r, random_int_between(0x14, 0x28));
                         }
                         ((Moby *)m)->state = 3;
                         ((Moby *)m)->anim_speed = 1.0f;
@@ -1269,8 +1269,8 @@ void snagglebeast_update(unsigned char *m) {
                     if (a) {
                         ((Moby *)m)->anim_speed = 1.0f;
                         if (((Moby *)m)->prev_seq != 6) {
-                            int r = func_L00_00258BC8(0, 2);
-                            MobyBlendAnimation(m, 6, r, func_L00_00258BC8(0x14, 0x19));
+                            int r = random_int_between(0, 2);
+                            MobyBlendAnimation(m, 6, r, random_int_between(0x14, 0x19));
                         }
                         d->phase = 0;
                         d->rope_len = 0.0f;
@@ -1284,8 +1284,8 @@ void snagglebeast_update(unsigned char *m) {
                     ((Moby *)m)->anim_speed = 1.0f;
                     if (((Moby *)m)->prev_seq != (func_001160D8() & 1)) {
                         int r1 = func_001160D8() & 1;
-                        int r2 = func_L00_00258BC8(0, 2);
-                        MobyBlendAnimation(m, r1, r2, func_L00_00258BC8(0x1C, 0x28));
+                        int r2 = random_int_between(0, 2);
+                        MobyBlendAnimation(m, r1, r2, random_int_between(0x1C, 0x28));
                     }
                     ((Moby *)m)->state = 1;
                 }
@@ -1309,10 +1309,10 @@ void snagglebeast_update(unsigned char *m) {
             if (!b && (((Moby *)m)->anim_flags & 2)) {
                 if (diff < 0.0001f) {
                     if (((Moby *)m)->prev_seq != 3)
-                        MobyBlendAnimation(m, 3, 5, func_L00_00258BC8(0xA, 0xD));
+                        MobyBlendAnimation(m, 3, 5, random_int_between(0xA, 0xD));
                 } else {
                     if (((Moby *)m)->prev_seq != 0xE)
-                        MobyBlendAnimation(m, 0xE, 5, func_L00_00258BC8(0xA, 0xD));
+                        MobyBlendAnimation(m, 0xE, 5, random_int_between(0xA, 0xD));
                 }
             }
             if (((Moby *)m)->seq == 3 || ((Moby *)m)->seq == 0xE || ((Moby *)m)->seq == 0xD) {
@@ -1324,9 +1324,9 @@ void snagglebeast_update(unsigned char *m) {
                                      g_frame_time * 2.0943952f);
                 }
                 if (diff > 0.001f && ((Moby *)m)->prev_seq == 3) {
-                    MobyBlendAnimation(m, 0xE, 5, func_L00_00258BC8(0xA, 0xD));
+                    MobyBlendAnimation(m, 0xE, 5, random_int_between(0xA, 0xD));
                 } else if (diff < 0.001f && ((Moby *)m)->prev_seq == 0xE) {
-                    MobyBlendAnimation(m, 3, 5, func_L00_00258BC8(0xA, 0xD));
+                    MobyBlendAnimation(m, 3, 5, random_int_between(0xA, 0xD));
                 }
             } else {
                 d->unk_84 = 0;
@@ -1337,8 +1337,8 @@ void snagglebeast_update(unsigned char *m) {
                 qzero(d->move_vec);
                 if (((Moby *)m)->prev_seq != d->unk_1F6) {
                     int anim = d->unk_1F6;
-                    int r = func_L00_00258BC8(0, 2);
-                    MobyBlendAnimation(m, anim, r, func_L00_00258BC8(0xF, 0x1B));
+                    int r = random_int_between(0, 2);
+                    MobyBlendAnimation(m, anim, r, random_int_between(0xF, 0x1B));
                 }
                 ((Moby *)m)->state = d->unk_1F4;
             }
@@ -1359,7 +1359,7 @@ void snagglebeast_update(unsigned char *m) {
             int k;
             if (d->health <= IntToFloat(d->hit_timer / 6)) {
                 if (((Moby *)m)->prev_seq != 8)
-                    MobyBlendAnimation(m, 8, 0x35, func_L00_00258BC8(0xA, 0xD));
+                    MobyBlendAnimation(m, 8, 0x35, random_int_between(0xA, 0xD));
             } else {
                 if (((Moby *)m)->prev_seq != 0xB)
                     MobyBlendAnimation(m, 0xB, 0x3D, 1);
@@ -1452,7 +1452,7 @@ void snagglebeast_update(unsigned char *m) {
                     if (*t20 <= 0.0f) {
                         *t20 = 0.0f;
                         if (((Moby *)m)->prev_seq != 8)
-                            MobyBlendAnimation(m, 8, 0, func_L00_00258BC8(0xA, 0xD));
+                            MobyBlendAnimation(m, 8, 0, random_int_between(0xA, 0xD));
                         if (d->unk_1F0 != -1) {
                             set_moby_dialogue_record_value(m, 1);
                             SetDeathBits(m, 0, -1);
@@ -1616,7 +1616,7 @@ void snagglebeast_update(unsigned char *m) {
                         if (cnt > 0) {
                             float zv = 0.0f;
                             if (d->unk_18C == -1) {
-                                func_L00_00258DB0((float *)&vb, g_frame_time * 4.0f, g_frame_time * 10.0f);
+                                random_vector((float *)&vb, g_frame_time * 4.0f, g_frame_time * 10.0f);
                                 if (vb.f[2] < g_frame_time * 2.0f)
                                     vb.f[2] = random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f);
                                 vec_scale_to_length(&vc, &vb, 0.9f);
@@ -1682,8 +1682,8 @@ void snagglebeast_update(unsigned char *m) {
             if (b) {
                 d->unk_196 = scale_ticks(0x1E);
                 if (((Moby *)m)->prev_seq != 9) {
-                    int r = func_L00_00258BC8(0, 2);
-                    MobyBlendAnimation(m, 9, r, func_L00_00258BC8(0x10, 0x19));
+                    int r = random_int_between(0, 2);
+                    MobyBlendAnimation(m, 9, r, random_int_between(0x10, 0x19));
                 }
                 detach_snagglebeast_rope_particles((int)m);
                 {
@@ -1713,14 +1713,14 @@ void snagglebeast_update(unsigned char *m) {
             switch (d->phase) {
                 case 0:
                     if (((Moby *)m)->prev_seq != 7)
-                        MobyBlendAnimation(m, 7, 0, func_L00_00258BC8(0xA, 0xD));
+                        MobyBlendAnimation(m, 7, 0, random_int_between(0xA, 0xD));
                     d->phase_timer = 0;
                     d->phase = 1;
                     break;
                 case 1:
                     if ((*(unsigned long *)&((Moby *)m)->frame & 0xFFFF0000) != 0x07070000 &&
                         ((Moby *)m)->prev_seq != 7) {
-                        MobyBlendAnimation(m, 7, 0, func_L00_00258BC8(0xA, 0xD));
+                        MobyBlendAnimation(m, 7, 0, random_int_between(0xA, 0xD));
                     }
                     if (((Moby *)m)->seq == 7) {
                         if (compute_interpolated_record_value(m) >= 9.5f) {
@@ -1738,7 +1738,7 @@ void snagglebeast_update(unsigned char *m) {
                 case 2:
                     if ((*(unsigned long *)&((Moby *)m)->frame & 0xFFFF0000) != 0x07070000 &&
                         ((Moby *)m)->prev_seq != 7) {
-                        MobyBlendAnimation(m, 7, 0, func_L00_00258BC8(7, 0xA));
+                        MobyBlendAnimation(m, 7, 0, random_int_between(7, 0xA));
                     }
                     if (fast_dec_timer(&d->phase_timer)) {
                         d->phase_timer = scale_ticks(0xA);
@@ -1779,8 +1779,8 @@ void snagglebeast_update(unsigned char *m) {
                     d->phase_timer = 0;
                     if (((Moby *)m)->prev_seq != (func_001160D8() & 1)) {
                         int r1 = func_001160D8() & 1;
-                        int r2 = func_L00_00258BC8(0, 7);
-                        MobyBlendAnimation(m, r1, r2, func_L00_00258BC8(0x1B, 0x2D));
+                        int r2 = random_int_between(0, 7);
+                        MobyBlendAnimation(m, r1, r2, random_int_between(0x1B, 0x2D));
                     }
                     ((Moby *)m)->state = 1;
                     break;
@@ -2025,7 +2025,7 @@ extern RopeVec_319080 l07_rope_previous_segment_start_points[];
 extern RopeVec_319080 l07_rope_previous_ring_rows[][20];
 extern RopeVec_319080 l07_rope_ring_profile_vectors[];
 extern float rope_segment_angular_velocities[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern void draw_rope_strips();
 
 /* Updates the rope: swings its anchor frame, solves the nine segments toward the hero,
@@ -2059,7 +2059,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
 
     best = 1000.0f;
     initialize_snagglebeast_rope(moby, anchor);
-    qcopy(v00, D_0013F4D0);
+    qcopy(v00, hero_pos);
     v00[2] += 0.6f;
     snagglebeast_rope_row_alpha_r[0] += 4;
     {
@@ -2068,7 +2068,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
             snagglebeast_rope_row_alpha_r[n] = snagglebeast_rope_row_alpha_r[n - 1] - 0x20;
         }
     }
-    FastVecSub(v10, D_0013F4D0, anchor);
+    FastVecSub(v10, hero_pos, anchor);
     v10[2] += 0.6f;
     vec_scale_to_length(v10, v10, 2.8f);
     FastVecCross(v20, v10, &((Moby *)moby)->rot_row1);
@@ -2102,7 +2102,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
         D_L07_00161C10_319080 = 0;
     }
     (*(float *)&D_L07_00161C14_319080) = FastAddRots((*(float *)&D_L07_00161C14_319080), 0.1f);
-    vec_scale_to_length(v50, D_0013F4D0 + 0x210, -1.0f);
+    vec_scale_to_length(v50, hero_pos + 0x210, -1.0f);
     qcopy(rb.r, v50);
     FastVecCross(rb.c, v10, rb.r);
     vec_scale_to_length(rb.c, rb.c, 1.0f);
@@ -2169,7 +2169,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                     }
                 }
             } else {
-                vec_scale_to_length(v110, D_0013F4D0 + 0x210, -1.0f);
+                vec_scale_to_length(v110, hero_pos + 0x210, -1.0f);
             }
             vec_scale_to_length(vF0, vE0, 1.0f);
             FastVecCross(v100, vF0, v110);
@@ -2823,14 +2823,14 @@ void BreakablePropUpdate(struct Moby *m) {
             p.y = random_float_between(-ext.y, ext.y) * 0.5f;
             p.z = random_float_between(1.5f, ext.z);
             FastVecAdd(&p, &p, &m->pos);
-            func_L00_00258DB0(&vel, g_frame_time_r2 * 5.0f, g_frame_time_r2 * 10.0f);
+            random_vector(&vel, g_frame_time_r2 * 5.0f, g_frame_time_r2 * 10.0f);
             if (vel.z < 0.0f)
                 vel.z = -vel.z;
             if (vel.z < g_frame_time_r2 + g_frame_time_r2)
                 vel.z = vel.z + (g_frame_time_r2 + g_frame_time_r2);
             cls = i % 3 + 0x2B8;
             scale = random_float_between(0.41f, 0.5f);
-            spawn_debris_moby(&p, &vel, cls, scale, func_L00_00258BC8(0x32, 0x50), 1.0f, 1.0f, 0.75f, 0);
+            spawn_debris_moby(&p, &vel, cls, scale, random_int_between(0x32, 0x50), 1.0f, 1.0f, 0.75f, 0);
         }
         spawn_explosion(m, &h->pos, h, 3.0f, 1.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
         DeleteMoby(m);

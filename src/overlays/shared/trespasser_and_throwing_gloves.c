@@ -36,7 +36,7 @@
 #include "core/libc/printf_rand.h"
 extern PadState g_controller_state;
 extern char g_hero[];
-extern int D_0013CBE0;
+extern int pad_held;
 extern char weapon_ammo_counts[];
 /* Trespasser: set once the pickup was collected. */
 struct TrespasserVars {
@@ -644,7 +644,7 @@ extern void update_trespasser_pickup(void *);
 void trespasser_update(Moby *m) {
     if (((struct TrespasserVars *)m->pvars)->picked_up != 0) {
         update_trespasser_pickup(m);
-    } else if (D_0013CBE0 & ((struct Hero *)g_hero)->items[0].button_mask) {
+    } else if (pad_held & ((struct Hero *)g_hero)->items[0].button_mask) {
         m->command = 1;
     } else {
         m->command = 0;
@@ -835,7 +835,7 @@ void mine_glove_update(struct Moby *moby) {
             transform_vector(&arc, &arc, matrix);
             FastSubRots(g_hero_r2.moby->rot.z, fast_atan2(arc.f[0], arc.f[1]));
             angle = fast_atan2(arc.f[0], arc.f[1]);
-            slope = fast_atan2(func_001F9CE8(&arc), arc.f[2]);
+            slope = fast_atan2(vector_length_xy(&arc), arc.f[2]);
             if (0.593411922f < slope)
                 slope = 0.593411922f;
             if (slope < -1.39626336f)
@@ -846,7 +846,7 @@ void mine_glove_update(struct Moby *moby) {
                                      : ((g_controller_state_r.held & (PAD_L2 | PAD_L1)) ? 6.0f : 4.0f),
                                  angle, slope);
             {
-                float distance = func_001F9CE8(&arc);
+                float distance = vector_length_xy(&arc);
                 float z = arc.f[2];
                 if (distance != 0.0f)
                     horizontal = z / distance;
@@ -975,7 +975,7 @@ void aim_throw_arc(float *a, float *b, float *out, float x, float y, float lim) 
     out[1] = FastSin(r) * e;
     out[2] = 0.0f;
     out[2] = jump_speed_4318_v(a, (float *)&t, e, -x, 0);
-    if (D_0013CBE0 & 5) {
+    if (pad_held & 5) {
         q = (IntToFloat(*(hero_globals_base - 9)) * 2.5f + 8.5f) / e;
     } else {
         q = 8.5f / e;
@@ -1110,7 +1110,7 @@ void bomb_glove_update(struct Moby *moby) {
             hit = 0;
             FastSubRots(g_hero_r3.moby->rot.z, fast_atan2(temporary.arc.f[0], temporary.arc.f[1]));
             angle = fast_atan2(temporary.arc.f[0], temporary.arc.f[1]);
-            slope = fast_atan2(func_001F9CE8(&temporary.arc), temporary.arc.f[2]);
+            slope = fast_atan2(vector_length_xy(&temporary.arc), temporary.arc.f[2]);
             if (0.593411922f < slope)
                 slope = 0.593411922f;
             if (slope < -1.39626336f)
@@ -1123,7 +1123,7 @@ void bomb_glove_update(struct Moby *moby) {
             }
             qcopy(&direction, &g_debug_camera_r2);
             {
-                f32 distance = func_001F9CE8(&temporary.arc);
+                f32 distance = vector_length_xy(&temporary.arc);
                 f32 z = temporary.arc.f[2];
                 if (distance != 0.0f)
                     horizontal = z / distance;
@@ -1513,7 +1513,7 @@ typedef struct {
 } ThrowVars;
 extern s32 cinematic_mode MACRO_ADDR;
 extern CollisionHit coll_hit_result_r3 __asm__("D_L00_00173F40");
-extern Vec4 D_L00_00173F80;
+extern Vec4 coll_hit_normal;
 extern Vec4 g_debug_camera_r3 __asm__("D_L00_00166EC0");
 
 extern s32 coll_line_r3(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
@@ -1622,7 +1622,7 @@ s32 predict_thrown_moby_landing(ThrowVars *v, struct Moby *m, s32 mode) {
     }
     if (mode != 2 || coll_hit_result_r3.moby == 0 || !get_moby_pvars_link(coll_hit_result_r3.moby))
         AddDrawCallback(draw_moby_oscillating_textured_quads_r, m);
-    v->normal.q = D_L00_00173F80.q;
+    v->normal.q = coll_hit_normal.q;
     FastVecSub(&a, &v->landing, &g_debug_camera_r3);
     FastVecScale(&a, &a, 0.94999998807907104492f);
     FastVecAdd(&v->landing, &a, &g_debug_camera_r3);
@@ -1662,7 +1662,7 @@ void update_decoy_proximity_motion(char *m) {
     }
     FastVecSub(horizontal_displacement, &((struct Moby *)m)->pos, &P->motion.pos);
     horizontal_displacement[2] = 0.0f;
-    horizontal_separation_error = func_001F9CE8(horizontal_displacement) - 1.4f;
+    horizontal_separation_error = vector_length_xy(horizontal_displacement) - 1.4f;
     if (horizontal_separation_error > 0.0f)
         horizontal_separation_error = 0.0f;
     if (proximity_response_gate == 0)
@@ -1835,8 +1835,8 @@ void decoy_update(Moby *moby) {
                         (g_hero_r4.ground_moby != 0 && get_moby_pvars_link((int)g_hero_r4.ground_moby) != 0 &&
                          FastVecLength(vars->vel_xy) <
                              frame_scale * 0.01f + FastVecLength(&g_hero_r4.motion.displacement))) {
-                        angle =
-                            fast_atan2(coll_hit_result_r3.normal.f[2], func_001F9CE8(&coll_hit_result_r3.normal.f[0]));
+                        angle = fast_atan2(coll_hit_result_r3.normal.f[2],
+                                           vector_length_xy(&coll_hit_result_r3.normal.f[0]));
                         if (angle < 0.61086524f) {
                             int t44 = *(unsigned short *)&vars->timer + 1;
                             vars->timer = t44;
@@ -2904,7 +2904,7 @@ void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, f
     out[1] = FastSin(ang) * s;
     *(int *)&out[2] = 0;
     out[2] = jump_speed_4318_v(pos, (float *)&t, s, -speed, 0);
-    if (D_0013CBE0 & 5) {
+    if (pad_held & 5) {
         k = 3.5f / s;
     } else {
         k = 2.5f / s;
@@ -2975,14 +2975,14 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
             flag = 0;
             FastSubRots(((Moby *)h->moby)->rot.z, fast_atan2(va0[0], va0[1]));
             f22 = fast_atan2(va0[0], va0[1]);
-            w = fast_atan2(func_001F9CE8(va0), va0[2]);
+            w = fast_atan2(vector_length_xy(va0), va0[2]);
             if (0.593411922f < w)
                 w = 0.593411922f;
             if (w < -1.39626336f)
                 w = -1.39626336f;
             BuildSphericalOffset(va0, (((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f, f22, w);
             qcopy(vb0, player_camera_r2 + 0x140);
-            y = func_001F9CE8(va0);
+            y = vector_length_xy(va0);
             {
                 float z = va0[2];
                 if (y != 0.0f) {

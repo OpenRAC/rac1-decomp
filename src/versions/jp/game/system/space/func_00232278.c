@@ -88,7 +88,7 @@ void initialize_level_runtime(void) {
     D_001941C0_q.unk18 = (s32)allocation_cursor;
     gs_texture_allocation_start = texture_cursor;
     cutscene_moby_ids_by_content_variant = texture_packet[0];
-    clear_blocks_16(D_0019C2C0, 0x100);
+    clear_blocks_16(point_lights, 0x100);
     clear_blocks_16(point_light_data, 0x180);
     clear_blocks_16(dir_lights, 0x400);
     copy_blocks_16_forward(dir_lights, D_001D9740, 0x40);

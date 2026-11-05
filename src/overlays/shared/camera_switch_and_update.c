@@ -521,7 +521,7 @@ int compute_spherical_offset_from_positions(float *polar, float *pos, float *ori
     W v;
     float t;
     FastVecSub_3(v, pos, origin);
-    polar[1] = fast_atan2(func_001F9CE8(v), v[2]);
+    polar[1] = fast_atan2(vector_length_xy(v), v[2]);
     t = fast_atan2(v[0], v[1]);
     FastSubRots(t, polar[0]);
     polar[0] = t;

@@ -253,7 +253,7 @@ void initialize_hero(void) {
     g_hero_r.reach_height = 1.25f;
     g_hero_r.health.vehicle_mode_hp = 4;
     g_hero_r.health.unk22B0 = g_hero_r.health.hp;
-    g_hero_r.unk1010 = func_L00_00258BC8(scale_ticks(0xB4), scale_ticks(0x12C));
+    g_hero_r.unk1010 = random_int_between(scale_ticks(0xB4), scale_ticks(0x12C));
     g_hero_r.idle_look_ease_rate = 0.007f;
     g_hero_r.unk1018 = 0.3f;
     g_hero_r.unkD20 = 0.97f;
@@ -664,7 +664,7 @@ void update_hero_glow_and_extra_manipulators(void) {
         return;
     if (FastDecTimer(g2 + 0xFFC) && ((struct Moby *)moby)->prev_seq == 1) {
         low = scale_ticks(50);
-        a = func_L00_00258BC8(low, scale_ticks(200));
+        a = random_int_between(low, scale_ticks(200));
         *(s16 *)(g2 + 0xFFC) = a;
         *(s16 *)(g2 + 0xFFE) = 1;
     }
@@ -1291,7 +1291,7 @@ void scan_hero_input_sequences(void) {
                 int t = gCheats[i] == 0;
                 selector_available[i] = 1;
                 gCheats[i] = t;
-                func_L00_00264DB8(t ? 0x4FBE : 0x4FBF, -1);
+                queue_dialogue_message(t ? 0x4FBE : 0x4FBF, -1);
                 break;
             }
         }
@@ -2405,7 +2405,7 @@ void emit_hero_periodic_surface_particles(int n, int lim) {
         v.f[0] = FastCos(a) * r + P->motion.displacement.f[0] * 0.75f;
         v.f[1] = FastSin(a) * r + P->motion.displacement.f[1] * 0.75f;
         v.f[2] = random_float_between(g_frame_time * 3.0f, g_frame_time * 6.5f);
-        k = func_L00_00258BC8(0x5A, 0x78);
+        k = random_int_between(0x5A, 0x78);
         if (P->water_depth < 0.25f)
             PartType35Spawn(&t, &v, 3, k);
         else
@@ -2504,7 +2504,7 @@ void emit_hero_surface_effect_burst(s32 puffs, s32 debris, s32 flash) {
         start.f[1] = D_0013F450_0A320.motion.pos.f[1] + v.f[0] * 8.0f;
         start.f[2] = D_0013F450_0A320.water_surface_z - random_float_between(0.0f, 0.2f);
         color = random_integer_below(2);
-        life = func_L00_00258BC8(0x5A, 0x78);
+        life = random_int_between(0x5A, 0x78);
         PartType35Spawn_r(&start, &v, color, life);
     }
 }
@@ -2534,7 +2534,7 @@ void emit_hero_timed_effects(void) {
         ((int *)&w)[2] = 0;
         w.f[3] = g_frame_time_sq * -8.0f;
         spawn_color_decaying_effect_particle((char *)&v, (char *)&w, 0);
-        *(short *)(base + 0x49E) = func_L00_00258BC8(2, 3);
+        *(short *)(base + 0x49E) = random_int_between(2, 3);
     }
     if (!FastDecTimer(g - 2))
         return;
@@ -2560,7 +2560,7 @@ void emit_hero_timed_effects(void) {
         BuildSphericalOffset(pt, r, a1, a2);
         spawn_effect(&v, pt, col, 0x70F0, life, n1, n2, 1);
     }
-    t = func_L00_00258BC8(scale_ticks(3), scale_ticks(7));
+    t = random_int_between(scale_ticks(3), scale_ticks(7));
     {
         struct Hero *b2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         b2->unk49C = t;
@@ -2726,7 +2726,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
     if (q->unk2274 != 0)
         return;
     if ((unsigned)(t - 1) < 2) {
-        q->unk1010 = func_L00_00258BC8(scale_ticks(0x28), scale_ticks(0x46));
+        q->unk1010 = random_int_between(scale_ticks(0x28), scale_ticks(0x46));
     }
     if (fast_dec_timer((int *)&q->unk1010) != 0) {
         *(float *)&q->unk1004 = -random_float_between(-0.157079637f, 0.436332315f);
@@ -2734,7 +2734,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
         f = random_float_between(0.0f, 1.0f);
         q->idle_look_ease_rate = interpolate_scalar_linear(0.015f, 0.007f, f);
         q->unk1018 = interpolate_scalar_linear(0.29f, 0.3f, f);
-        q->unk1010 = func_L00_00258BC8(scale_ticks(0x5A), scale_ticks(0xC8));
+        q->unk1010 = random_int_between(scale_ticks(0x5A), scale_ticks(0xC8));
         q->unk1010 += truncate_float_to_s32((float)scale_ticks(0x50) * f);
     }
     if ((unsigned)(*(unsigned char *)(*(char **)&q->moby + 0x53) - 1) < 2) {
@@ -2782,13 +2782,13 @@ void update_hero_idle_random_rotation_targets(void) {
                 int *s;
                 *(float *)&((Hero *)g)->unk1028 = randf_sym(0.17453292f, 0.5235988f);
                 s = (int *)(hero_globals_base + 0x1E7D);
-                *s = func_L00_00258BC8(scale_ticks(0x46), scale_ticks(0x96));
+                *s = random_int_between(scale_ticks(0x46), scale_ticks(0x96));
             } else if (i == 1) {
                 *(float *)((char *)q - 0x28) = randf_sym(0.17453292f, 0.5235988f);
-                q[1] = func_L00_00258BC8(scale_ticks(0x28), scale_ticks(0x5A));
+                q[1] = random_int_between(scale_ticks(0x28), scale_ticks(0x5A));
             } else if (i == 2) {
                 *(float *)((char *)q - 0x18) = randf_sym(0.2617994f, 0.87266463f);
-                q[2] = func_L00_00258BC8(scale_ticks(0x28), scale_ticks(0x5A));
+                q[2] = random_int_between(scale_ticks(0x28), scale_ticks(0x5A));
             } else {
                 float old, nw;
                 *(float *)(g + i * 0x10 + 0x1024) = random_float_between(-0.08726646f, 0.5235988f);
@@ -2797,7 +2797,7 @@ void update_hero_idle_random_rotation_targets(void) {
                 *(float *)(g + i * 0x10 + 0x1028) = nw;
                 if ((old <= 0 && nw <= 0) || (old >= 0 && nw >= 0))
                     *(float *)(g + i * 0x10 + 0x1028) = -*(float *)(g + i * 0x10 + 0x1028);
-                q[i] = func_L00_00258BC8(scale_ticks(0x23), scale_ticks(0x46));
+                q[i] = random_int_between(scale_ticks(0x23), scale_ticks(0x46));
             }
         }
         f = g + i * 0x10;
@@ -3007,7 +3007,7 @@ void update_hero_easing_targets_and_point_effects(void) {
 typedef unsigned int u128_20b5b8 __attribute__((mode(TI)));
 extern u8 D_0013F450_20b5b8[] __asm__("D_0013F450");
 extern f32 g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
-extern Vec4 D_L00_00173F80[];
+extern Vec4 coll_hit_normal[];
 
 extern s32 probe_hero_ledge_edge_r(void *, void *) __asm__("func_L00_0020CDF0");
 extern s32 probe_hero_forward_collision_r(s32, f32, f32) __asm__("func_L00_0020A8B8");
@@ -3078,7 +3078,7 @@ void probe_hero_airborne_wall_contact(void) {
     if (n == 0xC) {
         return;
     }
-    pz = (u8 *)D_L00_00173F80;
+    pz = (u8 *)coll_hit_normal;
     if (compute_gravity_relative_vector_inclination(pz) < 1.3089969f) {
         return;
     }
@@ -3401,7 +3401,7 @@ void check_ledge_grab(void) {
             hit = CollType();
             if (hit != 9 && hit != 12 && hit != 0) {
                 if (fast_atan2(((Hit_20C568 *)coll_hit_result_r)->v40[2],
-                               func_001F9CE8(((Hit_20C568 *)coll_hit_result_r)->v40)) < 0.3490658402442932f)
+                               vector_length_xy(((Hit_20C568 *)coll_hit_result_r)->v40)) < 0.3490658402442932f)
                     found = 1;
             }
         }

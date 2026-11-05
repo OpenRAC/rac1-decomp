@@ -282,7 +282,7 @@ void handle_pause_input(void) {
     if ((gDebugFreeCamLvl.w8 & 2) ||
         ((gDebugFreeCamLvl.w8 & 0x10) && (((PadS *)(&g_controller_state))->w1A4 & 0x200))) {
         count_expired_mobys();
-        func_00213C78();
+        update_visible_resident_objects();
         enqueue_voice_request();
         update_ambience_target_cycle();
     }
@@ -525,7 +525,7 @@ void finish_cutscene(void) {
         f = probe_ground_height(cutscene_state_c.v, 0, 0.5f);
         if (2.0f < f && absolute_float(cutscene_state_c.v[2] - f) < 2.0f)
             cutscene_state_c.v[2] = f;
-        func_L00_00217718(cutscene_hero_pos, cutscene_hero_pos + 0x10, 0, 1);
+        set_race_camera(cutscene_hero_pos, cutscene_hero_pos + 0x10, 0, 1);
     }
     if (active_scene_trigger.a)
         active_scene_trigger.a->flags &= ~1;
@@ -772,7 +772,7 @@ void update_cutscene_playback(void) {
         apply_level_specific_cutscene_moby_effects();
     }
     if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
-        func_00213C78();
+        update_visible_resident_objects();
         enqueue_voice_request();
     }
     Profile_Mark_v(level_profile_mark_after_mobys_r, 3);

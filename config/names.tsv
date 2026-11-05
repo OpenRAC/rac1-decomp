@@ -337,7 +337,7 @@ func_002116A0	get_moby_joint_matrices	descriptive	config/names_local.tsv	fills n
 func_00211808	moby_anim_eval_chain	descriptive	ReRAC doc_names.csv	verified at US boot 0x2109B8 (docs/formats/moby_rac1.md:70): doc name MobyAnimEvalChain; US/PAL size alignment	
 func_00212578	MobyAnimProc	recovered	NTSC config/symbols.txt	MobyAnimProc at US 0x211728 (hand-named); US/PAL size alignment	moby_anim_proc
 func_00213BB8	assign_moby_class_data	descriptive	the NTSC decomp	assign_moby_class_data at US boot 0x00212D68 (include/rnc/mobys.h); US function table counterpart	MobyClassRegister,SetMobyClassEntry,moby_class_register
-func_00213C78	MobyUpdateLoop	candidate	ReRAC doc_names.csv	suggested at US level 01 0x2793D8 (docs/plan/moby_update_catalogue.md:35): coined: per-frame moby loop (anim advance; update fn; matrix); fingerprint	update_all_mobys,update_visible_mobys
+func_00213C78	update_visible_resident_objects	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	MobyUpdateLoop,update_all_mobys,update_visible_mobys
 func_00213D28	MobySetAnimation	descriptive	config/names_local.tsv	sets sequence and frame (clamped) and next frame, refreshes frame pointers (comment)	hard_cut,moby_change_sequence,set_moby_animation
 func_00213DE0	MobyBlendAnimation	descriptive	config/names_local.tsv	parks current pose in a blend slot on a sequence change (comment)	MobyAnimBlend,blend_moby_animation,moby_set_anim_snapshot
 func_00213F28	blend_moby_animation_ex	descriptive	the NTSC decomp	blend_moby_animation_ex at US boot 0x002130D8 (src/mobys/animation/blend_moby_animation_ex.c); US function table counterpart	MobyAnimBlendEx,MobyBlendAnimationEx,moby_anim_blend_ex
@@ -962,7 +962,7 @@ func_L01_002F5720	cave_door_update	descriptive	the NTSC decomp	cave_door_update 
 func_L01_002F5800	TetheredMineUpdate	descriptive	config/names_local.tsv	floating mine: scales with camera distance, explodes when hit, deletes its four tethers	BlargFlyerUpdate,fighter_jet_update
 func_L01_002F5AE8	door_half_update	descriptive	the NTSC decomp	door_half_update at US level 01 0x002F4710 (src/overlays/l01/level_class_tables.c); US function table counterpart	CrankSliderUpdate
 func_L01_002F5D38	stationary_ship_update	descriptive	the NTSC decomp	stationary_ship_update at US level 01 0x002F4960 (src/overlays/l01/level_class_tables.c); US function table counterpart	DropshipUpdate,RiderCarrierUpdate
-func_L01_002F6540	FlyerPathDriver	candidate	ReRAC doc_names.csv	suggested at US level 01 0x2F5168 (docs/plan/moby_update_catalogue.md:130): coined: shared flyer path driver; fingerprint	gunship_update
+func_L01_002F6540	gunship_follow_path	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	FlyerPathDriver,gunship_update
 func_L01_002F74D0	update_and_draw_level01_scrolling_layers	descriptive	the NTSC decomp	update_and_draw_level01_scrolling_layers at US level 01 0x002F60F8 (src/overlays/l01/scroll_layers.c); US function table counterpart	Class676DrawCallback,Class678DrawCallback,Class761DrawCallback,DrawScrollingLayers8Callback
 func_L01_002F7558	bounded_scroll_layers_update	descriptive	the NTSC decomp	bounded_scroll_layers_update at US level 01 0x002F6180 (src/overlays/l01/level_class_tables.c); US function table counterpart	CustomDrawSurfacesUpdate,ScrollingLayers2Update
 func_L01_002F7700	rail_hero_motion_update	descriptive	the NTSC decomp	rail_hero_motion_update at US level 01 0x002F6328 (include/rnc/overlay/shared/props/rock.h); US function table counterpart	GrindRailUpdate,WaterCurrent679Update
@@ -1816,7 +1816,7 @@ func_001E99D8	startlevel	descriptive	the NTSC decomp	startlevel at US boot 0x001
 func_001E9EC8	initialize_level_render_state	descriptive	the NTSC decomp	initialize_level_render_state at US boot 0x001E9B10 (include/rnc/rendering/frame/initialize_level_render_state.h); US function table counterpart	Level_ParseObjectTables
 func_001EC2B8	switch_active_camera_record	descriptive	the NTSC decomp	switch_active_camera_record at US boot 0x001EBF10 (src/camera/switch_active_camera_record.c); US function table counterpart	Camera_SwitchActive
 func_001EDCE8	refresh_camera_control_flags	descriptive	the NTSC decomp	refresh_camera_control_flags at US boot 0x001ED940 (src/camera/refresh_camera_control_flags.c); US function table counterpart	Camera_PickCollisionMasks,Camera_PickDrawModes
-func_001F6598	Font_EnableColorCodes	descriptive	config/names_local.tsv	body: sets D_0015F59C=1, which the string drawer tests before applying control-code colours	enable_font_color_codes,snd_hold_command_batches
+func_001F6598	enable_font_color_codes	descriptive	the NTSC decomp	enable_font_color_codes at US boot 0x001F61E8 (include/rnc/ui/text/font/enable_font_color_codes.h); US function table counterpart	Font_EnableColorCodes
 func_001F65A8	disable_font_color_codes	descriptive	the NTSC decomp	disable_font_color_codes at US boot 0x001F61F8 (include/rnc/ui/text/font/disable_font_color_codes.h); US function table counterpart	Font_DisableColorCodes
 func_001F75D0	font_print_window_small	descriptive	the NTSC decomp	font_print_window_small at US boot 0x001F75F0 (include/rnc/ui/text/font/font_print_window_small.h); US function table counterpart	Font_PrintWindowAlt
 func_001F7A50	configure_graphics_render_target_and_projection	descriptive	the NTSC decomp	configure_graphics_render_target_and_projection at US boot 0x001F7888 (include/rnc/rendering/view/configure_graphics_render_target_and_projection.h); US function table counterpart	Framebuf_SetupRenderTarget
@@ -3501,7 +3501,7 @@ func_002080B0	map_filter_l11_3	descriptive	the NTSC decomp	map_filter_l11_3 at U
 func_00208160	map_filter_l11_4	descriptive	the NTSC decomp	map_filter_l11_4 at US boot 0x00207930 (src/ui/map/map_filters.c); US function table counterpart	MenuL11_HitTest4
 func_002081F8	map_filter_l11_5	descriptive	the NTSC decomp	map_filter_l11_5 at US boot 0x002079C8 (src/ui/map/map_filters.c); US function table counterpart	MenuL11_HasSpecialItem59
 func_00208208	map_filter_l12_0	descriptive	the NTSC decomp	map_filter_l12_0 at US boot 0x002079D8 (src/ui/map/map_filters.c); US function table counterpart	MenuL12_HitTest0
-func_00208238	MenuL12_IsAlwaysActive1	descriptive	config/names_local.tsv	Table row 11 slot 1 (level 12): always returns 1	isatty,map_filter_l12_1
+func_00208238	map_filter_l12_1	descriptive	the NTSC decomp	map_filter_l12_1 at US boot 0x00207A08 (src/ui/map/map_filters.c); US function table counterpart	MenuL12_IsAlwaysActive1
 func_00208240	map_filter_l12_2	descriptive	the NTSC decomp	map_filter_l12_2 at US boot 0x00207A10 (src/ui/map/map_filters.c); US function table counterpart	MenuL12_IsAlwaysActive2
 func_00208248	map_filter_l15_0	descriptive	the NTSC decomp	map_filter_l15_0 at US boot 0x00207A18 (src/ui/map/map_filters.c); US function table counterpart	MenuL15_HitTest0
 func_002082E8	map_filter_l16_0	descriptive	the NTSC decomp	map_filter_l16_0 at US boot 0x00207AB8 (src/ui/map/map_filters.c); US function table counterpart	MenuL16_HasSpecialItem72
@@ -3985,7 +3985,7 @@ D_0015EE84	g_current_level_index	descriptive	config/names_local.tsv	held-alias s
 func_001F9CE8	vector_length_xy	descriptive	the NTSC decomp	vector_length_xy at US boot 0x001F9B20 (include/rnc/math/asm_helpers.h); US function table counterpart	vec_length_xy
 D_0015EE60	frame_scale	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it frame_scale among others; this name is free in src (g_ when a local takes the plain word)	fighter_jet_frame_scale,frame_scale_macro
 D_00161000	g_render_packet_cursor	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it render_packet_cursor among others; this name is free in src (g_ when a local takes the plain word)	render_packet_cursor
-func_001F9878	multiply_global_factor	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it multiply_global_factor_ed64 among others; this name is free in src (g_ when a local takes the plain word)	multiply_global_factor_ed64,scale_recovery_time,scale_time
+func_001F9878	multiply_global_factor	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it multiply_global_factor_ed64 among others; this name is free in src (g_ when a local takes the plain word)	multiply_global_factor_ed64
 func_001F9EE8	transform_vector	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it transform_vector among others; this name is free in src (g_ when a local takes the plain word)	
 D_0013E650	voice_pool	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it voice_pool among others; this name is free in src (g_ when a local takes the plain word)	
 D_0013D5C8	item_available	descriptive	config/names_local.tsv	held-alias symbol: the NTSC decomp names it item_available among others; this name is free in src (g_ when a local takes the plain word)	
@@ -9640,7 +9640,7 @@ D_L14_001621B8	electric_beam_blend_alpha_factor_selector_gp	descriptive	the NTSC
 D_L14_001621BC	electric_beam_blend_addend_selector_gp	descriptive	the NTSC decomp	electric_beam_blend_addend_selector_gp at US level 14 0x001620EC (include/rnc/overlay/shared/props/electric_beam_data/draw_electric_beam.h); US/PAL address translation (code of both refers to it)	oltanis_vendor_beam_alpha_d
 D_L14_001E6320	electric_beam_base_uv	descriptive	the NTSC decomp	electric_beam_base_uv at US level 14 0x001E5FD0 (src/overlays/shared/props/electric_beam.c); US/PAL address translation (code of both refers to it)	oltanis_vendor_beam_quad_uvs
 func_00218930	alloc_part_slot	descriptive	config/names_local.tsv	create_part tail-calls it: takes a free bit from the D_001CDB00 slot bitmap, zeroes the 0x40-byte slot and stores the type byte	
-func_001F9840	scale_by_frame_scale	descriptive	config/names_local.tsv	returns frame_scale (gp -0x7EA0 = D_0015EE60) * x	
+func_001F9840	scale_by_frame_scale	descriptive	config/names_local.tsv	returns frame_scale (gp -0x7EA0 = D_0015EE60) * x	multiply_global_factor_ed64,scale_recovery_time,scale_time
 func_001F9888	scale_ticks_by_frame_scale_sq	descriptive	config/names_local.tsv	int x * g_frame_scale_sq + 0.5, truncated to int; twin of scale_ticks	
 func_001F98E8	scale_by_frame_time	descriptive	config/names_local.tsv	returns g_frame_time (gp -0x7E94 = D_0015EE6C) * x	
 func_001F9BA0	min3_int	descriptive	config/names_local.tsv	pminw of three int args	
@@ -10017,7 +10017,7 @@ func_00116CC0	find_substring	descriptive	config/names_local.tsv	newlib strstr (s
 func_00124650	sce_dbc_init	descriptive	config/names_local.tsv	binds IOP servers 0x80000900/0x8000091B and checks server version	sceDbcInit
 func_00124B88	sce_pad2_init	descriptive	config/names_local.tsv	pad2 library init next to scePad2CreateSocket	
 func_00124BC8	sce_pad2_create_socket	descriptive	config/names_local.tsv	marked scePad2CreateSocket(param, buf)	
-func_0012EC30	snd_reenable_command_flush	descriptive	config/names_local.tsv	sets the 989snd flush flag (GP -0x7F3C) back to 1 after a manual flush	
+func_0012EC30	snd_reenable_command_flush	descriptive	config/names_local.tsv	sets the 989snd flush flag (GP -0x7F3C) back to 1 after a manual flush	snd_hold_command_batches
 func_00118AB0	add_dmac_handler	descriptive	config/names_local.tsv	EE syscall 0x12; vuchain installs VIF1 DMA handler	
 func_00118AD0	remove_dmac_handler	descriptive	config/names_local.tsv	EE syscall 0x13; removes the VIF1 DMA handler by id	
 func_001232E0	sce_dma_get_chan	descriptive	config/names_local.tsv	returns DMA channel register block for id < 10	
@@ -10890,7 +10890,7 @@ func_00114920	_malloc_r	descriptive	config/names_local.tsv	mallocr.o _malloc_r (
 func_00115098	libc_mbtowc_r	descriptive	config/names_local.tsv	mbtowc_r.o _mbtowc_r, vfprintf calls it on the format	_mbtowc_r
 func_001154C8	__malloc_unlock	descriptive	config/names_local.tsv	mlock.o __malloc_unlock, empty (MALLOC_UNLOCK)	
 func_001163A0	__sseek	descriptive	config/names_local.tsv	stdio.c __sseek, std() installs it as _seek; calls _lseek_r	sseek
-func_001191C0	libc_glue_isatty	descriptive	config/names_local.tsv	newlib glue isatty: returns 1; __smakebuf calls it	
+func_001191C0	libc_glue_isatty	descriptive	config/names_local.tsv	newlib glue isatty: returns 1; __smakebuf calls it	isatty
 D_001524B8	small_powers_of_five	descriptive	the NTSC decomp	small_powers_of_five at US boot 0x001523B8 (src/sdk/libc/mprec/pow5mult.c); US/PAL address translation (code of both refers to it)	pow5mult_p05
 func_001123A8	_calloc_r	descriptive	config/names_local.tsv	callocr.o _calloc_r: _malloc_r then zero	
 func_001154D0	_Balloc	descriptive	config/names_local.tsv	mprec.o _Balloc: freelist pop or calloc	balloc
@@ -11677,6 +11677,27 @@ D_L18_00162166	electric_bolt_branch_peak_ticks_3_r	descriptive	config/names_loca
 D_L00_001E4E90	l00_suck_beam_ring_source_offsets	descriptive	the NTSC decomp	l00_suck_beam_ring_source_offsets at US level 00 0x001E4B40 (src/overlays/shared/weapons/suckcannon.c); US/PAL address translation (code of both refers to it)	suck_beam_ring_unit_offsets
 D_L00_001E6330	suck_beam_segment_turn_spring_states	descriptive	the NTSC decomp	suck_beam_segment_turn_spring_states at US level 00 0x001E5FE0 (src/overlays/shared/weapons/suckcannon.c); US/PAL address translation (code of both refers to it)	suck_beam_segment_turn_angles
 D_L00_0015F684	level_15_mine_77_respawn_flag	descriptive	config/names_local.tsv	class name from tools/extract/moby_classes.tsv, was level_15_class_4d_respawn_flag	level_15_class_4d_respawn_flag
+func_L12_0030A880	emit_phase_selected_moby_effects	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	cutscene_camera_target_update
+D_0010E800	font_vu_program_tag	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	l09_scaled_entries_vu1_setup_qword_count
+D_0010E810	font_vu_program	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	scaled_entries_vu1_setup_data
+D_0013CBE0	pad_held	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	pad_held_lui
+D_0013D4AF	menu_item_enabled_19	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_0013E130	level_render_state	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_0014C290	level_moby_killed	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	l15_banked_moby_save_bits
+D_0014D690	bolt_source_stats	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	bolt_source_stats_lui
+D_0015EEDC	invert52	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_00161290	surface_height_tiles	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_0016130C	decoder_state	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	movie_player_macro
+D_001872B0	cam_trans_state	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_0019C2C0	point_lights	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_001A0414	selected_level_index	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_001D2678	pause_default_action_list	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	planet_confirm_page
+D_L00_00173F80	coll_hit_normal	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_L00_001CA7C0	vendor_menu	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_L01_0016016C	camera_points	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	l01_cuboids_macro
+D_L01_00179910	help_state	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	
+D_L06_00167500	referencePosition	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	l06_camera
+D_L11_0016016C	path_points_14b0	descriptive	config/names_local.tsv	kept: the NTSC decomp holds its name for this symbol	l11_cuboids
 func_001E9770	noop_callback_a	descriptive	the NTSC decomp	noop_callback_a at US boot 0x001E93F0 (src/game/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9788	noop_callback_d	descriptive	the NTSC decomp	noop_callback_d at US boot 0x001E9408 (src/game/update_resident_gameplay_state.c); US function table counterpart	
 func_001E9790	noop_callback_e	descriptive	the NTSC decomp	noop_callback_e at US boot 0x001E9410 (src/game/update_gameplay_frame.c); US function table counterpart	
@@ -12543,40 +12564,22 @@ D_L18_001625FC	deplanetizer_glow_local_offset_w	descriptive	the NTSC decomp	depl
 D_L18_001D3900	sparkle_quad_corners	descriptive	the NTSC decomp	sparkle_quad_corners at US level 18 0x001D3630 (src/overlays/l18/mobys/rocket.c); US/PAL address translation (code of both refers to it)	
 D_L18_001D3940	sparkle_quad_uvs	descriptive	the NTSC decomp	sparkle_quad_uvs at US level 18 0x001D3670 (src/overlays/l18/mobys/rocket.c); US/PAL address translation (code of both refers to it)	
 func_L08_0027C218	spawn_colored_effect	candidate	the NTSC decomp	held-alias: spawn_colored_effect at US level 08 0x0027B450 (src/overlays/l08/mobys/spawn_moby_offset_effect.c); US function table counterpart	spawn_colored_effect_size_first
-D_0013CBE0	pad_held_lui	candidate	the NTSC decomp	held-alias: pad_held_lui at US boot 0x0013CAE0 (include/rnc/input/pad_globals.h); US/PAL address translation (code of both refers to it)	pad_held_words,pad_held_words_lui
-D_0013D4AF	menu_item_enabled_19	candidate	the NTSC decomp	held-alias: menu_item_enabled_19 at US boot 0x0013D3A7 (include/rnc/ui/menus/menu_globals.h); US/PAL address translation (code of both refers to it)	menu_item_enabled_19_lui
-D_0013E130	level_render_state	candidate	the NTSC decomp	held-alias: level_render_state at US boot 0x0013E030 (include/rnc/rendering/level_render_state.h); US/PAL address translation (code of both refers to it)	level_render_state_lui
 D_0013E6C0	voice_volume_records	candidate	the NTSC decomp	held-alias: voice_volume_records at US boot 0x0013E5C0 (src/audio/voices/allocate_voice_slot.c); US/PAL address translation (code of both refers to it)	voice_volume_records_macro
-D_0014D690	bolt_source_stats_lui	candidate	the NTSC decomp	held-alias: bolt_source_stats_lui at US boot 0x0014D590 (src/overlays/l02/mobys/sand_shark_nest.c); US/PAL address translation (code of both refers to it)	bolt_source_stats
-D_0015EEDC	invert52	candidate	the NTSC decomp	held-alias: invert52 at US boot 0x0015EDDC (include/rnc/game/options.h); US/PAL address translation (code of both refers to it)	invert52_macro
 D_0015EF20	alternate_animation_sequence_macro	candidate	the NTSC decomp	held-alias: alternate_animation_sequence_macro at US boot 0x0015EE20 (src/audio/voices/pause_all_sounds.c); US/PAL address translation (code of both refers to it)	alternate_animation_sequence,alternate_animation_sequence_gp
 D_00160600	mode4_render_vector_delta	candidate	the NTSC decomp	held-alias: mode4_render_vector_delta at US boot 0x00160500 (include/rnc/game/update_level_gameplay_frame_globals.h); US/PAL address translation (code of both refers to it)	mode4_render_vector_delta_gp
-D_00161290	surface_height_tiles	candidate	the NTSC decomp	held-alias: surface_height_tiles at US boot 0x00161190 (include/rnc/world/collision/surface_height_grid.h); US/PAL address translation (code of both refers to it)	surface_height_tiles_macro
-D_0016130C	movie_player_macro	candidate	the NTSC decomp	held-alias: movie_player_macro at US boot 0x0016120C (src/movies/decoder/dec_bs0.c); US/PAL address translation (code of both refers to it)	movie_player
-D_001872B0	cam_trans_state	candidate	the NTSC decomp	held-alias: cam_trans_state at US boot 0x001871B0 (include/rnc/camera/camera_globals.h); US/PAL address translation (code of both refers to it)	cam_trans_state_lui
-D_001A0414	selected_level_index	candidate	the NTSC decomp	held-alias: selected_level_index at US boot 0x001A0314 (include/rnc/ui/menus/menu_globals.h); US/PAL address translation (code of both refers to it)	selected_level_index_lui
-D_001D2678	planet_confirm_page	candidate	the NTSC decomp	held-alias: planet_confirm_page at US boot 0x001D22F8 (include/rnc/ui/menus/menu_pages.h); US/PAL address translation (code of both refers to it)	pause_default_action_list
 D_L00_0015F75C	hero_scalar_pulse_step	candidate	the NTSC decomp	held-alias: hero_scalar_pulse_step at US level 00 0x0015F67C (include/rnc/overlay/shared/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_scalar_pulse_step_gp
 D_L00_0015F760	hero_scalar_pulse_active	candidate	the NTSC decomp	held-alias: hero_scalar_pulse_active at US level 00 0x0015F680 (include/rnc/overlay/shared/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_scalar_pulse_active_gp
 D_L00_0015F764	hero_scalar_pulse_phase	candidate	the NTSC decomp	held-alias: hero_scalar_pulse_phase at US level 00 0x0015F684 (include/rnc/overlay/shared/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_scalar_pulse_phase_gp
 D_L00_0015F7D8	hero_extra_manipulator_attachment_indices	candidate	the NTSC decomp	held-alias: hero_extra_manipulator_attachment_indices at US level 00 0x0015F6F8 (include/rnc/overlay/shared/hero/hero_idle_sequence_globals.h); US/PAL address translation (code of both refers to it)	hero_extra_manipulator_attachment_indices_gp
 D_L00_0015F818	eight_slot_hud_selector_table_pointer	candidate	the NTSC decomp	held-alias: eight_slot_hud_selector_table_pointer at US level 00 0x0015F738 (include/rnc/overlay/shared/ui/hud/draw_hud_item_selector_panel_globals.h); US/PAL address translation (code of both refers to it)	eight_slot_hud_selector_table_pointer_gp
 D_L00_0017A780	hero_eases	candidate	the NTSC decomp	held-alias: hero_eases at US level 00 0x0017A680 (src/overlays/shared/hero/adjust_hero_pose_targets_from_motion.c); US/PAL address translation (code of both refers to it)	hero_eases_lui
-D_L00_001CA7C0	vendor_menu	candidate	the NTSC decomp	held-alias: vendor_menu at US level 00 0x001CA4C0 (src/overlays/shared/vendor/draw_vendor_inset_quads.c); US/PAL address translation (code of both refers to it)	vendor_menu_lui
-D_L01_0016016C	l01_cuboids_macro	candidate	the NTSC decomp	held-alias: l01_cuboids_macro at US level 01 0x001600EC (src/overlays/l01/mobys/agnogg_ship_front.c); US/PAL address translation (code of both refers to it)	l01_cuboids
 D_L02_0015F754	hero_button_8_double_press_countdown_gp	candidate	the NTSC decomp	held-alias: hero_button_8_double_press_countdown_gp at US level 02 0x0015F674 (src/overlays/shared/hero/process_hero_item_action_input.c); US/PAL address translation (code of both refers to it)	hero_button_8_double_press_countdown
-D_L06_00167500	l06_camera	candidate	the NTSC decomp	held-alias: l06_camera at US level 06 0x00167400 (include/rnc/overlay/shared/camera/level_camera.h); US/PAL address translation (code of both refers to it)	l06_camera_lui
-D_L11_0016016C	l11_cuboids	candidate	the NTSC decomp	held-alias: l11_cuboids at US level 11 0x001600EC (include/rnc/overlay/shared/world/cuboid.h); US/PAL address translation (code of both refers to it)	l11_cuboids_macro
 D_L12_001620BC	hoven_jittered_first_packet_blend_minuend_selector	candidate	the NTSC decomp	held-alias: hoven_jittered_first_packet_blend_minuend_selector at US level 12 0x00161FBC (include/rnc/overlay/l12/mobys/jittered_quad_layers_globals.h); US/PAL address translation (code of both refers to it)	hoven_jittered_first_packet_blend_minuend_selector_gp
 D_L14_00161AFC	level14_racer_start_interpolation_duration_frames	candidate	the NTSC decomp	held-alias: level14_racer_start_interpolation_duration_frames at US level 14 0x00161A2C (include/rnc/overlay/l14/mobys/racer_globals.h); US/PAL address translation (code of both refers to it)	level14_racer_start_interpolation_duration_frames_gp
 D_L14_001620BC	bolt_thief_path_spring_gain	candidate	the NTSC decomp	held-alias: bolt_thief_path_spring_gain at US level 14 0x00161FBC (include/rnc/overlay/l14/mobys/bolt_thief_globals.h); US/PAL address translation (code of both refers to it)	bolt_thief_path_spring_gain_gp
 D_L15_001620BC	poison_vessel_gravity	candidate	the NTSC decomp	held-alias: poison_vessel_gravity at US level 15 0x00161FBC (include/rnc/overlay/l15/mobys/poison_vessel_globals.h); US/PAL address translation (code of both refers to it)	poison_vessel_gravity_gp
-func_L12_0030A880	cutscene_camera_target_update	candidate	the NTSC decomp	held-several-symbols: cutscene_camera_target_update at US level 12 0x003094A0 (include/rnc/overlay/l12/mobys.h); US function table counterpart	
-D_0019C2C0	point_lights	candidate	the NTSC decomp	held-several-symbols: point_lights at US boot 0x0019C1C0 (src/game/initialize_level_runtime.c); US/PAL address translation (code of both refers to it)	
 D_L00_0015F770	large_font_height	candidate	the NTSC decomp	held-several-symbols: large_font_height at US level 00 0x0015F690 (src/overlays/shared/hero/hero_switch_item.c); US/PAL address translation (code of both refers to it)	
-D_L00_00173F80	coll_hit_normal	candidate	the NTSC decomp	held-several-symbols: coll_hit_normal at US level 00 0x00173E80 (include/rnc/overlay/shared/world/collision.h); US/PAL address translation (code of both refers to it)	
 D_L00_001EA680	moby_classes	candidate	the NTSC decomp	held-several-symbols: moby_classes at US level 00 0x001EA300 (src/overlays/l00/level_class_tables.c); US/PAL address translation (code of both refers to it)	
-D_L01_00179910	help_state	candidate	the NTSC decomp	held-several-symbols: help_state at US level 01 0x00179890 (src/overlays/l01/mobys/help_hints.c); US/PAL address translation (code of both refers to it)	
 D_L01_0020BE00	moby_classes	candidate	the NTSC decomp	held-several-symbols: moby_classes at US level 01 0x0020BB00 (src/overlays/l01/level_class_tables.c); US/PAL address translation (code of both refers to it)	
 D_L01_0020C780	level_camera_types	candidate	the NTSC decomp	held-several-symbols: level_camera_types at US level 01 0x0020C480 (src/overlays/l01/level_class_tables.c); US/PAL address translation (code of both refers to it)	
 D_L01_0020C880	sound_handlers	candidate	the NTSC decomp	held-several-symbols: sound_handlers at US level 01 0x0020C580 (src/overlays/l01/level_class_tables.c); US/PAL address translation (code of both refers to it)	
@@ -12631,9 +12634,6 @@ D_L17_001E7D80	sound_handlers	candidate	the NTSC decomp	held-several-symbols: so
 D_L18_001F3000	moby_classes	candidate	the NTSC decomp	held-several-symbols: moby_classes at US level 18 0x001F2D00 (src/overlays/l18/level_class_tables.c); US/PAL address translation (code of both refers to it)	
 D_L18_001F3800	level_camera_types	candidate	the NTSC decomp	held-several-symbols: level_camera_types at US level 18 0x001F3500 (src/overlays/l18/level_class_tables.c); US/PAL address translation (code of both refers to it)	
 D_L18_001F3900	sound_handlers	candidate	the NTSC decomp	held-several-symbols: sound_handlers at US level 18 0x001F3600 (src/overlays/l18/level_class_tables.c); US/PAL address translation (code of both refers to it)	
-D_0010E800	font_vu_program_tag	candidate	the NTSC decomp	held-several-names: font_vu_program_tag at US boot 0x0010E800 (include/rnc/ui/text/font_state.h); US/PAL address translation (code of both refers to it)	l09_scaled_entries_vu1_setup_qword_count
-D_0010E810	font_vu_program	candidate	the NTSC decomp	held-several-names: font_vu_program at US boot 0x0010E810 (include/rnc/ui/text/font_state.h); US/PAL address translation (code of both refers to it)	scaled_entries_vu1_setup_data
-D_0014C290	l15_banked_moby_save_bits	candidate	the NTSC decomp	held-several-names: l15_banked_moby_save_bits at US level 15 0x0014C190 (src/overlays/l15/mobys/codebot_slot.c); US/PAL address translation (code of both refers to it)	level_moby_killed
 D_0015EEB2	l05_scenery_ship_extended_trail_selector	candidate	the NTSC decomp	held-several-names: l05_scenery_ship_extended_trail_selector at US level 05 0x0015EDB2 (src/overlays/l05/mobys/scenery_ship.c); US/PAL address translation (code of both refers to it)	linked_moby_trail_long_span_enabled
 D_0012A718	csc_dma_chunk_handler	candidate	the NTSC decomp	held-unreferenced: csc_dma_chunk_handler at US boot 0x0012A5D8 (src/sdk/mpeg/ref_images/csc_store_ref_image.c); US/PAL address translation (code of both refers to it)	
 D_0013D4B9	umbris_open_volume_triggered	candidate	the NTSC decomp	held-unreferenced: umbris_open_volume_triggered at US boot 0x0013D3B1 (src/overlays/l07/mobys/umbris_scene_progression.c); US/PAL address translation (code of both refers to it)	

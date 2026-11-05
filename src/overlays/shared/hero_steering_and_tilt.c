@@ -153,7 +153,7 @@ void hero_move_state_velocity(void) {
                 d = g_hero_s.stickless_decel;
                 if (g_hero_s.on_ice_ground)
                     d = g_frame_time_sq * 0.17f;
-                speed = func_001F9CE8(&g_hero_s.motion.velocity);
+                speed = vector_length_xy(&g_hero_s.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);
                 vec_set_length_xy(g_hero_s.motion.velocity.f, g_hero_s.motion.velocity.f, speed);
                 return;
@@ -829,8 +829,8 @@ void update_hero_planar_movement_velocity(void) {
     }
     f20 = -(g_hero_r3.motion.velocity.f[0] * v0.f[0] + g_hero_r3.motion.velocity.f[1] * v0.f[1]);
     if (f21 < f20) {
-        f20 = f20 / func_001F9CE8(&v0);
-        f20 = f20 / func_001F9CE8(g_hero_r3.motion.velocity.f);
+        f20 = f20 / vector_length_xy(&v0);
+        f20 = f20 / vector_length_xy(g_hero_r3.motion.velocity.f);
     }
     if (1.0f < f20) {
         f20 = 1.0f;
@@ -858,7 +858,7 @@ void update_hero_planar_movement_velocity(void) {
         if (f22 < e) {
             f20 = f20 / e;
         }
-        b = func_001F9CE8(&v2);
+        b = vector_length_xy(&v2);
         a = (b - f20) / b;
         c = g_frame_time_sq * 3.0f;
         b = c * a;
@@ -982,7 +982,7 @@ void update_hero_delayed_voice_requests(void) {
 extern int hero_control_mode_11_flag NOT_SDA;
 
 /* resets the level state from two vectors: sets up camera matrices, clears flags, starts sound bank */
-void func_L00_00217718(void *a, void *b, int c, int d) {
+void set_race_camera(void *a, void *b, int c, int d) {
     char *p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
     char *q;
     qcopy(p, a);
@@ -1109,7 +1109,7 @@ void emit_filtered_entry_sparkles(int a, int n) {
         }
     }
 }
-extern char D_0013F4D0[];
+extern char hero_pos[];
 
 extern int truncate_float_to_s32(float);
 
@@ -1125,7 +1125,7 @@ void spawn_hero_radial_particle_burst(void) {
     float s, ang, e, r;
 
     t = scale_ticks(0x28);
-    q = D_0013F4D0;
+    q = hero_pos;
     g = q - 0x80;
     i = 9;
     do {
@@ -1192,7 +1192,7 @@ void launch_hero_wrench(void) {
                 transform_hero_local_offset_to_world(dir, 0.5f, 0.0f, 0.5f);
                 FastVecSub(delta, tpv->unk50, dir);
                 g_hero_r2.aim_yaw = fast_atan2(delta[0], delta[1]);
-                g_hero_r2.aim_pitch = fast_atan2(func_001F9CE8(delta), delta[2]);
+                g_hero_r2.aim_pitch = fast_atan2(vector_length_xy(delta), delta[2]);
             }
         }
         if (!has_target) {

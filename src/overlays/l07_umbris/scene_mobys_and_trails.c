@@ -460,8 +460,8 @@ void cutscene_effects_update(struct Moby *m) {
                     moby_point_position(mob, i, buf);
                     for (j = 9; j >= 0; j--) {
                         float d = random_float_between(20000.0f, 200000.0f);
-                        int col = (func_L00_00258BC8(0x20, 0x80) << 24) | 0x7F7F7F;
-                        int v = func_L00_00258BC8(0, 4);
+                        int col = (random_int_between(0x20, 0x80) << 24) | 0x7F7F7F;
+                        int v = random_int_between(0, 4);
                         char *p;
                         char *q;
                         if (random_integer_below(2) != 0)
@@ -469,7 +469,7 @@ void cutscene_effects_update(struct Moby *m) {
                         p = PartType23Spawn_v(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
                         if (p != 0) {
                             q = p + 0x20;
-                            *(short *)(p + 0xA) = scale_ticks(func_L00_00258BC8(0x3C, 0x5A));
+                            *(short *)(p + 0xA) = scale_ticks(random_int_between(0x3C, 0x5A));
                             *(int *)(q + 4) = 2;
                             *(char *)(q + 0xA) = col >> 24;
                             *(char *)(q + 0xB) = *(unsigned char *)(p + 0xA);

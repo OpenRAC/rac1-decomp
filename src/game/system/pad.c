@@ -264,7 +264,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     }
     v[0] = p->analog[2];
     v[1] = p->analog[3];
-    mag = func_001F9CE8(v);
+    mag = vector_length_xy(v);
     ang = fast_arc_tan(v[0], v[1]);
     p->hist_mag[p->hist_idx] = mag;
     p->hist_ang[p->hist_idx] = ang;

@@ -50,7 +50,7 @@ extern Hero g_hero;
 extern char g_screen_extent[];
 extern char help_records[];
 extern char pad0_pressed[];
-extern int D_0013CBE0;
+extern int pad_held;
 extern char voice_pool[];
 
 /* Dreks fleet turret: takes hits, flashes and fades colour. */
@@ -107,7 +107,7 @@ struct FleetHudVars {
     f32 shown_hp; /* 0xF0 */
     s32 bar_value; /* 0xF4 */
     u8 pad_F8[0xC];
-    s32 hud_frame; /* 0x104: effect texture offset */
+    s32 hud_frame_count; /* 0x104: effect texture offset */
 };
 
 /* Fighter jet: steering state clamped by the flight bounds. */
@@ -491,9 +491,9 @@ void dreks_fleet_turret_update(char *m) {
                 ang = fast_atan2(dir[0], dir[1]);
                 turn = g_frame_time_sq * 0.5235988f;
                 SteerAngleWithVelocity(yaw, &d->yawvel, ang, turn, turn, g_frame_time * 1.0471976f);
-                d->fF4 = -fast_atan2(func_001F9CE8(dir), dir[2]);
-                func_L00_00263950(m, d->a90, 0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f);
-                off = FastDiffRots(d->fD4, -fast_atan2(func_001F9CE8(dir), dir[2]));
+                d->fF4 = -fast_atan2(vector_length_xy(dir), dir[2]);
+                update_joint_animation(m, d->a90, 0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f);
+                off = FastDiffRots(d->fD4, -fast_atan2(vector_length_xy(dir), dir[2]));
                 if (fleet_frame_count % scale_ticks(0x5A) == d->timer && off < 0.034906585f) {
                     if (FastDiffRots(
                             ((Moby *)m)->rot.z,
@@ -540,9 +540,9 @@ void dreks_fleet_turret_update(char *m) {
                 ang = fast_atan2(dir[0], dir[1]);
                 turn = g_frame_time_sq * 0.5235988f;
                 SteerAngleWithVelocity(yaw, &d->yawvel, ang, turn, turn, g_frame_time * 1.0471976f);
-                d->fF4 = -fast_atan2(func_001F9CE8(dir), dir[2]);
-                func_L00_00263950(m, d->a90, 0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f);
-                off = FastDiffRots(d->fD4, -fast_atan2(func_001F9CE8(dir), dir[2]));
+                d->fF4 = -fast_atan2(vector_length_xy(dir), dir[2]);
+                update_joint_animation(m, d->a90, 0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f);
+                off = FastDiffRots(d->fD4, -fast_atan2(vector_length_xy(dir), dir[2]));
                 if (fast_dec_timer(&d->timer) && off < 0.034906585f) {
                     if (FastDiffRots(((Moby *)m)->rot.z, fast_atan2(aim.pos[0] - ((Moby *)m)->pos.x,
                                                                     aim.pos[1] - ((Moby *)m)->pos.y)) < 0.034906585f) {
@@ -1748,9 +1748,9 @@ void DrawFleetHud(char *moby) {
 
     VU1_addGSregister(0x42, 0x8000000044L);
     DrawTexturedQuad(0x170, (s = g_screen_extent, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080,
-                     GetEffectTex_l(d->hud_frame + 0x28));
+                     GetEffectTex_l(d->hud_frame_count + 0x28));
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080,
-                     GetEffectTex_l(d->hud_frame + 0x29));
+                     GetEffectTex_l(d->hud_frame_count + 0x29));
     VU1_addGSregister(0x42, 0x8000000048L);
     update_fighter_jet_target_lock((int)moby, ((char *)d));
     if (*(int *)&d->lock_target != 0) {
@@ -2108,7 +2108,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
         kb = fighter_jet_vertical_steering_settle_threshold_scale_gp;
         a = x;
         b = y;
-        if (D_0013CBE0 & 0x200) {
+        if (pad_held & 0x200) {
             a = x / fleet_jet_yaw_rate * fleet_jet_sharp_yaw_rate;
             b = y / fleet_jet_pitch_rate * fleet_jet_sharp_pitch_rate;
             ka = fighter_jet_rescaled_horizontal_steering_settle_threshold_scale_gp;
@@ -2238,7 +2238,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             reflect_vector(dir, dir, p + 0x40);
             o->f38 = FastAddRots(o->f38, FastSubRots(fast_atan2(dir[0], dir[1]), o->f38) *
                                              fighter_jet_impact_yaw_response_scale_gp);
-            t = FastAddRots(o->f34, FastSubRots(-fast_atan2(func_001F9CE8(dir), dir[2]), o->f34) *
+            t = FastAddRots(o->f34, FastSubRots(-fast_atan2(vector_length_xy(dir), dir[2]), o->f34) *
                                         fighter_jet_impact_pitch_response_scale_gp);
             k = o->speed * fleet_jet_bounce_speed_scale;
             o->f34 = t;
@@ -2283,7 +2283,7 @@ extern unsigned char saved_mission_state[][16] NOT_SDA;
 extern float fleet_view_tan_half_fov_a[] __asm__("D_L17_0016D470");
 extern char *fighter_jet_hp_bar_clut_lookup_base MACRO_ADDR;
 extern char voice_pool[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern float fighter_jet_transition_fade_value MACRO_ADDR;
 extern int fleet_play_mode MACRO_ADDR;
 extern char fleet_jet_err_no_jet_point[];
@@ -2448,8 +2448,9 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                         reflect_vector(v, v, p);
                         d->v30[2] = FastAddRots(d->v30[2], FastSubRots(fast_atan2(v[0], v[1]), d->v30[2]) *
                                                                *(float *)&fleet_jet_bounce_yaw_blend_s * f);
-                        d->v30[1] = FastAddRots(d->v30[1], FastSubRots(fast_atan2(func_001F9CE8(v), v[2]), d->v30[1]) *
-                                                               *(float *)&fleet_jet_bounce_pitch_blend_s * f);
+                        d->v30[1] =
+                            FastAddRots(d->v30[1], FastSubRots(fast_atan2(vector_length_xy(v), v[2]), d->v30[1]) *
+                                                       *(float *)&fleet_jet_bounce_pitch_blend_s * f);
                     }
                 } else {
                     Cam1379 *q;
@@ -2562,7 +2563,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     request_music_track(2, 4);
                     if (d->i120 != -1) {
                         char *e = fleet_camera_points + d->i120 * 128;
-                        func_L00_00217718(e + 0x30, e + 0x70, 0x32, 1);
+                        set_race_camera(e + 0x30, e + 0x70, 0x32, 1);
                         {
                             int i = d->i120;
                             char *b2 = fleet_camera_points;
@@ -2643,7 +2644,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                 moby->scale = *(float *)(moby->cls + 0x24);
                 refresh_moby_spatial_bounds_from_basis(moby);
                 e = fleet_camera_points + d->iFC * 128;
-                func_L00_00217718(e + 0x30, e + 0x70, 0, 1);
+                set_race_camera(e + 0x30, e + 0x70, 0, 1);
                 request_music_track(0, 5);
                 if (d->i108 != -1) {
                     char *e = voice_pool + d->i108 * 0x70;
@@ -2734,7 +2735,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                         }
                         set_class_mobys_flags_and_collision(0x325, 1, 1, -1);
                         e = fleet_camera_points + d->iFC * 128;
-                        func_L00_00217718(e + 0x30, e + 0x70, 0, 1);
+                        set_race_camera(e + 0x30, e + 0x70, 0, 1);
                     }
                     if (moby->b0 != 0xFF) {
                         jet_clear_persistent(moby->b0);
@@ -2753,7 +2754,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                         }
                     }
                     d->i10C = -1;
-                    jet_reset_camera(D_0013F4D0, D_0013F4D0 + 0x10);
+                    jet_reset_camera(hero_pos, hero_pos + 0x10);
                     moby->state = 9;
                 }
                 break;
@@ -2784,8 +2785,8 @@ void FighterJetUpdate(FighterJet1379 *moby) {
             moby->pos[2] = 1008.0f;
         s2 = moby->state;
         if (s2 == 4) {
-            qcopy(D_0013F4D0, moby->pos);
-            qcopy(D_0013F4D0 + 0x10, d->v30);
+            qcopy(hero_pos, moby->pos);
+            qcopy(hero_pos + 0x10, d->v30);
         }
         if (s2 >= 3 && s2 <= 4) {
             emit_type_74_particles_from_moby_joints(moby, d);
@@ -2805,8 +2806,8 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
     FastVecAdd(v, v, moby + 0x10);
     zz = v[2];
     FastVecSub(v, v, (d->camera_point << 7) + fleet_camera_points + 0x30);
-    dist = func_001F9CE8(v);
-    tmp = func_001F9CE8((d->camera_point << 7) + fleet_camera_points);
+    dist = vector_length_xy(v);
+    tmp = vector_length_xy((d->camera_point << 7) + fleet_camera_points);
     hi = *(float *)(fleet_camera_points_t[d->camera_point] + 0x28);
     lo = *(float *)(fleet_camera_points_t[d->camera_point] + 0x38);
     t = hi + lo;

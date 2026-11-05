@@ -31,7 +31,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/visibomb_and_pyrocitor.h"
 #include "overlays/shared/hero_water_and_ground_motion.h"
-extern u8 D_0013F4D0[];
+extern u8 hero_pos[];
 extern char g_hero_pos_z[];
 extern char hero_motion_rotation_for_local_pivot[];
 extern char hero_basis[];
@@ -39,7 +39,7 @@ extern char l00_object_offset_particle_velocity_contributions[];
 extern char hero_gravity_dir[];
 extern u8 hero_velocity[];
 extern int pad0_pressed;
-extern int D_0013CBE0;
+extern int pad_held;
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -99,7 +99,7 @@ int probe_hero_ledge_edge(Vec4 *pos, f32 *dir) {
         if (coll_line_r(&top, &low, 4, g_hero_r.moby, 0)) {
             material = CollType();
             if (material != 9 && material != 12) {
-                if (fast_atan2(coll_hit_result_r.normal.f[2], func_001F9CE8(&coll_hit_result_r.normal.f[0])) <
+                if (fast_atan2(coll_hit_result_r.normal.f[2], vector_length_xy(&coll_hit_result_r.normal.f[0])) <
                     max_slope)
                     found = 1;
             }
@@ -1557,7 +1557,7 @@ void update_hero_item_mobys(void) {
                         scratch.direction[1] = 0.0f;
                         scratch.direction[2] = 0.0f;
                         transform_vector_by_basis(scratch.direction, scratch.direction, &moby->rot_row0);
-                        moby->rot.y = -fast_atan2(func_001F9CE8(scratch.direction), scratch.direction[2]);
+                        moby->rot.y = -fast_atan2(vector_length_xy(scratch.direction), scratch.direction[2]);
                         moby->rot.z = fast_atan2(scratch.direction[0], scratch.direction[1]);
                         refresh_moby_spatial_bounds_from_basis(moby);
                         moby->flags |= 6;
@@ -2055,7 +2055,7 @@ void hero_switch_item(int i) {
         Sel *g = (Sel *)(hero_globals_base + 0xE1D);
         *(int *)((char *)g + i * 0x50 + 0x10B0) = 3;
         clear_hero_idle_rotation_targets();
-        ((Hero *)g)->unk1010 = func_L00_00258BC8(scale_ticks(0x32), scale_ticks(0x5A));
+        ((Hero *)g)->unk1010 = random_int_between(scale_ticks(0x32), scale_ticks(0x5A));
         set_hero_item_switch_timer_for_item(*((int *)(hero_globals_base + 0xE1D + 0x20D4) + i));
         set_hero_condition_animation_timer_for_item(*((int *)(hero_globals_base + 0xE1D + 0x20D4) + i));
         if (g->f20A8 != 0) {
@@ -2316,7 +2316,7 @@ extern T_210ce8 moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
 
 extern s32 hero_hit_count MACRO_ADDR;
-extern u8 D_0013F4D0[];
+extern u8 hero_pos[];
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
@@ -2390,7 +2390,7 @@ s32 hero_check_damage(s32 arg) {
             flag = 1;
         }
     } else if (tbl->p20 != 0) {
-        FastVecSub(&v, D_0013F4D0, tbl->p20 + 0x10);
+        FastVecSub(&v, hero_pos, tbl->p20 + 0x10);
     } else {
         v.f[0] = FastCos(FastAddRots(g_hero_r4.motion.rot.f[2], 3.1415927f));
         v.f[1] = FastSin(FastAddRots(g_hero_r4.motion.rot.f[2], 3.1415927f));
@@ -2612,7 +2612,7 @@ void hero_update(void) {
     D_0013F450_211D28.unk240 = 0;
     D_0013F450_211D28.stick_x = g_controller_state.analog[2];
     D_0013F450_211D28.stick_y = g_controller_state.analog[3];
-    if (func_001F9CE8(&D_0013F450_211D28.stick_x) < 0.25f) {
+    if (vector_length_xy(&D_0013F450_211D28.stick_x) < 0.25f) {
         raw = g_controller_state.raw_held;
         l = (raw >> 13) & 1;
         r = (raw >> 15) & 1;
@@ -2646,7 +2646,7 @@ void hero_update(void) {
 
 /* The xy length of the vector at g_hero + 0x1D20, capped at 1. */
 float get_capped_hero_stick_magnitude(void) {
-    float len = func_001F9CE8(g_hero + 0x1D20);
+    float len = vector_length_xy(g_hero + 0x1D20);
 
     if (1.0f < len) {
         len = 1.0f;
@@ -2703,7 +2703,7 @@ void stick_target(float scale, int mode) {
             v.f[1] = 0.0f;
         }
     }
-    len = func_001F9CE8(&v);
+    len = vector_length_xy(&v);
     if (len > 1.0f) {
         divide_vector_xyz(&v, &v, len);
     }
@@ -2750,7 +2750,7 @@ void stick_target(float scale, int mode) {
         v.f[1] = x;
     }
     transform_vector_by_basis(hero_globals_base + 0xF8D, &v, player_camera_matrix);
-    *(float *)(hero_globals_base + 0xF8D + 0x20) = scale * func_001F9CE8(&v);
+    *(float *)(hero_globals_base + 0xF8D + 0x20) = scale * vector_length_xy(&v);
 }
 extern float hero_speed_steps[];
 extern void stick_target(float, int);
@@ -2936,7 +2936,7 @@ void correct_hero_airborne_wall_velocity(void) {
 
     if (p->air_frames.s != 0 && p->ground_distance < 0.15f) {
         if (0.0f < p->motion.displacement.f[2] && p->wall_hit != 0 && 0.0f < p->wall_contact_normal.f[2]) {
-            if (fast_atan2(p->wall_contact_normal.f[2], func_001F9CE8(&p->wall_contact_normal)) >= 0.87266463f) {
+            if (fast_atan2(p->wall_contact_normal.f[2], vector_length_xy(&p->wall_contact_normal)) >= 0.87266463f) {
                 qcopy(v, &p->wall_contact_normal);
                 v[2] = 0.0f;
                 sceVu0Normalize(v, v);
@@ -2983,12 +2983,12 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
             primary_probe_height_offset = 1.5f;
             k = 5.0f;
         }
-        pos_base = (char *)&D_0013F4D0;
+        pos_base = (char *)&hero_pos;
         qcopy(primary_probe_start.f, pos_base);
         primary_probe_start.f[2] += primary_probe_height_offset;
         qcopy(b.f, pos_base);
         b.f[2] += primary_probe_height_offset * 0.3f;
-        if (arg != 0 || func_001F9CE8(q = pos_base + 0x60) < 0.01f) {
+        if (arg != 0 || vector_length_xy(q = pos_base + 0x60) < 0.01f) {
             h1 = (struct Hero *)(pos_base - 0x80);
             primary_probe_offset_or_end.f[0] = FastCos(h1->motion.rot.f[2]) * k;
             primary_probe_offset_or_end.f[1] = FastSin(h1->motion.rot.f[2]) * k;
@@ -3000,7 +3000,7 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
             qcopy(primary_probe_offset_or_end.f, q);
             primary_probe_offset_or_end.f[2] = 0.0f;
             FastVecScale(primary_probe_offset_or_end.f, primary_probe_offset_or_end.f,
-                         k / func_001F9CE8(primary_probe_offset_or_end.f));
+                         k / vector_length_xy(primary_probe_offset_or_end.f));
             qcopy(secondary_probe_offset_or_end.f, primary_probe_offset_or_end.f);
             FastVecScale(secondary_probe_offset_or_end.f, secondary_probe_offset_or_end.f, 1.4f);
         }
@@ -3019,7 +3019,7 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
             pos_base = (char *)coll_hit_result;
             if (((CollisionHit *)pos_base)->unk1C > 0) {
                 primary_hit_normal_angle = fast_atan2(((CollisionHit *)pos_base)->normal.f[2],
-                                                      func_001F9CE8(&((CollisionHit *)pos_base)->normal.f[0]));
+                                                      vector_length_xy(&((CollisionHit *)pos_base)->normal.f[0]));
             }
         }
         if (primary_hit_normal_angle >= 0.87266463f || r == 8 || r == 12) {
@@ -3055,7 +3055,7 @@ void hero_get_collision_ray_endpoints(VecA16 *a, VecA16 *b, int mode, float fa, 
         t[1] = *a;
         clip_negative_segment_endpoint_xyz(&t[1], b);
     } else {
-        qcopy(&t[0], (char *)&D_0013F4D0);
+        qcopy(&t[0], (char *)&hero_pos);
         qcopy(b, &t[0]);
         b->v[2] += fb;
         if (b->v[2] < 0.0f)
@@ -3296,7 +3296,7 @@ void correct_hero_ground_penetration(void) {
             len = len * 0.5f;
         }
         vec_scale_to_length(v, v, len);
-        FastVecAdd((char *)&D_0013F4D0, (char *)&D_0013F4D0, v);
+        FastVecAdd((char *)&hero_pos, (char *)&hero_pos, v);
     } else {
         if (((struct Hero *)g)->air_frames.s == 0 &&
             ((struct Hero *)g)->motion.pos.f[2] < ((struct Hero *)g)->ground_z.f) {
@@ -3407,7 +3407,7 @@ int resolve_hero_current_position_collisions(int arg) {
             v1[2] = g->capsule_bottom;
         }
     }
-    g2 = (char *)&D_0013F4D0;
+    g2 = (char *)&hero_pos;
     FastVecAdd(g2, g2, v1);
     r = 0x24;
     if (*(int *)(g2 + 0x2004) == 0x7F)
@@ -3433,7 +3433,7 @@ int resolve_hero_current_position_collisions(int arg) {
                     break;
             }
         }
-        p = (char *)&D_0013F4D0;
+        p = (char *)&hero_pos;
         qcopy(p, coll_hit_position);
         qcopy(p + 0x180, coll_hit_position + 0x10);
         qcopy(p + 0x190, coll_hit_position - 0x10);
@@ -3441,7 +3441,7 @@ int resolve_hero_current_position_collisions(int arg) {
         *(unsigned char *)(q + 0x257) = 1;
         *(int *)(q + 0x23C) = *(int *)(coll_hit_position - 0x18);
     }
-    g = &D_0013F4D0;
+    g = &hero_pos;
     FastVecSub(&g->rot_matrix[0], &g->rot_matrix[0], v1);
     FastVecSub(v2, &g->rot_matrix[0], v0);
     len = FastVecLength(v2);
@@ -3520,7 +3520,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *base = (float *)(&D_0013F4D0);
+    float *base = (float *)(&hero_pos);
     float *contact;
     float *vertical;
     float *position;
@@ -3561,7 +3561,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
             float limit;
 
             vertical = (float *)((char *)base + 0x60);
-            length = func_001F9CE8(vertical);
+            length = vector_length_xy(vertical);
             limit = ((Hero *)position)->capsule_radius - 0.02f;
             if (limit < length)
                 vec_set_length_xy(vertical, vertical, limit);
@@ -3580,7 +3580,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
             }
         }
     }
-    position = (float *)(&D_0013F4D0);
+    position = (float *)(&hero_pos);
     FastVecAdd(position, position, (char *)position + 0x60);
     extra_step = (float *)((char *)position + 0x8A0);
     FastVecAdd(position, position, extra_step);
@@ -3627,7 +3627,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
     vec_scale_to_length(vertical, plane.f, magnitude);
     motion_player = (Hero *)((char *)position - 0x110);
     motion_player->motion.speed_xy = FastVecLength(position);
-    magnitude = func_001F9CE8(position);
+    magnitude = vector_length_xy(position);
     work.q = *(Q_213F38 *)position;
     motion_player->motion.flat_speed = magnitude;
     motion_player->motion.forward_speed = forward_component((void *)work.f);
@@ -3718,8 +3718,8 @@ void steer_hero_planar_velocity(float step) {
                 v[1] = FastSin(a) * s;
                 v[2] = h3->motion.velocity.f[2];
                 t = -(h3->motion.velocity.f[0] * v[0] + h3->motion.velocity.f[1] * v[1]);
-                l1 = func_001F9CE8(v);
-                l2 = func_001F9CE8(&h3->motion.velocity);
+                l1 = vector_length_xy(v);
+                l2 = vector_length_xy(&h3->motion.velocity);
                 if (l1 == 0.0f) {
                     t = 0.0f;
                 } else if (l2 == 0.0f) {
@@ -3748,7 +3748,7 @@ void steer_hero_planar_velocity(float step) {
             p = (char *)hero_velocity;
             step *= t;
             FastVecSub(v, v, (float *)p);
-            if (step < func_001F9CE8(v))
+            if (step < vector_length_xy(v))
                 vec_set_length_xy(v, v, step);
             FastVecAdd(p, p, v);
             qcopy(p + 0x50, p);
@@ -3816,7 +3816,7 @@ void hero_integrate_velocity(void) {
                 }
             }
         }
-        FastVecSub(vec, (char *)&D_0013F4D0, (char *)&D_0013F4D0 + 0x380);
+        FastVecSub(vec, (char *)&hero_pos, (char *)&hero_pos + 0x380);
         {
             float d = gravity_z(vec);
             if (near) {
@@ -3854,7 +3854,7 @@ void hero_integrate_velocity(void) {
         z = 0;
         if (((struct Hero *)g)->unk428 == 0.0f && ((struct Hero *)g)->unk42C == 0.0f)
             z = 1;
-        if ((D_0013CBE0 & 0x40) || z != 0 || (k = hero_globals_base + 0xE1D, *(int *)(k + 0x2084) == 0x12)) {
+        if ((pad_held & 0x40) || z != 0 || (k = hero_globals_base + 0xE1D, *(int *)(k + 0x2084) == 0x12)) {
             struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
             if (h->unk430 < h->unk48C) {
                 if (h->state_timer <= scale_ticks(15)) {

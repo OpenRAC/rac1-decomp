@@ -274,7 +274,7 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
             dir[2] = 0.0f;
             FastVecCross(dir, dir, push);
             FastVecCross(dir, dir, push);
-            a->tilt = fast_atan2(func_001F9CE8(dir), dir[2]);
+            a->tilt = fast_atan2(vector_length_xy(dir), dir[2]);
         } else {
             a->tilt = 0.0f;
         }
@@ -567,7 +567,7 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
         }
         FastVecSub(v20, buf, &m->pos);
         FastVecAdd(&m->pos, buf, buf + 4);
-        if (func_001F9CE8(v20) < *(float *)(s + 0xC0) * 0.5f)
+        if (vector_length_xy(v20) < *(float *)(s + 0xC0) * 0.5f)
             res |= 2;
     }
 

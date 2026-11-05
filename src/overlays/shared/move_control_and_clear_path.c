@@ -264,7 +264,7 @@ typedef struct {
 extern GG fx_cutscene;
 
 /* Places the marker at a moby's position offset along its heading by scale. */
-void func_L01_00279398(float scale, char *moby) {
+void begin_dialogue_camera_transition(float scale, char *moby) {
     fx_cutscene.f = 1;
     qcopy(fx_cutscene.p, moby + 0x10);
     fx_cutscene.p[0] += FastCos(*(float *)(moby + 0x48)) * scale;

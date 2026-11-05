@@ -147,6 +147,7 @@ func_00119008	src/sdk/kernel/write.c
 func_00119088	src/sdk/kernel/read.c
 func_00119108	src/sdk/libc/reent/_lseek.c
 func_00119110	src/sdk/kernel/sbrk.c
+func_001191C0	src/sdk/libc/reent/isatty.c
 func_001191C8	src/sdk/libc/reent/_fstat.c
 func_001191E0	src/assembly/sdk/library/scesdc.c
 func_00119288	src/sdk/kernel/SyncDCache.c
@@ -533,6 +534,7 @@ func_0012E688	src/audio/rpc/snd_send_iop_command_and_wait.c
 func_0012E820	src/audio/rpc/snd_send_iop_command_no_wait.c
 func_0012EAE0	src/audio/rpc/snd_post_message.c
 func_0012EB18	src/audio/rpc/snd_send_current_batch.c
+func_0012EC30	src/audio/rpc/snd_hold_command_batches.c
 func_0012EC40	src/audio/rpc/snd_reset_state_and_flush_commands.c
 func_0012EC60	src/audio/streaming/vag/snd_init_vag_streaming_ex.c
 func_0012ED10	src/audio/streaming/snd_stop_all_streams.c
@@ -673,6 +675,7 @@ func_001F5BB8	src/rendering/packets/emit_textured_rectangle.c
 func_001F5E60	src/rendering/packets/append_rotated_sprite_quad.c
 func_001F62C8	src/ui/frames/draw_ui_frame.c
 func_001F6410	src/ui/frames/draw_outlined_rect.c
+func_001F6598	src/ui/text/font/enable_font_color_codes.c
 func_001F65A8	src/ui/text/font/disable_font_color_codes.c
 func_001F65B0	src/ui/text/font/measure_text_width.c
 func_001F6600	src/ui/text/font/measure_text_width_regular.c
@@ -923,6 +926,7 @@ func_002080B0	src/ui/map/map_filters.c
 func_00208160	src/ui/map/map_filters.c
 func_002081F8	src/ui/map/map_filters.c
 func_00208208	src/ui/map/map_filters.c
+func_00208238	src/ui/map/map_filters.c
 func_00208240	src/ui/map/map_filters.c
 func_00208248	src/ui/map/map_filters.c
 func_002082E8	src/ui/map/map_filters.c

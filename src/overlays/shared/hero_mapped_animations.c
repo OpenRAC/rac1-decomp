@@ -157,7 +157,7 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
     }
 }
 
-/* Picks at random (random_int_between) one of the entries whose seq is ID
+/* Picks at random (func_L00_00258BC8) one of the entries whose seq is ID
    in the mode's sequence table (see lookup_hero_slot3_animation_key) and returns 1 with
    its key and argument bytes in *KEY and *ARG; with no match, *KEY = 1
    and it returns 0. `tbl - -n` keeps retail's index-first addu, which
@@ -191,7 +191,7 @@ int select_hero_slot3_animation_pair(int id, int *key, int *arg) {
         }
     }
     if (count != 0) {
-        e = tbl - -list[func_L00_00258BC8(0, count - 1)];
+        e = tbl - -list[random_int_between(0, count - 1)];
         *key = e->key;
         *arg = e->unk3;
         return 1;
@@ -572,7 +572,7 @@ void advance_hero_animation(void) {
 
 typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r __asm__("D_0013F450");
-extern u8 D_L00_00173F80[];
+extern u8 coll_hit_normal[];
 extern f32 collision_hit_point;
 
 extern f32 compute_gravity_relative_vector_inclination_r(void *) __asm__("func_L00_002345B0");
@@ -597,8 +597,8 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
                 clip_negative_segment_endpoint_xyz(&v, t);
                 qcopy(&v, &(&g_hero_r)->motion.pos);
                 if (coll_line(&v, t, 0x24, 0, 0) != 0) {
-                    if (compute_gravity_relative_vector_inclination_r((f32 *)D_L00_00173F80) <= 0.87266463f) {
-                        c = *(f32 *)(D_L00_00173F80 - 0x18);
+                    if (compute_gravity_relative_vector_inclination_r((f32 *)coll_hit_normal) <= 0.87266463f) {
+                        c = *(f32 *)(coll_hit_normal - 0x18);
                     }
                 }
             }
@@ -1013,7 +1013,7 @@ void gravity_flatten(float *dst, float *src) {
     }
 }
 
-/* The xy length (vector_length_xy) of V. In view modes 1 and 2
+/* The xy length (func_001F9CE8) of V. In view modes 1 and 2
    (g_hero + 0x20B3) V is first taken through the inverse of the
    rotation euler_to_matrix builds from the angles at +0x40 of the object
    at +0x2080 (matrix_from_basis_rows transposes it); other modes give 0. The
@@ -1026,13 +1026,13 @@ float gravity_length_xy(float *v) {
 
     switch (base->gravity_mode) {
         case 0:
-            return func_001F9CE8(v);
+            return vector_length_xy(v);
         case 1:
         case 2:
             euler_to_matrix(m, *(char **)&base->moby + 0x40);
             matrix_from_basis_rows(inv, m);
             transform_vector(out, v, inv);
-            return func_001F9CE8(out);
+            return vector_length_xy(out);
     }
     return 0.0f;
 }
@@ -1137,7 +1137,7 @@ float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step) 
 }
 
 /* Returns fast_atan2 (handwritten, apparently an atan2) of V's z
-   and its xy length (vector_length_xy): V's pitch. In view modes 1 and 2
+   and its xy length (func_001F9CE8): V's pitch. In view modes 1 and 2
    (g_hero + 0x20B3) V is first transformed by the matrix at +0x40,
    in an aligned stack copy; any other mode gives 0. The switch gives
    retail's case tree. */
@@ -1147,12 +1147,12 @@ float compute_gravity_relative_vector_inclination(float *v) {
 
     switch (base->gravity_mode) {
         case 0:
-            return fast_atan2(v[2], func_001F9CE8(v));
+            return fast_atan2(v[2], vector_length_xy(v));
         case 1:
         case 2:
             qcopy(tmp, v);
             transform_vector(tmp, tmp, base->inv_rot_matrix);
-            return fast_atan2(tmp[2], func_001F9CE8(tmp));
+            return fast_atan2(tmp[2], vector_length_xy(tmp));
     }
     return 0.0f;
 }
@@ -1355,7 +1355,7 @@ void update_hero_attachment(void) {
     clear_u64_value(&v20);
     clear_u64_value(&v30);
     if (amt != 0.0f) {
-        sB4 = func_001F9CE8(&((Hero *)g_hero)->attached_moby_move);
+        sB4 = vector_length_xy(&((Hero *)g_hero)->attached_moby_move);
         sB0 = ((Hero *)g_hero)->attached_moby_move.f[2];
         if (!(plat->i3C & 2)) {
             ApproachValue(&sB0, 0.0f, g_frame_time_sq * 25.0f * amt);

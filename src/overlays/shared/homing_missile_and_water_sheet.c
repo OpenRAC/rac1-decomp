@@ -53,7 +53,7 @@ struct FireballVars {
 };
 
 LINKER_REMNANT("asm/overlays", func_L11_002C99E0);
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern unsigned char l11_proximity_removal_flag[];
 extern char pokitaru_pickup_message_buffer[];
 extern char raritanium_acquired_text[];
@@ -61,7 +61,7 @@ extern int proximity_removal_frame_count MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8830.c, FUN_L11_002cb790. */
 void remove_when_near_hero_update(char *a0) {
-    if (fast_vec_dist(a0 + 0x10, D_0013F4D0) < 2.0f) {
+    if (fast_vec_dist(a0 + 0x10, hero_pos) < 2.0f) {
         l11_proximity_removal_flag[0] = 1;
         sprintf(pokitaru_pickup_message_buffer, raritanium_acquired_text);
         proximity_removal_frame_count = scale_ticks(0xB4);
@@ -124,7 +124,7 @@ unsigned char *spawn_fighter_jet_missile(char *owner, float *dir, float *pos, fl
         ((Moby *)m)->draw_dist = truncate_float_to_s32_r(a);
         *(int *)&((Moby *)m)->rot.x = 0;
         ((Moby *)m)->visible = 1;
-        f = func_001F9CE8(dir);
+        f = vector_length_xy(dir);
         ((Moby *)m)->rot.y = -fast_atan2(f, dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         *(float *)&d->life = 1.0f;
@@ -253,7 +253,8 @@ void fighter_jet_missile_update(struct Moby *moby) {
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time * 5.0f, g_frame_time * 9.0f));
-            PartType27Spawn_r(&moby->pos, q, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 90000.0f);
+            PartType27Spawn_r(&moby->pos, q, 0x7F2F4F6F, random_int_between(scale_ticks(10), scale_ticks(15)),
+                              90000.0f);
         }
         DeleteMoby(moby);
         return;
@@ -279,7 +280,7 @@ char *spawn_blarg_ship_shot(int owner, float *dir, float *pos, float size, float
         ((Moby *)m)->draw_dist = truncate_float_to_s32(size);
         *(int *)&((Moby *)m)->rot.x = 0;
         ((Moby *)m)->visible = 1;
-        ((Moby *)m)->rot.y = -fast_atan2(func_001F9CE8(dir), dir[2]);
+        ((Moby *)m)->rot.y = -fast_atan2(vector_length_xy(dir), dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         *(float *)&p->life = 1.0f;
         if (len > 0.0f) {
@@ -335,7 +336,7 @@ void blarg_ship_shot_update(Moby *m) {
     qcopy(old, pos);
     c = FastTweenColor(*(int *)&projectile_trail_color_a, *(int *)&projectile_trail_color_b,
                        random_float_between(0.0f, 1.0f));
-    func_L00_00258DB0(p, 0.0f, 0.1f);
+    random_vector(p, 0.0f, 0.1f);
     FastVecAdd(p, p, pos);
     FastVecScale(v, &((struct UpdateProjectileWithTrailVars *)d)->unk_00, *(float *)&projectile_trail_speed_scale);
     PartType27Spawn((char *)p, (char *)v, c, scale_ticks(*(int *)&projectile_trail_life_ticks),
@@ -354,8 +355,8 @@ void blarg_ship_shot_update(Moby *m) {
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time_e * 5.0f, g_frame_time_e * 9.0f));
-            PartType27Spawn((char *)&m->pos, (char *)q, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)),
-                            90000.0f);
+            PartType27Spawn((char *)&m->pos, (char *)q, 0x7F2F4F6F,
+                            random_int_between(scale_ticks(10), scale_ticks(15)), 90000.0f);
         }
         DeleteMoby(m);
         return;
@@ -680,7 +681,7 @@ void draw_pokitaru_ocean(Moby *moby) {
                         v0.y = l11_ocean_wave_grid_vertex_positions[i].y - ((Cam *)l11_camera)->y;
                         v0.z = l11_ocean_wave_grid_vertex_positions[i].z - ((Cam *)l11_camera)->z;
                         v0.w = 1.0f;
-                        t = func_001F9CE8(&v0) / (d->f18 * 2.0f);
+                        t = vector_length_xy(&v0) / (d->f18 * 2.0f);
                         if (t > 1.0f) {
                             t = 1.0f;
                         }
@@ -1413,7 +1414,7 @@ void update_moby_hit_stats_and_state(Moby *m) {
             if (++skill_point_18_kill_count >= 3 && gSkillPoints[0x12] == 0) {
                 gSkillPoints[0x12] = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53DB, -1);
+                queue_dialogue_message(0x53DB, -1);
             }
         }
         if (d->unk_88 != 0) {

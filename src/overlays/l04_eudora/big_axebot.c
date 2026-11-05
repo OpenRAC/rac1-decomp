@@ -2073,7 +2073,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
             transform_vector_by_basis(b, b, moby->fC0);
             spawn_effect_particle_with_target_scalar(
                 a, b, alt ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(75000.0f, 100000.0f),
-                scale_ticks(alt ? func_L00_00258BC8(10, 15) : func_L00_00258BC8(20, 30)));
+                scale_ticks(alt ? random_int_between(10, 15) : random_int_between(20, 30)));
         }
     }
     StepColorFade(moby, data->fB0);
@@ -2150,18 +2150,18 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
         vel.f[0] = randf_sym(0.0f, 0.005f);
         vel.f[1] = randf_sym(0.0f, 0.005f);
         vel.f[2] = random_float_between((eudora_smoke_puff_rise_speed) * 0.1f, (eudora_smoke_puff_rise_speed));
-        tint = func_L00_00258BC8(0x40, 0x70);
-        grey = func_L00_00258BC8(0x40, 0x7F);
+        tint = random_int_between(0x40, 0x70);
+        grey = random_int_between(0x40, 0x7F);
         grey = grey | (grey << 16 | grey << 8);
         size = random_float_between(1.0f, 1.02f);
-        spin = func_L00_00258BC8(-2, 2);
+        spin = random_int_between(-2, 2);
         puff = PartType23Spawn(&at, (smoke_trail_puff_position_jitter_scale_gp), 1.0f, size, spin, &vel,
                                grow + a * 210000.0f, tint << 24 | grey);
         if (puff != 0) {
             tail = &puff->tail;
             if (random_integer_below(2) != 0) {
                 puff->alpha = 0x7E;
-                grey = func_L00_00258BC8(0x60, 0xE0);
+                grey = random_int_between(0x60, 0xE0);
                 grey = grey | (grey << 16 | grey << 8);
                 puff->color = tint << 24 | grey;
             }
@@ -2175,12 +2175,12 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
     vel.f[1] = FastSin(random_angle_radians()) * 0.05f;
     vel.f[2] = 0.0f;
     vel.f[2] = random_float_between(0.01f, 0.03f);
-    spawn_burst(from, &vel, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 10000.0f);
+    spawn_burst(from, &vel, 0x4F007FFF, 0x1FFFFFFF, random_int_between(scale_ticks(10), scale_ticks(20)), 1, 10000.0f);
     vel.f[0] = FastCos(random_angle_radians()) * 0.05f;
     vel.f[1] = FastSin(random_angle_radians()) * 0.05f;
     vel.f[2] = 0.0f;
     vel.f[2] = random_float_between(0.01f, 0.03f);
-    spawn_burst(to, &vel, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
+    spawn_burst(to, &vel, 0x4F007FFF, 0x1FFFFFFF, random_int_between(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
 }
 
 /* Destroy a Blarg trooper: delete its linked moby, spawn a puff, then delete it. */
@@ -2658,7 +2658,7 @@ void BlargTrooperUpdate(char *moby) {
                 a = fast_atan2(st.w.p.v80[0], st.w.p.v80[1]);
                 a = (FastDiffRots(a, ((Moby *)moby)->rot.z) > 0.2617994f) ? ((Moby *)moby)->rot.z : a;
                 {
-                    float p = fast_atan2(func_001F9CE8(st.w.p.v80), st.w.p.v80[2]);
+                    float p = fast_atan2(vector_length_xy(st.w.p.v80), st.w.p.v80[2]);
                     BuildSphericalOffset(st.w.p.v80, g_frame_time * 10.0f, a, p);
                 }
                 Moby_PlaySound(7, 0, moby);
@@ -2757,8 +2757,8 @@ void BlargTrooperUpdate(char *moby) {
         data->arm_scale_a = -data->arm_scale_a;
         data->arm_scale_b = -data->arm_scale_b;
     }
-    func_L00_00263950(moby, (char *)&data->unk_110, 5, g_frame_scale_sq * 0.018f, g_frame_scale_sq * 0.3f);
-    func_L00_00263950(moby, (char *)&data->unk_190, 6, g_frame_scale_sq * 0.024f, g_frame_scale_sq * 0.3f);
+    update_joint_animation(moby, (char *)&data->unk_110, 5, g_frame_scale_sq * 0.018f, g_frame_scale_sq * 0.3f);
+    update_joint_animation(moby, (char *)&data->unk_190, 6, g_frame_scale_sq * 0.024f, g_frame_scale_sq * 0.3f);
     if (data->weapon != 0) {
         char *o;
         build_moby_bone_transform(moby, 1, (char *)st.w.m);

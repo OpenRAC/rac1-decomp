@@ -805,7 +805,7 @@ void update_hero_state_motion(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -1049,7 +1049,7 @@ void update_hero_state_motion(void) {
                 float len;
 
                 lim = g_frame_time * 14.0f;
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 if (len < lim) {
                     Spring(&len, &g_hero.swing_push_speed, lim, g_frame_scale_sq * 0.047f, g_frame_scale_sq * 0.3f,
                            0.0f);
@@ -1727,7 +1727,7 @@ void update_hero_state_motion(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.100000024f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -1968,7 +1968,7 @@ void update_hero_state_motion(void) {
             float len;
             float dec;
 
-            len = func_001F9CE8(g_hero.motion.velocity.f);
+            len = vector_length_xy(g_hero.motion.velocity.f);
             dec = g_frame_time_sq * 4.0f;
             if (g_hero.air_frames.s == 0 && g_hero.state_timer > scale_ticks(0xA)) {
                 dec = g_frame_time_sq * 10.0f;
@@ -1989,7 +1989,7 @@ void update_hero_state_motion(void) {
 
             FastVecSub(vec[0], g_hero.target_pose.f, g_hero.motion.pos.f);
             g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
-            len = func_001F9CE8(vec[0]);
+            len = vector_length_xy(vec[0]);
             if (len > 0.2f) {
                 g_hero.stick_magnitude = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
@@ -2140,7 +2140,7 @@ void update_hero_state_motion(void) {
             float len;
 
             vel = g_hero.motion.velocity.f;
-            len = func_001F9CE8(vel);
+            len = vector_length_xy(vel);
             clamp_vec_length_xy(
                 (g_hero.air_frames.s != 0 ? frame_scale * -0.00999999f : frame_scale * -0.07999998f) * len + len,
                 g_hero.motion.velocity.f, g_hero.motion.velocity.f);

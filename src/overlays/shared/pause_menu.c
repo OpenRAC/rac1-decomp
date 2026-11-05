@@ -752,7 +752,7 @@ L2:
             }
         }
     }
-    func_00213C78();
+    update_visible_resident_objects();
     sound_update();
     if (GS.unkC != 0) {
         close_pause_menu();
@@ -1217,7 +1217,7 @@ void process_unlock_code_input(void) {
             if (!*q) {
                 *q = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53DB, -1);
+                queue_dialogue_message(0x53DB, -1);
             }
         }
     } else {
@@ -1336,7 +1336,7 @@ typedef struct {
     short uid;
     short bolts;
 } BoltSource;
-extern BoltSource D_0014D690[][64];
+extern BoltSource bolt_source_stats[][64];
 
 /* the bolt tally slot of moby uid in level lvl: scanning down from slot 63, the first slot that
    holds uid (stored as uid + 1) or is free, which it claims; -1 when there is none or uid < 0 */
@@ -1346,11 +1346,11 @@ int find_or_assign_bolt_source_slot(int lvl, int uid) {
     if (uid >= 0) {
         uid++;
         k = 63;
-        while (k >= 0 && D_0014D690[lvl][k].uid != uid && D_0014D690[lvl][k].uid != 0) {
+        while (k >= 0 && bolt_source_stats[lvl][k].uid != uid && bolt_source_stats[lvl][k].uid != 0) {
             k--;
         }
         if (k >= 0) {
-            D_0014D690[lvl][k].uid = uid;
+            bolt_source_stats[lvl][k].uid = uid;
         }
     }
     return k;
@@ -1367,7 +1367,7 @@ extern B_00284e50 checkpoint_moby_states;
 extern char g_hero[];
 extern char voice_pool[];
 extern unsigned char saved_mission_state[][16] NOT_SDA;
-extern int D_0014C290[][64] NOT_SDA;
+extern int level_moby_killed[][64] NOT_SDA;
 extern unsigned char checkpoint_level_state[0xC58];
 
 /* core data, big blobs addressed with lui/addiu, never through $gp */
@@ -1379,7 +1379,7 @@ extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 struct CheckpointState {
     s32 valid;
     u8 pad_04[0xC];
-    Vec4 hero_pos;
+    Vec4 hero_position;
     Vec4 hero_rot;
     s32 unk_30;
     s32 unk_34;
@@ -1412,12 +1412,12 @@ void jet_reset_camera(void *a0, void *a1) {
         if ((unsigned char)v != 1 && saved_mission_state[lvl][(unsigned char)v - 2] != 0xFF)
             continue;
         checkpoint_moby_states.f[i] = v;
-        D_0014C290[lvl][i >> 5] |= 1 << (i & 0x1F);
+        level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
         session_moby_killed[i >> 5] |= 1 << (i & 0x1F);
     }
     g = (struct CheckpointState *)((char *)checkpoint_level_state);
     g->valid = 1;
-    qcopy(&g->hero_pos, a0);
+    qcopy(&g->hero_position, a0);
     qcopy(&g->hero_rot, a1);
     {
         struct Hero *hero = (struct Hero *)g_hero;
@@ -1463,7 +1463,7 @@ void restore_or_clear_level_state(void) {
         return;
     }
     copy_memory_by_alignment((int)current_level_state, p, 0xC60);
-    qcopy(g_hero + 0x80, &p->hero_pos);
+    qcopy(g_hero + 0x80, &p->hero_position);
     qcopy(g_hero + 0x90, &p->hero_rot);
     g = (struct Hero *)((unsigned char *)g_hero);
     *(int *)(*(char **)&g->moby + 0x38) = p->unk_30;

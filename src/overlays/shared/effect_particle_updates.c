@@ -176,7 +176,7 @@ after:
             KillPart(m);
         } else {
             p->fade_mode = 1;
-            m->timer = func_L00_00258BC8(scale_ticks(0x78) * 3, scale_ticks(0x78) * 9);
+            m->timer = random_int_between(scale_ticks(0x78) * 3, scale_ticks(0x78) * 9);
         }
     }
 }
@@ -280,7 +280,7 @@ void update_scalar_and_fade_effect_particle(struct PartBase *m) {
 
 extern int truncate_float_to_s32(float);
 
-extern f32 D_L00_00173F80[];
+extern f32 coll_hit_normal[];
 typedef int u128_6AB __attribute__((mode(TI)));
 
 typedef struct PartType06Def {
@@ -338,12 +338,12 @@ void update_colliding_effect_particle(struct PartBase *m) {
         v2[0] = e->vel.x;
         v2[1] = e->vel.y;
         v2[2] = e->vel.z;
-        subtract_homogeneous_scaled_vector_xyz(o, v2, D_L00_00173F80, t->bounce_scale);
+        subtract_homogeneous_scaled_vector_xyz(o, v2, coll_hit_normal, t->bounce_scale);
         e->vel.x = o[0];
         e->vel.y = o[1];
         e->vel.z = o[2];
-        vec_scale_to_length(v3, D_L00_00173F80, 0.055f);
-        FastVecAdd(&m->pos, (char *)D_L00_00173F80 - 0x20, v3);
+        vec_scale_to_length(v3, coll_hit_normal, 0.055f);
+        FastVecAdd(&m->pos, (char *)coll_hit_normal - 0x20, v3);
     } else {
         /* q is never set and both arms are the same: jump2 folds the branch away, but flow2 has
            already seen $s0 live here, so reorg fills the beqz slot with addiu $a0 like retail. */
@@ -742,7 +742,7 @@ void update_branching_and_fading_effect_particle(struct PartBase *m) {
                 p->color_start = p->color_end;
                 p->color_end = ((unsigned char)*(char *)&m->blend == 0x48) ? 0 : 0xF2F3F3F;
                 p->flags |= 1;
-                r = func_L00_00258BC8(p->max_timer * 2, p->max_timer * 3);
+                r = random_int_between(p->max_timer * 2, p->max_timer * 3);
                 if (p->flags & 8)
                     r *= 5;
                 p->max_timer = r;
@@ -1099,7 +1099,7 @@ void update_shrinking_effect_particle_with_gravity_and_secondary_spawns(struct P
         vec_scale_to_length(&t, &t, b * random_float_between(0.15f, 0.25f));
         FastVecAdd(&t, &t, o);
         FastVecScale(&t, &t, random_float_between(0.75f, 0.95f));
-        func_L00_0026CA10_26bca8(p, &t, m->color, o->color_end, scale_ticks(func_L00_00258BC8(0xF, 0x1E)), m->size, 0,
+        func_L00_0026CA10_26bca8(p, &t, m->color, o->color_end, scale_ticks(random_int_between(0xF, 0x1E)), m->size, 0,
                                  m->texture, m->blend);
     } else {
         FastVecScale(o, o, 0.96f);
@@ -1210,7 +1210,7 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
                 p->vel[2] = 0;
                 f = random_float_between(200000.0f, 300000.0f);
                 t = scale_ticks(0x5A);
-                r = func_L00_00258BC8(t, scale_ticks(0x96));
+                r = random_int_between(t, scale_ticks(0x96));
                 mine_debris_r(&m->pos, p, u, w, f, r, 3);
             }
             KillPart(m);
@@ -1472,7 +1472,7 @@ void update_shrinking_effect_particle_with_secondary_spawns(struct PartBase *par
             FastVecAdd(spawn_velocity, spawn_velocity, &s->vel);
             FastVecScale(spawn_velocity, spawn_velocity, random_float_between(0.75f, 0.95f));
             spawn_burst(particle_position, spawn_velocity, particle->color, s->color_end,
-                        scale_ticks(func_L00_00258BC8(15, 20)), 0, particle->size);
+                        scale_ticks(random_int_between(15, 20)), 0, particle->size);
         } else {
             FastVecScale(&s->vel, &s->vel, 0.96f);
         }
@@ -2363,12 +2363,12 @@ char *PartType34Spawn(char *vec, float *pos, float sc, float vy) {
         p->unk_09 = r + 0x40;
         *(float *)(q + 0xC) = random_float_between(0.75f, 1.25f) * sc;
         p->size = 5250.0f;
-        r = func_L00_00258BC8(-10, 10);
+        r = random_int_between(-10, 10);
         p->spin = r - 0x80;
         p->texture = *part_type34_textures;
         a = scale_ticks(0x46);
         b = scale_ticks(0x8C);
-        p->timer = func_L00_00258BC8(a, b);
+        p->timer = random_int_between(a, b);
         if (vy == -1.0f) {
             struct Hero *x = &g_hero;
             if (x->state.current == HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT) {
@@ -2434,7 +2434,7 @@ void update_swaying_and_fading_effect_particle(struct PartBase *m) {
     v[1] = *(float *)(p + 4);
     v[2] = *(float *)(p + 8);
     {
-        float len = func_001F9CE8(v);
+        float len = vector_length_xy(v);
         vec_set_length_xy(v, v, frame_scale * -0.029999971f * len + len);
     }
     FastVecAdd(&m->pos, &m->pos, v);
@@ -2747,7 +2747,7 @@ typedef struct {
     char pad[0xC];
 } S_26ff10;
 extern u8 *effect_texture_ids;
-extern f32 D_L00_00173F80[];
+extern f32 coll_hit_normal[];
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern s32 FastDecTimer_r3(s16 *) __asm__("func_001F9938");
@@ -2845,11 +2845,11 @@ void update_splitting_effect_particle_with_collision_response_and_fade(struct Pa
     }
     hit = coll_line_r(pa, pb, mode, col, aux) != 0;
     if (hit) {
-        vec_scale_to_length(v2, D_L00_00173F80, 1.0f);
-        reflect_vector(pv, pv, D_L00_00173F80);
+        vec_scale_to_length(v2, coll_hit_normal, 1.0f);
+        reflect_vector(pv, pv, coll_hit_normal);
         FastVecScale(pv, pv, 0.02f);
-        vec_scale_to_length(v2, D_L00_00173F80, 0.055f);
-        FastVecAdd(p->pos.f, D_L00_00173F80 - 8, v2);
+        vec_scale_to_length(v2, coll_hit_normal, 0.055f);
+        FastVecAdd(p->pos.f, coll_hit_normal - 8, v2);
         if (p->size < 200000.0f && (pv->f18 & 8) == 0) {
             p->size = p->size + p->size;
         }

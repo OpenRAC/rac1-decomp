@@ -165,7 +165,7 @@ extern void map_filter_l11_3();
 extern void map_filter_l11_4();
 extern void map_filter_l11_5();
 extern void map_filter_l12_0();
-extern void MenuL12_IsAlwaysActive1();
+extern void map_filter_l12_1();
 extern void map_filter_l12_2();
 extern void map_filter_l15_0();
 extern void map_filter_l16_0();
@@ -2035,7 +2035,7 @@ void *D_001A0000[] DATA_SECTION(D_001A0000) = {
     0,
     0,
     map_filter_l12_0,
-    MenuL12_IsAlwaysActive1,
+    map_filter_l12_1,
     map_filter_l12_2,
     0,
     0,

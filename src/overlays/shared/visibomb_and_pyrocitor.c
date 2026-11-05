@@ -253,7 +253,7 @@ void devastator_update(Moby *m) {
                 yaw = hero_2B33E8.items[6].lock_yaw;
             else
                 yaw = fast_atan2(velocity.f.x, velocity.f.y);
-            pitch = -fast_atan2(func_001F9CE8(&velocity), velocity.f.z);
+            pitch = -fast_atan2(vector_length_xy(&velocity), velocity.f.z);
             yaw0 = yaw;
             pitch0 = pitch;
             if (hero_2B33E8.state.current == HERO_STATE_LOOK_RELEASE_WAIT && (hero_2B33E8.moby->flags & 1)) {
@@ -467,7 +467,7 @@ void visibomb_update(char *m) {
                                     (*(unsigned short *)(*(int *)&g->moby + 0x34) & 1)) {
                                     char *v = g2 + 0x350;
                                     f20 = fast_atan2(*(float *)(g2 + 0x350), *(float *)(g2 + 0x354));
-                                    f21 = -fast_atan2(func_001F9CE8(v), *(float *)(g2 + 0x358));
+                                    f21 = -fast_atan2(vector_length_xy(v), *(float *)(g2 + 0x358));
                                     vec_scale_to_length(t0, v, 0.3f);
                                     vec_scale_to_length(t1, g2 + 0x370, -0.35f);
                                     FastVecAdd(t0, t0, t1);
@@ -475,8 +475,8 @@ void visibomb_update(char *m) {
                                 } else {
                                     struct Hero *q = &g_hero;
                                     if (q->unk22C8 == 1) {
-                                        f21 =
-                                            fast_atan2(func_001F9CE8(&((Moby *)m)->rot_row1), ((Moby *)m)->rot_row1.z);
+                                        f21 = fast_atan2(vector_length_xy(&((Moby *)m)->rot_row1),
+                                                         ((Moby *)m)->rot_row1.z);
                                         BuildSphericalOffset(t0, 0.6f, f20, -f21);
                                         FastVecAdd(t0, t0, &((Moby *)m)->pos);
                                     } else {
@@ -1219,7 +1219,7 @@ void blaster_update(Moby *m) {
         yaw = hero_2B33E8.items[6].lock_yaw;
     else
         yaw = fast_atan2(velocity.f.x, velocity.f.y);
-    pitch = -fast_atan2(func_001F9CE8(&velocity), velocity.f.z);
+    pitch = -fast_atan2(vector_length_xy(&velocity), velocity.f.z);
     yaw0 = yaw;
     pitch0 = pitch;
     if (hero_2B33E8.state.current != HERO_STATE_LOOK_RELEASE_WAIT) {
@@ -1300,11 +1300,11 @@ void blaster_update(Moby *m) {
                     FastVecAdd(&w.spray.v, &velocity, &w.spray.v);
                     vec_scale_to_length(&w.spray.v, &w.spray.v,
                                         random_float_between(g_frame_time_r * 3.0f, g_frame_time_r * 6.0f));
-                    PartType27Spawn(&launch, &w.spray.v, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(10)),
-                                    10000.0f);
+                    PartType27Spawn(&launch, &w.spray.v, 0x5F2F4F6F,
+                                    random_int_between(scale_ticks(5), scale_ticks(10)), 10000.0f);
                 }
                 vec_scale_to_length(&velocity, &velocity, g_frame_time_r * 0.5f);
-                PartType27Spawn(&launch, &velocity, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)),
+                PartType27Spawn(&launch, &velocity, 0x2F4F7F7F, random_int_between(scale_ticks(4), scale_ticks(7)),
                                 200000.0f);
             }
             if (m->prev_seq != 4)
@@ -1623,8 +1623,8 @@ void spawn_moby_particle_and_glow_burst(Moby *m, int flag) {
                 B = glow_burst_spark_colors_b;
                 pa = A.v + random_integer_below(6);
                 pb = B.v + random_integer_below(6);
-                a = func_L00_00258BC8(scale_ticks(15), scale_ticks(20));
-                b = func_L00_00258BC8(scale_ticks(25), scale_ticks(30));
+                a = random_int_between(scale_ticks(15), scale_ticks(20));
+                b = random_int_between(scale_ticks(25), scale_ticks(30));
                 PartType11Spawn_v(&m->pos, n, *pa, *pb, a, b, 0, 0, 400000.0f, sc);
             } while (--i);
         }
@@ -1958,7 +1958,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
                             FastVecSub(&q, e + 0x10, &((Moby *)m)->pos);
                             vec_scale_to_length(&q, &q, 1.5f);
                             PostHitMessage(e, (int)m, 0x10000, &g->motion.pos, &q, 1.0f);
-                            d[4] = scale_ticks(func_L00_00258BC8(5, 0x2D));
+                            d[4] = scale_ticks(random_int_between(5, 0x2D));
                         }
                         d[5] = d[5] + 1;
                     }
@@ -2033,7 +2033,7 @@ extern s32 truncate_float_to_s32(f32);
 
 extern void update_taunter_effect_slots(Moby *);
 extern Hero g_hero_r4 __asm__("D_0013F450");
-extern u32 D_0013CBE0[];
+extern u32 pad_held[];
 extern u8 voice_pool[];
 extern Ring item_usage;
 extern s32 taunter_effect_reset_pending MACRO_ADDR;
@@ -2091,7 +2091,7 @@ void taunter_update(Moby *m) {
              ((g_controller_state[0x1A0 / 4] & ((u32)g_hero_r4.items[0].button_mask)) != 0 && o->retry >= 0x11)) &&
             g_hero_r4.item_use_locked == 0) {
             if (b != 0) {
-                o->frame = scale_ticks(func_L00_00258BC8(0xF, 0x2D));
+                o->frame = scale_ticks(random_int_between(0xF, 0x2D));
             }
             if (item_usage.cnt < 0xFFFF)
                 item_usage.cnt++;
@@ -2126,7 +2126,7 @@ void taunter_update(Moby *m) {
         }
     } else {
         o->retry++;
-        if ((D_0013CBE0[0] & ((u32)g_hero_r4.items[0].button_mask)) != 0 || scale_ticks(0x1E) >= o->cnt18) {
+        if ((pad_held[0] & ((u32)g_hero_r4.items[0].button_mask)) != 0 || scale_ticks(0x1E) >= o->cnt18) {
             if (g_hero_r4.item_use_locked == 0)
                 goto L7340;
         }
@@ -2462,7 +2462,7 @@ void pyrocitor_update(Moby *moby) {
                 if (length < 4.0f || (moby->flags & 1))
                     initial_count = 1;
                 for (i = 0; i < extra + initial_count; i++) {
-                    func_L00_00258DB0(
+                    random_vector(
                         (float *)&random_vec, 0.0f,
                         ((pyrocitor_flame_full_length_random_range_gp - pyrocitor_flame_zero_length_random_range_gp) *
                              (length / (pyrocitor_flame_base_range_gp + speed)) +
@@ -2501,7 +2501,7 @@ void pyrocitor_update(Moby *moby) {
             coll_sphere_mobys_v(&random_vec, 0.42f, 5, (*(Hero *)&g_hero).moby, &hit);
             if (FastDecTimer(&v->spark)) {
                 v->spark = truncate_float_to_s32(multiply_global_factor(random_float_between(10.0f, 30.0f)));
-                func_L00_00258DB0((float *)&random_vec, 0.0f, g_frame_time + g_frame_time);
+                random_vector((float *)&random_vec, 0.0f, g_frame_time + g_frame_time);
                 FastVecScale(&particle_pos, &dir, random_float_between(0.5f, 0.1f));
                 FastVecAdd(&particle_pos, &particle_pos, &random_vec);
                 spawn_color_decaying_effect_particle(&scratch, &particle_pos, gold_weapon_purchased.level);
@@ -2642,7 +2642,7 @@ void update_pyrocitor_flame_effect_slots(char *m) {
                     int c3;
                     int c4;
                     qcopy(qv, src);
-                    func_L00_00258DB0(v2, 0.0f, pyrocitor_spark_random_vector_magnitude_scale_gp * g_frame_time);
+                    random_vector(v2, 0.0f, pyrocitor_spark_random_vector_magnitude_scale_gp * g_frame_time);
                     *(float *)(qv + 0xC) = pyrocitor_spark_direction_vector_w_gp;
                     v2[2] = g_frame_time * 4.0f;
                     v2[3] = pyrocitor_spark_random_vector_w_gp;
@@ -2658,7 +2658,7 @@ void update_pyrocitor_flame_effect_slots(char *m) {
                     c4 = truncate_float_to_s32_r(
                         multiply_global_factor(random_float_between((float)pyrocitor_spark_random_frame_count_min_gp,
                                                                     (float)pyrocitor_spark_random_frame_count_max_gp)));
-                    func_L00_00258DB0(v3, 0.0f, f20 + f20);
+                    random_vector(v3, 0.0f, f20 + f20);
                     FastVecAdd(v3, v3, (o + 0x10));
                     PartType02Spawn(v3, qv, v2, c1, c2, 0xA, c3, c4, pyrocitor_spark_lookup_index_and_flags_gp);
                 }

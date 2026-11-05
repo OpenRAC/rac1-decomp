@@ -57,10 +57,10 @@ int read_mpeg(char *vd, char *rb, int *file) {
             left -= used;
         }
         proceedAudio();
-        if (!started && voBufIsFull(D_0016130C + 0xD9168) && isAudioOK()) {
+        if (!started && voBufIsFull(decoder_state + 0xD9168) && isAudioOK()) {
             started = 1;
             startDisplay(1);
-            audioDecStart(D_0016130C + 0xD9100);
+            audioDecStart(decoder_state + 0xD9100);
         }
     }
 
@@ -73,7 +73,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
         switchThread();
     }
     endDisplay();
-    audioDecReset(D_0016130C + 0xD9100);
+    audioDecReset(decoder_state + 0xD9100);
     snd_SetMasterVolume(5, voice_pool.f5C);
     snd_FlushSoundCommands();
     return aborted;

@@ -588,7 +588,7 @@ void update_debug_menu(void) {
                                 ((DebugMenu *)gDebugFreeCamLvl)->draw_bits = 0;
                                 FastVecSub(buf.points.vec, &g_hero.motion.pos.f[0],
                                            &((CameraSystem *)gCameraLvl)->pos.f[0]);
-                                ((DebugMenu *)gDebugFreeCamLvl)->distance = func_001F9CE8(buf.points.vec);
+                                ((DebugMenu *)gDebugFreeCamLvl)->distance = vector_length_xy(buf.points.vec);
                                 ((DebugMenu *)gDebugFreeCamLvl)->angle =
                                     FastSubRots(fast_atan2(buf.points.vec[0], buf.points.vec[1]),
                                                 ((CameraSystem *)gCameraLvl)->rot.f[2]);
@@ -1461,7 +1461,7 @@ void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale,
     d = c + 0xE0E0E0;
     FontPrintLarge(l + 1, y - 7, (unsigned int)c, p, -1);
     FontPrintLarge(l, y - 8, d, p, -1);
-    Font_EnableColorCodes();
+    enable_font_color_codes();
 }
 typedef void (*LabelFn)(int, int, int, float, float, unsigned char *);
 

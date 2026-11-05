@@ -96,7 +96,7 @@ extern int D_0015EF20 MACRO_ADDR;
 extern char pause_menu_chain_head[];
 extern char pause_menu_chain_tail[];
 extern char pause_goodies_tab[];
-extern int D_001A0414;
+extern int selected_level_index;
 extern int help_history_selected_index;
 extern int update_mission_list_i(void) __asm__("func_0020C7A0");
 
@@ -155,9 +155,9 @@ void PauseAllSounds(int arg0) {
         g->update_count = 0;
     }
     if (g_current_level_index < LEVEL_COUNT) {
-        D_001A0414 = g_current_level_index;
+        selected_level_index = g_current_level_index;
     } else {
-        D_001A0414 = 0;
+        selected_level_index = 0;
     }
     update_mission_list_i();
     help_history_selected_index = 0;
@@ -485,7 +485,7 @@ void update_menu_system(void) {
             }
         }
     }
-    func_00213C78();
+    update_visible_resident_objects();
     if (menu_system_r2.close_request != 0) {
         close_menu_system_r();
     }
@@ -931,7 +931,7 @@ extern char str_default[];
 extern char str_empty_menu_label[];
 extern char fmt_two_strings[];
 extern char str_null_text[];
-extern int D_0013CBE0[];
+extern int pad_held[];
 extern int menu_fade_duration SDATA(menu_fade_duration);
 extern short text_shadow_x;
 extern short text_shadow_y;
@@ -980,7 +980,7 @@ static inline void win_unshift(Win *p) {
    menu_fade_duration when the content changes. */
 int render_configured_text_label(MenuScreen *w) {
     extern void disable_font_color_codes(void);
-    extern void Font_EnableColorCodes(void);
+    extern void enable_font_color_codes(void);
     char buf[0x40];
     int id;
     Win win;
@@ -1012,7 +1012,7 @@ int render_configured_text_label(MenuScreen *w) {
             content = -1;
         }
     } else if (flags & 0x40) {
-        content = D_001A0414 - 1;
+        content = selected_level_index - 1;
     } else if (flags & 4) {
         t = scale_game_frame_count(menu_fade_duration);
         if (w->data.label.fade_timer < t) {
@@ -1174,26 +1174,26 @@ int render_configured_text_label(MenuScreen *w) {
     win_shift(&win);
     disable_font_color_codes();
     DRAW(0x80000000L, text);
-    Font_EnableColorCodes();
+    enable_font_color_codes();
     win_unshift(&win);
     if (w->data.label.flags & 0x20000) {
         disable_font_color_codes();
     }
     DRAW(colour, text);
     if (w->data.label.flags & 0x20000) {
-        Font_EnableColorCodes();
+        enable_font_color_codes();
     }
     if (w->data.label.flags & 0x400) {
         win.s[5] = win.s[5] + (win.s[7] + menu_label_marquee_gap * 3);
         win_shift(&win);
         disable_font_color_codes();
         DRAW(0x80000000L, text);
-        Font_EnableColorCodes();
+        enable_font_color_codes();
         win_unshift(&win);
         DRAW(colour, text);
         if (w->data.label.flags & 0x400) {
             int span = (win.s[7] + menu_label_marquee_gap * 3) << 4;
-            w->data.label.scroll_offset += (D_0013CBE0[0] & 1) ? 10 : 3;
+            w->data.label.scroll_offset += (pad_held[0] & 1) ? 10 : 3;
             w->data.label.scroll_offset %= span;
         }
     }
@@ -1525,7 +1525,7 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
             disable_font_color_codes();
             FontPrint_r(x + (*(s32 *)&text_shadow_x), y + (*(s32 *)&text_shadow_y), 0x80000000L, text_id, -1,
                         GetEffectTex(font_texture_index), glyphs);
-            Font_EnableColorCodes();
+            enable_font_color_codes();
             if (menu->flags & 0x80) {
                 disable_font_color_codes();
             }
@@ -1539,14 +1539,14 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
                 FontPrint_r(shadow_x, shadow_y, 0x80000000L, secondary_text, -1, GetEffectTex(font_texture_index),
                             glyphs);
                 if (!(menu->flags & 0x80)) {
-                    Font_EnableColorCodes();
+                    enable_font_color_codes();
                 }
                 FontPrint_r(x, y, color, msg_string_r(menu->items[entry_index].secondary_text_id), -1,
                             GetEffectTex(font_texture_index), glyphs);
                 y += row_height;
             }
             if (menu->flags & 0x80) {
-                Font_EnableColorCodes();
+                enable_font_color_codes();
             }
             entry_index++;
             selection_index++;
@@ -2148,7 +2148,7 @@ s32 DrawMapScreen(MenuScreen *screen) {
     return 0;
 }
 
-extern int D_001A0414;
+extern int selected_level_index;
 extern int selected_mission_id;
 extern int selected_mission_index;
 extern void update_mission_list_v(void *) __asm__("func_0020C7A0");
@@ -2161,7 +2161,7 @@ int enter_menu_mission_list(void *arg0) {
     update_mission_list_v((void *)arg0);
     *(int *)((char *)arg0 + 0x7C) = collect_mission_ids((void *)0x70000000, (void *)0, (void *)0x70000100, 1);
     p = (int *)((char *)arg0 + 0x30);
-    p += D_001A0414;
+    p += selected_level_index;
     if (*p != -1) {
         selected_mission_id = ((int *)0x70000000)[*p];
         selected_mission_index = ((int *)0x70000100)[*p];
@@ -2843,7 +2843,7 @@ int draw_menu_text_list(Menu *menu) {
             }
             FontPrintWindow_a(&box, color, text, -1, glyphs, font);
             if (sel) {
-                Font_EnableColorCodes();
+                enable_font_color_codes();
             }
             if (menu->flags & 0x200) {
                 draw_menu_selection_marker(0xF, box.s[5] + 9, gSkillPoints[i] != 0);
@@ -3499,7 +3499,7 @@ int Menu_BackInput(MenuScreen *arg0) {
 
     if (v & 0xD00) {
         if (arg0->data.grid.flags & 0x20) {
-            D_001A0414 = g_current_level_index;
+            selected_level_index = g_current_level_index;
         }
         return -1;
     }
@@ -3507,7 +3507,7 @@ int Menu_BackInput(MenuScreen *arg0) {
         struct MenuSystem *g;
         int t;
         if (arg0->data.grid.flags & 0x20) {
-            D_001A0414 = g_current_level_index;
+            selected_level_index = g_current_level_index;
         }
         g = (struct MenuSystem *)menu_system;
         t = *(int *)(*(char **)&g->current + 0x38);
@@ -3940,7 +3940,7 @@ int DrawMissionsMenu(char *arg0) {
     FontPrintSmall(x, y, 0x80FFA888L, msg_string(0x4EFC), -1);
     y += step;
     FontPrintSmall(x, y, 0x80FFA888L, msg_string(0x4EE0), -1);
-    Font_EnableColorCodes();
+    enable_font_color_codes();
     DoGifPaging();
     return 2;
 }
@@ -4016,7 +4016,7 @@ int MissionMenu_DrawObjectives(char *arg) {
             t.f[4] = 0x10;
             font_print_window_small(t.f, color, MSGS(*ids), -1);
             if (sel)
-                Font_EnableColorCodes();
+                enable_font_color_codes();
             h = (short)t.f[7];
             h = h / (short)t.f[8];
             ids++;
@@ -5409,13 +5409,13 @@ int initialize_selection_entries_and_index(MenuObj40 *arg0) {
 }
 
 extern int pad0_pressed_unmasked NOT_SDA;
-extern char D_001D2678[];
+extern char pause_default_action_list[];
 extern char *pause_current_action_list NOT_SDA;
 
 /* Map screen tick: on pad bit 0x40 switches back to the default action list. */
 int update_level_selection_map_screen(void) {
     if (pad0_pressed_unmasked & PAD_CROSS) {
-        pause_current_action_list = D_001D2678;
+        pause_current_action_list = pause_default_action_list;
     }
     return 0;
 }
@@ -5443,14 +5443,14 @@ int handle_menu_action_buttons(MenuScreen *arg0) {
             return -1;
         }
     } else if (v & 0x800) {
-        D_001A0414 = g_current_level_index;
+        selected_level_index = g_current_level_index;
         return 1;
     } else if (v & 0x40) {
         Moby_PlaySound(0, 0x11, arg0->moby);
         return 1;
     } else if (v & 0x20) {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
-        g->unkE4 = D_001A0414;
+        g->unkE4 = selected_level_index;
         *(int *)&g->unkF0 = *(int *)&g->current;
         g->close_request = 3;
         g->unkF4 = 0xF;
@@ -6160,7 +6160,7 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu *menu) {
     draw_menu_selection_marker_r(0xB, draw_y + 9, count_skill_points() == 0x1E);
     sprintf_r(text_buffer, msg_string_r5(0x5236), count_skill_points(), 0x1E);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index), glyphs);
-    Font_EnableColorCodes();
+    enable_font_color_codes();
     DoGifPaging();
     return 2;
 }

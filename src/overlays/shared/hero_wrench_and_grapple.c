@@ -156,7 +156,7 @@ void Hero_ApplyMotionCollisionL02(void) {
     vec_scale_to_length(start, plane.f, magnitude);
     motion_player = (Hero *)((char *)position - 0x110);
     motion_player->motion.speed_xy = FastVecLength(position);
-    magnitude = func_001F9CE8(position);
+    magnitude = vector_length_xy(position);
     work.q = *(Q_222D18 *)position;
     motion_player->motion.flat_speed = magnitude;
     motion_player->motion.forward_speed = forward_component(work.f);
@@ -308,7 +308,7 @@ void hero_update_hop_velocity(void) {
         if (g_hero.target_speed < aridia_hero_speed_bands_field_18[0] * g_frame_time * 0.2f) {
             if (g_hero.state.control_mode == HERO_MODE_FALL) {
                 d = g_hero.stickless_decel;
-                speed = func_001F9CE8(&g_hero.motion.velocity);
+                speed = vector_length_xy(&g_hero.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);
                 vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, speed);
                 return;

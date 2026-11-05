@@ -124,11 +124,11 @@ int map_filter_l04_2(void) {
     return menu_item_enabled_18 != 0;
 }
 
-extern unsigned char D_0013D4AF NOT_SDA;
+extern unsigned char menu_item_enabled_19 NOT_SDA;
 
 /* Map filter: shown once menu item flag 19 is set. */
 int map_filter_l04_3(void) {
-    return D_0013D4AF != 0;
+    return menu_item_enabled_19 != 0;
 }
 
 extern unsigned char menu_item_enabled_25 NOT_SDA;
@@ -589,7 +589,7 @@ int map_filter_l12_0(void *arg0, int arg1, float unused1, float unused2, float a
 }
 
 /* Map filter that always returns 1. */
-int MenuL12_IsAlwaysActive1(void) {
+int map_filter_l12_1(void) {
     return 1;
 }
 

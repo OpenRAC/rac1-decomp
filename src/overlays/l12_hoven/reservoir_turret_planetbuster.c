@@ -298,7 +298,7 @@ char *SpawnHovenShot(char *src, char *pos, int owner, int seed, float f0, float 
         qcopy(&moby->pos, pos);
         qcopy(data->dir, src);
         moby->rot.z = fast_atan2(data->dir[0], data->dir[1]);
-        moby->rot.y = -fast_atan2(func_001F9CE8(data->dir), data->dir[2]);
+        moby->rot.y = -fast_atan2(vector_length_xy(data->dir), data->dir[2]);
         r = scale_ticks(seed);
         data->owner = owner;
         data->unk_18 = f2;
@@ -380,10 +380,10 @@ void HovenShotUpdate(struct Moby *moby) {
             vec_scale_to_length(side, vars, f20);
             vec_scale_to_length(back, vars, -0.2f);
             add_vectors(trail, back, &moby->pos);
-            spawn_effect(back, side, 0x6F00AFFF, 0xFF, scale_ticks(func_L00_00258BC8(15, 22)), 40,
-                         func_L00_00258BC8(20, 35), 1);
-            spawn_effect(back, side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(func_L00_00258BC8(30, 60)), 40,
-                         func_L00_00258BC8(50, 75), 0);
+            spawn_effect(back, side, 0x6F00AFFF, 0xFF, scale_ticks(random_int_between(15, 22)), 40,
+                         random_int_between(20, 35), 1);
+            spawn_effect(back, side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(random_int_between(30, 60)), 40,
+                         random_int_between(50, 75), 0);
             if (coll_line(&moby->pos, old_pos, 0, moby, 0) || coll_sphere_v(&moby->pos, 0, (struct Moby *)moby, f20)) {
                 if (hoven_coll_hit.moby != 0 && hoven_coll_hit.moby != (int)vars->owner) {
                     damage = 1;
@@ -437,7 +437,7 @@ void HovenChallengeUpdate(char *m) {
         if (s[0x14] == 0) {
             s[0x14] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53DB, -1);
+            queue_dialogue_message(0x53DB, -1);
         }
     }
     {
@@ -646,7 +646,7 @@ void update_oscillating_target_link_strips(struct Moby *moby) {
                     rate = (electric_arc_jitter)*g_frame_time;
                     points[3] = 1.0f;
                     points[0] = index * (length / vector_count_float);
-                    func_L00_00258DB0(intermediate + i * 4, 0.0f, rate);
+                    random_vector(intermediate + i * 4, 0.0f, rate);
                     points += 4;
                     i++;
                 } while (i < ((struct Data_303CA8 *)data)->count);
@@ -702,7 +702,7 @@ extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_00
 extern Row *hoven_paths_r[] __asm__("D_L12_001B0C30");
 extern char hoven_camera_pos_r[] __asm__("D_L12_001672C0");
 extern float hoven_zero_vec_r[] __asm__("D_L12_0015F660") MACRO_ADDR;
-extern float D_0013F4D0[];
+extern float hero_pos[];
 
 /* Level 12 vendor moby update: steers toward its target, then calls the vendor helpers. */
 void oscillating_target_link_update(Moby *moby) {
@@ -752,7 +752,7 @@ void oscillating_target_link_update(Moby *moby) {
             tmp0.q = row->v10;
             tmp1.q = row->v20;
             interpolate_vector(((float *)&moby->pos), &tmp0, &tmp1, a);
-            if (vec_distance_xy(((float *)&moby->pos), D_0013F4D0) > 64.0f) {
+            if (vec_distance_xy(((float *)&moby->pos), hero_pos) > 64.0f) {
                 return;
             }
             if (moby->visible == 0 && hoven_mobys_r[data->target].visible == 0) {
@@ -1064,7 +1064,7 @@ void hoven_turret_update(Moby *moby) {
                         Vec_304920 crot = {0.0f, 0.0f, -1.7f};
 
                         hoven_turret_manned = 0;
-                        func_L00_00217718(cpos, crot, 0, 1);
+                        set_race_camera(cpos, crot, 0, 1);
                     }
                     moby->state = 5;
                     break;
@@ -1148,11 +1148,12 @@ void hoven_turret_update(Moby *moby) {
                         vec_scale_to_length(vel, vel, FastVecLength(dir) * (frame_scale * (0.65f - 1.0f) + 1.0f));
                         FastVecAdd(vel, dir, vel);
                         vec_scale_to_length(vel, vel, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                        PartType27Spawn(muz, vel, 0x5F2F4F6F, func_L00_00258BC8(scale_ticks(5), scale_ticks(0xA)),
+                        PartType27Spawn(muz, vel, 0x5F2F4F6F, random_int_between(scale_ticks(5), scale_ticks(0xA)),
                                         50000.0f);
                     }
                     vec_scale_to_length(dir, dir, g_frame_time * 0.5f);
-                    PartType27Spawn(muz, dir, 0x2F4F7F7F, func_L00_00258BC8(scale_ticks(4), scale_ticks(7)), 500000.0f);
+                    PartType27Spawn(muz, dir, 0x2F4F7F7F, random_int_between(scale_ticks(4), scale_ticks(7)),
+                                    500000.0f);
                 }
                 if (planetbuster_death_cam_active == 0) {
                     update_hoven_turret_camera((char *)moby);
@@ -1177,7 +1178,7 @@ void hoven_turret_update(Moby *moby) {
                 t = random_float_between(0.5f, 1.3f);
                 spawn_explosion_v(moby, hoven_zero_vec, v, 0.0f, 0.0f, 7, 0xF, 0x19, t, t * 0.57f, 10.0f, 3, 0.7f, 0.0f,
                                   0, 0, -1, 0);
-                d->fAE = scale_ticks(func_L00_00258BC8(5, 0xD));
+                d->fAE = scale_ticks(random_int_between(5, 0xD));
             }
             if (FastDecTimer(&d->fAC)) {
                 hero_respawn();
@@ -1636,7 +1637,7 @@ void update_planetbuster_maximus_guns(char *moby) {
             qcopy_nc(pv1, m + 0x10);
             v1[2] += 1.5f;
             md->f60 = fast_atan2(vec_distance_xy(v1, v0), v0[2] - v1[2]);
-            func_L00_00263950(m, (char *)md, 0, g_frame_scale_sq_f * 0.008f, g_frame_scale_sq_f * 0.3f);
+            update_joint_animation(m, (char *)md, 0, g_frame_scale_sq_f * 0.008f, g_frame_scale_sq_f * 0.3f);
             yaw = FastSubRots(FastAddRots(fast_atan2(g_hero.motion.pos.f[0] - ((Moby *)m)->pos.x,
                                                      g_hero.motion.pos.f[1] - ((Moby *)m)->pos.y),
                                           -1.5707964f),
@@ -1719,11 +1720,11 @@ void update_planetbuster_maximus_guns(char *moby) {
                                     v3[0] = randf_sym(0.0f, g_frame_time * 1.7f);
                                     v3[1] = randf_sym(0.0f, g_frame_time * 1.7f);
                                     v3[2] = randf_sym(0.0f, g_frame_time * 1.7f);
-                                    c0 = func_L00_00258BC8(0xAA, 0xF0);
-                                    c1 = func_L00_00258BC8(0x6E, 0xC8);
+                                    c0 = random_int_between(0xAA, 0xF0);
+                                    c1 = random_int_between(0x6E, 0xC8);
                                     c1 = 0x7F000000 | (c1 << 8) | c0;
-                                    life = scale_ticks(func_L00_00258BC8(0xF, 0x1E));
-                                    spawn_effect(v0, v3, c1, 0xFF, life, 0x37, func_L00_00258BC8(0xB4, 0x10E), 1);
+                                    life = scale_ticks(random_int_between(0xF, 0x1E));
+                                    spawn_effect(v0, v3, c1, 0xFF, life, 0x37, random_int_between(0xB4, 0x10E), 1);
                                 }
                             }
                             md->h9C = scale_ticks(7);
@@ -1805,7 +1806,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                             s = random_float_between(0.1f, 0.8f);
                             v0[0] += FastCos(ang) * s;
                             v0[1] += FastSin(ang) * s;
-                            c = func_L00_00258BC8(scale_ticks(0x5A), scale_ticks(0xB4));
+                            c = random_int_between(scale_ticks(0x5A), scale_ticks(0xB4));
                             s = random_float_between(g_frame_time * 0.7f, g_frame_time * 1.5f);
                             v1[0] = FastCos(ang) * s;
                             v1[1] = FastSin(ang) * s;
@@ -1834,14 +1835,14 @@ void update_planetbuster_maximus_guns(char *moby) {
                     s = random_float_between(0.1f, 0.4f);
                     v0[0] += FastCos(ang) * s;
                     v0[1] += FastSin(ang) * s;
-                    c = func_L00_00258BC8(scale_ticks(0x19), scale_ticks(0x37));
+                    c = random_int_between(scale_ticks(0x19), scale_ticks(0x37));
                     s = random_float_between(g_frame_time * 0.5f, g_frame_time * 3.0f);
                     v1[0] = FastCos(ang) * s;
                     v1[1] = FastSin(ang) * s;
                     v1[2] = 0.0f;
                     v1[2] = random_float_between(g_frame_time * 7.0f, g_frame_time * 17.0f) * IntToFloat(lvl) * 1.5f /
                             IntToFloat(5);
-                    spawn_effect_particle_with_target_scalar(v0, v1, (func_L00_00258BC8(0x46, 0xCD) << 8) | 0x460A00AA,
+                    spawn_effect_particle_with_target_scalar(v0, v1, (random_int_between(0x46, 0xCD) << 8) | 0x460A00AA,
                                                              0xA0A46, 420000.0f, c);
                 }
                 for (j = 0; j < 3; j++) {
@@ -1851,7 +1852,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                     s = random_float_between(0.1f, 0.8f);
                     v0[0] += FastCos(ang) * s;
                     v0[1] += FastSin(ang) * s;
-                    c = func_L00_00258BC8(scale_ticks(0x28), scale_ticks(0x46));
+                    c = random_int_between(scale_ticks(0x28), scale_ticks(0x46));
                     s = random_float_between(g_frame_time * 0.1f, g_frame_time * 0.4f);
                     v1[0] = FastCos(ang) * s;
                     v1[1] = FastSin(ang) * s;
@@ -2557,7 +2558,7 @@ static inline unsigned char func_L12_pick(int cur) {
 }
 
 /* Cutscene moby: on cinematic steps 1 and 7 aims the camera at a picked moby. */
-void func_L12_0030A880(Moby *moby) {
+void emit_phase_selected_moby_effects(Moby *moby) {
     Level12MobyList *list;
     Level12MobyList *l2;
     int cur;

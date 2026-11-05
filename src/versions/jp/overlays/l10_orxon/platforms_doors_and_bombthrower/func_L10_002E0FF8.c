@@ -9,7 +9,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
     extern void transform_vector_by_basis(void *, void *, void *);
     extern void PlayBankSound_v(int, int, int) __asm__("func_0022EE28");
-    extern void func_L00_00264DB8(int, int);
+    extern void queue_dialogue_message(int, int);
     MobyData *data = (MobyData *)moby->pvars;
     Hit_2E0FF8 *r;
     float v[4];
@@ -32,7 +32,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
                 if (hero_inside_conditional_help_volume != 0 && (f = gSkillPoints, f[0x10]) == 0) {
                     f[0x10] = 1;
                     PlayBankSound_v(1, 0, 0);
-                    func_L00_00264DB8(0x542D, -1);
+                    queue_dialogue_message(0x542D, -1);
                 }
                 data->f20 = 0.0f;
                 moby->flags &= 0xEFFF;
@@ -76,7 +76,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
         if (r19 != 2) {
             Anim *bp = &((Anim *)l10_cuboids)[data->f194];
-            FastVecSub(v, (char *)&D_0013F4D0, bp->f30);
+            FastVecSub(v, (char *)&hero_pos, bp->f30);
             v[3] = 0.0f;
             transform_vector_by_basis(w, v, bp->f40);
             if (w[0] <= -1.0f || 0.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2])

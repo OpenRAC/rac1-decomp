@@ -45,9 +45,9 @@ void morphoray_pickup_update(struct Moby *moby) {
                     memcard_Save(0, -1);
                 }
                 if (*(s32 *)(d + 0x18) != 0)
-                    func_L00_00264DB8(0x53E0, -1);
+                    queue_dialogue_message(0x53E0, -1);
                 else
-                    func_L00_00264DB8(0x36b2, -1);
+                    queue_dialogue_message(0x36b2, -1);
                 help_request(0x36b0, 0x7a);
                 DeleteMoby(moby);
                 return;

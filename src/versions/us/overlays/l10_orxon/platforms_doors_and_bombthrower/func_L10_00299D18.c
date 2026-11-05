@@ -25,7 +25,8 @@ void hero_relocation_trigger_update(char *m) {
     }
     id = *(unsigned short *)(m + 0xB2);
     if (l10_save_state.collected[(short)id] != 0 ||
-        ((*(int *)(D_0014C290 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
+        ((*(int *)(level_moby_killed + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) !=
+            0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = orxon_mobys_r;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
@@ -64,7 +65,7 @@ void hero_relocation_trigger_update(char *m) {
             }
         }
     }
-    *(int *)(D_0014C290 + ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (g_current_level_index << 8))) |=
+    *(int *)(level_moby_killed + ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (g_current_level_index << 8))) |=
         1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     orxon_moby_killed[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     if (*(int *)(d + 8) == -1 || *(int *)d == -1)
@@ -78,10 +79,10 @@ void hero_relocation_trigger_update(char *m) {
         byte = saved_mission_state[((unsigned char *)m)[0xB0] + eo];
         if (byte == 0xFF || *(int *)(d + 0x14) == -1) {
             k = *(int *)(d + 0x14);
-            func_L00_00217718(l10_cuboids + (k << 7) + 0x30, l10_cuboids + (k << 7) + 0x70, 0, 1);
+            set_race_camera(l10_cuboids + (k << 7) + 0x30, l10_cuboids + (k << 7) + 0x70, 0, 1);
         } else {
             k = *(int *)(d + 8);
-            func_L00_00217718(l10_cuboids + (k << 7) + 0x30, l10_cuboids + (k << 7) + 0x70, 0, 1);
+            set_race_camera(l10_cuboids + (k << 7) + 0x30, l10_cuboids + (k << 7) + 0x70, 0, 1);
         }
         enter_hero_vehicle_mode(1, 0x43, orxon_mobys_r + (*(int *)d << 8));
         request_music_track(2, 4);
@@ -90,8 +91,8 @@ void hero_relocation_trigger_update(char *m) {
         if (h[0x20A4] == 1) {
             exit_hero_vehicle_mode();
             {
-                func_L00_00217718(l10_cuboids + (*(int *)(d + 4) << 7) + 0x30,
-                                  l10_cuboids + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
+                set_race_camera(l10_cuboids + (*(int *)(d + 4) << 7) + 0x30,
+                                l10_cuboids + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
             }
             request_music_track(0, 5);
             {

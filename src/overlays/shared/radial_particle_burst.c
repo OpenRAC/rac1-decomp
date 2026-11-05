@@ -55,7 +55,7 @@ static inline int game_frames(int n) {
 static inline int rand_ticks(int lo, int hi) {
     int a = game_frames(lo);
     int b = game_frames(hi);
-    return func_L00_00258BC8(a, b);
+    return random_int_between(a, b);
 }
 /* Return a random value within plus or minus spread. */
 static inline float rand_jitter(float spread) {
@@ -69,7 +69,7 @@ static inline float rand_speed(void) {
 }
 /* Return a random spin step from 0 to 3. */
 static inline int rand_spin(void) {
-    int s = func_L00_00258BC8(0, 3);
+    int s = random_int_between(0, 3);
     return s;
 }
 /* Return 0 or 1 at random. */

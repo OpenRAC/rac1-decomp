@@ -376,7 +376,7 @@ void deplanetizer_effects_update(Moby *moby) {
                         col0 = 0x207F7F;
                         col1 = 0x7F7F20;
                         v->f48 = fast_atan2(moby->rot_row1.x, moby->rot_row1.y);
-                        v->f4C = fast_atan2(func_001F9CE8(&moby->rot_row1), moby->rot_row1.z);
+                        v->f4C = fast_atan2(vector_length_xy(&moby->rot_row1), moby->rot_row1.z);
                         save = beam_effect_default_length;
                         beam_effect_default_length = 24.0f;
                         update_beam_ring_rail_and_pulse_effects(moby);

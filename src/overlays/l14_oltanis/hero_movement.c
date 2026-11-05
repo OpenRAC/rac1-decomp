@@ -37,7 +37,7 @@
 #include "overlays/l14_oltanis/hero_idle_animation.h"
 #include "overlays/shared/effect_particle_updates.h"
 extern int g_controller_state_no_direction;
-extern int D_0013CBE0;
+extern int pad_held;
 
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
@@ -519,7 +519,7 @@ void HeroL14_UpdateStatePhysics(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.07999998f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -762,7 +762,7 @@ void HeroL14_UpdateStatePhysics(void) {
                 float len;
 
                 lim = g_frame_time * 14.0f;
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 if (len < lim) {
                     Spring(&len, &g_hero.swing_push_speed, lim, g_frame_scale_sq * 0.047f, g_frame_scale_sq * 0.3f,
                            0.0f);
@@ -1008,7 +1008,7 @@ void HeroL14_UpdateStatePhysics(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (D_0013CBE0 & 0xA) {
+                    if (pad_held & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -1570,7 +1570,7 @@ void HeroL14_UpdateStatePhysics(void) {
                     g_hero.state.current != HERO_STATE_GRIND_COLLISION_RECOVERY &&
                     g_hero.state.current != HERO_STATE_GRIND_RAIL_TRANSFER) {
                     oltanis_hero_spline_tilt[0] =
-                        fast_atan2(func_001F9CE8(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
+                        fast_atan2(vector_length_xy(g_hero.motion.displacement.f), g_hero.motion.displacement.f[2]);
                 }
                 if (hasW) {
                     Hero_SetTiltSpringParams(g_frame_scale_sq * 0.017f, g_frame_scale_sq * 0.3f);
@@ -1618,7 +1618,7 @@ void HeroL14_UpdateStatePhysics(void) {
                         }
                     } else {
                         g_hero.rail_dir_yaw = fast_atan2(vec[2][0], vec[2][1]);
-                        g_hero.rail_pitch = fast_atan2(func_001F9CE8(vec[2]), vec[2][2]);
+                        g_hero.rail_pitch = fast_atan2(vector_length_xy(vec[2]), vec[2][2]);
                     }
                     g_hero.motion.move_yaw = FastAddRots(g_hero.rail_dir_yaw, g_hero.grind_yaw_offset);
                     turn_to(0, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.15f, g_frame_time * 6.2831855f);
@@ -1902,7 +1902,7 @@ void HeroL14_UpdateStatePhysics(void) {
             {
                 float len;
 
-                len = func_001F9CE8(g_hero.motion.velocity.f);
+                len = vector_length_xy(g_hero.motion.velocity.f);
                 clamp_vec_length_xy(frame_scale * -0.100000024f * len + len, g_hero.motion.velocity.f,
                                     g_hero.motion.velocity.f);
             }
@@ -2164,7 +2164,7 @@ void HeroL14_UpdateStatePhysics(void) {
             float len;
             float dec;
 
-            len = func_001F9CE8(g_hero.motion.velocity.f);
+            len = vector_length_xy(g_hero.motion.velocity.f);
             dec = g_frame_time_sq * 4.0f;
             if (g_hero.air_frames.s == 0 && g_hero.state_timer > scale_ticks(0xA)) {
                 dec = g_frame_time_sq * 10.0f;
@@ -2185,7 +2185,7 @@ void HeroL14_UpdateStatePhysics(void) {
 
             FastVecSub(vec[0], g_hero.target_pose.f, g_hero.motion.pos.f);
             g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
-            len = func_001F9CE8(vec[0]);
+            len = vector_length_xy(vec[0]);
             if (len > 0.2f) {
                 g_hero.stick_magnitude = 1.0f;
                 g_hero.motion.move_yaw = fast_atan2(vec[0][0], vec[0][1]);
@@ -2325,7 +2325,7 @@ void HeroL14_UpdateStatePhysics(void) {
             float len;
 
             vel = g_hero.motion.velocity.f;
-            len = func_001F9CE8(vel);
+            len = vector_length_xy(vel);
             clamp_vec_length_xy(
                 (g_hero.air_frames.s != 0 ? frame_scale * -0.00999999f : frame_scale * -0.07999998f) * len + len,
                 g_hero.motion.velocity.f, g_hero.motion.velocity.f);

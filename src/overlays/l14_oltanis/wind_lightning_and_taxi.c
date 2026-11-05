@@ -42,11 +42,11 @@
 #include "overlays/l14_oltanis/bolt_thief_and_path_cameras.h"
 #include "overlays/shared/rocket_and_path_camera.h"
 #include "overlays/shared/space_commando_and_door_lock.h"
-extern char D_0014C290[];
+extern char level_moby_killed[];
 
 extern Hero g_hero;
 extern char saved_mission_state[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char g_hero_body_center[];
 extern char gSpecialItems[];
 extern char voice_pool[];
@@ -460,7 +460,7 @@ void PathLiftUpdate(struct Moby *m) {
         d->riding = 0;
         d->from = d->height;
     }
-    func_L01_002F6540(m);
+    gunship_follow_path(m);
     rider = (struct Moby *)(MB(oltanis_mobys) + (d->rider << 8));
     if (d->mode == 0x3039) {
         if (d->anchor != -1)
@@ -978,7 +978,7 @@ char *spawn_flying_bolt(void *a, float *b, int c, int d) {
         ((Moby *)m)->draw_dist = 0x7F;
         m[0x31] = 1;
         data = (struct L14BoltVars *)((Moby *)m)->pvars;
-        ((Moby *)m)->rot.y = -fast_atan2(func_001F9CE8(b), b[2]);
+        ((Moby *)m)->rot.y = -fast_atan2(vector_length_xy(b), b[2]);
         ((Moby *)m)->rot.z = fast_atan2(b[0], b[1]);
         qcopy(m + 0x10, a);
         qcopy(&data->origin, a);
@@ -1083,7 +1083,7 @@ void flying_bolt_update(struct Moby *m) {
                 FastVecAdd(&dir, &spark, &dir);
                 vec_scale_to_length(&dir, &dir, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
                 PartType27Spawn((char *)&m->pos, (char *)&dir, 0x7F2F4F6F,
-                                func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
+                                random_int_between(scale_ticks(10), scale_ticks(15)), 30000.0f);
             }
         }
         Moby_PlaySound(0, 0, m);
@@ -1254,14 +1254,14 @@ void update_branched_lightning_arc(char *moby) {
                     lightning_main_arc_penultimate_point + 4, 0.5f);
         sign = -1.0f;
         lightning_arc_remaining_frames = lightning_arc_initial_lifetime_frames =
-            scale_ticks(func_L00_00258BC8((*(int *)&lightning_arc_life_min), (*(int *)&lightning_arc_life_max)));
+            scale_ticks(random_int_between((*(int *)&lightning_arc_life_min), (*(int *)&lightning_arc_life_max)));
         lightning_arc_inverse_fade_duration =
             1.0f / IntToFloat(lightning_arc_remaining_frames - scale_ticks((*(int *)&lightning_grow_ticks)));
         if (random_integer_below(2) != 0) {
             sign = 1.0f;
         }
         for (j = 0; j < 3; j++) {
-            int k = func_L00_00258BC8(5, 22);
+            int k = random_int_between(5, 22);
             int m;
             float (*row)[4] = lightning_branch_points[j];
             u16 *sq = lightning_branch_point_timers[j];
@@ -1643,7 +1643,7 @@ extern unsigned char oltanis_collected_flags_base_r[] __asm__("D_L14_001BBCC0");
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 extern unsigned char level_moby_killed_r[] __asm__("D_0014C290");
 extern char g_hero_r2[] __asm__("D_0013F450");
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern int path_mover_ride_sound_default_pitch;
 extern int path_mover_loop_sound_default_pitch;
 extern char *g_hero_ground_moby;
@@ -1659,7 +1659,7 @@ extern char voice_pool_r[] __asm__("D_0013E650");
 
 /* Elevator update (moby Elevator): runs its five-state switch, the lift-height test and the table lookups, then the
    shared follow-up.
- * Hero, hero position, voice slots and the flag tables are separate symbols (g_hero, hero_pos, voice_pool,
+ * Hero, hero position, voice slots and the flag tables are separate symbols (g_hero, hero_position, voice_pool,
  * saved_mission_state, D_0014C290, ...), not offsets of hero_globals_base. The read of data+0x130 in state 3 is
  * a struct member:
  * a member load may be scheduled above the store to the stack float t30, a cast load may not. */
@@ -1728,7 +1728,7 @@ void elevator_685_update(char *moby) {
             update_elevator_idle_glow_r(moby);
             v = data->call_a;
             if (v >= 0) {
-                if (is_point_inside_clip_volume(D_0013F4D0, v) != 0) {
+                if (is_point_inside_clip_volume(hero_pos, v) != 0) {
                     ((unsigned char *)moby)[0xBC] = 0;
                     data->dir = -1.0f;
                     data->point = 0;
@@ -1736,14 +1736,14 @@ void elevator_685_update(char *moby) {
                 }
             }
             v = data->call_b;
-            if (v >= 0 && is_point_inside_clip_volume(D_0013F4D0, v) != 0) {
+            if (v >= 0 && is_point_inside_clip_volume(hero_pos, v) != 0) {
                 ((unsigned char *)moby)[0xBC] = 0;
                 data->point = *(int *)oltanis_paths_r2[data->path_from] - 2;
                 data->point_dist = *(float *)(oltanis_paths_r2[data->path_from] + (data->point << 4) + 0x1C);
                 data->dir = 1.0f;
             }
             v = data->call_c;
-            if (v >= 0 && is_point_inside_clip_volume(D_0013F4D0, v) != 0) {
+            if (v >= 0 && is_point_inside_clip_volume(hero_pos, v) != 0) {
                 ((unsigned char *)moby)[0xBC] = 1;
                 data->point = *(int *)oltanis_paths_r2[data->path_to] - 2;
                 data->point_dist = *(float *)(oltanis_paths_r2[data->path_to] + (data->point << 4) + 0x1C);
@@ -2576,7 +2576,7 @@ void qwark_oltanis_update(char *m) {
                 d->unk_0C = 1.7f;
             }
             if (Npc_TryStartDialog(m, ((char *)d)) != 0) {
-                func_L01_00279398(3.0f, m);
+                begin_dialogue_camera_transition(3.0f, m);
                 m[0x20] = 2;
             }
             break;
@@ -2587,9 +2587,9 @@ void qwark_oltanis_update(char *m) {
             if (d->dialog_state != 3 && d->dialog_state != 4)
                 break;
             if (d->dialog_state == 4) {
-                func_L00_00264DB8(0x53E2, -1);
+                queue_dialogue_message(0x53E2, -1);
             } else {
-                func_L00_00264DB8(0x36B3, -1);
+                queue_dialogue_message(0x36B3, -1);
             }
             grant_inventory_item(0x20, 1);
             mark_elevator_collected(oltanis_mobys_r + (d->elevator << 8));
@@ -2652,7 +2652,7 @@ void qwark_oltanis_update(char *m) {
             w[2] = w[2] + 1.0f;
             FastVecSub(u, b, w);
             f20 = FastSubRots(fast_atan2(u[0], u[1]), ((Moby *)m)->rot.z);
-            f2 = -fast_atan2(func_001F9CE8(u), u[2]);
+            f2 = -fast_atan2(vector_length_xy(u), u[2]);
             if (f20 > 1.5707964f)
                 f20 = 1.5707964f;
             else if (f20 < -1.5707964f)
@@ -2667,8 +2667,8 @@ void qwark_oltanis_update(char *m) {
         }
         if (gCheats[0] != 0)
             d->height = 2.75f;
-        func_L00_00263950(m, d->body_manip, 0, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
-        func_L00_00263950(m, d->head_manip, 1, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
+        update_joint_animation(m, d->body_manip, 0, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
+        update_joint_animation(m, d->head_manip, 1, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
     }
 }
 typedef struct L14FlightPathVars {
@@ -2724,7 +2724,7 @@ void enemy_fighter_update(struct Moby *moby) {
             if (fighter_skill_hit_count_r > 2 && D_0013D510_FD578.flag == 0) {
                 D_0013D510_FD578.flag = 1;
                 PlayBankSound_r(1, 0, 0);
-                func_L00_00264DB8(0x53db, -1);
+                queue_dialogue_message(0x53db, -1);
             }
         }
         moby->state = 2;
@@ -2962,7 +2962,7 @@ void advance_enemy_fighter_along_flight_path(char *m) {
             yaw_error_factor = FastSubRots(moby->rot.z, target_yaw);
             MobySpringTurn(m, &moby_vars->f88, target_yaw, (enemy_fighter_flight_spring_strength_gp),
                            (enemy_fighter_flight_spring_damping_gp), 0.0f);
-            path_vertical_angle = fast_atan2(func_001F9CE8(path_position_delta), path_position_delta[2]);
+            path_vertical_angle = fast_atan2(vector_length_xy(path_position_delta), path_position_delta[2]);
             Spring(&moby->rot.y, &moby_vars->f84, -path_vertical_angle, (enemy_fighter_flight_spring_strength_gp),
                    (enemy_fighter_flight_spring_damping_gp), 0.0f);
             yaw_error_factor = yaw_error_factor / (enemy_fighter_bank_yaw_error_scale_gp);
@@ -3064,7 +3064,7 @@ void rocket_strike_fighter_update(Moby *m) {
                 if (fighter_skill_hit_count_r2 >= 3 && ((Skill_2FE038 *)gSkillPoints_r)->f18 == 0) {
                     ((Skill_2FE038 *)gSkillPoints_r)->f18 = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53DB, -1);
+                    queue_dialogue_message(0x53DB, -1);
                 }
             }
             m->state = 3;
@@ -3278,7 +3278,7 @@ void spawn_rocket_strike_fighter_exhaust(struct Moby *m) {
     size = 300000.0f;
     FastVecScale(&step, &m->rot_row0, (rocket_strike_fighter_exhaust_grey_puff_row0_offset_gp));
     FastVecAdd(&pos, &base, &step);
-    grey = func_L00_00258BC8(0x40, 0x80);
+    grey = random_int_between(0x40, 0x80);
     grey = 0x7F000000 | grey << 16 | grey << 8 | grey;
     if (random_integer_below(3) != 0) {
         L14Puff *p;
@@ -3375,7 +3375,7 @@ int advance_rocket_strike_fighter_along_flight_path(char *m) {
             yaw_error_factor = FastSubRots(moby->rot.z, yaw);
             MobySpringTurn(moby, &moby_vars->f88, yaw, rocket_strike_fighter_flight_spring_strength_gp,
                            rocket_strike_fighter_flight_spring_damping_gp, 0.0f);
-            yaw = fast_atan2(func_001F9CE8(path_position_delta), path_position_delta[2]);
+            yaw = fast_atan2(vector_length_xy(path_position_delta), path_position_delta[2]);
             Spring(&moby->rot.y, &moby_vars->f84, -yaw, rocket_strike_fighter_flight_spring_strength_gp,
                    rocket_strike_fighter_flight_spring_damping_gp, 0.0f);
             yaw_error_factor = yaw_error_factor / rocket_strike_fighter_bank_yaw_error_scale_gp;
@@ -3462,7 +3462,7 @@ void FlyerUpdate(struct Moby *moby) {
             }
             moby->rot.x = FastAddRots(moby->rot.x, 2.0f * 0.017453292f);
             moby->rot.y =
-                interpolate_angle(moby->rot.y, -fast_atan2(func_001F9CE8(&diff), diff.z), D_L14_0016207C_2FF040);
+                interpolate_angle(moby->rot.y, -fast_atan2(vector_length_xy(&diff), diff.z), D_L14_0016207C_2FF040);
             moby->rot.z = interpolate_angle(moby->rot.z, fast_atan2(diff.x, diff.y), D_L14_0016207C_2FF040);
             FastVecScale(&step, &moby->rot_row0, speed);
             FastVecAdd_r3((u8 *)&moby->pos, (u8 *)&moby->pos, (u8 *)&step);

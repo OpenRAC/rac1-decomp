@@ -624,11 +624,11 @@ void hoven_anklebiter_update(Moby *m) {
                 d->effect_size0 = 0.5f;
                 if (d->group_enabled) {
                     first = scale_ticks(20);
-                    d->group_timer = func_L00_00258BC8(first, scale_ticks(170));
+                    d->group_timer = random_int_between(first, scale_ticks(170));
                 }
                 qcopy(d->idle_pos, &m->pos);
                 first = scale_ticks(120);
-                d->idle_timer = func_L00_00258BC8(first, scale_ticks(700));
+                d->idle_timer = random_int_between(first, scale_ticks(700));
                 qcopy(work.v0, &m->pos);
                 work.v0[2] += 0.8f;
                 m->pos.z = probe_ground_height(work.v0, 0, 0.5f);
@@ -1222,9 +1222,9 @@ void emit_platform_exhaust_effects(char *m) {
     p2[1] = -p2[1];
     transform_vector_by_basis(p2, p2, m + 0xC0);
     FastVecAdd(p2, p2, m + 0x10);
-    spawn_burst(p1, a, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(8), scale_ticks(0x11)), 1, 10000.0f);
+    spawn_burst(p1, a, 0x4F007FFF, 0x1FFFFFFF, random_int_between(scale_ticks(8), scale_ticks(0x11)), 1, 10000.0f);
     PartType23Spawn(p1, 0.05f, 1.01f, 1.03f, 6, b, 30000.0f, 0x404040);
-    spawn_burst(p2, a, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(8), scale_ticks(0x11)), 1, 10000.0f);
+    spawn_burst(p2, a, 0x4F007FFF, 0x1FFFFFFF, random_int_between(scale_ticks(8), scale_ticks(0x11)), 1, 10000.0f);
     PartType23Spawn(p2, 0.05f, 1.01f, 1.03f, 6, b, 30000.0f, 0x404040);
 }
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -1634,7 +1634,7 @@ void miner_update(Moby *m) {
             break;
         case 1:
             if (((Flags *)gSpecialItems)->f1 == 0 && Npc_TryStartDialog(m, d->activation)) {
-                func_L01_00279398(2.5f, m);
+                begin_dialogue_camera_transition(2.5f, m);
                 m->anim_speed = 0.0f;
                 m->state = 2;
             }
@@ -1644,7 +1644,7 @@ void miner_update(Moby *m) {
                 Flags *flags = (Flags *)gSpecialItems;
                 m->anim_speed = 1.0f;
                 flags->f1 = 1;
-                func_L00_00264DB8(0x2EE7, scale_ticks(300));
+                queue_dialogue_message(0x2EE7, scale_ticks(300));
                 flags->f61 = 1;
                 jet_clear_persistent(m->mission);
                 if (d->node != -1) {
@@ -1696,7 +1696,7 @@ void miner_update(Moby *m) {
         scratch.eye[2] += 1.0f;
         FastVecSub(scratch.delta, scratch.target, scratch.eye);
         yaw = FastSubRots(fast_atan2(scratch.delta[0], scratch.delta[1]), m->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(scratch.delta), scratch.delta[2]);
+        pitch = -fast_atan2(vector_length_xy(scratch.delta), scratch.delta[2]);
         if (yaw > 1.5707964f)
             yaw = 1.5707964f;
         else if (yaw < -1.5707964f)
@@ -1899,7 +1899,7 @@ void blarg_trooper_294_update(char *moby) {
                 }
             }
             if (M_I(data, 0x274) != 0) {
-                r = func_L00_00258BC8(0, 300);
+                r = random_int_between(0, 300);
                 M_I(data, 0x288) = ((int (*)(int))scale_ticks)(r);
             }
             M_I(moby, 0x40) = 0;
@@ -2099,7 +2099,7 @@ void blarg_trooper_294_update(char *moby) {
                     f21 = ((float (*)(float, float))fast_atan2)(v60[0], v60[1]);
                     f20 = ((float (*)(float, float))FastAddRots)(M_F(moby, 0x48), M_F(data, 0x208));
                     f21 = (((float (*)(float, float))FastDiffRots)(f21, f20) > 0.226892799f) ? f20 : f21;
-                    g = ((float (*)(void *))func_001F9CE8)(v60);
+                    g = ((float (*)(void *))vector_length_xy)(v60);
                     g = ((float (*)(float, float))fast_atan2)(g, v60[2]);
                     ((void (*)(void *, float, float, float))BuildSphericalOffset)(
                         v60, (*(float *)&g_frame_time) * 15.0f, f21, g);
@@ -2209,12 +2209,12 @@ tail:
         M_F(data, 0x188) = -M_F(data, 0x188);
         M_F(data, 0x208) = -M_F(data, 0x208);
     }
-    ((void (*)(void *, void *, int, float, float))func_L00_00263950)(moby, data + 0x120, 5,
-                                                                     (*(float *)&g_frame_scale_sq) * 0.0179999992f,
-                                                                     (*(float *)&g_frame_scale_sq) * 0.300000012f);
-    ((void (*)(void *, void *, int, float, float))func_L00_00263950)(moby, data + 0x1A0, 6,
-                                                                     (*(float *)&g_frame_scale_sq) * 0.0240000002f,
-                                                                     (*(float *)&g_frame_scale_sq) * 0.300000012f);
+    ((void (*)(void *, void *, int, float, float))update_joint_animation)(moby, data + 0x120, 5,
+                                                                          (*(float *)&g_frame_scale_sq) * 0.0179999992f,
+                                                                          (*(float *)&g_frame_scale_sq) * 0.300000012f);
+    ((void (*)(void *, void *, int, float, float))update_joint_animation)(moby, data + 0x1A0, 6,
+                                                                          (*(float *)&g_frame_scale_sq) * 0.0240000002f,
+                                                                          (*(float *)&g_frame_scale_sq) * 0.300000012f);
     return;
 }
 
@@ -2696,7 +2696,7 @@ void blarg_helicopter_326_update(char *moby) {
                 int t, s, n;
                 t = scale_ticks(0xF0);
                 s = scale_ticks(0x190);
-                S_I(data, 0xC4) = func_L00_00258BC8(t, s);
+                S_I(data, 0xC4) = random_int_between(t, s);
                 n = hoven_turret_attempts - 1;
                 if (n >= 11) {
                     n = 10;
@@ -2834,15 +2834,15 @@ void blarg_helicopter_326_update(char *moby) {
                         vA0[0] = randf_sym(0.0f, g_frame_time * 1.3f);
                         vA0[1] = randf_sym(0.0f, g_frame_time * 1.3f);
                         vA0[2] = randf_sym(0.0f, g_frame_time * 1.3f);
-                        s = func_L00_00258BC8(0xAA, 0xF0);
-                        t = func_L00_00258BC8(0x6E, 0xB4);
+                        s = random_int_between(0xAA, 0xF0);
+                        t = random_int_between(0x6E, 0xB4);
                         {
                             int sc = s | 0x7F000000;
                             col = (t << 8) | sc;
                         }
-                        n = func_L00_00258BC8(0x1E, 0x46);
+                        n = random_int_between(0x1E, 0x46);
                         n = scale_ticks(n);
-                        t = func_L00_00258BC8(0x78, 0xAA);
+                        t = random_int_between(0x78, 0xAA);
                         spawn_effect(v70, vA0, col, 0xFF, n, 0x1E, t, 1);
                     }
                     limit = 4;
@@ -2950,7 +2950,7 @@ void blarg_helicopter_326_update(char *moby) {
                 int t, s;
                 t = scale_ticks(0xF0);
                 s = scale_ticks(0x190);
-                M_I(data, 0xC4) = func_L00_00258BC8(t, s);
+                M_I(data, 0xC4) = random_int_between(t, s);
             }
             M_I(moby, 0x94) = 0;
             M_U8(moby, 0x20) = 0;
@@ -3247,7 +3247,7 @@ void edwina_update(char *m) {
             break;
         case 1:
             if (gHaveHeliPack[2] == 0 && Npc_TryStartDialog(moby, &moby_data->activation) != 0) {
-                func_L01_00279398(2.52f, moby);
+                begin_dialogue_camera_transition(2.52f, moby);
                 moby->anim_speed = 0.0f;
                 moby->state = 2;
             }
@@ -3263,7 +3263,7 @@ void edwina_update(char *m) {
                 moby->state = 1;
                 if (moby_data->activation.unk04 == 2) {
                     grant_inventory_item(4, 0);
-                    func_L00_00264DB8(0x2EE6, -1);
+                    queue_dialogue_message(0x2EE6, -1);
                     if (moby_data->region != -1) {
                         char *t = hoven_camera_points + (moby_data->region << 7);
                         jet_reset_camera(t + 0x30, t + 0x70);
@@ -3377,7 +3377,7 @@ void edwina_update(char *m) {
             w[2] = w[2] + 1.0f;
             FastVecSub(u, b, w);
             f20 = FastSubRots(fast_atan2(u[0], u[1]), moby->rot.z);
-            f2 = -fast_atan2(func_001F9CE8(u), u[2]);
+            f2 = -fast_atan2(vector_length_xy(u), u[2]);
             if (f20 > 1.5707964f)
                 f20 = 1.5707964f;
             else if (f20 < -1.5707964f)
@@ -3392,8 +3392,8 @@ void edwina_update(char *m) {
         }
         if (gCheats[0] != 0)
             moby_data->height = 2.75f;
-        func_L00_00263950(moby, moby_data->body, 1, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
-        func_L00_00263950(moby, moby_data->head, 0, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
+        update_joint_animation(moby, moby_data->body, 1, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
+        update_joint_animation(moby, moby_data->head, 0, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
     }
 }
 
@@ -3414,7 +3414,7 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
                 if (q[0x15] == 0) {
                     q[0x15] = 1;
                     allocate_voice_for_bank_entry(1, 0, 0);
-                    func_L00_00264DB8(0x53DB, -1);
+                    queue_dialogue_message(0x53DB, -1);
                 }
             }
         }

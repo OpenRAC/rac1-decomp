@@ -29,8 +29,9 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                         reflect_vector(v, v, p);
                         d->v30[2] = FastAddRots(d->v30[2], FastSubRots(fast_atan2(v[0], v[1]), d->v30[2]) *
                                                                *(float *)&fleet_jet_bounce_yaw_blend_s * f);
-                        d->v30[1] = FastAddRots(d->v30[1], FastSubRots(fast_atan2(func_001F9CE8(v), v[2]), d->v30[1]) *
-                                                               *(float *)&fleet_jet_bounce_pitch_blend_s * f);
+                        d->v30[1] =
+                            FastAddRots(d->v30[1], FastSubRots(fast_atan2(vector_length_xy(v), v[2]), d->v30[1]) *
+                                                       *(float *)&fleet_jet_bounce_pitch_blend_s * f);
                     }
                 } else {
                     Cam1379 *q;
@@ -143,7 +144,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     request_music_track(2, 4);
                     if (d->i120 != -1) {
                         char *e = fleet_camera_points + d->i120 * 128;
-                        func_L00_00217718(e + 0x30, e + 0x70, 0x32, 1);
+                        set_race_camera(e + 0x30, e + 0x70, 0x32, 1);
                         {
                             int i = d->i120;
                             char *b2 = fleet_camera_points;
@@ -224,7 +225,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                 moby->scale = *(float *)(moby->cls + 0x24);
                 refresh_moby_spatial_bounds_from_basis(moby);
                 e = fleet_camera_points + d->iFC * 128;
-                func_L00_00217718(e + 0x30, e + 0x70, 0, 1);
+                set_race_camera(e + 0x30, e + 0x70, 0, 1);
                 request_music_track(0, 5);
                 if (d->i108 != -1) {
                     char *e = voice_pool + d->i108 * 0x70;
@@ -315,7 +316,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                         }
                         set_class_mobys_flags_and_collision(0x325, 1, 1, -1);
                         e = fleet_camera_points + d->iFC * 128;
-                        func_L00_00217718(e + 0x30, e + 0x70, 0, 1);
+                        set_race_camera(e + 0x30, e + 0x70, 0, 1);
                     }
                     if (moby->b0 != 0xFF) {
                         jet_clear_persistent(moby->b0);
@@ -334,7 +335,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                         }
                     }
                     d->i10C = -1;
-                    jet_reset_camera(D_0013F4D0, D_0013F4D0 + 0x10);
+                    jet_reset_camera(hero_pos, hero_pos + 0x10);
                     moby->state = 9;
                 }
                 break;
@@ -365,8 +366,8 @@ void FighterJetUpdate(FighterJet1379 *moby) {
             moby->pos[2] = 1008.0f;
         s2 = moby->state;
         if (s2 == 4) {
-            qcopy(D_0013F4D0, moby->pos);
-            qcopy(D_0013F4D0 + 0x10, d->v30);
+            qcopy(hero_pos, moby->pos);
+            qcopy(hero_pos + 0x10, d->v30);
         }
         if (s2 >= 3 && s2 <= 4) {
             emit_type_74_particles_from_moby_joints(moby, d);

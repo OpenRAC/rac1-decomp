@@ -32,7 +32,7 @@ extern char voice_pool[];
 
 /* One aimed joint of the elite commando: manipulator block plus the eased pitch and yaw. */
 struct EliteJointAim {
-    u8 manip[0x64]; /* 0x00: update_joint_animation */
+    u8 manip[0x64]; /* 0x00: update_joint_animation_fn */
     f32 pitch; /* 0x64 */
     f32 yaw; /* 0x68 */
     u8 pad_6C[0x14];
@@ -125,7 +125,7 @@ struct ArmedTransportVars {
     s32 unk_D4; /* 0xD4 */
     s32 path_a; /* 0xD8: index in kalebo3_path_table */
     s32 path_b; /* 0xDC: index in kalebo3_path_table */
-    u8 turret_manip[0x64]; /* 0xE0: update_joint_animation */
+    u8 turret_manip[0x64]; /* 0xE0: update_joint_animation_fn */
     f32 turret_pitch; /* 0x144 */
     u8 pad_148[0x18];
     s32 timer_a; /* 0x160 */
@@ -174,7 +174,7 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
         data->owner = owner;
         data->unk_10 = 0;
         ((Moby *)moby)->rot.z = fast_atan2(pos[0], pos[1]);
-        a = func_001F9CE8(pos);
+        a = vector_length_xy(pos);
         b = fast_atan2(a, pos[2]);
         ((Moby *)moby)->rot.y = -b;
         ((struct Moby *)moby)->visible = 0;
@@ -202,7 +202,7 @@ void armed_transport_rocket_update(char *m) {
     spawn_rocket_trail_spark(m);
     FastVecSub(delta, &d->target_pos, m + 0x10);
     yaw = fast_atan2(delta[0], delta[1]);
-    pitch = fast_atan2(func_001F9CE8(delta), delta[2]);
+    pitch = fast_atan2(vector_length_xy(delta), delta[2]);
     yaw = FastAddRots(yaw, d->yaw_rate);
     pitch = FastAddRots(pitch, d->pitch_rate);
     if (pitch > 1.2217305f)
@@ -216,7 +216,7 @@ void armed_transport_rocket_update(char *m) {
         lerp_vector(blend, desired, ((char *)d), a / b);
         FastVecAdd(next, m + 0x10, blend);
         ((Moby *)m)->rot.z = fast_atan2(blend[0], blend[1]);
-        ((Moby *)m)->rot.y = -fast_atan2(func_001F9CE8(blend), blend[2]);
+        ((Moby *)m)->rot.y = -fast_atan2(vector_length_xy(blend), blend[2]);
     } else {
         FastVecAdd(next, m + 0x10, desired);
         ((Moby *)m)->rot.z = yaw;
@@ -265,7 +265,7 @@ char *spawn_rocket_50_moby(char *owner, char *vec, void *pos, void *vel, int c) 
         d->pitch_rate = random_float_between(0.0f, y) * 0.017453292f;
         d->unk_34 = 0;
         ((Moby *)m)->rot.z = fast_atan2(*(float *)vec, *(float *)(vec + 4));
-        ((Moby *)m)->rot.y = -fast_atan2(func_001F9CE8(vec), *(float *)(vec + 8));
+        ((Moby *)m)->rot.y = -fast_atan2(vector_length_xy(vec), *(float *)(vec + 8));
         m[0x31] = 0;
         ((Moby *)m)->flags |= 1;
     }
@@ -649,12 +649,12 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
             case 6:
             case 7:
             case 8: {
-                float impulse = g_frame_time * 6.0f;
+                float impulse_value = g_frame_time * 6.0f;
                 char *source;
                 d->blend_start = -1.0f;
                 d->blend_end = -1.0f;
-                d->forward_impulse = impulse;
-                d->lateral_impulse = impulse;
+                d->forward_impulse = impulse_value;
+                d->lateral_impulse = impulse_value;
                 source = *(char **)(hit + 0x20);
                 {
                     float heading = fast_atan2(((Moby *)m)->pos.x - *(float *)(source + 0x10),
@@ -677,7 +677,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                         if (((L16DamageReward *)gSkillPoints)->awarded == 0) {
                             ((L16DamageReward *)gSkillPoints)->awarded = 1;
                             allocate_voice_for_bank_entry(1, 0, 0);
-                            func_L00_00264DB8(0x53DB, -1);
+                            queue_dialogue_message(0x53DB, -1);
                         }
                     }
                 }
@@ -685,14 +685,14 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                 ((Moby *)m)->flags &= 0xEFFF;
                 d->impulse_time = time_scale;
                 if (((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->difficulty == 2) {
-                    float impulse = g_frame_time;
+                    float impulse_value = g_frame_time;
                     ((Moby *)m)->anim_speed = 0.5f;
-                    d->forward_impulse = impulse * 24.0f;
-                    d->lateral_impulse = impulse * 8.0f;
+                    d->forward_impulse = impulse_value * 24.0f;
+                    d->lateral_impulse = impulse_value * 8.0f;
                 } else {
-                    float impulse = g_frame_time * 8.0f;
-                    d->forward_impulse = impulse;
-                    d->lateral_impulse = impulse;
+                    float impulse_value = g_frame_time * 8.0f;
+                    d->forward_impulse = impulse_value;
+                    d->lateral_impulse = impulse_value;
                 }
                 d->blend_start = -1.0f;
                 d->blend_end = -1.0f;
@@ -892,11 +892,11 @@ void emit_blarg_elite_commando_death_particles(void *m) {
             b = &second.values[random_integer_below(6)];
             {
                 int lo = scale_ticks(15), hi = scale_ticks(20);
-                duration1 = func_L00_00258BC8(lo, hi);
+                duration1 = random_int_between(lo, hi);
             }
             {
                 int lo = scale_ticks(25), hi = scale_ticks(30);
-                duration2 = func_L00_00258BC8(lo, hi);
+                duration2 = random_int_between(lo, hi);
             }
             PartType11Spawn_v(origin, movement, *a, *b, duration1, duration2, 0, 0, 400000.0f, delay);
         } while (remaining != 0);
@@ -929,7 +929,7 @@ void update_blarg_elite_commando_joint_aim(char *m) {
         FastVecSub(delta, savedTarget, position);
         transform_vector_by_basis(delta, delta, matrix);
         yaw = fast_atan2(delta[0], delta[1]);
-        pitch = -fast_atan2(func_001F9CE8(delta), delta[2]);
+        pitch = -fast_atan2(vector_length_xy(delta), delta[2]);
         if (yaw > 0.7853982f)
             yaw = 0.7853982f;
         else if (yaw < -0.7853982f)
@@ -954,7 +954,7 @@ void update_blarg_elite_commando_joint_aim(char *m) {
             FastVecSub(aimDelta, savedTarget, aim);
             savedMatrix = matrix;
             transform_vector_by_basis(aimDelta, aimDelta, savedMatrix);
-            pitch2 = -fast_atan2(func_001F9CE8(aimDelta), aimDelta[2]);
+            pitch2 = -fast_atan2(vector_length_xy(aimDelta), aimDelta[2]);
             yaw2 = -fast_atan2(aimDelta[0], aimDelta[1]);
             bound = 0.7853982f;
             if (pitch2 > bound || pitch2 < (bound = -0.7853982f))
@@ -967,9 +967,9 @@ void update_blarg_elite_commando_joint_aim(char *m) {
             d->joints[2].yaw = yaw2;
         }
     }
-    func_L00_00263950(m, (char *)d->joints, 1, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
-    func_L00_00263950(m, (char *)&d->joints[1], 2, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
-    func_L00_00263950(m, (char *)&d->joints[2], 3, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
+    update_joint_animation(m, (char *)d->joints, 1, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
+    update_joint_animation(m, (char *)&d->joints[1], 2, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
+    update_joint_animation(m, (char *)&d->joints[2], 3, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
 }
 
 /* Emit randomized joint particles while the moby is active. */
@@ -993,7 +993,7 @@ void emit_blarg_elite_commando_joint_sparks(char *m) {
         clear_u64_value(acceleration);
         acceleration[2] = z;
         z = random_float_between(-1.5f, 1.5f) * g_frame_time;
-        func_L00_00258DB0(scatter, z, z);
+        random_vector(scatter, z, z);
         FastVecAdd(acceleration, acceleration, scatter);
         velocity[3] = random_float_between(0.2f, 0.2f);
         acceleration[3] = random_float_between(0.4f, 0.4f);
@@ -1011,7 +1011,7 @@ extern int advance_armed_transport_along_path(char *, char *);
 extern void update_armed_transport_joint_animation(char *);
 
 /* Stand-in: retail passes five arguments and no float; the file's definition (line 101) has a sixth, `float unused`. */
-extern float D_0013F4D0[];
+extern float hero_pos[];
 extern unsigned char hero_vehicle_mode[];
 extern float armed_transport_passenger_attachment_offset[4];
 extern float kalebo3_zero_vec[] MACRO_ADDR;
@@ -1061,7 +1061,7 @@ void armed_transport_update(char *m) {
             int i;
 
             if (kalebo3_game_mode == 0 &&
-                (d->unk_D4 == -1 || point_in_path_xy(D_0013F4D0, kalebo3_path_table[d->unk_D4] + 0x10,
+                (d->unk_D4 == -1 || point_in_path_xy(hero_pos, kalebo3_path_table[d->unk_D4] + 0x10,
                                                      *(int *)kalebo3_path_table[d->unk_D4]))) {
                 ((struct Moby *)m)->state = 2;
                 ((Moby *)m)->flags &= 0xFFFE;
@@ -1351,7 +1351,7 @@ void update_armed_transport_joint_animation(char *moby) {
     float b = ticks * 0.3f;
     struct ArmedTransportVars *data = (struct ArmedTransportVars *)((Moby *)moby)->pvars;
     data->turret_pitch = data->unk_17C;
-    func_L00_00263950(moby, data->turret_manip, 2, a, b);
+    update_joint_animation(moby, data->turret_manip, 2, a, b);
 }
 extern float grindrail_barrier_ring_rotation_speed SDATA(D_L16_00161EC0);
 extern float grindrail_barrier_ring_phase_speed SDATA(D_L16_00161EC4);

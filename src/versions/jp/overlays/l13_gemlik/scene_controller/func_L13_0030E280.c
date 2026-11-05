@@ -7,7 +7,7 @@ void blarg_ship_1805_update(void *moby) {
     float tmp[4];
     int k, n;
 
-    if ((D_0014C290[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] >>
+    if ((level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] >>
          (*(unsigned short *)(m + 0xB2) & 0x1F)) &
         1) {
         DeleteMoby(moby);
@@ -44,13 +44,13 @@ void blarg_ship_1805_update(void *moby) {
                     if (t[0x16] == 0) {
                         t[0x16] = r;
                         allocate_voice_for_bank_entry(1, 0, 0);
-                        func_L00_00264DB8(0x542D, -1);
+                        queue_dialogue_message(0x542D, -1);
                     }
                 }
             }
             Moby_PlaySound(0, 0, (int)moby);
             spawn_proximity_gated_bolts(moby);
-            D_0014C290[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] |=
+            level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] |=
                 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
             blarg_ship_destroyed_save_id_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |=
                 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);

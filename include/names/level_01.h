@@ -62,6 +62,7 @@
 #define TetheredMineUpdate                                               func_L01_002F5800
 #define door_half_update                                                 func_L01_002F5AE8
 #define stationary_ship_update                                           func_L01_002F5D38
+#define gunship_follow_path                                              func_L01_002F6540
 #define update_and_draw_level01_scrolling_layers                         func_L01_002F74D0
 #define bounded_scroll_layers_update                                     func_L01_002F7558
 #define rail_hero_motion_update                                          func_L01_002F7700
@@ -142,6 +143,7 @@
 #define check_scaled_vector_bsphere                                      func_L01_00276680
 #define compute_clear_path_point_mask                                    func_L01_00277A38
 #define expand_path_mask_to_intersection                                 func_L01_00277C30
+#define begin_dialogue_camera_transition                                 func_L01_00279398
 #define initialize_path_descriptor                                       func_L01_0028C1D8
 #define select_list_point_toward_target                                  func_L01_0028C3A8
 #define get_path_node                                                    func_L01_0028C578
@@ -522,6 +524,8 @@
 #define gunship_missing_path_warning_format                              D_L01_0020B6D0
 #define gunship_follow_path_fn_ptr                                       D_L01_001607F0
 #define novalis_shrubproc_stack_epilogues_tail                           func_L01_002A0190
+#define camera_points                                                    D_L01_0016016C
+#define help_state                                                       D_L01_00179910
 #define rig_probe_setup                                                  func_L01_002649D8
 #define select_sand_mouse_spawn_target                                   func_L01_002E4620
 #define activate_smaller_amoeboid                                        func_L01_002F0728

@@ -41,10 +41,10 @@
 #include "overlays/l15_quartu/scientist_and_hint_triggers.h"
 #include "overlays/shared/moby_drops_and_death.h"
 #include "core/libc/printf_rand.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
-extern char D_0014C290[];
+extern char level_moby_killed[];
 extern char voice_pool[];
 
 /* Quartu helicopter: hit response, knockback and recoil. */
@@ -446,10 +446,10 @@ void swinging_door_update(struct Moby *moby) {
 
     if (vars->trigger == -1) {
         if (moby->state != 0) {
-            if (is_point_inside_clip_volume(D_0013F4D0, vars->open_volume) ||
+            if (is_point_inside_clip_volume(hero_pos, vars->open_volume) ||
                 is_point_inside_clip_volume(quartu_camera_pos, vars->open_volume)) {
                 open = 1;
-            } else if (!is_point_inside_clip_volume(D_0013F4D0, vars->close_volume) &&
+            } else if (!is_point_inside_clip_volume(hero_pos, vars->close_volume) &&
                        !is_point_inside_clip_volume(quartu_camera_pos, vars->close_volume)) {
                 close = 1;
             }
@@ -619,7 +619,7 @@ void radial_exploding_prop_update(struct Moby *moby) {
             index = random_integer_below(4);
             palette_entry = &palette[index];
             radius = random_float_between(0.1f, 0.3f);
-            duration = func_L00_00258BC8(60, 100);
+            duration = random_int_between(60, 100);
             size = random_float_between(3.0f, 7.0f);
             spawn_debris_moby_v(&offset, &velocity, *palette_entry, radius, duration, size, 0.15f, 2.0f, 1);
             i--;
@@ -636,7 +636,7 @@ void radial_exploding_prop_update(struct Moby *moby) {
         velocity.f[2] += g_frame_time * 3.0f;
         size = random_float_between(0.75f, 1.25f);
         FastVecScale_r(size, &velocity, &velocity);
-        duration = func_L00_00258BC8(60, 100);
+        duration = random_int_between(60, 100);
         effect = spawn_debris_moby_v(&offset, &velocity, 0xc9, radius, duration, 5.0f, radius, 2.0f, 1);
         if (effect != 0)
             FastVecScale_r(0.35f, (char *)effect + 0x40, (char *)effect + 0x40);
@@ -692,8 +692,8 @@ no_hit:
     {
         u8 saved_flag = kalebo3_available;
         u16 save_id = moby->save_id;
-        u32 saved_bit =
-            *(u32 *)(D_0014C290 + (((s16)save_id >> 5) * 4) + g_current_level_index * 0x100) & (1U << (save_id & 31));
+        u32 saved_bit = *(u32 *)(level_moby_killed + (((s16)save_id >> 5) * 4) + g_current_level_index * 0x100) &
+                        (1U << (save_id & 31));
         if (saved_flag != 0 && saved_bit != 0)
             DeleteMoby_r(moby);
     }
@@ -776,7 +776,7 @@ void exploding_prop_update(struct Moby *moby) {
             pick = random_integer_below(4);
             color = &palette[pick];
             radius = random_float_between(0.1f, 0.3f);
-            life = func_L00_00258BC8(100, 160);
+            life = random_int_between(100, 160);
             size = random_float_between(3.0f, 7.0f);
             spawn_debris_moby_v(&offset, &velocity, *color, radius, life, size, 0.15f, 2.0f, 1);
         }
@@ -827,7 +827,9 @@ void exploding_prop_update(struct Moby *moby) {
         moby->state = 1;
         if (gemlik_available[3] != 0) {
             u16 save_id = moby->save_id;
-            if ((*(s32 *)(D_0014C290 + (((s16)save_id >> 5) * 4) + g_current_level_index * 256) >> (save_id & 31)) & 1)
+            if ((*(s32 *)(level_moby_killed + (((s16)save_id >> 5) * 4) + g_current_level_index * 256) >>
+                 (save_id & 31)) &
+                1)
                 DeleteMoby(moby);
         }
     }
@@ -888,7 +890,7 @@ void construction_arm_update(char *moby) {
         float a = g * 0.03f;
         float b = g * 0.3f;
         arm_vars->facing = v;
-        func_L00_00263950(moby, arm_vars, 0, a, b);
+        update_joint_animation(moby, arm_vars, 0, a, b);
     }
     switch (m->state) {
         case CONSTRUCTION_ARM_INITIALIZE: {
@@ -947,7 +949,7 @@ void construction_arm_update(char *moby) {
             break;
         }
         case CONSTRUCTION_ARM_TURN_TO_TARGET_YAW: {
-            int r = func_L00_00258BC8(0, 1);
+            int r = random_int_between(0, 1);
             arm_vars->side = r;
             if (FastDiffRots(arm_vars->yaw, arm_vars->target_yaw) < 0.00872664619f) {
                 int k = arm_vars->side * 2 + 1;
@@ -965,7 +967,7 @@ void construction_arm_update(char *moby) {
                 break;
             if (!(m->anim_flags & 2))
                 break;
-            arm_vars->timer = scale_ticks(func_L00_00258BC8(0xF, 0x2D));
+            arm_vars->timer = scale_ticks(random_int_between(0xF, 0x2D));
             {
                 int k = arm_vars->side * 2 + 2;
                 int q = scale_ticks(3);
@@ -1006,7 +1008,7 @@ void construction_arm_update(char *moby) {
                 {
                     int ra = scale_ticks(construction_arm_puff_life_min);
                     int rb = scale_ticks(construction_arm_puff_life_max);
-                    int c = func_L00_00258BC8(ra, rb);
+                    int c = random_int_between(ra, rb);
                     spawn_burst(vP, vA, construction_arm_puff_color, construction_arm_puff_color, c, 1, 40000.0f);
                 }
             }
@@ -1650,7 +1652,8 @@ void helicopter_update(HMoby_6950 *m) {
                 d->child->flags |= 0x41;
             quartu_moby_state_bytes_base.collected[(short)m->id] = 0;
             l15_save_state.collected[(short)m->id] = 0;
-            *(int *)(D_0014C290 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
+            *(int *)(level_moby_killed + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &=
+                ~(1 << (m->id & 0x1F));
             quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
             if (hero_globals_base[0x2EC1] != 2) {
                 m->pos.f[2] = d->f1A8 - 7.5f;
@@ -1695,7 +1698,7 @@ void helicopter_update(HMoby_6950 *m) {
         a = fast_atan2(vD0.f[0], vD0.f[1]);
         d->yaw = SpringTurn(&d->yawVel, d->yaw, a, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 12.566371f,
                             g_frame_time * 6.2831855f);
-        a = fast_atan2(func_001F9CE8(&vD0), vD0.f[2]);
+        a = fast_atan2(vector_length_xy(&vD0), vD0.f[2]);
         d->pitch = SpringTurn(&d->pitchVel, d->pitch, -a, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
                               g_frame_time * 1.5707964f);
         build_axis_rotation_quaternion(d->anim0 + 0x10, 2, d->yaw);
@@ -1710,7 +1713,7 @@ void helicopter_update(HMoby_6950 *m) {
         a = fast_atan2(vD0.f[0], vD0.f[1]);
         d->yaw = SpringTurn(&d->yawVel, d->yaw, a, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 12.566371f,
                             g_frame_time * 6.2831855f);
-        a = fast_atan2(func_001F9CE8(&vD0), vD0.f[2]);
+        a = fast_atan2(vector_length_xy(&vD0), vD0.f[2]);
         d->pitch = SpringTurn(&d->pitchVel, d->pitch, -a, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
                               g_frame_time * 1.5707964f);
         build_axis_rotation_quaternion(d->anim0 + 0x10, 2, d->yaw);
@@ -2329,7 +2332,8 @@ void ultramech_unlimited_update(UMoby *m) {
             d->b58 = 0;
             quartu_moby_state_bytes_base.collected[(short)m->id] = 0;
             l15_save_state.collected[(short)m->id] = 0;
-            *(int *)(D_0014C290 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &= ~(1 << (m->id & 0x1F));
+            *(int *)(level_moby_killed + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &=
+                ~(1 << (m->id & 0x1F));
             quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
             if (hero_vehicle_mode[0] != 2)
                 m->state = 0;
@@ -2369,7 +2373,7 @@ void ultramech_unlimited_update(UMoby *m) {
                 transform_vector_by_basis(&v10, &v10, m->mtx);
                 spawn_effect_particle_with_target_scalar(
                     &v20, &v10, k ? 0x400F0F7F : 0x407F7F7F, 0x272727, random_float_between(1.5f, 3.0f) * 210000.0f,
-                    scale_ticks(k ? func_L00_00258BC8(0xA, 0xF) : func_L00_00258BC8(0x14, 0x1E)));
+                    scale_ticks(k ? random_int_between(0xA, 0xF) : random_int_between(0x14, 0x1E)));
             }
         }
     } else if (m->state > 1 && m->state != 0x40) {
@@ -2796,7 +2800,7 @@ void bolt_grabber_update(unsigned char *m) {
             break;
         case BOLT_GRABBER_FINALIZE_AND_SAVE:
             if (quartu_game_mode != 2) {
-                func_L00_00264DB8(0x3AA3, -1);
+                queue_dialogue_message(0x3AA3, -1);
                 quartu_dialogue_message_duration = scale_ticks(0xB4);
                 grant_inventory_item(0x22, 1);
                 memcard_Save(0, -1);
@@ -3036,7 +3040,7 @@ void quartu_cutscene_trigger_update(unsigned char *moby) {
                 update_hero_item_moby_flags();
                 if (data[1] != -1) {
                     char *p = quartu_cuboids + data[1] * 128;
-                    func_L00_00217718(p + 0x30, p + 0x70, 0, 1);
+                    set_race_camera(p + 0x30, p + 0x70, 0, 1);
                 }
             }
             break;
@@ -3237,7 +3241,7 @@ void codebot_slot_update(char *moby) {
                 m->state = CODEBOT_SLOT_COMPLETED;
                 break;
             }
-            if (((*(int *)(D_0014C290 + (((short)save_id >> 5) * 4 + (g_current_level_index << 8)))) >>
+            if (((*(int *)(level_moby_killed + (((short)save_id >> 5) * 4 + (g_current_level_index << 8)))) >>
                  (save_id & 0x1F)) &
                 1) {
                 m->state = CODEBOT_SLOT_COMPLETED;
@@ -3290,7 +3294,7 @@ void codebot_slot_update(char *moby) {
             vec[2] = probe_ground_height(vec, 0, 0.5f);
             clear_u64_value(tmp);
             tmp[2] = FastAddRots(m->rot.z, 1.5707964f);
-            func_L00_00217718(vec, tmp, 0x72, 0);
+            set_race_camera(vec, tmp, 0x72, 0);
             {
                 int d = data[8];
                 if (d != -1)
@@ -3316,7 +3320,7 @@ void codebot_slot_update(char *moby) {
             if (angle < 0.5f) {
                 {
                     unsigned short save_id = m->save_id;
-                    *(int *)(D_0014C290 + (((short)save_id >> 5) * 4 + (g_current_level_index << 8))) |=
+                    *(int *)(level_moby_killed + (((short)save_id >> 5) * 4 + (g_current_level_index << 8))) |=
                         1 << (save_id & 0x1F);
                 }
                 {

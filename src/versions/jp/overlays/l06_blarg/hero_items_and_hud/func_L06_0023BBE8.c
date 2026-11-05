@@ -185,7 +185,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                     if (0.55850536f > blarg_hero_bones.f258 && blarg_hero_bones.f254 < 0.34906584f &&
                                         g_hero.items[3].state == 2) {
                                         g_hero.slot3_anim_timer =
-                                            func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
+                                            random_int_between(scale_ticks(0x6E), scale_ticks(0x10E));
                                         blend_hero_slot3_animation_pair();
                                     }
                                 }
@@ -834,8 +834,8 @@ void HeroL06_UpdateStateTransitions(void) {
                                 ice = 1;
                                 g_hero.coll_hit_moby[0xBC] = 1;
                             }
-                            if (func_001F9CE8(g_hero.motion.displacement.f) <
-                                    func_001F9CE8(g_hero.motion.velocity.f) * 0.5f ||
+                            if (vector_length_xy(g_hero.motion.displacement.f) <
+                                    vector_length_xy(g_hero.motion.velocity.f) * 0.5f ||
                                 ice || g_hero.unk5BE != 0) {
                                 int ok = 1;
 

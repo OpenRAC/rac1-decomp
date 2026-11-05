@@ -5,7 +5,7 @@ extern void func_J_001F81F8(void);
 
 int render_configured_text_label(MenuScreen *w) {
     extern void disable_font_color_codes(void);
-    extern void Font_EnableColorCodes(void);
+    extern void enable_font_color_codes(void);
     char buf[0x40];
     int id;
     Win win;
@@ -37,7 +37,7 @@ int render_configured_text_label(MenuScreen *w) {
             content = -1;
         }
     } else if (flags & 0x40) {
-        content = D_001A0414 - 1;
+        content = selected_level_index - 1;
     } else if (flags & 4) {
         t = scale_game_frame_count(menu_fade_duration);
         if (w->data.label.fade_timer < t) {
@@ -199,26 +199,26 @@ int render_configured_text_label(MenuScreen *w) {
     win_shift(&win);
     disable_font_color_codes();
     DRAW(0x80000000L, text);
-    Font_EnableColorCodes();
+    enable_font_color_codes();
     win_unshift(&win);
     if (w->data.label.flags & 0x20000) {
         disable_font_color_codes();
     }
     DRAW(colour, text);
     if (w->data.label.flags & 0x20000) {
-        Font_EnableColorCodes();
+        enable_font_color_codes();
     }
     if (w->data.label.flags & 0x400) {
         win.s[5] = win.s[5] + (win.s[7] + menu_label_marquee_gap * 3);
         win_shift(&win);
         disable_font_color_codes();
         DRAW(0x80000000L, text);
-        Font_EnableColorCodes();
+        enable_font_color_codes();
         win_unshift(&win);
         DRAW(colour, text);
         if (w->data.label.flags & 0x400) {
             int span = (win.s[7] + menu_label_marquee_gap * 3) << 4;
-            w->data.label.scroll_offset += (D_0013CBE0[0] & 1) ? 10 : 3;
+            w->data.label.scroll_offset += (pad_held[0] & 1) ? 10 : 3;
             w->data.label.scroll_offset %= span;
         }
     }

@@ -28,7 +28,7 @@ void update_resident_gameplay_state(void) {
         case 0:
         case 8:
             noop_callback_i();
-            func_00213C78();
+            update_visible_resident_objects();
             enqueue_voice_request();
             noop_callback_g();
             UpdateParts();
@@ -325,7 +325,7 @@ void update_resident_gameplay_state(void) {
 
         case 3:
             noop_callback_i();
-            func_00213C78();
+            update_visible_resident_objects();
             enqueue_voice_request();
             noop_callback_g();
             UpdateParts();

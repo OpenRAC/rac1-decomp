@@ -163,7 +163,7 @@ void hero_update_hop_movement(void) {
                 d = g_hero.stickless_decel;
                 if (g_hero.on_ice_ground)
                     d = g_frame_time_sq * 0.17f;
-                speed = func_001F9CE8(&g_hero.motion.velocity);
+                speed = vector_length_xy(&g_hero.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);
                 vec_set_length_xy(g_hero.motion.velocity.f, g_hero.motion.velocity.f, speed);
                 return;

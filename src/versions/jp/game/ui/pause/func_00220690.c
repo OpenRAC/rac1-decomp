@@ -37,7 +37,7 @@ int MissionMenu_DrawObjectives(char *arg) {
             t.f[4] = 0x10;
             font_print_window_small(t.f, color, MSGS(*ids), -1);
             if (sel)
-                Font_EnableColorCodes();
+                enable_font_color_codes();
             h = (short)t.f[7];
             h = h / (short)t.f[8];
             ids++;

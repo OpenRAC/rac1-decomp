@@ -44,7 +44,7 @@ void path_following_moby_update(char *m) {
             *(float *)(d + 0x18) = *(float *)(d + 0x18) - g_frame_time_sq * c15;
             dd = FastAddRots(*(float *)(m + 0x40), g);
             *(float *)(m + 0x40) = *(float *)(m + 0x40) + dd;
-            *(float *)(m + 0x44) = -fast_atan2(func_001F9CE8(v), *(float *)(d + 0x18));
+            *(float *)(m + 0x44) = -fast_atan2(vector_length_xy(v), *(float *)(d + 0x18));
             FastVecAdd(pos, pos, v);
             if (*(float *)(m + 0x18) < c10) {
                 DeleteMoby(m);
@@ -69,7 +69,7 @@ void path_following_moby_update(char *m) {
         if (hero_current_state == 0x32 && gSkillPoints[0xC] == 0) {
             gSkillPoints[0xC] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x542D, -1);
+            queue_dialogue_message(0x542D, -1);
         }
         FastVecSub(b, m + 0x10, a);
         qcopy(d + 0x10, b);

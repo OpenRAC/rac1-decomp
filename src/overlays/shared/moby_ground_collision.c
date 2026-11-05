@@ -26,7 +26,7 @@
 extern char gold_weapon_purchased[];
 
 /* Returns a random integer in the inclusive range lo..hi. */
-int func_L00_00258BC8(int lo, int hi) {
+int random_int_between(int lo, int hi) {
     return ((func_001160D8() >> 16) & 0x7FFF) % (hi - lo + 1) + lo;
 }
 
@@ -45,7 +45,7 @@ float randf_sym(float lo, float hi) {
 }
 
 /* Writes a random direction vector scaled by a random length between lo and hi. */
-void func_L00_00258DB0(float *o, float lo, float hi) {
+void random_vector(float *o, float lo, float hi) {
     float a = random_float_between(lo, hi);
     float b = random_angle_radians();
     float c = random_angle_radians();
@@ -225,7 +225,7 @@ int move_moby_xy_with_collision_constraints(void *ign, Vec4 *to, Vec4 *pos, int 
         c = D_94C8_40;
         if (*(int *)(c + 0x1C) > 0) {
             nrm = (float *)(c + 0x40);
-            if (slope <= fast_atan2(*(float *)(c + 0x48), func_001F9CE8(nrm))) {
+            if (slope <= fast_atan2(*(float *)(c + 0x48), vector_length_xy(nrm))) {
                 *(int *)(c + 0x48) = 0;
                 sceVu0Normalize(nrm, nrm);
                 {
@@ -320,7 +320,8 @@ int MoveMobyWithCollision(char *m, char *v, int flags, float a, float b, float c
         if (coll_hit_result[7] > 0) {
             float g;
             r |= 2;
-            g = fast_atan2(*(float *)((char *)coll_hit_result + 0x48), func_001F9CE8((char *)coll_hit_result + 0x40));
+            g = fast_atan2(*(float *)((char *)coll_hit_result + 0x48),
+                           vector_length_xy((char *)coll_hit_result + 0x40));
             if (g > 0.5f) {
                 r |= 4;
             }
@@ -399,7 +400,7 @@ s32 MobySteerToward(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
     sp = c->f1C * f;
     lim = c->f24 * f;
     FastVecSub(&d, v, &m->pos);
-    len = func_001F9CE8(&d);
+    len = vector_length_xy(&d);
     save.q = m->pos.q;
     t = sp * len;
     if (sp < t)
@@ -429,16 +430,16 @@ s32 MobySteerToward(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
     p.f[2] = m->pos.f[2] - c->f30;
     if (probe_vertical_ground_collision_r(&p, m, c->i38 & 0x20, c->f08, c->f0C)) {
         g = &coll_hit_result_r;
-        a = fast_atan2(g->normal.f[2], func_001F9CE8(&g->normal));
+        a = fast_atan2(g->normal.f[2], vector_length_xy(&g->normal));
         h1 = g->point.f[2];
-        if (0.5f < a && 0.1f < func_001F9CE8(&d)) {
+        if (0.5f < a && 0.1f < vector_length_xy(&d)) {
             {
                 vec_scale_to_length(&q, &d, 0.57f);
                 FastVecAdd(&q, &q, &m->pos);
                 q.f[2] = m->pos.f[2] - c->f30;
                 if (probe_vertical_ground_collision_r(&q, m, c->i38 & 0x20, c->f08, c->f0C)) {
                     h2 = g->point.f[2];
-                    if (!(0.5f <= fast_atan2(g->normal.f[2], func_001F9CE8(&g->normal))))
+                    if (!(0.5f <= fast_atan2(g->normal.f[2], vector_length_xy(&g->normal))))
                         goto done;
                     mask = 0x22;
                     if (!(c->i38 & 8))
@@ -459,7 +460,7 @@ s32 MobySteerToward(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
     }
 done:
     if (!(mask & 2)) {
-        l2 = func_001F9CE8(&d);
+        l2 = vector_length_xy(&d);
         FastVecScale(&p, &d, 1.0f / l2);
         r = move_moby_with_collision_integer_radius_r(m, &d, c->f04, c->i00, c->f30, c->i38);
         if (r & 2)
@@ -915,7 +916,7 @@ struct Ent {
     float b[4];
 };
 extern struct Ent ground_shadow_entries[];
-extern float D_L00_00173F80[];
+extern float coll_hit_normal[];
 
 /* Records a shadow-like entry for the moby at its ground height, scaled by arg. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_00259710.c, FUN_L00_00259fe8. */
 void jet_animate(Moby *m, float s) {
@@ -931,7 +932,7 @@ void jet_animate(Moby *m, float s) {
             n = ground_shadow_count;
             e = &ground_shadow_entries[n];
             e->a[2] = h + 0.025f;
-            qcopy(ground_shadow_entries[n].b, D_L00_00173F80);
+            qcopy(ground_shadow_entries[n].b, coll_hit_normal);
             v = (8.0f - absolute_float(m->pos.z - h)) * 0.125f;
             if (v < 0.25f) {
                 v = 0.25f;
@@ -1306,7 +1307,7 @@ void trooper_knockback_arc(Q25BBA0 *v, float *ang, float *s1, float *s2) {
         return;
     }
     *ang = fast_atan2(t.f[0], t.f[1]);
-    *s1 *= func_001F9CE8(&t);
+    *s1 *= vector_length_xy(&t);
     t.f[3] = 0;
     *s2 *= t.f[2];
 }
@@ -1319,7 +1320,7 @@ float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     Vc0 d;
     float t;
     FastVecSub(&d, b, a);
-    t = func_001F9CE8(&d) / speed;
+    t = vector_length_xy(&d) / speed;
     if (out) {
         *out = t;
     }
@@ -1835,7 +1836,7 @@ int GetFlaggedPvarWord(char *m) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025D3A0);
 
-extern int func_L00_00258BC8(int, int);
+extern int random_int_between(int, int);
 
 extern float g_frame_time MACRO_ADDR;
 
@@ -1863,12 +1864,12 @@ void spawn_particles_at_shape_points(void *a0, void *a1, void *a2) {
         FastVecAdd(tmp, tmp, a1);
         tmp[2] += g_frame_time * 0.9f;
         if (flag[0x10]) {
-            a = scale_ticks(func_L00_00258BC8(20, 35));
-            b = func_L00_00258BC8(40, 60);
+            a = scale_ticks(random_int_between(20, 35));
+            b = random_int_between(40, 60);
             spawn_effect(&buf[i], tmp, 0x7000FFA0, 0xFF00, a, 30, b, 1);
         } else {
-            a = scale_ticks(func_L00_00258BC8(20, 35));
-            b = func_L00_00258BC8(40, 60);
+            a = scale_ticks(random_int_between(20, 35));
+            b = random_int_between(40, 60);
             spawn_effect(&buf[i], tmp, 0x7000A0FF, 0xFF, a, 30, b, 1);
         }
     }
@@ -1956,7 +1957,7 @@ int step_moby_motion(char *moby, struct FallState *st) {
         }
     }
 
-    f60 = func_001F9CE8(&st->vel_x);
+    f60 = vector_length_xy(&st->vel_x);
     t = (st->mode == 2) ? 0.0f : st->unk_4C;
     ApproachValue(&f60, t, st->unk_14);
     vec_set_length_xy(&st->vel_x, &st->vel_x, f60);
@@ -2859,8 +2860,8 @@ void cart_burst(char *a, char *b, int snd, float sc, float fl) {
         c0 = color_swapped_burst_colors_r2;
         c1 = color_swapped_burst_fade_colors_r2;
         PartType11Spawn(b, &m, c0.v[random_integer_below(6)], c1.v[random_integer_below(6)], big,
-                        func_L00_00258BC8(scale_ticks(0xF), scale_ticks(0x14)),
-                        func_L00_00258BC8(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, sp * sc);
+                        random_int_between(scale_ticks(0xF), scale_ticks(0x14)),
+                        random_int_between(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, sp * sc);
     }
     if (a != 0) {
         t1 = sc * 4.0f;
@@ -2921,8 +2922,8 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
         c1 = burst_second_color_palette;
         PartType11Spawn(b, &m, swap_packed_color_channels(c0.v[random_integer_below(6)], 1),
                         swap_packed_color_channels(c1.v[random_integer_below(6)], 1), big,
-                        func_L00_00258BC8(scale_ticks(0xF), scale_ticks(0x14)),
-                        func_L00_00258BC8(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, sp * sc);
+                        random_int_between(scale_ticks(0xF), scale_ticks(0x14)),
+                        random_int_between(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, sp * sc);
     }
     if (a != 0) {
         r[0] = 0x7F;
@@ -3036,7 +3037,7 @@ int test_point_in_transformed_unit_cylinder(void *p, int i) {
     FastVecSub(&a, p, e + 0x30);
     a.w = 0;
     transform_vector_by_basis(&b, &a, e + 0x40);
-    if (func_001F9CE8(&b) < 1.0f) {
+    if (vector_length_xy(&b) < 1.0f) {
         if (-1.0f <= b.z && b.z <= 1.0f) {
             return 1;
         }
@@ -3426,7 +3427,7 @@ void grant_inventory_item(int id, int flag) {
     p = &item_pickup_banner_ids[idx];
     *pb = 1;
     if (*p != -1) {
-        func_L00_00264DB8(*p, scale_ticks(0x12C));
+        queue_dialogue_message(*p, scale_ticks(0x12C));
     }
     if (*pa == 0) {
         ItemRec *r;

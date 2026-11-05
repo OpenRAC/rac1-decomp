@@ -30,7 +30,7 @@
 #include "overlays/shared/bolts_and_wrench.h"
 extern char g_hero[];
 extern char item_usage[];
-extern unsigned int D_0013CBE0;
+extern unsigned int pad_held;
 extern char usage_stats[];
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
@@ -63,7 +63,7 @@ void update_hero_motion_and_collision_probes(void) {
         g_hero_r.wall_probe_hit_moby = 0;
         if (probe_hero_forward_collision_v(&g_hero_r.wall_probe_distance, 0.7f, 4.0f)) {
             g_hero_r.wall_normal_pitch =
-                fast_atan2(coll_hit_result.normal.f[2], func_001F9CE8(&coll_hit_result.normal.f[0]));
+                fast_atan2(coll_hit_result.normal.f[2], vector_length_xy(&coll_hit_result.normal.f[0]));
             if (coll_hit_result.moby != 0) {
                 g_hero_r.wall_probe_hit_moby = 1;
                 if (is_moby_in_class_range_500_to_540(coll_hit_result.moby)) {
@@ -450,7 +450,7 @@ int select_hero_grapple_target(void) {
     Hero *hero_target_check_base;
     Hero *hero_angle_state_base;
     Hero *gb;
-    char *hero_pos;
+    char *hero_position;
     Hero *hero_target_output_base;
     Hero *hero_target_result_base;
     struct Moby *candidate_moby;
@@ -500,12 +500,13 @@ int select_hero_grapple_target(void) {
                                                      target_elevation_angle_limit);
         if (out != 0)
             continue;
-        hero_pos = (char *)&gb->motion.pos;
-        if (vec_distance_xy(hero_pos, (char *)&candidate_moby->pos) < 4.0f)
+        hero_position = (char *)&gb->motion.pos;
+        if (vec_distance_xy(hero_position, (char *)&candidate_moby->pos) < 4.0f)
             continue;
         if (candidate_moby->visible == 0)
             target_score += 10.0f;
-        if (candidate_data->clip_volume >= 0 && is_point_inside_clip_volume(hero_pos, candidate_data->clip_volume) != 0)
+        if (candidate_data->clip_volume >= 0 &&
+            is_point_inside_clip_volume(hero_position, candidate_data->clip_volume) != 0)
             continue;
         if (target_score < bestd) {
             bestd = target_score;
@@ -624,14 +625,14 @@ int HeroEnterMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)g_hero;
             p->state.control_mode = HERO_MODE_IDLE;
             p->unk2284 = 0;
-            p->unk1010 = func_L00_00258BC8(scale_ticks(0x32), scale_ticks(0x64));
+            p->unk1010 = random_int_between(scale_ticks(0x32), scale_ticks(0x64));
             clear_hero_idle_rotation_targets();
             if (p->vehicle_mode != 0) {
                 set_hero_idle_state_for_vehicle_mode();
                 return 1;
             }
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
-            if (p->on_ice_ground != 0 && func_001F9CE8(&p->motion.momentum) > g_frame_time * 0.5f) {
+            if (p->on_ice_ground != 0 && vector_length_xy(&p->motion.momentum) > g_frame_time * 0.5f) {
                 HeroEnterMoveState(HERO_STATE_RUN_CLEAR_VELOCITY_Z, 1);
                 return 0;
             }
@@ -993,7 +994,7 @@ int HeroEnterMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)g_hero;
             p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
-            p->ground_speed = func_001F9CE8(&p->motion.displacement);
+            p->ground_speed = vector_length_xy(&p->motion.displacement);
             p->state.step = 0;
             p->unk3B8 = 0;
             p->run_start_blending = 0;
@@ -1008,7 +1009,7 @@ int HeroEnterMoveState(int a, int b) {
             p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
             if (p->state.prev_control_mode != HERO_MODE_JUMP && p->state.prev2_control_mode != HERO_MODE_JUMP) {
-                p->ground_speed = func_001F9CE8(&p->motion.resolved_velocity);
+                p->ground_speed = vector_length_xy(&p->motion.resolved_velocity);
             }
             {
                 struct Hero *q = (struct Hero *)g_hero;
@@ -1091,7 +1092,7 @@ int HeroEnterMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)g_hero;
             p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
-            p->ground_speed = func_001F9CE8(&p->motion.resolved_velocity);
+            p->ground_speed = vector_length_xy(&p->motion.resolved_velocity);
             p->item_use_locked = 1;
             if (p->vehicle_mode == 0)
                 cancel_hero_item_animation();
@@ -1169,7 +1170,7 @@ int HeroEnterMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)g_hero;
             p->state.control_mode = HERO_MODE_CROUCH;
             p->unk2284 = 0;
-            p->ground_speed = func_001F9CE8(&p->motion.resolved_velocity);
+            p->ground_speed = vector_length_xy(&p->motion.resolved_velocity);
             if (g_frame_time * 7.0f < p->ground_speed)
                 p->ground_speed = g_frame_time * 7.0f;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
@@ -2474,11 +2475,11 @@ int HeroEnterMoveState(int a, int b) {
                 struct Hero *q = (struct Hero *)g_hero;
                 q->state.control_mode = HERO_MODE_RUN;
                 q->unk2284 = 0;
-                q->ground_speed = func_001F9CE8(&q->motion.resolved_velocity);
+                q->ground_speed = vector_length_xy(&q->motion.resolved_velocity);
                 if (q->state.prev == HERO_STATE_STOP)
                     q->ground_speed = 0.0f;
                 if (q->state.prev_control_mode == HERO_MODE_IDLE)
-                    q->ground_speed = func_001F9CE8(&q->motion.momentum);
+                    q->ground_speed = vector_length_xy(&q->motion.momentum);
                 q->unk3B8 = 0;
                 if (b)
                     set_hero_animation(2, 0, (float)scale_ticks(8));
@@ -2597,7 +2598,7 @@ int HeroEnterMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)g_hero;
             p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
-            p->ground_speed = func_001F9CE8(&p->motion.resolved_velocity);
+            p->ground_speed = vector_length_xy(&p->motion.resolved_velocity);
             p->unk3B8 = 0;
             if (b)
                 set_hero_animation(3, 0x12, (float)scale_ticks(8));
@@ -2679,7 +2680,7 @@ int HeroEnterMoveState(int a, int b) {
             {
                 char *v = &((struct Hero *)g_hero)->motion.resolved_velocity;
                 char *g;
-                float r = func_001F9CE8(v);
+                float r = vector_length_xy(v);
                 g = v - 0x110;
                 *(float *)(g + 0x194) = r;
                 if (g_frame_time * 1.5f < r)
@@ -2903,7 +2904,7 @@ typedef u32 u128_27F48 __attribute__((mode(TI), aligned(16)));
 struct Moby;
 extern struct Hero g_hero_r2 __asm__("D_0013F450");
 extern unsigned char item_available[];
-extern unsigned int D_0013CBE0;
+extern unsigned int pad_held;
 extern int hero_control_mode_11_flag[];
 extern short g_frame_time_r2 __asm__("D_0015EE6C");
 
@@ -2953,7 +2954,7 @@ collision_mode:
     qcopy(&end, &start);
     end.f[2] += 0.3f;
     if (coll_line_r2(&start, &end, 2, g_hero_r2.moby, 0)) {
-        if (item_available[4] != 0 && (D_0013CBE0 & (PAD_R2 | PAD_R1)) != 0) {
+        if (item_available[4] != 0 && (pad_held & (PAD_R2 | PAD_R1)) != 0) {
             state = 0x35;
             goto change_state;
         }
@@ -3475,7 +3476,7 @@ int try_start_hero_jump(void *a0, int a1) {
 
     len = get_hero_high_jump_input_window_frames();
 
-    if ((*(int *)(&D_0013CBE0) & 0xA) != 0) {
+    if ((*(int *)(&pad_held) & 0xA) != 0) {
         if (len > 0 && check_pad_press_separation(0x40, (void *)0x1F000, (char *)a0 + len, len)) {
             HeroEnterMoveState(HERO_STATE_HIGH_JUMP, 1);
             return 1;

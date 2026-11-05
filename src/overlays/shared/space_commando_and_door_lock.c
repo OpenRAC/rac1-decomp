@@ -523,7 +523,7 @@ void process_blarg_space_commando_hits(char *m) {
             gSkillPoints[0x11] == 0) {
             gSkillPoints[0x11] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53DB, -1);
+            queue_dialogue_message(0x53DB, -1);
         }
         f = d->health - dt;
         d->health = f;
@@ -1032,7 +1032,7 @@ typedef struct {
     long tag[4];
 } Pkt89B8 __attribute__((aligned(16)));
 
-extern char D_L06_00167500[];
+extern char referencePosition[];
 extern int door_lock_glow_quad_corner_indices[][4];
 extern float door_lock_glow_corner_uvs[][2];
 extern char door_lock_glow_corner_vertices[];
@@ -1047,7 +1047,7 @@ void draw_bot_door_lock_glow(char *o) {
     char *data = *(char **)&((Moby *)o)->pvars;
     float f;
     int i, col;
-    float *g = (float *)D_L06_00167500;
+    float *g = (float *)referencePosition;
     float *g2;
 
     axis[2] = g[0x56];
@@ -1130,7 +1130,7 @@ void draw_bot_door_lock_glow(char *o) {
         *(u128 *)w[2] = *(u128 *)c[2];
         *(u128 *)w[3] = *(u128 *)c[3];
     }
-    g2 = (float *)D_L06_00167500;
+    g2 = (float *)referencePosition;
     axis[2] = g2[0x56];
     axis[0] = 0.0f;
     axis[1] = 0.0f;

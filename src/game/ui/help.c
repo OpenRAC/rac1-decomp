@@ -168,7 +168,7 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
             label_y = marker_y + level_map_markers[level_index].label_offset_y;
             label_direction[1] = level_map_markers[level_index].label_offset_y;
             label_direction[0] = level_map_markers[level_index].label_offset_x;
-            direction_length = func_001F9CE8(label_direction) * 1000.0f;
+            direction_length = vector_length_xy(label_direction) * 1000.0f;
             line_fraction = direction_length - 8000;
             line_start_x = label_x + (marker_x - label_x) * line_fraction / direction_length;
             line_start_y = label_y + (marker_y - label_y) * line_fraction / direction_length;
@@ -318,7 +318,7 @@ void link_localized_display_text(void) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern int D_0013CBE0;
+extern int pad_held;
 extern int pad0_pressed;
 extern int g_game_mode MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -376,7 +376,7 @@ extern PlayerHud cd_read_state;
 /* Advances the help popup's state machine: delay, open, hold, close, record stats. Adapted from Lombyte's project (GPL-3.0) for PAL: ui/help/update_help_state.c, update_help_state. */
 void Help_Update(void) {
     if (HS.started == 0) {
-        if (HS.delay == 0 && (D_0013CBE0 & (PAD_UP | PAD_RIGHT | PAD_DOWN | PAD_LEFT))) {
+        if (HS.delay == 0 && (pad_held & (PAD_UP | PAD_RIGHT | PAD_DOWN | PAD_LEFT))) {
             HS.delay = 1;
         }
         if (HS.delay != 0) {

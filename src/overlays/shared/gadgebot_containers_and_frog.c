@@ -37,7 +37,7 @@
 #include "overlays/shared/radial_particle_burst.h"
 #include "overlays/l06_blarg/hero_idle_and_items.h"
 #include "overlays/shared/moby_drops_and_death.h"
-extern char D_0014C290[];
+extern char level_moby_killed[];
 extern unsigned char saved_mission_state[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -246,7 +246,7 @@ typedef struct {
     long unk88;
 } L06BackdropQuad;
 extern char blarg_camera_pos[];
-extern char D_L06_00167500[];
+extern char referencePosition[];
 extern float gadgebot_container_local_vertices[][4];
 extern float gadgebot_container_vertex_normals[][4];
 extern float gadgebot_container_transformed_vertices[][4];
@@ -290,7 +290,7 @@ void draw_gadgebot_spawn_container(char *moby) {
     pos[2] = ((Moby *)moby)->pos.z;
     pos[3] = 1.0f;
     near = 0;
-    g = (float *)D_L06_00167500;
+    g = (float *)referencePosition;
     if (absolute_float(g[0x140 / 4] - pos[0]) < 16.0f && absolute_float(g[0x144 / 4] - ((Moby *)moby)->pos.y) < 16.0f) {
         near = 1;
     }
@@ -554,7 +554,7 @@ void frog_update(unsigned char *m) {
             vec_scale_to_length(C, &((Moby *)m)->rot_row0, ((struct FrogVars *)d)->speed * g_frame_time);
             move_frog_with_collision_resolution(m, C, 0, 0.3f, 0.3f);
             transform_vector_by_basis(A, A, &((Moby *)m)->rot_row0);
-            if (func_001F9CE8(A) < 0.5f) {
+            if (vector_length_xy(A) < 0.5f) {
                 float k;
                 float dist;
                 p = blarg_paths[((struct FrogVars *)d)->unk_1F8];
@@ -1097,11 +1097,11 @@ void spawn_moby_death_effect_burst(char *m) {
         int t, u;
         BuildSphericalOffset(a, g_frame_time * 1.8f, r1, r2);
         a[2] += g_frame_time * 0.9f;
-        func_L00_00258DB0(b, 0.0f, 0.5f);
+        random_vector(b, 0.0f, 0.5f);
         FastVecAdd(b, b, m + 0x10);
         b[2] += 0.5f;
-        t = scale_ticks(func_L00_00258BC8(0x14, 0x23));
-        u = func_L00_00258BC8(0x28, 0x3C);
+        t = scale_ticks(random_int_between(0x14, 0x23));
+        u = random_int_between(0x28, 0x3C);
         spawn_effect(b, a, 0x7000A0FF, 0xFF, t, 0x1E, u, 1);
     }
 }
@@ -1886,9 +1886,9 @@ void GadgebotUpdate(Moby *moby) {
                 moby->state = 4;
                 for (i = 0; i < 10; i++) {
                     float s = random_float_between(0.1f, 1.0f);
-                    int cr = func_L00_00258BC8(0x40, 0xFF);
-                    int cg = func_L00_00258BC8(0x40, 0xFF);
-                    int cb = func_L00_00258BC8(0x40, 0xFF);
+                    int cr = random_int_between(0x40, 0xFF);
+                    int cg = random_int_between(0x40, 0xFF);
+                    int cb = random_int_between(0x40, 0xFF);
                     int t;
                     int ga;
                     float fa;
@@ -1901,7 +1901,7 @@ void GadgebotUpdate(Moby *moby) {
                     add_vectors(v60, v50, (*(float (*)[4]) & moby->pos));
                     vec_scale_to_length(v40, v40, random_float_between(0.0f, g_frame_time));
                     v40[2] = random_float_between(g_frame_time * 2.5f, g_frame_time * 5.0f);
-                    t = scale_ticks(func_L00_00258BC8(0xF, 0x1E));
+                    t = scale_ticks(random_int_between(0xF, 0x1E));
                     ga = (cg << 8) | 0x7F000000;
                     fa = s * 0.07f;
                     fb = s * 0.7f;
@@ -1970,7 +1970,7 @@ void GadgebotUpdate(Moby *moby) {
                     if (coll_sphere(IntToFloat(d->ctl.i00) * 0.0009765625f, v50, 6, moby) == 0) {
                         break;
                     }
-                    if (fast_atan2(blarg_coll_hit.f48, func_001F9CE8(blarg_coll_hit.f40)) > 0.5235988f) {
+                    if (fast_atan2(blarg_coll_hit.f48, vector_length_xy(blarg_coll_hit.f40)) > 0.5235988f) {
                         qcopy((*(float (*)[4]) & moby->pos), hp);
                         (*(float (*)[4]) & moby->pos)[2] -= d->ctl.f04;
                     }
@@ -2044,7 +2044,7 @@ void GadgebotUpdate(Moby *moby) {
 /* scores a target moby by distance, heading differences and flags */
 float score_gadgebot_target_candidate(char *a, char *b, int c) {
     float r = vec_distance_xy(&((Moby *)a)->pos, &((Moby *)b)->pos);
-    float *g = (float *)D_L06_00167500;
+    float *g = (float *)referencePosition;
     float t = FastDiffRots(
         g[0x56], fast_atan2(((Moby *)b)->pos.x - ((Moby *)a)->pos.x, ((Moby *)b)->pos.y - ((Moby *)a)->pos.y));
     float u = FastDiffRots(((Moby *)a)->rot.z, fast_atan2(((Moby *)b)->pos.x - ((Moby *)a)->pos.x,
@@ -2395,9 +2395,9 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 int r16, r17, r18, r2, gc;
                 float f0, f1, f20, f21;
                 f21 = random_float_between(0.1f, 1.0f);
-                r18 = func_L00_00258BC8(0x40, 0xFF);
-                r17 = func_L00_00258BC8(0x40, 0xFF);
-                r16 = func_L00_00258BC8(0x40, 0xFF);
+                r18 = random_int_between(0x40, 0xFF);
+                r17 = random_int_between(0x40, 0xFF);
+                r16 = random_int_between(0x40, 0xFF);
                 f20 = FastCos(random_angle_radians()) * random_float_between(0.0f, 0.25f);
                 vA[0] = f20;
                 f20 = FastSin(random_angle_radians());
@@ -2411,7 +2411,7 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 vec_scale_to_length(vB, vB, f0);
                 f0 = random_float_between(*(float *)&g_frame_time * 2.5f, *(float *)&g_frame_time * 5.0f);
                 vB[2] = f0;
-                r2 = scale_ticks(func_L00_00258BC8(0xF, 0x1E));
+                r2 = scale_ticks(random_int_between(0xF, 0x1E));
                 gc = (r17 << 8) | 0x7F000000;
                 PartType53Spawn_v(vA, r2, f21 * 0.07f, f21 * 0.7f, (r16 << 16) | gc | r18, 0,
                                   random_integer_below(2) ? 1 : -1, g_frame_time_sq * 15.0f, vB);
@@ -2429,9 +2429,9 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 int r16, r17, r18, r2, gc;
                 float f0, f1, f20, f21;
                 f21 = random_float_between(0.1f, 1.0f);
-                r18 = func_L00_00258BC8(0x40, 0xFF);
-                r17 = func_L00_00258BC8(0x40, 0xFF);
-                r16 = func_L00_00258BC8(0x40, 0xFF);
+                r18 = random_int_between(0x40, 0xFF);
+                r17 = random_int_between(0x40, 0xFF);
+                r16 = random_int_between(0x40, 0xFF);
                 f20 = FastCos(random_angle_radians()) * random_float_between(0.0f, 0.25f);
                 vC[0] = f20;
                 f20 = FastSin(random_angle_radians());
@@ -2445,7 +2445,7 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 vec_scale_to_length(vA, vA, f0);
                 f0 = random_float_between(*(float *)&g_frame_time * 2.5f, *(float *)&g_frame_time * 5.0f);
                 vA[2] = f0;
-                r2 = scale_ticks(func_L00_00258BC8(0xF, 0x1E));
+                r2 = scale_ticks(random_int_between(0xF, 0x1E));
                 gc = (r17 << 8) | 0x7F000000;
                 PartType53Spawn_v(vC, r2, f21 * 0.07f, f21 * 0.7f, (r16 << 16) | gc | r18, 0,
                                   random_integer_below(2) ? 1 : -1, g_frame_time_sq * 15.0f, vA);
@@ -2894,7 +2894,7 @@ void energy_sphere_holder_update(Moby *m) {
     unsigned char *q;
     switch (m->state) {
         case 0:
-            if ((*(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (D_0014C290)) >>
+            if ((*(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) >>
                      (m->save_id & 0x1F) &
                  1) &&
                 (g_current_level_index_r != LEVEL_ORXON ||
@@ -2917,7 +2917,7 @@ void energy_sphere_holder_update(Moby *m) {
             ((struct EnergySphereHolderUpdateVars *)d)->unk_40 = o;
             m->state = 1;
             initialize_energy_sphere_holder_vars((char *)m);
-            *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (D_0014C290)) &=
+            *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) &=
                 ~(1 << (m->save_id & 0x1F));
             energy_sphere_holder_completion_bits[(short)m->save_id >> 5] &= ~(1 << (m->save_id & 0x1F));
             break;
@@ -2931,7 +2931,7 @@ void energy_sphere_holder_update(Moby *m) {
             if (((struct EnergySphereHolderUpdateVars *)d)->unk_40[0x20] < 0) {
                 m->command = 1;
                 m->state = 2;
-                *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (D_0014C290)) |=
+                *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) |=
                     1 << (m->save_id & 0x1F);
                 energy_sphere_holder_completion_bits[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
             } else {
@@ -3161,8 +3161,8 @@ void spawn_energy_sphere_destruction_particles(char *m) {
         int r;
         int c;
         int v;
-        func_L00_00258DB0(buf, energy_sphere_destruction_speed_range_start_gp * g_frame_time,
-                          energy_sphere_destruction_speed_range_end_gp * g_frame_time);
+        random_vector(buf, energy_sphere_destruction_speed_range_start_gp * g_frame_time,
+                      energy_sphere_destruction_speed_range_end_gp * g_frame_time);
         f = random_float_between(energy_sphere_destruction_scale_range_start_gp,
                                  energy_sphere_destruction_scale_range_end_gp);
         if (random_integer_below(2) != 0) {

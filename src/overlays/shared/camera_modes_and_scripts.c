@@ -23,12 +23,12 @@
 #include "overlays/shared/small_word_helpers.h"
 #include "overlays/shared/fast_vector_math.h"
 extern char g_hero[];
-extern u8 D_0013F4D0[];
+extern u8 hero_pos[];
 extern PadState g_controller_state;
 extern char hero_motion_rotation_for_local_pivot[];
 extern s32 hero_control_mode[];
 extern unsigned char hero_vehicle_mode NOT_SDA;
-extern int D_0013CBE0 NOT_SDA;
+extern int pad_held NOT_SDA;
 
 extern int vendor_stock[] MACRO_ADDR;
 extern short follow_camera_yaw_rate_table;
@@ -75,8 +75,8 @@ void update_hero_aligned_camera_position(char *p) {
         FastVecScale(b, a, 1.6f);
     }
     p += 0x30;
-    FastVecAdd(p, (char *)&D_0013F4D0, b);
-    FastVecAdd(p, (char *)&D_0013F4D0 + 0xC0, p);
+    FastVecAdd(p, (char *)&hero_pos, b);
+    FastVecAdd(p, (char *)&hero_pos + 0xC0, p);
 }
 
 extern void *camera_cross_axis_ptr;
@@ -136,7 +136,7 @@ typedef struct {
 } S_9f38;
 extern Hero g_hero_r __asm__("D_0013F450");
 extern CameraSystem player_camera_r __asm__("D_L00_00166D80");
-extern int D_0015EEDC MACRO_ADDR;
+extern int invert52 MACRO_ADDR;
 extern float hero_aligned_camera_rotation_gain_at_zero_input_gp SDATA(D_L00_00161E90);
 extern float hero_aligned_camera_rotation_gain_at_unit_input_gp SDATA(D_L00_00161E94);
 extern float hero_aligned_camera_input_stiffness_gp SDATA(D_L00_00161E98);
@@ -187,7 +187,7 @@ void update_hero_aligned_camera_from_input(Camera *o) {
         t = -IntToFloat((g_controller_state.held >> 14) & 1);
     if (player_camera_r.blend.phase != 0 && g_hero_r.state.prev == HERO_STATE_RUN)
         t = 0.0f;
-    if (D_0015EEDC == 0)
+    if (invert52 == 0)
         t = -t;
     r = absolute_float(st->b);
     k = (hero_aligned_camera_rotation_gain_at_zero_input_gp) +
@@ -569,7 +569,7 @@ void update_camera_pose_from_targets(void *arg) {
         } else {
             float t, x, y, diff, z;
             t = (float)(*(int *)(c + 4) - *(int *)(d + 0xE0)) / IntToFloat(*(int *)(c + 4));
-            compute_spherical_offset_from_positions(d + 0xE8, b, (char *)&D_0013F4D0);
+            compute_spherical_offset_from_positions(d + 0xE8, b, (char *)&hero_pos);
             x = FastSubRots(F(c, 8), F(c, 0x1C));
             y = FastSubRots(F(b, 0x18), camera_yaw);
             if ((x > 0.34906584f && y < -0.34906584f) || (x < -0.34906584f && y > 0.34906584f)) {
@@ -587,7 +587,7 @@ void update_camera_pose_from_targets(void *arg) {
             F(c, 0x24) =
                 F(c, 0x24) + (F(c, 0x10) - F(c, 0x24)) * cubic_hermite_scalar(F(c, 0x44), 0, 1.0f, F(c, 0x48), t);
             F(c, 0x20) = interpolate_wrapped_angle_cosine_eased(F(c, 0x20), F(c, 0xC), t);
-            interpolate_vector_xyz_cosine_eased(c + 0x30, c + 0x30, (char *)&D_0013F4D0, t);
+            interpolate_vector_xyz_cosine_eased(c + 0x30, c + 0x30, (char *)&hero_pos, t);
             compute_position_from_spherical_offset(&((Camera *)m)->pos, c + 0x1C, c + 0x30);
             interpolate_wrapped_rotations_cosine_eased((float *)((Camera *)m)->type_data,
                                                        (float *)((Camera *)m)->type_data, (float *)(b + 0x10), t);
@@ -1108,7 +1108,7 @@ extern char camera_view_up_axis[] NOT_SDA;
 void turn_camera_view_toward_hero(Camera *m) {
     char *p = *(char **)&m->state_buf;
     char *q = p + 0x40;
-    char *g = (char *)&D_0013F4D0;
+    char *g = (char *)&hero_pos;
     float a[4];
     float b[4];
     float c[4];
@@ -1256,15 +1256,15 @@ s32 volume_camera_swing_active(A_2ec7e8 *a) {
     } else if ((s16)w == 4 && hero_requested_camera_mode[0] == 3) {
         v17 = 0 < o->f2E;
     }
-    if (o->f0C >= 0 && (v17 || is_point_inside_clip_volume(&D_0013F4D0[0], o->f0C)))
+    if (o->f0C >= 0 && (v17 || is_point_inside_clip_volume(&hero_pos[0], o->f0C)))
         return 1;
-    if (o->f4C >= 0 && (v17 || is_point_inside_clip_volume(&D_0013F4D0[0], o->f4C)))
+    if (o->f4C >= 0 && (v17 || is_point_inside_clip_volume(&hero_pos[0], o->f4C)))
         return 1;
-    if (o->f10 >= 0 && (v17 || test_point_in_transformed_unit_cylinder(&D_0013F4D0[0], o->f10)))
+    if (o->f10 >= 0 && (v17 || test_point_in_transformed_unit_cylinder(&hero_pos[0], o->f10)))
         return 1;
-    if (o->f08 >= 0 && (v17 || test_point_in_transformed_unit_sphere(&D_0013F4D0[0], o->f08)))
+    if (o->f08 >= 0 && (v17 || test_point_in_transformed_unit_sphere(&hero_pos[0], o->f08)))
         return 1;
-    if (o->f14 >= 0 && (v17 || point_in_path_xy(&D_0013F4D0[0], toad_paths[o->f14] + 0x10, *(s32 *)toad_paths[o->f14])))
+    if (o->f14 >= 0 && (v17 || point_in_path_xy(&hero_pos[0], toad_paths[o->f14] + 0x10, *(s32 *)toad_paths[o->f14])))
         return 1;
     return 0;
 }
@@ -1730,15 +1730,15 @@ int volume_camera_aim_active(void *arg) {
             return 0;
     }
     if (params->clip_volume >= 0) {
-        if (is_point_inside_clip_volume((char *)&D_0013F4D0, params->clip_volume) != 0)
+        if (is_point_inside_clip_volume((char *)&hero_pos, params->clip_volume) != 0)
             return 1;
     }
     if (params->volume_25fa38 >= 0) {
-        if (test_point_in_transformed_unit_cylinder((char *)&D_0013F4D0, params->volume_25fa38) != 0)
+        if (test_point_in_transformed_unit_cylinder((char *)&hero_pos, params->volume_25fa38) != 0)
             return 1;
     }
     if (params->volume_25faf0 >= 0) {
-        if (test_point_in_transformed_unit_sphere((float *)(&D_0013F4D0), params->volume_25faf0) != 0)
+        if (test_point_in_transformed_unit_sphere((float *)(&hero_pos), params->volume_25faf0) != 0)
             return 1;
     }
     params->done = 1;
@@ -1891,7 +1891,7 @@ void volume_camera_aim(void *cam_) {
             params->timer = 0;
             return;
         }
-        if (!(D_0013CBE0 & (PAD_L2 | PAD_L1))) {
+        if (!(pad_held & (PAD_L2 | PAD_L1))) {
             goto run;
         }
     }

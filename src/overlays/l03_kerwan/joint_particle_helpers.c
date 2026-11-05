@@ -48,7 +48,7 @@ void emit_cutscene_sparks(void) {
         BuildSphericalOffset(direction, size, a, b);
         lo = scale_ticks(12);
         hi = scale_ticks(35);
-        value = func_L00_00258BC8(lo, hi);
+        value = random_int_between(lo, hi);
         spawn_effect_particle_with_target_scalar_v(position, direction, 0x80808080, 0x808080, value, 147000.0f);
     }
 }

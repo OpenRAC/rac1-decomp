@@ -502,7 +502,7 @@ void integrate_hero_motion(void) {
             float limit;
 
             position = (float *)&g_hero.motion.velocity;
-            length = func_001F9CE8(position);
+            length = vector_length_xy(position);
             limit = player->capsule_radius - 0.02f;
             if (limit < length)
                 vec_set_length_xy(position, position, limit);
@@ -530,7 +530,7 @@ void integrate_hero_motion(void) {
                     float limit;
 
                     position = player->motion.velocity.f;
-                    length = func_001F9CE8(position);
+                    length = vector_length_xy(position);
                     limit = player->capsule_radius - 0.02f;
                     if (limit < length)
                         vec_set_length_xy(position, position, limit);
@@ -598,7 +598,7 @@ void integrate_hero_motion(void) {
     vec_scale_to_length(vertical, plane.f, magnitude);
     motion_player = &g_hero;
     motion_player->motion.speed_xy = FastVecLength(delta);
-    motion_player->motion.flat_speed = func_001F9CE8(delta);
+    motion_player->motion.flat_speed = vector_length_xy(delta);
     work.q = *(Q *)delta;
     motion_player->motion.forward_speed = forward_component(work.f);
     if (motion_player->motion.forward_speed < 0.0f)

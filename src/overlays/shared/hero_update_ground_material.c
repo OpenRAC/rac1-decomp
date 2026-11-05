@@ -35,7 +35,7 @@
 #include "game/moby/mobyutil.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
-extern int D_0013CBE0;
+extern int pad_held;
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
@@ -490,7 +490,7 @@ void update_hero_ledge_probe(void) {
             hit = CollType();
             if (hit != 9 && hit != 12 && hit != 0) {
                 if (fast_atan2(((Hit_D688 *)novalis_coll_hit_r)->v40[2],
-                               func_001F9CE8(((Hit_D688 *)novalis_coll_hit_r)->v40)) < 0.3490658402442932f)
+                               vector_length_xy(((Hit_D688 *)novalis_coll_hit_r)->v40)) < 0.3490658402442932f)
                     found = 1;
             }
         }
@@ -646,7 +646,8 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
         if (coll_line_r2(&top, &low, 4, g_hero_r.moby, 0)) {
             material = CollType();
             if (material != 9 && material != 12) {
-                if (fast_atan2(novalis_coll_hit_r2.normal_z, func_001F9CE8(&novalis_coll_hit_r2.normal_x)) < max_slope)
+                if (fast_atan2(novalis_coll_hit_r2.normal_z, vector_length_xy(&novalis_coll_hit_r2.normal_x)) <
+                    max_slope)
                     found = 1;
             }
         }
@@ -1035,7 +1036,7 @@ void clip_hero_horizontal_velocity(int flag) {
     s[2] += f2;
     qcopy(t, &g->motion.pos);
     t[2] += f2 * 0.3f;
-    if (flag != 0 || func_001F9CE8(&g->motion.velocity) < 0.01f) {
+    if (flag != 0 || vector_length_xy(&g->motion.velocity) < 0.01f) {
         p[0] = FastCos(g->motion.rot.f[2]) * f21;
         p[1] = FastSin(g->motion.rot.f[2]) * f21;
         p[2] = 0.0f;
@@ -1045,7 +1046,7 @@ void clip_hero_horizontal_velocity(int flag) {
     } else {
         qcopy(p, &g->motion.velocity);
         p[2] = 0.0f;
-        FastVecScale(p, p, f21 / func_001F9CE8(p));
+        FastVecScale(p, p, f21 / vector_length_xy(p));
         qcopy(q, p);
         FastVecScale(q, q, 1.4f);
     }
@@ -1063,7 +1064,7 @@ void clip_hero_horizontal_velocity(int flag) {
     if (coll_line(s, p, 4, *(int *)&h2->moby, 0) != 0) {
         w = novalis_coll_hit;
         if (*(int *)(w + 0x1C) > 0) {
-            f20 = fast_atan2(*(float *)(w + 0x48), func_001F9CE8(w + 0x40));
+            f20 = fast_atan2(*(float *)(w + 0x48), vector_length_xy(w + 0x40));
         }
     }
     if (f20 >= 0.87266463f || k == 8 || k == 12) {
@@ -1382,8 +1383,8 @@ void air_accel(float step) {
                 v[1] = FastSin(ang) * spd;
                 v[2] = g3->motion.velocity.f[2];
                 d = -(g3->motion.velocity.f[0] * v[0] + g3->motion.velocity.f[1] * v[1]);
-                l1 = func_001F9CE8(v);
-                l2 = func_001F9CE8(&g3->motion.velocity);
+                l1 = vector_length_xy(v);
+                l2 = vector_length_xy(&g3->motion.velocity);
             }
             if (l1 == 0.0f)
                 d = 0.0f;
@@ -1412,7 +1413,7 @@ void air_accel(float step) {
             h = (char *)&g_hero + 0xE0;
             step = step * d;
             FastVecSub(v, v, h);
-            if (step < func_001F9CE8(v))
+            if (step < vector_length_xy(v))
                 vec_set_length_xy(v, v, step);
             FastVecAdd(h, h, v);
             *(u128_34970 *)w = *(u128_34970 *)(h + 0x840);
@@ -1599,7 +1600,7 @@ void select_hero_locomotion_state(void) {
     b = (char *)&g_hero;
     ((struct Hero *)b)->unk2284 = 0;
     stick_target_v(0, 1.0f);
-    if (D_0013CBE0 & 0xA) {
+    if (pad_held & 0xA) {
         l01_hero_set_state(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
         hero_queue_sequence(3, 0x12);

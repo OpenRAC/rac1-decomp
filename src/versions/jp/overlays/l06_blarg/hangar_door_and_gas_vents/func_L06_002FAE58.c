@@ -327,7 +327,7 @@ void alien_queen_update(unsigned char *moby) {
                 return;
             flag[0xA] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x542D, -1);
+            queue_dialogue_message(0x542D, -1);
             return;
         }
         case 15: {

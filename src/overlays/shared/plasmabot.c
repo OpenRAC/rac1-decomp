@@ -29,7 +29,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/moby_drops_and_death.h"
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
 extern char hero_gravity_dir[];
@@ -1048,7 +1048,7 @@ float update_plasmabot_aim_quaternion(char *moby, int flag, float x) {
         bp = b;
         FastVecSub(bp, a, &((Moby *)moby)->pos);
         b[2] = b[2] + 1.5f;
-        t = -fast_atan2(func_001F9CE8(bp), b[2]);
+        t = -fast_atan2(vector_length_xy(bp), b[2]);
         SteerAngleWithVelocity_r2(&d->aim_yaw, t, (float *)&d->aim_yaw_vel, g_frame_time_sq * 12.566370964050293f,
                                   g_frame_time_sq * 12.566370964050293f, g_frame_time * 6.2831854820251465f);
         cp = c;
@@ -1347,13 +1347,13 @@ void plasmabot_death_debris_update(struct MobyDf *moby) {
         return;
     }
     spawn_burst(&moby->pos, oltanis_zero_vector, 0x4F007FFF, 0x1FFFFFFF,
-                func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
+                random_int_between(scale_ticks(10), scale_ticks(20)), 1, 60000.0f);
     for (i = 0; i < 2; i++) {
         n = random_integer_below(6);
         if (random_integer_below(2) != 0)
             n = -n;
         size = random_float_between(40000.0f, 100000.0f);
-        color = func_L00_00258BC8(0x30, 0xFF);
+        color = random_int_between(0x30, 0xFF);
         alpha = 0x60000000;
         particle = (unsigned char *)PartType23Spawn(&moby->pos, 0.025f, 1.0f, 1.0f, n, oltanis_zero_vector, size,
                                                     color | ((color << 16) | ((color << 8) | alpha)));
@@ -1387,7 +1387,7 @@ unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
         ((Moby *)m)->visible = 1;
-        g = D_0013F4D0;
+        g = hero_pos;
         FastVecSub(vec, &((Moby *)m)->pos, g);
         g = g + 0x210;
         vec[2] = 0.0f;
@@ -1541,14 +1541,14 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
         } else {
             float angle;
             *(int *)(d + 4) = scale_ticks(200);
-            FastVecSub(vec, pos, D_0013F4D0);
+            FastVecSub(vec, pos, hero_pos);
             vec[2] = 0.0f;
             vec_scale_to_length(
                 vec, vec,
                 random_float_between(path_debris_min_speed * frame_scale, path_debris_max_speed * frame_scale));
-            FastVecCross(vec + 4, D_0013F4D0 + 0x210, vec);
+            FastVecCross(vec + 4, hero_pos + 0x210, vec);
             angle = randf_sym(0.5759586691856384f, 1.3962633609771729f);
-            build_look_at_matrix(d + 0x30, vec, D_0013F4D0 + 0x210, angle);
+            build_look_at_matrix(d + 0x30, vec, hero_pos + 0x210, angle);
             *(float *)(d + 0x38) =
                 random_float_between(path_debris_min_spin * frame_scale, path_debris_max_spin * frame_scale);
             *(float *)(d + 0x20) = randf_sym(0.0f, 0.008726646f);
@@ -1660,14 +1660,14 @@ void emit_debris_trail_particles(Moby *m) {
         pos.f[0] += randf_sym(0.0f, 0.1f);
         pos.f[1] += randf_sym(0.0f, 0.1f);
     }
-    PartType21Spawn_r(&pos, &vel, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(scale_ticks(10), scale_ticks(20)), 1,
+    PartType21Spawn_r(&pos, &vel, 0x4F007FFF, 0x1FFFFFFF, random_int_between(scale_ticks(10), scale_ticks(20)), 1,
                       60000.0f);
     n = random_integer_below(6);
     if (random_integer_below(2) != 0) {
         n = -n;
     }
     size = random_float_between(60000.0f, 140000.0f);
-    c = func_L00_00258BC8(0x30, 0xFF);
+    c = random_int_between(0x30, 0xFF);
     alpha = 0x60000000;
     e = PartType23Spawn_r(&pos, 0.025f, 1.0f, 1.0f, n, &vel, size, c | ((c << 16) | ((c << 8) | alpha)));
     if (e != 0) {
@@ -2049,7 +2049,7 @@ void electric_beam_update(unsigned char *m) {
             break;
     }
     if (*(int *)&electric_beam_damage_disabled_gp == 0) {
-        if (vec_distance_xy(&((Moby *)m)->pos, D_0013F4D0) < 10.0f) {
+        if (vec_distance_xy(&((Moby *)m)->pos, hero_pos) < 10.0f) {
             apply_electric_beam_damage((char *)m);
         }
     }
@@ -2128,7 +2128,7 @@ void start_electric_beam_pulse(char *moby) {
         low = scale_ticks(ticks);
     }
     high = scale_ticks((electric_beam_max_pulse_duration_frames_gp));
-    duration = func_L00_00258BC8(low, high);
+    duration = random_int_between(low, high);
     beam->s12 = (short)duration;
     beam->r620 = (short)duration;
     length = FastVecLength(l14_cuboids + (beam->idx << 7) + 0x10);
@@ -2144,8 +2144,8 @@ void start_electric_beam_pulse(char *moby) {
             clear_u64_value(&path[i]);
             clear_u64_value(&path_steps[i]);
         } else {
-            func_L00_00258DB0(&path[i], 0.0f, electric_beam_displacement_radius_gp);
-            func_L00_00258DB0(&path_steps[i], 0.0f, electric_beam_max_point_speed_gp * g_frame_time);
+            random_vector(&path[i], 0.0f, electric_beam_displacement_radius_gp);
+            random_vector(&path_steps[i], 0.0f, electric_beam_max_point_speed_gp * g_frame_time);
         }
         y = path[i].y;
         path[i].w = 1.0f;
@@ -2169,14 +2169,14 @@ void start_electric_beam_pulse(char *moby) {
     for (branch = 0; branch < 4; branch++) {
         int start;
         float spread = (electric_beam_displacement_radius_gp);
-        func_L00_00258DB0(&work, spread, spread);
+        random_vector(&work, spread, spread);
         start = truncate_float_to_s32(random_float_between((float)branch * 6.0f, (float)(branch + 1) * 6.0f)) + 4;
         beam->cnt[branch] = (unsigned char)start;
         qcopy(&beam->a[0][branch], &beam->pts[start]);
         qcopy(&beam->b[0][branch], &beam->off[start]);
         for (k = 1; k < 4; k++) {
-            func_L00_00258DB0(&delta, 0.1f, 0.1f);
-            func_L00_00258DB0(&beam->b[k][branch], 0.0f, (electric_beam_max_point_speed_gp)*g_frame_time);
+            random_vector(&delta, 0.1f, 0.1f);
+            random_vector(&beam->b[k][branch], 0.0f, (electric_beam_max_point_speed_gp)*g_frame_time);
             FastVecAdd(&beam->a[k][branch], &beam->a[k - 1][branch], &work);
             FastVecAdd(&beam->a[k][branch], &beam->a[k][branch], &delta);
         }
@@ -2288,7 +2288,7 @@ typedef struct {
     s32 one;
 } VendorBeamReq;
 
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern VendorBeamFrame_3039C0 *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
 extern u8 oltanis_collision_hit_point_r[] __asm__("D_L14_00174660");
 
@@ -2318,7 +2318,7 @@ void apply_electric_beam_damage(char *self) {
     dir.f[0] = FastCos(m->rot.z);
     dir.f[1] = FastSin(m->rot.z);
     dir.f[2] = 0.0f;
-    FastVecSub(&to_hero, D_0013F4D0, &m->pos);
+    FastVecSub(&to_hero, hero_pos, &m->pos);
     to_hero.f[2] = 0.0f;
     dot = FastVecDot(&dir, &to_hero);
     if (FastVecLength(&to_hero) != 0.0f) {

@@ -82,7 +82,7 @@ s32 *find_camera_collision_volume_for_point(q128 *v, f32 rad) {
         FastVecSub(&d, e, tp);
         f = *(f32 *)(e + 0xC);
         d.f[3] = 1.0f;
-        if (func_001F9CE8(&d) < f + rad) {
+        if (vector_length_xy(&d) < f + rad) {
             if (test_point_in_camera_collision_volume_r(tp, (s32 *)e, rad) != 0) {
                 return (s32 *)e;
             }
@@ -124,7 +124,7 @@ int test_point_in_camera_collision_volume(Vec4 *pt, int *vol, float rad) {
             FastVecSub(&d, pt, e + 0x30);
             d.i[3] = 0;
             transform_vector_by_basis(&l, &d, e + 0x40);
-            if (func_001F9CE8(&l) < 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f) {
+            if (vector_length_xy(&l) < 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f) {
                 r = 1;
             }
             return r;
@@ -144,7 +144,7 @@ int test_point_in_camera_collision_volume(Vec4 *pt, int *vol, float rad) {
             FastVecSub(&d, pt, e + 0x30);
             d.i[3] = 0;
             transform_vector_by_basis(&l, &d, e + 0x40);
-            if (func_001F9CE8(&l) < 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f) {
+            if (vector_length_xy(&l) < 1.0f && -1.0f <= l.f[2] && l.f[2] <= 1.0f) {
                 return 1;
             }
             c.i[0] = 0;

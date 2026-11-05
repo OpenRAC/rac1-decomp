@@ -104,7 +104,7 @@ char *spawn_blarg_ship_rocket(float scale, void *vel, void *pos, int a, int b, i
         d->unk_30 = 0;
         d->unk_34 = 0;
         m->rot.z = fast_atan2(*(float *)((char *)d), d->vel_y);
-        m->rot.y = -fast_atan2(func_001F9CE8(&d->vel_x), d->vel_z);
+        m->rot.y = -fast_atan2(vector_length_xy(&d->vel_x), d->vel_z);
         moby_build_matrix(m);
     }
     return (char *)m;
@@ -125,7 +125,7 @@ typedef struct {
 } Shot;
 
 extern unsigned char g_hero[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -189,10 +189,10 @@ void rocket_819_update(Moby *m) {
                     FastVecScale(aim, hv, t);
                     FastVecAdd(aim, aim, diff);
                     yaw = fast_atan2(aim[0], aim[1]);
-                    pitch = -fast_atan2(func_001F9CE8(aim), aim[2]);
+                    pitch = -fast_atan2(vector_length_xy(aim), aim[2]);
                 } else {
                     yaw = fast_atan2(diff[0], diff[1]);
-                    pitch = -fast_atan2(func_001F9CE8(diff), diff[2]);
+                    pitch = -fast_atan2(vector_length_xy(diff), diff[2]);
                 }
                 m->rot.z = SpringTurn_v(m->rot.z, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
                                         g_frame_time * 6.2831855f, &d->yawSpeed);
@@ -202,11 +202,11 @@ void rocket_819_update(Moby *m) {
                 BuildSphericalOffset_v(speed, m->rot.z, -m->rot.y, d);
             }
             clear_u64_value(c);
-            spawn_effect(p, c, 0x6F00AFFF, 0xFF, scale_ticks(func_L00_00258BC8(15, 22)), 0x28,
-                         func_L00_00258BC8(20, 35), 1);
-            spawn_effect(p, c, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(func_L00_00258BC8(30, 60)), 0x28,
-                         func_L00_00258BC8(50, 75), 0);
-            dist = fast_vec_dist(p, D_0013F4D0);
+            spawn_effect(p, c, 0x6F00AFFF, 0xFF, scale_ticks(random_int_between(15, 22)), 0x28,
+                         random_int_between(20, 35), 1);
+            spawn_effect(p, c, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(random_int_between(30, 60)), 0x28,
+                         random_int_between(50, 75), 0);
+            dist = fast_vec_dist(p, hero_pos);
             FastVecAdd(p, p, d);
             if (d->warned == 0 && d->passed != 0 && d->dist < dist && dist < 5.0f) {
                 Moby_PlaySound(0, 0, m);
@@ -256,7 +256,7 @@ void spawn_type_52_particle_near_moby(char *moby) {
     float b = random_float_between(0.0f, type_52_particle_offset_radius_upper_bound);
     float c = random_float_between(0.0f, type_52_particle_scale_upper_bound);
     float d = random_float_between(type_52_particle_scale_upper_bound, type_52_particle_random_value_upper_bound);
-    int e = func_L00_00258BC8(type_52_particle_divisor_lower_bound, type_52_particle_divisor_upper_bound);
+    int e = random_int_between(type_52_particle_divisor_lower_bound, type_52_particle_divisor_upper_bound);
     v[0] = FastCos(a) * b;
     v[1] = FastSin(a) * b;
     v[2] = 0.0f;
@@ -443,17 +443,17 @@ int check_descriptor_hero_trigger(char *moby, char *unused) {
     unsigned char *e = *(unsigned char **)(l10_descriptor_table + *(short *)(moby + 0x84) * 32 + 0x1C);
 
     if (*(int *)(e + 0x0C) >= 0) {
-        if (is_point_inside_clip_volume(D_0013F4D0, *(int *)(e + 0x0C)))
+        if (is_point_inside_clip_volume(hero_pos, *(int *)(e + 0x0C)))
             return 1;
     } else if (*(int *)(e + 0x10) >= 0) {
-        if (test_point_in_transformed_unit_cylinder(D_0013F4D0, *(int *)(e + 0x10)))
+        if (test_point_in_transformed_unit_cylinder(hero_pos, *(int *)(e + 0x10)))
             return 1;
     } else if (*(int *)(e + 0x08) >= 0) {
-        if (test_point_in_transformed_unit_sphere((float *)D_0013F4D0, *(int *)(e + 0x08)))
+        if (test_point_in_transformed_unit_sphere((float *)hero_pos, *(int *)(e + 0x08)))
             return 1;
     } else if (*(int *)(e + 0x14) >= 0) {
         int i = *(int *)(e + 0x14);
-        if (point_in_path_xy((float *)D_0013F4D0, (float *)(l10_paths[i] + 0x10), *(int *)l10_paths[i]))
+        if (point_in_path_xy((float *)hero_pos, (float *)(l10_paths[i] + 0x10), *(int *)l10_paths[i]))
             return 1;
     } else if (e[0x38] != 0 && e[0x39] == 0) {
         return 1;

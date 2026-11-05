@@ -31,7 +31,7 @@
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "overlays/shared/trespasser_and_throwing_gloves.h"
 extern Hero g_hero;
-extern int D_0013CBE0;
+extern int pad_held;
 extern char voice_pool[];
 
 /* Glow particle (class 0x70): spinning shard that shrinks and fades out. */
@@ -339,7 +339,7 @@ void mine_update(M910 *m) {
                             n[0] = FastCos(ang) * rr;
                             n[1] = FastSin(ang) * rr;
                             n[2] = random_float_between(g_frame_time * 3.0f, g_frame_time * 6.5f);
-                            life = func_L00_00258BC8(0x5A, 0x78);
+                            life = random_int_between(0x5A, 0x78);
                             PartType35Spawn(t, n, random_integer_below(2), life);
                         }
                     }
@@ -787,7 +787,7 @@ void mine_update(M910 *m) {
                             c1 = swap_packed_color_channels(c1, D_E910.b11);
                             c2 = swap_packed_color_channels(c2, D_E910.b11);
                             sz = random_float_between(31500.002f, 52500.0f);
-                            life = func_L00_00258BC8(scale_ticks(0x5A), scale_ticks(0x96));
+                            life = random_int_between(scale_ticks(0x5A), scale_ticks(0x96));
                             spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
                                 n, r, c1, c2, sz, life, 1, part_type_textures[11][0], -1);
                         }
@@ -830,7 +830,7 @@ void mine_update(M910 *m) {
                                 case 0: {
                                     int c1 = swap_packed_color_channels(0x1F101820, D_E910.b11);
                                     float sz = random_float_between(200000.0f, 300000.0f) * sc;
-                                    int life = func_L00_00258BC8(scale_ticks(0xB4), scale_ticks(0xF0));
+                                    int life = random_int_between(scale_ticks(0xB4), scale_ticks(0xF0));
 
                                     mine_debris((char *)r, (char *)n, c1, 0x101010, sz, life, 0);
                                     break;
@@ -852,7 +852,7 @@ void mine_update(M910 *m) {
 
                                     c2 = swap_packed_color_channels(0x0F000020, D_E910.b11);
                                     sz = sc * 150000.0f;
-                                    life = func_L00_00258BC8(scale_ticks(0x1E), scale_ticks(0x2D));
+                                    life = random_int_between(scale_ticks(0x1E), scale_ticks(0x2D));
                                     mine_debris((char *)r, (char *)n, c1, c2, sz, life, 2);
                                     break;
                                 }
@@ -868,7 +868,7 @@ void mine_update(M910 *m) {
                                     BuildSphericalOffset(n, random_float_between(0.0f, 1.0f) * g_frame_time, ang,
                                                          random_angle_radians());
                                     sz = random_float_between(200000.0f, 300000.0f) * sc;
-                                    life = func_L00_00258BC8(scale_ticks(0xF0), scale_ticks(0x12C));
+                                    life = random_int_between(scale_ticks(0xF0), scale_ticks(0x12C));
                                     mine_debris((char *)r, (char *)n, c1, c2, sz, life, 3);
                                     break;
                                 }
@@ -1173,7 +1173,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
         if (cls == 0x56e || cls == 0x58e) {
             FastVecAdd(&vars->vel, &vars->vel, &vars->dir);
         } else if (vars->unk64 != 0) {
-            length = func_001F9CE8(velocity);
+            length = vector_length_xy(velocity);
             FastVecSub(difference, &((Hero *)&D_G910)->motion.pos, &vars->target->pos);
             vec_scale_to_length(difference, difference, 1.0f);
             dot = FastVecDot(difference, &vars->dir);
@@ -1205,7 +1205,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
             }
             total = g_frame_time_sq * 11.0f;
             rp = result;
-            if (D_0013CBE0 & 5) {
+            if (pad_held & 5) {
                 e = (char *)&D_E910;
                 height = IntToFloat(*(unsigned char *)(e + 0xa)) * 2.5f + 8.5f;
             } else {
@@ -1547,7 +1547,7 @@ void bomb_update(M_2aedd0 *m) {
                     int n2;
 
                     FastVecScale(&v1, d, bomb_trail_spark_speed_scale);
-                    func_L00_00258DB0(v3.f, 0.0f, bomb_trail_spark_jitter * g_frame_time);
+                    random_vector(v3.f, 0.0f, bomb_trail_spark_jitter * g_frame_time);
                     FastVecAdd(&v1, &v3, &v1);
                     clear_u64_value(v2.f);
                     v1.f[3] = random_float_between(bomb_trail_spark_start_size_min, bomb_trail_spark_start_size_max);
@@ -1630,7 +1630,7 @@ void bomb_update(M_2aedd0 *m) {
                         vel.f[0] = FastCos(ang) * r;
                         vel.f[1] = FastSin(ang) * r;
                         vel.f[2] = random_float_between(g_frame_time * 3.0f, g_frame_time * 6.5f);
-                        n = func_L00_00258BC8(0x5A, 0x78);
+                        n = random_int_between(0x5A, 0x78);
                         PartType35Spawn(&p, &vel, random_integer_below(2), n);
                     }
                 } else if (d->h68 != 0 || CollType() != 0) {
@@ -1696,7 +1696,7 @@ void bomb_update(M_2aedd0 *m) {
                         vec_scale_to_length(&v, &v, s * random_float_between(3.5f, 6.5f) * g_frame_time);
                         FastVecAdd(&v, &v, &a);
                         SpawnFallingSpark((char *)&m->pos, (char *)&v,
-                                          func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x78)), 0,
+                                          random_int_between(scale_ticks(0x3C), scale_ticks(0x78)), 0,
                                           (unsigned char)D_E910.p0[0xA]);
                     }
                 }
@@ -1724,7 +1724,7 @@ void bomb_update(M_2aedd0 *m) {
                             vec_scale_to_length(&v, &v, s * random_float_between(6.5f, 10.0f) * g_frame_time);
                             FastVecAdd(&v, &v, &a);
                             SpawnFallingSpark((char *)&m->pos, (char *)&v,
-                                              func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x5A)), 1,
+                                              random_int_between(scale_ticks(0x3C), scale_ticks(0x5A)), 1,
                                               (unsigned char)D_E910.p0[0xA]);
                         }
                     }
@@ -1739,7 +1739,7 @@ void bomb_update(M_2aedd0 *m) {
                     FastVecAdd(&v, &v, &delta);
                     clamp_vec_length(&v, &v, g_frame_time * 10.0f);
                     SpawnFallingSpark((char *)&m->pos, (char *)&v,
-                                      func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x5A)), 1,
+                                      random_int_between(scale_ticks(0x3C), scale_ticks(0x5A)), 1,
                                       (unsigned char)D_E910.p0[0xA]);
                     if (dist < 6.0f) {
                         cnt = truncate_float_to_s32(dist) + 1;
@@ -1759,8 +1759,8 @@ void bomb_update(M_2aedd0 *m) {
                             &m->pos, &a,
                             swap_packed_color_channels(c1.c[random_integer_below(6)], (unsigned char)D_E910.p0[0xA]),
                             swap_packed_color_channels(c2.c[random_integer_below(6)], (unsigned char)D_E910.p0[0xA]),
-                            s * 400000.0f, func_L00_00258BC8(scale_ticks(0xF), scale_ticks(0x14)),
-                            func_L00_00258BC8(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, spd);
+                            s * 400000.0f, random_int_between(scale_ticks(0xF), scale_ticks(0x14)),
+                            random_int_between(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0, spd);
                     }
                     if (dist > 9.0f) {
                         int r;
@@ -1884,7 +1884,7 @@ void bomb_update(M_2aedd0 *m) {
                             v2.q = m->pos.q;
                             v2.f[2] = gz;
                             sz = random_float_between(31500.002f, 52500.0f);
-                            life = func_L00_00258BC8(scale_ticks(0x5A), scale_ticks(0x96));
+                            life = random_int_between(scale_ticks(0x5A), scale_ticks(0x96));
                             spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
                                 &v2, &w, c0, c1, sz, life, 1, part_type_textures[11][0], -1);
                         }
@@ -2075,7 +2075,7 @@ unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *pos, vo
 extern float D_L00_00161540_float SDATA(D_L00_00161540);
 extern int D_L00_00161544_count SDATA(D_L00_00161544);
 extern unsigned char D_L00_00161544_byte SDATA(D_L00_00161544);
-extern char D_L00_00173F80[];
+extern char coll_hit_normal[];
 extern float D_L00_00161518_float SDATA(D_L00_00161518);
 extern float D_L00_0016151C_float SDATA(D_L00_0016151C);
 
@@ -2108,7 +2108,7 @@ void nanotech_crate_fragment_update(char *moby) {
                 mob->state = 1;
             } else if (FastDecTimer(&data->timer) != 0 && data->bounces != 0) {
                 if (coll_sphere(data->radius, pos, 2, 0) != 0) {
-                    char *n = D_L00_00173F80;
+                    char *n = coll_hit_normal;
                     float zero;
                     if (FastVecDot(vel, n) < (zero = 0.0f)) {
                         qcopy(pos, n - 0x10);
@@ -2494,10 +2494,10 @@ void gold_devastator_missile_update(M910 *m) {
             FastVecScale(&predicted, &phase.vectors.relative, time);
             FastVecAdd(&predicted, &predicted, phase.collision.dir);
             yaw = fast_atan2(predicted.f[0], predicted.f[1]);
-            pitch = -fast_atan2(func_001F9CE8(&predicted), predicted.f[2]);
+            pitch = -fast_atan2(vector_length_xy(&predicted), predicted.f[2]);
         } else {
             yaw = fast_atan2(phase.collision.dir[0], phase.collision.dir[1]);
-            pitch = -fast_atan2(func_001F9CE8(phase.collision.dir), phase.collision.dir[2]);
+            pitch = -fast_atan2(vector_length_xy(phase.collision.dir), phase.collision.dir[2]);
         }
     } else {
         if (d->life < scale_ticks(300) - scale_ticks(5)) {
@@ -2669,7 +2669,7 @@ void gold_devastator_missile_update(M910 *m) {
                     if (FastVecLength(&predicted) > 1.0f)
                         vec_scale_to_length(&predicted, &predicted, g_frame_time * 8.0f);
                     particle_scale = size * 40000.0f;
-                    life = func_L00_00258BC8(scale_ticks(60), scale_ticks(120)) - particle_reduction * 35;
+                    life = random_int_between(scale_ticks(60), scale_ticks(120)) - particle_reduction * 35;
                     spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
                         (&m->pos), &predicted, color, fade, particle_scale, life, 1, -1, -1);
                 }
@@ -2690,8 +2690,8 @@ void gold_devastator_missile_update(M910 *m) {
         vec_scale_to_length(&camera_delta, &camera_delta, (distance + distance) * g_frame_time);
         FastVecAdd(&predicted, &predicted, &camera_delta);
         clamp_vec_length(&predicted, &predicted, g_frame_time * 10.0f);
-        SpawnFallingSpark((char *)(&m->pos), (char *)&predicted, func_L00_00258BC8(scale_ticks(60), scale_ticks(90)), 0,
-                          0);
+        SpawnFallingSpark((char *)(&m->pos), (char *)&predicted, random_int_between(scale_ticks(60), scale_ticks(90)),
+                          0, 0);
         if (distance < 6.0f)
             j = truncate_float_to_s32(distance) / 2;
         else
@@ -2707,12 +2707,12 @@ void gold_devastator_missile_update(M910 *m) {
             Colors1688 fade = l00_devastator_missile_impact_fade_palette;
             int c = swap_packed_color_channels(color.colors[random_integer_below(6)], gold_weapon_purchased.bB);
             int f = swap_packed_color_channels(fade.colors[random_integer_below(6)], gold_weapon_purchased.bB);
-            int life = func_L00_00258BC8(scale_ticks(15), scale_ticks(20)) - particle_reduction * 7;
-            int end = func_L00_00258BC8(scale_ticks(25), scale_ticks(30)) - particle_reduction * 10;
+            int life = random_int_between(scale_ticks(15), scale_ticks(20)) - particle_reduction * 7;
+            int end = random_int_between(scale_ticks(25), scale_ticks(30)) - particle_reduction * 10;
             int white_life, white_end;
             PartType11Spawn((&m->pos), &blast_velocity, c, f, 400000.0f, life, end, 0, 0, speed);
-            white_life = func_L00_00258BC8(scale_ticks(5), scale_ticks(10)) - particle_reduction * 5;
-            white_end = func_L00_00258BC8(scale_ticks(15), scale_ticks(20)) - particle_reduction * 7;
+            white_life = random_int_between(scale_ticks(5), scale_ticks(10)) - particle_reduction * 5;
+            white_end = random_int_between(scale_ticks(15), scale_ticks(20)) - particle_reduction * 7;
             PartType11Spawn((&m->pos), &blast_velocity, 0x7FFFFFFF, 0xFFFFFF, 400000.0f, white_life, white_end, 0, 0,
                             speed * 0.5f);
         }
@@ -2734,7 +2734,7 @@ void gold_devastator_missile_update(M910 *m) {
             c = swap_packed_color_channels(color.colors[random_integer_below(6)], gold_weapon_purchased.bB);
             f = swap_packed_color_channels(fade.colors[random_integer_below(6)], gold_weapon_purchased.bB);
             debris_scale = size * 200000.0f;
-            life = func_L00_00258BC8(scale_ticks(20), scale_ticks(35)) - particle_reduction * 10;
+            life = random_int_between(scale_ticks(20), scale_ticks(35)) - particle_reduction * 10;
             debris1688((&m->pos), &v, c, f, debris_scale, life);
         }
         if (cpu_frame_load < 0.95f && distance > 9.0f) {
@@ -2781,7 +2781,7 @@ void gold_devastator_missile_update(M910 *m) {
             vec_scale_to_length(&impact1688.normal, &impact1688.normal, 1.0f);
             reflect_vector(&bounce[0], &motion, &impact1688.normal);
             m->rz = fast_atan2(bounce[0].f[0], bounce[0].f[1]);
-            m->ry = -fast_atan2(func_001F9CE8(&bounce[0]), bounce[0].f[2]);
+            m->ry = -fast_atan2(vector_length_xy(&bounce[0]), bounce[0].f[2]);
             d->yaw_velocity = 0.0f;
             d->pitch_velocity = 0.0f;
             vec_scale_to_length(&bounce[1], &impact1688.normal, 0.05f);
@@ -2854,7 +2854,7 @@ void emit_object_offset_particles(unsigned char *o) {
         b.f[2] = 0.0f;
         FastVecAdd(&d, &d, &b);
         t = scale_ticks(0x14);
-        spark_2b1af0(&c, &d, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(t, scale_ticks(0x28)), 1, 10000.0f);
+        spark_2b1af0(&c, &d, 0x4F007FFF, 0x1FFFFFFF, random_int_between(t, scale_ticks(0x28)), 1, 10000.0f);
     }
 }
 typedef int OvlQuad __attribute__((mode(TI)));
@@ -2889,7 +2889,7 @@ void emit_object_offset_particle_burst(unsigned char *o) {
                              (char *)&l00_object_offset_burst_reference_direction - 0x20,
                              (float)i * 0.2617994f + angle);
         vec_scale_to_length(&c, &c, random_float_between(0.05f, 0.1f));
-        t = func_L00_00258BC8(0, 3);
+        t = random_int_between(0, 3);
         if (random_integer_below(2) != 0)
             t = -t;
         if (*(int *)((char *)&l00_object_offset_burst_reference_direction - 0x360) != 0) {
@@ -2899,7 +2899,7 @@ void emit_object_offset_particle_burst(unsigned char *o) {
         {
             int low = scale_ticks(30);
             int high = scale_ticks(90);
-            PartType44Spawn(&b, &c, func_L00_00258BC8(low, high), 30, 0xFFFFFF, t, 60000.0f, 3000.0f, 0.85f, -0.001f,
+            PartType44Spawn(&b, &c, random_int_between(low, high), 30, 0xFFFFFF, t, 60000.0f, 3000.0f, 0.85f, -0.001f,
                             0.0f);
         }
     }
@@ -2912,7 +2912,7 @@ void emit_object_offset_particle_burst(unsigned char *o) {
         {
             int low = scale_ticks(20);
             int high = scale_ticks(60);
-            spawn_burst(&b, &c, 0x4F007FFF, 0x1FFFFFFF, func_L00_00258BC8(low, high), 1, 10000.0f);
+            spawn_burst(&b, &c, 0x4F007FFF, 0x1FFFFFFF, random_int_between(low, high), 1, 10000.0f);
         }
     }
     o[0xBC] = scale_ticks(5);

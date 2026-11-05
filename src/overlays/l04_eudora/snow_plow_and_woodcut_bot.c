@@ -278,7 +278,7 @@ void snow_plow_update(VehicleMoby *m) {
     }
     izero = 0;
     zero = *(float *)&izero;
-    func_L01_002F6540(m);
+    gunship_follow_path(m);
     if (m->cls != 0x1E4) {
         FastDecTimer(&d->phase_timer);
         switch (d->phase) {
@@ -422,7 +422,7 @@ void snow_plow_update(VehicleMoby *m) {
         if (++eudora_skill_snow_plow_hits >= 10 && gSkillPoints.flag == 0) {
             gSkillPoints.flag = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53DB, -1);
+            queue_dialogue_message(0x53DB, -1);
         }
         switch ((s16)((u16)m->cls - 0x1D2)) {
             case 19:
@@ -636,7 +636,7 @@ void FloatingPlatformUpdate(char *m) {
                 float g = g_frame_scale_sq;
                 *p = a;
                 *(float *)(d + 0x108 + i * 0x80) = a;
-                func_L00_00263950(m, d + 0xA0 + i * 0x80, i, g * 0.03f, g * 0.3f);
+                update_joint_animation(m, d + 0xA0 + i * 0x80, i, g * 0.03f, g * 0.3f);
             }
             if (((struct FloatingPlatformUpdateVars *)d)->unk_230 != -1) {
                 char *o = eudora_mobys_b + (((struct FloatingPlatformUpdateVars *)d)->unk_230 << 8);
@@ -1451,9 +1451,7 @@ struct MobyP {
 #define rib_p func_002140B0
 #define cif_p func_001FA888
 
-#define vector_length_xy func_001F9CE8
 
-#define random_int_between func_L00_00258BC8
 #define collision_line ((int (*)(void *, void *, int, void *, void *))(func_L00_001EFFF0))
 
 extern float leaf_motion_parameters[6];
@@ -1589,8 +1587,8 @@ void leaf_update(struct MobyP *moby) {
 #undef scale_vector_xyz
 #undef rib_p
 #undef cif_p
-#undef vector_length_xy
-#undef random_int_between
+#undef func_001F9CE8
+#undef func_L00_00258BC8
 #undef collision_line
 /* Return the riser's vertical speed by moby class (negative values move it down). */
 float riser_rise_speed(char *moby) {
@@ -1634,7 +1632,7 @@ extern float riser_rise_speed(char *);
 extern int fast_dec_timer_i(int *arg0) __asm__("func_001F9908");
 
 extern int g_current_level_index MACRO_ADDR;
-extern int D_0014C290[][64] NOT_SDA;
+extern int level_moby_killed[][64] NOT_SDA;
 typedef struct {
     unsigned char pad[0x454];
     unsigned char taken[0];
@@ -1655,7 +1653,7 @@ void upper_door_update(CollectMoby2BB8 *m) {
         case 1:
             u = m->id;
             if (D_L04_001BB6C0_flags.taken[(short)u] == 0 &&
-                ((D_0014C290[g_current_level_index][(short)u >> 5] >> (u & 0x1F)) & 1) == 0) {
+                ((level_moby_killed[g_current_level_index][(short)u >> 5] >> (u & 0x1F)) & 1) == 0) {
                 int o = d->owner;
                 CollectMoby2BB8 *q;
                 if (o == -1)
@@ -1675,7 +1673,7 @@ void upper_door_update(CollectMoby2BB8 *m) {
             m->height = m->height + riser_rise_speed((char *)m) * g_frame_time;
             if (fast_dec_timer_i(&d->timer) != 0) {
                 id1 = m->id;
-                D_0014C290[g_current_level_index][(short)id1 >> 5] |= 1 << (id1 & 0x1F);
+                level_moby_killed[g_current_level_index][(short)id1 >> 5] |= 1 << (id1 & 0x1F);
                 id2 = m->id;
                 level_completed_save_id_bits[(short)id2 >> 5] |= 1 << (id2 & 0x1F);
                 if (m->oclass == MOBY_CLASS_UPPER_DOOR_1101)
@@ -1746,9 +1744,9 @@ void suck_cannon_update(Moby *moby) {
             if (eudora_game_mode_r == 2)
                 break;
             if (!*(gHaveHeliPack_r + 7))
-                func_L00_00264DB8(0xFA7, -1);
+                queue_dialogue_message(0xFA7, -1);
             else
-                func_L00_00264DB8(0x53E4, -1);
+                queue_dialogue_message(0x53E4, -1);
             dialogue_message_duration_frames_r = 0xB4;
             grant_inventory_item(9, 1);
             if (vars->exitMoby != -1) {
@@ -1923,7 +1921,7 @@ extern unsigned char item_available_26 NOT_SDA;
 extern unsigned char menu_item_enabled_16 NOT_SDA;
 extern unsigned char menu_item_enabled_17 NOT_SDA;
 extern unsigned char menu_item_enabled_18 NOT_SDA;
-extern unsigned char D_0013D4AF NOT_SDA;
+extern unsigned char menu_item_enabled_19 NOT_SDA;
 extern unsigned short usage_stats_entry24_count NOT_SDA;
 extern unsigned short item_usage_entry40_last_time NOT_SDA;
 extern unsigned short usage_stats_entry31_count NOT_SDA;
@@ -2033,7 +2031,7 @@ void Moby1343Update(Moby *moby) {
             }
             if (data->f44 != -1) {
                 if (eudora_mobys_r[data->f44].oclass == MOBY_CLASS_BOLT_CRANK && eudora_mobys_r[data->f44].state == 5) {
-                    D_0013D4AF = 1;
+                    menu_item_enabled_19 = 1;
                 }
             }
 

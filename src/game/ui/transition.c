@@ -200,7 +200,7 @@ extern float occl_fog_density_set MACRO_ADDR;
 extern int occl_fog_count MACRO_ADDR;
 extern int part_clip_dist MACRO_ADDR;
 extern unsigned char frame_vu0_micro_program[];
-extern unsigned char D_0019C2C0[];
+extern unsigned char point_lights[];
 extern unsigned char point_light_data[];
 extern unsigned char dir_lights[];
 extern char too_many_directional_lights_message[];
@@ -332,7 +332,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr) {
     part_clip_dist = 0x1F4000;
     SetBackgroundColor(view_context.x23C, view_context.x240, view_context.x244);
     ((void (*)(void *))VU0_loadMicroProgram)(frame_vu0_micro_program);
-    FastMemZero16(D_0019C2C0, 0x100);
+    FastMemZero16(point_lights, 0x100);
     FastMemZero16(point_light_data, 0x180);
     FastMemZero16(dir_lights, 0x400);
 
@@ -581,7 +581,7 @@ unsigned char *initialize_level_render_state(LevelHeaderE9EC8 *hdr) {
     }
     ResetDrawGlobals();
     reset_pad_history();
-    Font_EnableColorCodes();
+    enable_font_color_codes();
     world_update_time = 0;
     gFade = 1.0f;
     return p;
@@ -1352,7 +1352,7 @@ void transition_do_transition(void) {
             continue;
         stop:
             if (is_active_BB48(transition_sound_cues[i].voice, transition_sound_cues[i].sound) != 0) {
-                func_0022EAB0(transition_sound_cues[i].voice);
+                release_voice_slot(transition_sound_cues[i].voice);
             }
             transition_sound_cues[i].voice = -1;
         }

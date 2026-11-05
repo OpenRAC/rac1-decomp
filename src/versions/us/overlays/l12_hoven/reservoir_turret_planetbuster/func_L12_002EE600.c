@@ -5,7 +5,7 @@ void HovenChallengeUpdate(char *m) {
         if (s[0x14] == 0) {
             s[0x14] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x53D6, -1);
+            queue_dialogue_message(0x53D6, -1);
         }
     }
     {

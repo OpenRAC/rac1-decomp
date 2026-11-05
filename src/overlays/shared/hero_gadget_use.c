@@ -34,7 +34,7 @@
 #include "game/ui/hud.h"
 #include "game/gameplay/freeze.h"
 extern char gSpecialItems[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char last_weapon_id[];
@@ -403,7 +403,7 @@ void apply_hero_item_slot_selection(int i) {
         Sel *g = (Sel *)(&g_hero);
         *(int *)((char *)g + i * 0x50 + 0x10B0) = 3;
         clear_hero_idle_rotation_targets();
-        *(int *)((char *)g + 0x1010) = func_L00_00258BC8(scale_ticks(0x32), scale_ticks(0x5A));
+        *(int *)((char *)g + 0x1010) = random_int_between(scale_ticks(0x32), scale_ticks(0x5A));
         set_hero_item_switch_timer_for_item(*((int *)((char *)&g_hero + 0x20D4) + i));
         set_hero_condition_animation_timer_for_item(*((int *)((char *)&g_hero + 0x20D4) + i));
         if (g->f20A8 != 0) {
@@ -484,7 +484,7 @@ void update_hero_movement_and_collision_probes(void) {
         g_hero_r.wall_probe_hit_moby = 0;
         if (probe_hero_forward_collision(0.7f, 4.0f, &g_hero_r.wall_probe_distance)) {
             CollisionHit_4C558 *wall = &rilgar_coll_hit_r;
-            float normal_xy = func_001F9CE8(&wall->normal_x);
+            float normal_xy = vector_length_xy(&wall->normal_x);
             g_hero_r.wall_normal_pitch = fast_atan2(wall->normal_z, normal_xy);
             if (wall->moby != 0) {
                 g_hero_r.wall_probe_hit_moby = 1;
@@ -1393,7 +1393,7 @@ void compute_hero_hoverboard_respawn_transform(float *out, float *rot) {
                         goto next_point;
                 }
             }
-            d = vec_distance_xy(D_0013F4D0, path + i * 16 + 0x10);
+            d = vec_distance_xy(hero_pos, path + i * 16 + 0x10);
             if (d < distance) {
                 distance = d;
                 best = i;
@@ -1559,7 +1559,7 @@ void update_hero_hoverboard_race_progress(void) {
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
                 g_hero.off_course_frames = 0;
                 g_hero.board_air_yaw = v1[2];
-                func_L00_00217718(v0, v1, 0x6B, 1);
+                set_race_camera(v0, v1, 0x6B, 1);
                 if (((Path *)g_hero.race_path) != 0) {
                     int r = select_point_index_by_distance(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
@@ -1633,7 +1633,7 @@ void update_hero_hoverboard_race_progress(void) {
             if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
                 ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53DB, -1);
+                queue_dialogue_message(0x53DB, -1);
             }
         }
         if (d->f28 == -1) {
@@ -1820,7 +1820,7 @@ int hero_pick_help_mode(void) {
         goto L_BAC;
     if (*(int *)(h + 0x1C) == 0)
         goto L_BAC;
-    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), func_001F9CE8(h + 0x40))))
+    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), vector_length_xy(h + 0x40))))
         goto L_BAC;
     g->f8A4 = FastAddRots(fast_atan2(*(float *)(h + 0x40), *(float *)(h + 0x44)), 3.1415927f);
     if (!(FastDiffRots(fast_atan2(g->fE0[0], g->fE0[1]), g->f8A4) < 0.7853982f))
@@ -1834,8 +1834,8 @@ int hero_pick_help_mode(void) {
 
 L_BAC:
     if (((H_9F0 *)(&g_hero))->b257 != 0) {
-        f20 = func_001F9CE8(((H_9F0 *)(&g_hero))->f100);
-        if (f20 < func_001F9CE8(((H_9F0 *)(&g_hero))->fE0) * 0.25f) {
+        f20 = vector_length_xy(((H_9F0 *)(&g_hero))->f100);
+        if (f20 < vector_length_xy(((H_9F0 *)(&g_hero))->fE0) * 0.25f) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
         }
@@ -1942,7 +1942,7 @@ L_DEC:
             if (fl->f7 == 0) {
                 fl->f7 = 1;
                 allocate_voice_for_bank_entry(1, 0, 0);
-                func_L00_00264DB8(0x53DB, -1);
+                queue_dialogue_message(0x53DB, -1);
             }
         }
         ((H_9F0 *)(&g_hero))->i714 = 0;

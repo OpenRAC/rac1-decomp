@@ -815,7 +815,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int race_record_panel_end_y MACRO_ADDR;
 extern int hud_text_panel_y SDATA(hud_text_panel_y);
 extern unsigned char hud_text_panel_string[];
-extern float D_0013F4D0[];
+extern float hero_pos[];
 extern int race_best_times[] MACRO_ADDR;
 extern int race_best_records[] MACRO_ADDR;
 extern const char hud_text_panel_time_format[];
@@ -905,7 +905,7 @@ int draw_hud_text_panel(char *e) {
             qcopy(&point, &points[1]);
         }
         pt = &point;
-        if (fast_vec_dist(D_0013F4D0, pt) < 5.0f) {
+        if (fast_vec_dist(hero_pos, pt) < 5.0f) {
             race_record_panel_end_y = y + 100;
             elapsed = race_best_times[g_current_level_index == LEVEL_KALEBO3 ? 1 : 0];
             score = race_best_records[g_current_level_index == LEVEL_KALEBO3 ? 1 : 0];
@@ -1273,7 +1273,7 @@ typedef struct {
     char pad4A[2];
 } TI_238C30;
 
-extern void func_L00_0023BAB8(char *, int, int, int, int, int);
+extern void hud_frame(char *, int, int, int, int, int);
 
 extern unsigned char screen_globals_base[];
 extern short quick_select_pulse_period;
@@ -1359,14 +1359,13 @@ int draw_hud_item_selector_panel(HudElem *rec) {
                 icon_alpha = truncate_float_to_s32((float)alpha * GF(quick_select_unselected_alpha_scale));
             else
                 icon_alpha = alpha;
-            func_L00_0023BAB8(
-                (char *)rec,
-                GetIconFrame(((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id,
-                             ((unsigned char *)screen_globals_base +
-                              0x4C6)[((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].item]
-                                 ? 4
-                                 : 0),
-                icon_x, icon_y, 1, icon_alpha);
+            hud_frame((char *)rec,
+                      GetIconFrame(((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id,
+                                   ((unsigned char *)screen_globals_base +
+                                    0x4C6)[((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].item]
+                                       ? 4
+                                       : 0),
+                      icon_x, icon_y, 1, icon_alpha);
         }
     }
     selected = rec->unk74;
@@ -1834,7 +1833,7 @@ extern short health_hud_default_icon_offsets;
 extern short l00_health_hud_eight_capacity_icon_offsets[];
 extern short l00_health_hud_five_capacity_icon_offsets[];
 
-extern void func_L00_0023BAB8(char *, int, int, int, int, int);
+extern void hud_frame(char *, int, int, int, int, int);
 
 /* Draws the health bar (and its nanotech orbs) of a HUD element; returns the element's field 0x58. */
 int draw_health_hud_panel(HudElem *e) {
@@ -1936,10 +1935,10 @@ int draw_health_hud_panel(HudElem *e) {
         }
     }
     for (i = 0; i < cnt; i++) {
-        func_L00_0023BAB8((char *)e, GetIconFrame(0x7536, phase), x0 + tbl[i * 2], y0 + tbl[i * 2 + 1], 1, alpha);
+        hud_frame((char *)e, GetIconFrame(0x7536, phase), x0 + tbl[i * 2], y0 + tbl[i * 2 + 1], 1, alpha);
         if (phase != 0x1E) {
             int a, b, px, py;
-            func_L00_0023BAB8((char *)e, GetIconFrame(0x7536, 0x1E), x0 + tbl[i * 2], y0 + tbl[i * 2 + 1], 1, alpha);
+            hud_frame((char *)e, GetIconFrame(0x7536, 0x1E), x0 + tbl[i * 2], y0 + tbl[i * 2 + 1], 1, alpha);
             a = GetIconFrame(0x7536, 0x1F);
             px = x0 + tbl[i * 2];
             py = y0 + tbl[i * 2 + 1];
@@ -2214,7 +2213,7 @@ int draw_hud_bolt_exclamation_panel(HudElem *m) {
     panel_left = panel_right - slide;
     draw_hud_sprite(GetIconFrame(0x7580, 0), panel_left, y, slide + 16, 32, alpha);
     draw_hud_sprite(GetIconFrame(0x7580, 1), panel_left - 32, y, 32, 32, alpha);
-    func_L00_0023BAB8((char *)m, GetIconFrame(0x754f, level_frame_counter % 60 >> 1), x - 32, y, 0, text_alpha);
+    hud_frame((char *)m, GetIconFrame(0x754f, level_frame_counter % 60 >> 1), x - 32, y, 0, text_alpha);
 
     sprintf(buf, bolt_exclamation_label_format);
     text_x = x + bolt_exclamation_text_x;
@@ -2278,7 +2277,7 @@ extern int ammo_hud_zero_text_color_blend_end SDATA(D_L00_0015FA10);
 extern int ammo_hud_text_right_x_offset SDATA(D_L00_0015FA14);
 extern int ammo_hud_text_y_offset SDATA(D_L00_0015FA18);
 
-extern void func_L00_0023BAB8(char *, int, int, int, int, int);
+extern void hud_frame(char *, int, int, int, int, int);
 
 /* Draws the weapon HUD tile: three-part frame, weapon icon and ammo text with shadow, faded by the slide-in timers. */
 int draw_weapon_ammo_hud_panel(char *m) {
@@ -2319,7 +2318,7 @@ int draw_weapon_ammo_hud_panel(char *m) {
         draw_hud_sprite_flipped(GetIconFrame(0x7580, 1), x4 + wd, y, 0x20, 0x20, a);
         tex = GetIconFrame(*(int *)m, 3);
         *(int *)(m + 0x44) = tex;
-        func_L00_0023BAB8(m, tex, x, y, 0, alpha);
+        hud_frame(m, tex, x, y, 0, alpha);
         v74 = ((HudElem *)m)->unk74;
         sprintf(buf, hud_ammo_format, v74, ((HudElem *)m)->unk08);
         if (v74 != 0)
@@ -2499,7 +2498,7 @@ void reset_hud_and_suspend_weapon_updates(void) {
 extern char texture_group_header[];
 
 // Places a HUD element: looks up its size, offsets x/y by the anchor flags and draws it.
-void func_L00_0023BAB8(char *e, int id, int x, int y, int flags, int alpha) {
+void hud_frame(char *e, int id, int x, int y, int flags, int alpha) {
     if (id >= 0) {
         char *g = texture_group_header;
         char *a = *(char **)(g + 0x20);

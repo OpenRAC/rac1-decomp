@@ -563,7 +563,7 @@ void umbris_scene_progression_update(Moby *moby) {
             if (umbris_scene_state == 2)
                 break;
             if (data->f18 != -1) {
-                func_L00_00217718(scene_points_r[data->f18].f30, scene_points_r[data->f18].f70, 0, 1);
+                set_race_camera(scene_points_r[data->f18].f30, scene_points_r[data->f18].f70, 0, 1);
             }
             moby->state = 7;
             break;
@@ -585,7 +585,7 @@ void umbris_scene_progression_update(Moby *moby) {
                 if (data->fC == -1 || (e = &level_mobys_r[data->fC]) == 0 || e->state == 0xFE || e->state == 0xFD) {
                     if (data->f4 != -1) {
                         if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f4) != 0) {
-                            func_L00_00217718(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72, 1);
+                            set_race_camera(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72, 1);
                             ((Flags *)gSpecialItems)->f2A = 1;
                             moby->state = 9;
                             start_scene(3);
@@ -618,7 +618,7 @@ void umbris_scene_progression_update(Moby *moby) {
             if (umbris_scene_state == 2)
                 break;
             if (data->f1C != -1) {
-                func_L00_00217718(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0, 1);
+                set_race_camera(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0, 1);
             }
             if (data->f10 != -1) {
                 Moby *e = &level_mobys_r[data->f10];
@@ -958,7 +958,7 @@ unsigned char *spawn_machinegun_turret_projectile(void *pos, float *dir, int a, 
         ((Moby *)m)->visible = 1;
         *(int *)&((Moby *)m)->rot.x = 0;
         d = ((char *)((Moby *)m)->pvars);
-        ((Moby *)m)->rot.y = -fast_atan2(func_001F9CE8(dir), dir[2]);
+        ((Moby *)m)->rot.y = -fast_atan2(vector_length_xy(dir), dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         qcopy(&((Moby *)m)->pos, pos);
         qcopy(&((struct SpawnMachinegunTurretProjectileVars *)d)->unk_40, pos);
@@ -1040,7 +1040,7 @@ void machinegun_turret_projectile_update(Moby *m) {
                 FastVecAdd(&dir, &spark, &dir);
                 vec_scale_to_length(&dir, &dir, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
                 PartType27Spawn((char *)&m->pos, (char *)&dir, 0x7F2F4F6F,
-                                func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
+                                random_int_between(scale_ticks(10), scale_ticks(15)), 30000.0f);
             }
         }
         Moby_PlaySound_r(0, 0, m);
@@ -1089,7 +1089,7 @@ struct AnimSeq;
 extern int coll_line_r2(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
-extern char D_0013F4D0[];
+extern char hero_pos[];
 typedef struct {
     Vec4f vel; /* 0x00 */
     void *ignore; /* 0x10: collision owner to skip */
@@ -1117,7 +1117,7 @@ void bombomatic_bomb_update(struct Moby *m) {
     m->rot.z = FastAddRots(m->rot.z, d->spin_z);
     if (coll_line_r2(&old, pos, 0, d->ignore, 0) != 0 || coll_sphere(0.5f, pos, 0, d->ignore) != 0) {
         if (debris_target_r == 0 || (u16)(debris_target_r->oclass - 0x371) >= 2) {
-            if (m->visible != 0 || vec_distance_xy(pos, D_0013F4D0) < 5.0f) {
+            if (m->visible != 0 || vec_distance_xy(pos, hero_pos) < 5.0f) {
                 size = 0.0f;
                 if (d->variant % 3 == 0) {
                     size = 10.0f;
@@ -1726,7 +1726,7 @@ eb20:
             int r1 = scale_ticks(((struct BombomaticVars *)d)->reload_ticks);
             int r2;
             int r3;
-            r2 = func_L00_00258BC8(0, 10);
+            r2 = random_int_between(0, 10);
             r3 = scale_ticks(r2);
             ((struct BombomaticVars *)d)->next_time = umbris_frame_count + r1 + r3;
             AttachManipulator(m, 0, ((struct BombomaticVars *)d)->manip);
@@ -2439,7 +2439,7 @@ void advance_sharkigator_swim_movement(char *a, char *b, float f12, float f13, f
 /* steers a speed toward a target angle and writes the velocity along the moby's heading; returns 1 when speeding up */
 int update_sharkigator_horizontal_velocity_by_heading(char *moby, char *obj, float a, float lo, float up, float hi,
                                                       float down, float vmax, float vmin) {
-    float speed = func_001F9CE8(&((struct SharkigatorVars *)obj)->velocity);
+    float speed = vector_length_xy(&((struct SharkigatorVars *)obj)->velocity);
     int r = 0;
     float d = FastDiffRots(((Moby *)moby)->rot.z, a);
     if (d < lo) {

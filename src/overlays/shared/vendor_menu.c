@@ -45,7 +45,7 @@ extern char pad0_pressed[];
 extern int queued_dialogue_id;
 extern s32 weapon_ammo_counts[];
 
-extern int D_L00_001CA7C0[];
+extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
 
@@ -55,16 +55,16 @@ void decompress_and_relocate_vendor_moby_assets(void) {
     int *p;
     char *base;
     int v;
-    v = D_L00_001CA7C0[6] + 0x80000;
+    v = vendor_menu[6] + 0x80000;
     flush_cache(0);
-    fast_decompress(v, D_L00_001CA7C0[6]);
+    fast_decompress(v, vendor_menu[6]);
     flush_cache(0);
-    p = (int *)D_L00_001CA7C0[6];
+    p = (int *)vendor_menu[6];
     base = moby_class_headers[g_class_slot_12];
     for (i = 0; i < 16; i++) {
         int e = *p++;
         if (e) {
-            *(int *)(base + 0x48 + i * 4) = D_L00_001CA7C0[6] + e;
+            *(int *)(base + 0x48 + i * 4) = vendor_menu[6] + e;
             relocate_asset_entry_pointers(base, i);
         }
     }
@@ -265,7 +265,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     s32 k;
     VendorSlot_pv *slot;
 
-    FastMemSet((Vendor_pv *)D_L00_001CA7C0, 0, 0x220);
+    FastMemSet((Vendor_pv *)vendor_menu, 0, 0x220);
     FastMemSet(vendor_extra, 0, 0x40);
     if (m == 0) {
         m = CreateMoby(0xB);
@@ -403,7 +403,7 @@ typedef struct VendorMenuState {
 void close_vendor_menu(int exit_cutscene_completed) {
     Vec4A world_position;
     Vec4A euler_rotation;
-    VendorMenuState *vendor_state_base = (VendorMenuState *)D_L00_001CA7C0;
+    VendorMenuState *vendor_state_base = (VendorMenuState *)vendor_menu;
     if (vendor_state_base->hud_bar_54 != -1)
         set_animation_parameter(vendor_state_base->hud_bar_54, 0);
     if (vendor_state_base->hud_bar_50 != -1)
@@ -424,14 +424,14 @@ void close_vendor_menu(int exit_cutscene_completed) {
         euler_rotation.y = 0.0f;
         euler_rotation.z = FastAddRots(*(float *)((char *)vendor_state_base->moby + 0x48), 3.1415927f);
         if (exit_cutscene_completed == 0) {
-            func_L00_00217718(&world_position, &euler_rotation, 0, 0);
+            set_race_camera(&world_position, &euler_rotation, 0, 0);
             jet_end_mount(2);
         } else {
-            func_L00_00217718(&world_position, &euler_rotation, 0, 1);
+            set_race_camera(&world_position, &euler_rotation, 0, 1);
         }
     }
     {
-        VendorMenuState *vendor_state = (VendorMenuState *)D_L00_001CA7C0;
+        VendorMenuState *vendor_state = (VendorMenuState *)vendor_menu;
         MusicModeBlock *music = (MusicModeBlock *)(&cd_read_state);
         *((char *)vendor_state->moby + 0x20) = 1;
         if ((unsigned short)(music->mode - 6) >= 2)
@@ -603,13 +603,13 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     HeroEnterMoveState(HERO_STATE_IDLE, 1);
     g_hero_field_20a5[0] = 0;
     update_hero_item_moby_flags();
-    vendor_state_base = (VendorExitState *)D_L00_001CA7C0;
+    vendor_state_base = (VendorExitState *)vendor_menu;
     transform_vector_by_basis(&world_position, &vendor_exit_hero_local_offset_gp, vendor_state_base->actor->basis);
     FastVecAdd(&world_position, &world_position, &vendor_state_base->actor->pos);
     *(int *)&euler_rotation.x = 0;
     *(int *)&euler_rotation.y = 0;
     euler_rotation.z = FastAddRots(vendor_state_base->actor->yaw, -1.5707964f);
-    func_L00_00217718(&world_position, &euler_rotation, 0, 1);
+    set_race_camera(&world_position, &euler_rotation, 0, 1);
     decrement_resource_counter();
     mode_block = (MusicModeBlock *)(&cd_read_state);
     if (!(mode_block->mode >= 6 && mode_block->mode <= 7))
@@ -634,7 +634,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
     int r1;
     if (vendor_auxiliary_moby_active == 0)
         return;
-    b = D_L00_001CA7C0;
+    b = vendor_menu;
     m = *(unsigned char **)(b + 0x24);
     switch (a) {
         case 0:
@@ -667,7 +667,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
         case 3:
             s2 = m[0x20];
             if (s2 == 2 || s2 == 0) {
-                char *q = D_L00_001CA7C0;
+                char *q = vendor_menu;
                 *(int *)(q + 0x34) = 0;
             }
             break;
@@ -725,7 +725,7 @@ void initialize_vendor_selected_item_mobys(void) {
     float v[4];
     A *q;
     B *r;
-    S *g = (S *)D_L00_001CA7C0;
+    S *g = (S *)vendor_menu;
     S *g1;
     S *g2;
     S *g3;
@@ -738,7 +738,7 @@ void initialize_vendor_selected_item_mobys(void) {
     } else {
         select_world_object_resource_tables(cls, -1);
     }
-    g1 = (S *)D_L00_001CA7C0;
+    g1 = (S *)vendor_menu;
 #undef GG
 #define GG g1
     InitMobyInstance(P + 0x100, cls);
@@ -751,7 +751,7 @@ void initialize_vendor_selected_item_mobys(void) {
             v[2] += vendor_item_slot1_placement_offset[TA].c;
         }
     }
-    g2 = (S *)D_L00_001CA7C0;
+    g2 = (S *)vendor_menu;
 #undef GG
 #define GG g2
     transform_vector_by_basis(P + 0x110, v, GG->cam + 0xC0);
@@ -779,7 +779,7 @@ void initialize_vendor_selected_item_mobys(void) {
         moby_build_matrix(P + 0x200);
         pack_render_command_fields(P + 0x200, 0x202020, 0xE, 0xE, 0);
     }
-    g3 = (S *)D_L00_001CA7C0;
+    g3 = (S *)vendor_menu;
 #undef GG
 #define GG g3
     InitMobyInstance(P + 0x300, cls);

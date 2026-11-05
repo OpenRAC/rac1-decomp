@@ -621,6 +621,7 @@
 #define door_lock_glow_corner_uvs                                     D_L06_001FECB0
 #define door_lock_glow_corner_colors                                  D_L06_001FECF8
 #define door_lock_glow_quad_corner_indices                            D_L06_001FED20
+#define referencePosition                                             D_L06_00167500
 #define linked_sequence_exit_ramp_progress                            D_L06_0015F500
 #define level_game_mode_q                                             D_L06_0015F6A8
 #define level_mobys_q                                                 D_L06_00160058

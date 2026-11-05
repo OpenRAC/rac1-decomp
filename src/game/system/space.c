@@ -122,7 +122,7 @@ typedef struct {
     short level;
     short set;
 } FlareCfg;
-extern FlareCfg D_0013E130;
+extern FlareCfg level_render_state;
 extern float light_flare_corner_offsets[][4][4];
 
 /* Draws a light flare quad at arg0's position (+0x00; the matrix is at
@@ -143,8 +143,8 @@ void draw_light_flare(char *arg0) {
     if (bsphere_check_alpha(a, &alpha, 32.0f) < 0) {
         return;
     }
-    if (g_game_mode == 6 && D_0013E130.mode == 3 && D_0013E130.level > scale_game_frame_count(150)) {
-        alpha -= (D_0013E130.level - scale_game_frame_count(150)) * 4;
+    if (g_game_mode == 6 && level_render_state.mode == 3 && level_render_state.level > scale_game_frame_count(150)) {
+        alpha -= (level_render_state.level - scale_game_frame_count(150)) * 4;
         if (alpha <= 0) {
             return;
         }
@@ -164,7 +164,7 @@ void draw_light_flare(char *arg0) {
 
         q.rgba[i] = ((alpha >> 1) << 24) | 0x808080;
         v = q.v[i];
-        transform_vector_by_basis(v, light_flare_corner_offsets[D_0013E130.set][i], arg0 + 0xC0);
+        transform_vector_by_basis(v, light_flare_corner_offsets[level_render_state.set][i], arg0 + 0xC0);
         FastVecAdd(v, v, arg0 + 0x10);
         v[2] = z;
     }
@@ -621,8 +621,8 @@ void update_level_gameplay_frame(void) {
     if (((*(LevelFrame_LGS *)&render_sequence)).time == 1 && g_current_level_index_m != LEVEL_VELDIN1 &&
         (g_current_level_index_m != LEVEL_NOVALIS || level_available[3] != 0)) {
         snd_reenable_command_flush();
-        snd_play_sound_vol_pan_pmpb(sound_bank_handle, ((*(LevelFrame_LRS *)&D_0013E130)).mode, 0x400, 0, 0, 0, 0,
-                                    D_0013E6C0);
+        snd_play_sound_vol_pan_pmpb(sound_bank_handle, ((*(LevelFrame_LRS *)&level_render_state)).mode, 0x400, 0, 0, 0,
+                                    0, D_0013E6C0);
         snd_reset_state_and_flush_commands();
         snd_FlushSoundCommands();
     }
@@ -638,18 +638,19 @@ void update_level_gameplay_frame(void) {
         }
         if (g_current_level_index_m != LEVEL_VELDIN1 &&
             (g_current_level_index_m != LEVEL_NOVALIS || level_available[3] != 0) && D_0015EF48_m < 3) {
-            ((*(LevelFrame_LRS *)&D_0013E130)).state = 0;
+            ((*(LevelFrame_LRS *)&level_render_state)).state = 0;
         }
-        if (((*(LevelFrame_LRS *)&D_0013E130)).state < 2) {
-            if (((*(LevelFrame_LRS *)&D_0013E130)).state == 0) {
+        if (((*(LevelFrame_LRS *)&level_render_state)).state < 2) {
+            if (((*(LevelFrame_LRS *)&level_render_state)).state == 0) {
                 mode_advance = (func_001160D8() >> 16) % 3 + 1;
-                ((*(LevelFrame_LRS *)&D_0013E130)).mode = (((*(LevelFrame_LRS *)&D_0013E130)).mode + mode_advance) & 3;
+                ((*(LevelFrame_LRS *)&level_render_state)).mode =
+                    (((*(LevelFrame_LRS *)&level_render_state)).mode + mode_advance) & 3;
             } else {
-                ((*(LevelFrame_LRS *)&D_0013E130)).mode = 4;
+                ((*(LevelFrame_LRS *)&level_render_state)).mode = 4;
             }
-            ((*(LevelFrame_LRS *)&D_0013E130)).history_index = 0;
-            ((*(LevelFrame_LRS *)&D_0013E130)).history_count = 0;
-            ((*(LevelFrame_LRS *)&D_0013E130)).state++;
+            ((*(LevelFrame_LRS *)&level_render_state)).history_index = 0;
+            ((*(LevelFrame_LRS *)&level_render_state)).history_count = 0;
+            ((*(LevelFrame_LRS *)&level_render_state)).state++;
             qcopy(&D_001605F0_gp, &D_001605E0_gp);
             FastMemSet(&((*(LevelFrame_LGS *)&render_sequence)), 0, 0x1C0);
             ((*(LevelFrame_LGS *)&render_sequence)).source_begin =
@@ -658,13 +659,15 @@ void update_level_gameplay_frame(void) {
                 ((*(LevelFrame_LRA *)&level_resource_buffers)).source_end_offset + current_vu_chain;
             archive_table = ((*(LevelFrame_LRA *)&level_resource_buffers)).archive_table;
             archive_data = (u8 *)archive_table + archive_table->data_offset;
-            archive_entry = (LevelFrame_RAE *)(archive_data +
-                                               archive_table->scene_offsets[((*(LevelFrame_LRS *)&D_0013E130)).mode]);
+            archive_entry =
+                (LevelFrame_RAE *)(archive_data +
+                                   archive_table->scene_offsets[((*(LevelFrame_LRS *)&level_render_state)).mode]);
             for (prepared_frame_index = 0; prepared_frame_index < 0x46 && archive_entry->available != 0;
                  prepared_frame_index++, archive_entry++) {
                 payload_offset = archive_entry->offset + 0x800;
                 ((*(LevelFrame_LGS *)&render_sequence)).prepared_frames[prepared_frame_index] =
-                    (s32)(archive_data + archive_table->scene_offsets[((*(LevelFrame_LRS *)&D_0013E130)).mode]) +
+                    (s32)(archive_data +
+                          archive_table->scene_offsets[((*(LevelFrame_LRS *)&level_render_state)).mode]) +
                     payload_offset;
             }
             parse_space_scene_chunk(0);
@@ -680,21 +683,22 @@ void update_level_gameplay_frame(void) {
     }
     build_object_rotation_matrix();
     if (((*(LevelFrame_LPS *)&view_context)).projection_scale <
-        cam_mode_min_fov[((*(LevelFrame_LRS *)&D_0013E130)).mode]) {
+        cam_mode_min_fov[((*(LevelFrame_LRS *)&level_render_state)).mode]) {
         ((*(LevelFrame_LPS *)&view_context)).projection_scale =
-            cam_mode_min_fov[((*(LevelFrame_LRS *)&D_0013E130)).mode];
+            cam_mode_min_fov[((*(LevelFrame_LRS *)&level_render_state)).mode];
     }
     UpdateViewContext();
     scale = 1.0f;
-    if (((*(LevelFrame_LRS *)&D_0013E130)).mode == 4) {
+    if (((*(LevelFrame_LRS *)&level_render_state)).mode == 4) {
         scale = (f32)(((*(LevelFrame_LGS *)&render_sequence)).end - ((*(LevelFrame_LGS *)&render_sequence)).time) /
                 (f32)((*(LevelFrame_LGS *)&render_sequence)).end;
         FastVecScale(&first_position, &D_00160600_gp, scale);
         FastVecAdd(&D_001605F0_gp, &D_001605F0_gp, &first_position);
     }
-    FastVecScale(sky_shell_translation, &level_render_motion_vectors_by_mode[((*(LevelFrame_LRS *)&D_0013E130)).mode],
+    FastVecScale(sky_shell_translation,
+                 &level_render_motion_vectors_by_mode[((*(LevelFrame_LRS *)&level_render_state)).mode],
                  (f32)(((*(LevelFrame_LGS *)&render_sequence)).time - scale_game_frame_count(0x78)) * 20.0f * scale);
-    sky_shell_base_rot_z = level_render_depth_by_mode[((*(LevelFrame_LRS *)&D_0013E130)).mode];
+    sky_shell_base_rot_z = level_render_depth_by_mode[((*(LevelFrame_LRS *)&level_render_state)).mode];
     for (object_index = 0; object_index < ((*(LevelFrame_LGS *)&render_sequence)).count; object_index++) {
         object = (((LevelFrame_LRO **)render_sequence_slots))[object_index];
         for (subframe = 0; subframe < 2; subframe++) {
@@ -730,21 +734,21 @@ void update_level_gameplay_frame(void) {
             object->selected_b = object->model->count - 1;
             build_moby_bone_transform(object, 1, &first_transform);
             build_moby_bone_transform(object, 2, &second_transform);
-            ((*(LevelFrame_LRS *)&D_0013E130)).history_index =
-                (((*(LevelFrame_LRS *)&D_0013E130)).history_index + 1) & 0x1F;
-            if (((*(LevelFrame_LRS *)&D_0013E130)).history_count < 0x20) {
-                ((*(LevelFrame_LRS *)&D_0013E130)).history_count++;
+            ((*(LevelFrame_LRS *)&level_render_state)).history_index =
+                (((*(LevelFrame_LRS *)&level_render_state)).history_index + 1) & 0x1F;
+            if (((*(LevelFrame_LRS *)&level_render_state)).history_count < 0x20) {
+                ((*(LevelFrame_LRS *)&level_render_state)).history_count++;
             }
-            history_slot = ((*(LevelFrame_LRS *)&D_0013E130)).history_index;
-            qcopy(&((*(LevelFrame_LRS *)&D_0013E130)).primary_history_positions[history_slot],
+            history_slot = ((*(LevelFrame_LRS *)&level_render_state)).history_index;
+            qcopy(&((*(LevelFrame_LRS *)&level_render_state)).primary_history_positions[history_slot],
                   &first_transform.rows[3]);
-            qcopy(&((*(LevelFrame_LRS *)&D_0013E130)).secondary_history_positions[history_slot],
+            qcopy(&((*(LevelFrame_LRS *)&level_render_state)).secondary_history_positions[history_slot],
                   &second_transform.rows[3]);
-            if (((*(LevelFrame_LRS *)&D_0013E130)).mode == 4) {
+            if (((*(LevelFrame_LRS *)&level_render_state)).mode == 4) {
                 if (g_current_level_index_m == LEVEL_VELDIN1 ||
                     (g_current_level_index_m == LEVEL_NOVALIS && level_available[3] == 0)) {
                     object->flags |= 1;
-                    ((*(LevelFrame_LRS *)&D_0013E130)).history_count = 0;
+                    ((*(LevelFrame_LRS *)&level_render_state)).history_count = 0;
                 }
                 if (((*(LevelFrame_LGS *)&render_sequence)).time > ((*(LevelFrame_LGS *)&render_sequence)).end - 0x38) {
                     object->fade = object->model->base_scale * ((f32)(((*(LevelFrame_LGS *)&render_sequence)).end -
@@ -892,7 +896,7 @@ void emit_six_spark_effects(char *m, float z) {
         vel[3] = 0.4f;
         qcopy(vel2, vel);
         vel2[3] = 0.6f;
-        qcopy(pos, spark_spawn_points_by_variant[D_0013E130.set][i]);
+        qcopy(pos, spark_spawn_points_by_variant[level_render_state.set][i]);
         transform_vector_by_basis(pos, pos, m + 0xC0);
         FastVecAdd(pos, pos, m + 0x10);
         a = scale_game_frame_count(4);
@@ -1148,7 +1152,7 @@ void update_resident_gameplay_state(void) {
         case 0:
         case 8:
             noop_callback_i();
-            func_00213C78();
+            update_visible_resident_objects();
             enqueue_voice_request();
             noop_callback_g();
             UpdateParts();
@@ -1445,7 +1449,7 @@ void update_resident_gameplay_state(void) {
 
         case 3:
             noop_callback_i();
-            func_00213C78();
+            update_visible_resident_objects();
             enqueue_voice_request();
             noop_callback_g();
             UpdateParts();
@@ -1806,7 +1810,7 @@ extern s32 moby_texture_lookup_table[];
 extern s32 resident_moby_class_count MACRO_ADDR;
 extern s32 level_texture_payload_address MACRO_ADDR;
 extern char resident_indexed_textures[0x1000];
-extern u8 D_0019C2C0[];
+extern u8 point_lights[];
 extern u8 point_light_data[];
 extern char dir_lights[];
 extern u8 default_directional_light_template[];
@@ -1825,7 +1829,7 @@ extern short resident_quad_start_pos;
 extern u8 level_init_cleared_block[];
 extern u8 level_init_cleared_block2[];
 
-extern s32 func_002175C8(void *buf, u32 lsn, u32 sectors);
+extern s32 submit_audio_stream_io_request(void *buf, u32 lsn, u32 sectors);
 
 extern void store_sound_bank_handle_callback();
 #define sequence (*(f32 *)&D_0015F53C)
@@ -1870,7 +1874,6 @@ extern void store_sound_bank_handle_callback();
 #define init_view_context ((void (*)(void))func_001F3008)
 #define update_view_context ((void (*)(void))func_001F3140)
 #define vu1_init_chain func_002348E8
-#define submit_audio_stream_io_request func_002175C8
 #define scale_game_frames ((s32 (*)(s32))func_001F98C0)
 #define fade_to_black func_001F4E08
 #define sceCdSync ((s32 (*)(s32))func_00120F30)
@@ -1982,7 +1985,7 @@ void initialize_level_runtime(void) {
     D_001941C0_q.unk18 = (s32)allocation_cursor;
     gs_texture_allocation_start = texture_cursor;
     cutscene_moby_ids_by_content_variant = texture_packet[0];
-    clear_blocks_16(D_0019C2C0, 0x100);
+    clear_blocks_16(point_lights, 0x100);
     clear_blocks_16(point_light_data, 0x180);
     clear_blocks_16(dir_lights, 0x400);
     copy_blocks_16_forward(dir_lights, D_001D9740, 0x40);
@@ -2138,7 +2141,7 @@ struct CommonArchiveMemory {
 
 extern s32 wait_for_graphics_pipeline_idle_r(s32 a0, s32 a1) __asm__("func_00120858");
 
-extern s32 func_002175C8(void *a0, u32 a1, u32 a2);
+extern s32 submit_audio_stream_io_request(void *a0, u32 a1, u32 a2);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00231878.c, prepare_loading_slide_textures. */
 void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 second_slide, u64 *shared_texture,
@@ -2158,8 +2161,9 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
     second_output = second_texture;
     archive_memory = &level_resource_buffers;
     upload_index = 0;
-    func_002175C8((void *)(archive_memory->archive_base + 0x100000), disc_table.loading_slides[language_index].sector,
-                  disc_table.loading_slides[language_index].size);
+    submit_audio_stream_io_request((void *)(archive_memory->archive_base + 0x100000),
+                                   disc_table.loading_slides[language_index].sector,
+                                   disc_table.loading_slides[language_index].size);
     sce_cd_sync_s(0);
     flush_cache(0);
     fast_decompress(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
@@ -2401,12 +2405,12 @@ void DoSpaceTransition(void) {
     }
     coll_output.f10 |= 0x80000000;
     g_game_mode = 6;
-    D_0013E130.set = 0;
+    level_render_state.set = 0;
     if (level_available_b.f8 != 0 || space_load_level >= 8) {
-        D_0013E130.set = 1;
+        level_render_state.set = 1;
     }
     if (level_available_b.fE != 0 || space_load_level >= 14) {
-        D_0013E130.set = 2;
+        level_render_state.set = 2;
     }
     flush_cache(0);
     snd_set_reverb_ex(2, 0, 0, 0, 0);

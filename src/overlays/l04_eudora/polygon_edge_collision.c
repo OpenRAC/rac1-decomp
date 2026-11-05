@@ -232,7 +232,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
         if (coll_line(&a, &e, 2, m, 0) != 0) {
             if (eudora_coll_hit.hit > 0 && eudora_coll_hit.z > m->pos.z) {
                 qcopy(&x, &eudora_coll_hit.normal);
-                s = fast_atan2(eudora_coll_hit.normal.z, func_001F9CE8(&eudora_coll_hit.normal));
+                s = fast_atan2(eudora_coll_hit.normal.z, vector_length_xy(&eudora_coll_hit.normal));
                 vec_set_length_xy(&x, &x, 1.0f);
                 FastVecScale(&x, &x, f[3]);
                 FastVecAdd(c, c, &x);

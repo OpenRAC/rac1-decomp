@@ -126,6 +126,7 @@
 #define floating_platform_update                                      func_L05_0030D230
 #define draw_electric_gate_beams                                      func_L05_0030F358
 #define rilgar_zero_vec                                               D_L05_0015F660
+#define game_mode                                                     D_L05_0015F6A8
 #define rilgar_coll_hit                                               D_L05_00174340
 #define rilgar_frame_count                                            D_L05_0015F6B0
 #define rilgar_lean_state                                             D_L05_0017ABE0

@@ -110,11 +110,11 @@ struct SentrybotVars {
     s16 noticed_timer; /* 0x19C */
     u8 fired; /* 0x19E */
     u8 sees_aim_point; /* 0x19F */
-    u8 head_manip[0x64]; /* 0x1A0: update_joint_animation block */
+    u8 head_manip[0x64]; /* 0x1A0: update_joint_animation_fn block */
     f32 head_pitch; /* 0x204 */
     f32 head_yaw; /* 0x208 */
     u8 pad_20C[0x14];
-    u8 body_manip[0x68]; /* 0x220: update_joint_animation block */
+    u8 body_manip[0x68]; /* 0x220: update_joint_animation_fn block */
     f32 body_yaw; /* 0x288 */
     u8 pad_28C[0x14];
     Vec4A effect_quads[3]; /* 0x2A0: drawn by draw_sentrybot_effect_quads */
@@ -719,7 +719,7 @@ void sentrybot_update(unsigned char *moby) {
                     FastVecSub(vb, &data->aim_point, pos);
                     vec_scale_to_length(vb, vb, sentrybot_emission_vector_speed_gp * g_frame_time);
                     if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f ||
-                        FastDiffRots(fast_atan2(func_001F9CE8(va), va[2]), fast_atan2(func_001F9CE8(vb), vb[2])) >
+                        FastDiffRots(fast_atan2(vector_length_xy(va), va[2]), fast_atan2(vector_length_xy(vb), vb[2])) >
                             0.7853982f) {
                         spawn_class_3a6_moby_v((char *)moby, va, (char *)pos, (char *)&data->aim_point);
                     } else {
@@ -770,7 +770,7 @@ void sentrybot_update(unsigned char *moby) {
                     FastVecSub(vb, &data->aim_point, pos);
                     vec_scale_to_length(vb, vb, sentrybot_emission_vector_speed_gp * g_frame_time);
                     if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f ||
-                        FastDiffRots(fast_atan2(func_001F9CE8(va), va[2]), fast_atan2(func_001F9CE8(vb), vb[2])) >
+                        FastDiffRots(fast_atan2(vector_length_xy(va), va[2]), fast_atan2(vector_length_xy(vb), vb[2])) >
                             0.7853982f) {
                         spawn_class_3a6_moby_v((char *)moby, va, (char *)pos, (char *)&data->aim_point);
                     } else {
@@ -1240,7 +1240,7 @@ void update_sentrybot_joint_aim(void *mv) {
         pos[2] += 1.0f;
         FastVecSub(dir, tgt, pos);
         yaw = FastSubRots(fast_atan2(dir[0], dir[1]), ((Moby *)m)->rot.z);
-        pitch = -fast_atan2(func_001F9CE8(dir), dir[2]);
+        pitch = -fast_atan2(vector_length_xy(dir), dir[2]);
         if ((unsigned int)(((unsigned char *)m)[0x20] - 0x10) < 2) {
             if (1.5707964f < yaw)
                 yaw = 1.5707964f;
@@ -1274,9 +1274,9 @@ void update_sentrybot_joint_aim(void *mv) {
     {
         float e = g_frame_scale_sq;
         d->head_pitch = pitch;
-        func_L00_00263950(m, d->head_manip, 1, k1 * e, k2 * e);
+        update_joint_animation(m, d->head_manip, 1, k1 * e, k2 * e);
     }
-    func_L00_00263950(m, d->body_manip, 0, k1 * g_frame_scale_sq, k2 * g_frame_scale_sq);
+    update_joint_animation(m, d->body_manip, 0, k1 * g_frame_scale_sq, k2 * g_frame_scale_sq);
 }
 
 extern void InitKnockback_v(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
@@ -1589,12 +1589,12 @@ void spawn_rocket_trail_spark(char *moby) {
     s = *(float *)&rocket_trail_spark_first_noise_radius_factor_gp;
     s *= g_frame_time;
     FastVecScale(v0, data, *(float *)&rocket_trail_spark_first_velocity_scale_gp);
-    func_L00_00258DB0(v2, s, s);
+    random_vector(v2, s, s);
     FastVecAdd(v0, v0, v2);
     s = *(float *)&rocket_trail_spark_second_noise_radius_factor_gp;
     s *= g_frame_time;
     FastVecScale(v1, data, *(float *)&rocket_trail_spark_second_velocity_scale_gp);
-    func_L00_00258DB0(v2, s, s);
+    random_vector(v2, s, s);
     FastVecAdd(v1, v1, v2);
     v0[3] = *(float *)&rocket_trail_spark_first_vector_fourth_component_gp;
     v1[3] = *(float *)&rocket_trail_spark_second_vector_fourth_component_gp;
@@ -1776,10 +1776,10 @@ void giant_clank_missile_update(M_29E8A0 *m) {
                 FastVecScale(ip, dv, s);
                 FastVecAdd(ip, ip, delta);
                 yaw = fast_atan2(ip[0], ip[1]);
-                pitch = -fast_atan2(func_001F9CE8(ip), ip[2]);
+                pitch = -fast_atan2(vector_length_xy(ip), ip[2]);
             } else {
                 yaw = fast_atan2(delta[0], delta[1]);
-                pitch = -fast_atan2(func_001F9CE8(delta), delta[2]);
+                pitch = -fast_atan2(vector_length_xy(delta), delta[2]);
             }
         } else {
             if (d->timer < scale_ticks(0x96) - scale_ticks(0)) {
@@ -1931,7 +1931,7 @@ void giant_clank_missile_update(M_29E8A0 *m) {
                     FastVecAdd(v100, v100, v70);
                     spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
                         m->pos, v100, 0x4F007FFF, 0x1F00007F, 40000.0f,
-                        func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x78)), 1, -1, -1);
+                        random_int_between(scale_ticks(0x3C), scale_ticks(0x78)), 1, -1, -1);
                 }
                 {
                     float r4[4];
@@ -1950,8 +1950,8 @@ void giant_clank_missile_update(M_29E8A0 *m) {
                 vec_scale_to_length(v50, v50, (dist + dist) * g_frame_time);
                 FastVecAdd(v100, v100, v50);
                 clamp_vec_length(v100, v100, g_frame_time * 10.0f);
-                SpawnFallingSpark((char *)m->pos, (char *)v100, func_L00_00258BC8(scale_ticks(0x3C), scale_ticks(0x5A)),
-                                  0, 0);
+                SpawnFallingSpark((char *)m->pos, (char *)v100,
+                                  random_int_between(scale_ticks(0x3C), scale_ticks(0x5A)), 0, 0);
                 {
                     int n;
                     float under;
@@ -1970,12 +1970,12 @@ void giant_clank_missile_update(M_29E8A0 *m) {
                         Cols c2 = l15_missile_burst_secondary_color_palette;
                         int *p1 = &c1.c[random_integer_below(6)];
                         int *p2 = &c2.c[random_integer_below(6)];
-                        int l1 = func_L00_00258BC8(scale_ticks(0xF), scale_ticks(0x14));
-                        int l2 = func_L00_00258BC8(scale_ticks(0x19), scale_ticks(0x1E));
+                        int l1 = random_int_between(scale_ticks(0xF), scale_ticks(0x14));
+                        int l2 = random_int_between(scale_ticks(0x19), scale_ticks(0x1E));
                         int l3, l4;
                         PartType11Spawn_v(m->pos, v70, *p1, *p2, 400000.0f, l1, l2, sz, 0, 0);
-                        l3 = func_L00_00258BC8(scale_ticks(5), scale_ticks(0xA));
-                        l4 = func_L00_00258BC8(scale_ticks(0xF), scale_ticks(0x14));
+                        l3 = random_int_between(scale_ticks(5), scale_ticks(0xA));
+                        l4 = random_int_between(scale_ticks(0xF), scale_ticks(0x14));
                         PartType11Spawn_v(m->pos, v70, 0x7FFFFFFF, 0xFFFFFF, 400000.0f, l3, l4, sz * 0.5f, 0, 0);
                         i++;
                     }
@@ -1997,7 +1997,7 @@ void giant_clank_missile_update(M_29E8A0 *m) {
                         int *p1 = &c1.c[random_integer_below(6)];
                         int *p2 = &c2.c[random_integer_below(6)];
                         spawn_particle_alt_9768(m->pos, dir, *p1, *p2,
-                                                func_L00_00258BC8(scale_ticks(0x14), scale_ticks(0x23)), 200000.0f);
+                                                random_int_between(scale_ticks(0x14), scale_ticks(0x23)), 200000.0f);
                     }
                 }
                 if (missile_distant_gray_glow_gate < 0.95f && 9.0f < dist) {
@@ -2156,8 +2156,8 @@ void giant_clank_charged_blast_update(Moby29FF90 *moby) {
                     v[1] = random_float_between(-1.0f, 1.0f);
                     v[2] = random_float_between(-1.0f, 1.0f);
                     *(u128_29FF90 *)w = *(u128_29FF90 *)v;
-                    g = func_L00_00258BC8(0x4F, 0xAF);
-                    r = func_L00_00258BC8(0x4F, 0xFF);
+                    g = random_int_between(0x4F, 0xAF);
+                    r = random_int_between(0x4F, 0xFF);
                     rc = r > 0xFF ? 0xFF : r;
                     if (g > 0xFF)
                         g = 0xFF;
@@ -2195,9 +2195,9 @@ void giant_clank_charged_blast_update(Moby29FF90 *moby) {
                     s = IntToFloat(d->f10) / multiply_global_factor(30.0f);
                     if (s > 1.0f)
                         s = 1.0f;
-                    PartType05Spawn(&quartu_lights[d->light].f10, func_L00_00258BC8(0xF, 0x2F),
-                                    func_L00_00258BC8(0x2F, 0x3F), func_L00_00258BC8(0x3F, 0x7F), s * 4.0f * 210000.0f,
-                                    0.0f, scale_ticks(0x14));
+                    PartType05Spawn(&quartu_lights[d->light].f10, random_int_between(0xF, 0x2F),
+                                    random_int_between(0x2F, 0x3F), random_int_between(0x3F, 0x7F),
+                                    s * 4.0f * 210000.0f, 0.0f, scale_ticks(0x14));
                     (quartu_lights + d->light)->f0 = random_float_between(
                         (quartu_lights + d->light)->f0 * 0.8f, (quartu_lights + d->light)->f1C * 2.0f / 7.0f);
                     (quartu_lights + d->light)->f4 =
@@ -2245,13 +2245,13 @@ void giant_clank_charged_blast_update(Moby29FF90 *moby) {
             SendRadialMessageToMobys(moby, v2, quartu_coll_sphere_moby_hits, n, 0, 0x8B0000, 2, 1, 20.0f, 1.0f, 1.0f);
             cnt = scale_ticks(0x3C) - d->f14 < scale_ticks(5) ? scale_ticks(0x3C) - d->f14 : scale_ticks(5);
             spawn_source_attached_fading_effect_particle_v(r * 0.5f * 210000.0f, (char *)moby,
-                                                           (0x4F << 24) | (func_L00_00258BC8(0x3F, 0x7F) << 16) |
-                                                               (func_L00_00258BC8(0x2F, 0x3F) << 8) |
-                                                               func_L00_00258BC8(0xF, 0x2F),
+                                                           (0x4F << 24) | (random_int_between(0x3F, 0x7F) << 16) |
+                                                               (random_int_between(0x2F, 0x3F) << 8) |
+                                                               random_int_between(0xF, 0x2F),
                                                            cnt, -1);
             random_spherical_offset(w, r * g_frame_time, r * 2.0f * g_frame_time);
-            col = (0x7F << 24) | (func_L00_00258BC8(0x3F, 0x7F) << 16) | (func_L00_00258BC8(0x2F, 0x3F) << 8) |
-                  func_L00_00258BC8(0xF, 0x2F);
+            col = (0x7F << 24) | (random_int_between(0x3F, 0x7F) << 16) | (random_int_between(0x2F, 0x3F) << 8) |
+                  random_int_between(0xF, 0x2F);
             spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
                 moby->pos, w, col, 0x4F7F4F2F, 210000.0f, scale_ticks(0x2D), 1, *quartu_charged_blast_texture_ptr, -1);
             {
@@ -2346,7 +2346,7 @@ void hero_seeking_mine_update(char *moby) {
         ((struct Moby *)moby)->hit_slot = 0xFF;
     }
     if (((struct Moby *)moby)->state != 1) {
-        func_L00_00258DB0(va, 0.0f, g_frame_time + g_frame_time);
+        random_vector(va, 0.0f, g_frame_time + g_frame_time);
         qcopy(pb, &((struct Moby *)moby)->pos);
         pb[2] = pb[2] + group_moby_effect_z_offset_gp;
         if (quartu_alarm_raised_m == 0) {
@@ -2547,7 +2547,7 @@ typedef struct {
 } KillFlags_2A3DD0;
 extern KillFlags_2A3DD0 quartu_collected_flags_base_r __asm__("D_L15_001BBB40");
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
-extern int D_0014C290[][64];
+extern int level_moby_killed[][64];
 extern unsigned char voice_pool_r[] __asm__("D_0013E650");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 typedef struct {
@@ -2566,7 +2566,7 @@ extern void draw_spark_emitter_effect_quads_r(void) __asm__("func_L15_002A4318")
 
 /* True when save bit id of the current level is still clear. */
 static inline int save_flag_clear_2A3DD0(unsigned short id) {
-    return ((D_0014C290[g_current_level_index_r][(short)id >> 5] >> (id & 0x1F)) & 1) == 0;
+    return ((level_moby_killed[g_current_level_index_r][(short)id >> 5] >> (id & 0x1F)) & 1) == 0;
 }
 
 /* Level 15 moby update (class 78), three states: 0 picks the first state from the kill and save flags,

@@ -36,9 +36,9 @@
 #include "overlays/shared/glint_effects.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
 extern char g_hero[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char pad0_pressed[];
-extern int D_0013CBE0;
+extern int pad_held;
 
 /* Gadget vendor: a ring moby that glows and spins while the hero is near. */
 struct VendorVars {
@@ -915,7 +915,7 @@ void bolt_update(Moby *m) {
                 c = &coll_hit_result_r;
                 clear_u64_value(d->ang);
                 d->ang[2] = fast_atan2(c->normal.f[0], c->normal.f[1]);
-                d->ang[1] = fast_atan2(c->normal.f[2], func_001F9CE8(c->normal.f));
+                d->ang[1] = fast_atan2(c->normal.f[2], vector_length_xy(c->normal.f));
                 if (((Moby *)c->moby) != 0 && get_moby_pvars_link((Moby *)c->moby) != 0) {
                     d->held = (Moby *)c->moby;
                     convert_pose_to_reference_local(m, d->held, d, d->ang, d, d->ang);
@@ -927,7 +927,7 @@ void bolt_update(Moby *m) {
             d->f50 = random_angle_radians();
             d->f58 = random_angle_radians();
             d->start_z = m->pos.z;
-            d->h6E = func_L00_00258BC8(0, scale_ticks(0x258));
+            d->h6E = random_int_between(0, scale_ticks(0x258));
             d->h6C = -1;
             switch (m->oclass) {
                 case BOLT_CLASS_ONE:
@@ -982,7 +982,7 @@ void bolt_update(Moby *m) {
                 c = &coll_hit_result_r;
                 clear_u64_value(d->ang);
                 d->ang[2] = fast_atan2(c->normal.f[0], c->normal.f[1]);
-                d->ang[1] = fast_atan2(c->normal.f[2], func_001F9CE8(c->normal.f));
+                d->ang[1] = fast_atan2(c->normal.f[2], vector_length_xy(c->normal.f));
             }
             FastVecSub(u.s.a, ((float *)&m->pos), coll_hit_result_r.point.f);
             reflect_vector(d->vel, d->vel, u.s.a);
@@ -997,9 +997,9 @@ void bolt_update(Moby *m) {
                     break;
                 }
             }
-            if (fast_atan2(u.s.a[2], func_001F9CE8(u.s.a)) < 0.7853982f) {
+            if (fast_atan2(u.s.a[2], vector_length_xy(u.s.a)) < 0.7853982f) {
                 CollisionHit *c = &coll_hit_result_r;
-                if (fast_atan2(c->normal.f[2], func_001F9CE8(c->normal.f)) < 0.7853982f) {
+                if (fast_atan2(c->normal.f[2], vector_length_xy(c->normal.f)) < 0.7853982f) {
                     m->state = 2;
                     d->f56 = d->f57 =
                         truncate_float_to_s32_r2(multiply_global_factor(random_float_between(30.0f, 40.0f)));
@@ -1069,7 +1069,7 @@ void bolt_update(Moby *m) {
                         FastVecAdd(u.s.a, u.s.a, ((float *)&m->pos));
                         d->h6C = allocate_glint_slot(u.s.a, m - moby_array_start, 1.4f);
                         lo = scale_ticks(0x12C);
-                        d->h6E = func_L00_00258BC8(lo, scale_ticks(0x258));
+                        d->h6E = random_int_between(lo, scale_ticks(0x258));
                     }
                 }
             } else {
@@ -1156,7 +1156,7 @@ extern s32 gBolts MACRO_ADDR;
 extern s32 counted_bolts_total MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
-extern BoltSourceStats D_0014D690[][64];
+extern BoltSourceStats bolt_source_stats[][64];
 
 extern s32 current_moby_mission_complete MACRO_ADDR;
 extern void *level_mobys_end SDATA(level_mobys_end);
@@ -1191,7 +1191,7 @@ void collect_bolt(struct Moby *bolt) {
 
     src = bolt->parent;
     if (src && !(src->id & 0x80))
-        D_0014D690[g_current_level_index][src->id].bolts += value;
+        bolt_source_stats[g_current_level_index][src->id].bolts += value;
     gBolts += value;
     if (bolt->pvars[0x40] || (current_moby_mission_complete && (void *)bolt < (level_mobys_end)))
         counted_bolts_total += value;
@@ -1202,7 +1202,7 @@ void collect_bolt(struct Moby *bolt) {
                            draw_bolt_counter_hud_panel, &gBolts, 9999999);
 
     /* two sparkles 10 units out along a random direction, spinning opposite ways */
-    func_L00_00258DB0(&vel, g_frame_time * k, g_frame_time);
+    random_vector(&vel, g_frame_time * k, g_frame_time);
     FastVecScale(&pos, &vel, 10.0f);
     FastVecAdd(&pos, &pos, &bolt->pos);
     spin = random_integer_below(2);
@@ -1440,7 +1440,7 @@ struct Moby *spawn_bolt_by_value(struct Moby *src, void *pos, void *vel, int fla
             set_moby_color(m, color[4], color[5], color[6]);
         else
             m->spawn_frame = src->spawn_frame;
-        v->unk6E = func_L00_00258BC8(0, scale_ticks(600));
+        v->unk6E = random_int_between(0, scale_ticks(600));
         v->unk6C = -1;
         qcopy(&m->pos, pos);
         qcopy(v->vel, vel);
@@ -1721,7 +1721,7 @@ void spawn_wrench_impact_effects(char *m) {
     int i, r;
     float *q;
     FastVecSub(v, g_debug_camera, collision_hit_point);
-    len = func_001F9CE8(v);
+    len = vector_length_xy(v);
     ang = -fast_atan2(len, v[2]);
     fast_atan2(v[0], v[1]);
     for (i = 19; i >= 0; i--) {
@@ -1740,7 +1740,7 @@ void spawn_wrench_impact_effects(char *m) {
         a = FastAddRots(randf_sym(0.0f, 3.1415927f), ang);
         b = FastAddRots(randf_sym(0.0f, 3.1415927f), ang);
         BuildSphericalOffset(v, 0.05f, b, a);
-        r = func_L00_00258BC8(scale_ticks(10), scale_ticks(20));
+        r = random_int_between(scale_ticks(10), scale_ticks(20));
         spawn_burst(p, v, 0x4F007FFF, 0x1FFFFFFF, r, 1, 20000.0f);
     }
     if (*(short *)(((char *)((Moby *)m)->pvars) + 0x78) == 0x2B)
@@ -1958,7 +1958,7 @@ void wrench_update(Wrench48 *m) {
             m->parent = initial_player->moby;
             player_state = initial_player->state;
             if (player_state == 1) {
-                if (D_0013CBE0 & 0xA)
+                if (pad_held & 0xA)
                     EffectQueue_Add((int)m, 0xFF917267, 1.0f, 0.0f, 0, 0x25, -1, 90.0f, 4);
                 d->aim_hit = 0;
                 BuildSphericalOffset(work.v[0], 10.0f, wrench_camera48.yaw, -wrench_camera48.pitch);
@@ -2701,7 +2701,7 @@ void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
     }
 }
 
-extern float D_L00_00173F80[];
+extern float coll_hit_normal[];
 
 // Traces a projectile path from a0 step by step and resolves where it lands.
 int predict_mine_impact(char *a0, char *o, int mode) {
@@ -2782,7 +2782,7 @@ int predict_mine_impact(char *a0, char *o, int mode) {
         {
             char *g = (char *)&g_debug_camera;
             char *a10 = a0 + 0x10;
-            *(u128 *)(a0 + 0x20) = *(u128 *)D_L00_00173F80;
+            *(u128 *)(a0 + 0x20) = *(u128 *)coll_hit_normal;
             FastVecSub(C, a10, g);
             FastVecScale(C, C, 0.95f);
             FastVecAdd(a10, C, g);

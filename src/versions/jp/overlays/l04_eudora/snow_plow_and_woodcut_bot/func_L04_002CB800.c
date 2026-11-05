@@ -26,7 +26,7 @@ void snow_plow_update(VehicleMoby *m) {
     }
     izero = 0;
     zero = *(float *)&izero;
-    func_L01_002F6540(m);
+    gunship_follow_path(m);
     if (m->cls != 0x1E4) {
         FastDecTimer(&d->phase_timer);
         switch (d->phase) {
@@ -170,7 +170,7 @@ void snow_plow_update(VehicleMoby *m) {
         if (++eudora_skill_snow_plow_hits >= 10 && gSkillPoints.flag == 0) {
             gSkillPoints.flag = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x542D, -1);
+            queue_dialogue_message(0x542D, -1);
         }
         switch ((s16)((u16)m->cls - 0x1D2)) {
             case 19:

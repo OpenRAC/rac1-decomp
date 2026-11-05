@@ -402,7 +402,7 @@ state_three: {
                 qcopy_nc(v, h + 0x80);
                 v[2] = HF(0x2F0);
                 ((void (*)(char *, void *))spawn_sharkigator_splash_effects)(moby, v);
-                func_L00_00217718(h + 0x80, h + 0x90, 0x72, 0);
+                set_race_camera(h + 0x80, h + 0x90, 0x72, 0);
                 *(unsigned char *)(h + 0x20A5) = one;
                 HF(0x88) += 20.0f;
             } else {
@@ -513,12 +513,12 @@ void spawn_sharkigator_splash_effects(int unused, char *p) {
         v[0] = FastCos(ang) * k;
         v[1] = FastSin(ang) * k;
         v[2] = random_float_between(g_frame_time * 3.0f, g_frame_time * 6.5f);
-        n = func_L00_00258BC8(0x5A, 0x78);
+        n = random_int_between(0x5A, 0x78);
         PartType35Spawn(p, v, random_integer_below(2), n);
     }
     for (i = 0; i < 16; i++) {
         unsigned char *q;
-        func_L00_00258DB0(v, 1.0f, 1.0f);
+        random_vector(v, 1.0f, 1.0f);
         FastVecAdd(v, v, p);
         v[2] = rilgar_water_surface_z_m + 0.05f;
         q = spawn_splash(v, rilgar_zero_vec, base, random_float_between(0.7f, 1.0f), i == 0 ? 2.0f : -2.0f);
@@ -1075,7 +1075,7 @@ void move_extermibot_along_path(struct Moby *m, s32 node, f32 side);
 
 extern void resolve_point_path_segment_xy_clearance_v(int, void *, void *, float) __asm__("func_L00_00262DF0");
 
-extern int D_L05_0015F6A8 MACRO_ADDR;
+extern int game_mode MACRO_ADDR;
 
 extern float sharkigator_scale SDATA(sharkigator_scale);
 extern int extermibot_pre_strike_delay_frames_gp SDATA(extermibot_pre_strike_delay_frames_gp);
@@ -1109,10 +1109,10 @@ void extermibot_update(unsigned char *m) {
     extern float fast_vec_dist(void *, void *);
 
     manipulator_set_scale(d->head_manip, 2.5f);
-    if (D_L05_0015F6A8 == 2 && ((((Moby *)m)->flags ^ 1) & 1)) {
+    if (game_mode == 2 && ((((Moby *)m)->flags ^ 1) & 1)) {
         d->cinematic_hidden = 1;
         ((Moby *)m)->flags |= 0x41;
-    } else if (d->cinematic_hidden != 0 && D_L05_0015F6A8 == 0) {
+    } else if (d->cinematic_hidden != 0 && game_mode == 0) {
         d->cinematic_hidden = 0;
         ((Moby *)m)->flags &= 0xFFBE;
     }
@@ -1194,7 +1194,7 @@ void extermibot_update(unsigned char *m) {
                     MobyBlendAnimation(m, 1, 0, scale_ticks(10));
             } else if (((Moby *)m)->anim_flags & 2) {
                 if (((Moby *)m)->visible != 0 && (random_integer_below(0xFF) & 1)) {
-                    func_L00_00258DB0(&d->wander_point.x, 0.0f, 4.0f);
+                    random_vector(&d->wander_point.x, 0.0f, 4.0f);
                     d->wander_point.z = 0.0f;
                     FastVecAdd(&d->wander_point, &d->wander_point, &d->home_pos);
                     d->wander_frames = 0;
@@ -1286,7 +1286,7 @@ void extermibot_update(unsigned char *m) {
                 ((Moby *)m)->state = 1;
             } else if (((Moby *)m)->anim_flags & 2) {
                 if (random_integer_below(0xFF) & 1) {
-                    func_L00_00258DB0(&d->wander_point.x, 0.0f, 4.0f);
+                    random_vector(&d->wander_point.x, 0.0f, 4.0f);
                     d->wander_point.z = 0.0f;
                     FastVecAdd(&d->wander_point, &d->wander_point, &d->home_pos);
                     d->wander_frames = scale_ticks(0x5A);
@@ -1713,7 +1713,7 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
             float yaw, pitch;
             FastVecSub(v0, ((float *)&d->target->pos), ((float *)&m->pos));
             yaw = FastSubRots(fast_atan2(v0[0], v0[1]), m->rot.z);
-            pitch = -fast_atan2(func_001F9CE8(v0), v0[2]);
+            pitch = -fast_atan2(vector_length_xy(v0), v0[2]);
             if (m->flags & 0x8000) {
                 yaw = -yaw;
             }
@@ -1732,8 +1732,8 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
             d->f258 = yaw * 0.3f;
         }
     }
-    func_L00_00263950(m, d->f170, 1, g_frame_scale_sq_r * 0.04f, g_frame_scale_sq_r * 0.3f);
-    func_L00_00263950(m, d->f1F0, 2, g_frame_scale_sq_r * 0.04f, g_frame_scale_sq_r * 0.3f);
+    update_joint_animation(m, d->f170, 1, g_frame_scale_sq_r * 0.04f, g_frame_scale_sq_r * 0.3f);
+    update_joint_animation(m, d->f1F0, 2, g_frame_scale_sq_r * 0.04f, g_frame_scale_sq_r * 0.3f);
 }
 typedef struct {
     u8 pad0[0xD0];
@@ -2593,7 +2593,7 @@ void update_racer_jump_animations(unsigned char *moby) {
                 if (((Moby *)moby)->prev_seq == 5) {
                     r = scale_ticks(0x1B);
                     if ((float)r < f21) {
-                        r = func_L00_00258BC8(0, 3) + 1;
+                        r = random_int_between(0, 3) + 1;
                         data->jump_anim_frame = (short)r;
                         s = (short)r;
                         r = scale_ticks(7);
@@ -2891,11 +2891,13 @@ void SkidMcMarxUpdate(Moby *moby) {
                 d->m[0].f68 = turn * 20.0f;
                 d->m[2].f68 = turn * 50.0f;
                 d->m[1].f64 = turn * 40.0f;
-                func_L00_00263950((char *)moby, (char *)&d->m[3], 3, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f);
-                func_L00_00263950((char *)moby, (char *)d, 0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f);
-                func_L00_00263950((char *)moby, (char *)&d->m[2], 1, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f);
-                func_L00_00263950((char *)moby, (char *)&d->m[1], 2, g_frame_scale_sq * 0.015f,
-                                  g_frame_scale_sq * 0.3f);
+                update_joint_animation((char *)moby, (char *)&d->m[3], 3, g_frame_scale_sq * 0.02f,
+                                       g_frame_scale_sq * 0.3f);
+                update_joint_animation((char *)moby, (char *)d, 0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f);
+                update_joint_animation((char *)moby, (char *)&d->m[2], 1, g_frame_scale_sq * 0.02f,
+                                       g_frame_scale_sq * 0.3f);
+                update_joint_animation((char *)moby, (char *)&d->m[1], 2, g_frame_scale_sq * 0.015f,
+                                       g_frame_scale_sq * 0.3f);
                 qcopy(((float *)&moby->pos), d->pos);
                 moby->pos.z += 0.25f;
                 d->f274 = FastAddRots(d->f274, g_frame_time * 6.108652f);
@@ -3087,7 +3089,7 @@ extern void DrawRipplePatches(void);
 void WaterSurfaceUpdate(Moby *moby) {
     Data_0030DED8 *d = *(Data_0030DED8 **)&moby->pvars;
 
-    if (D_L05_0015F6A8 == 2) {
+    if (game_mode == 2) {
         return;
     }
     switch (moby->state) {

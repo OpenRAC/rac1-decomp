@@ -248,7 +248,7 @@ typedef struct {
 extern CameraDef *gCameraDefs MACRO_ADDR;
 extern CamRec20 *cam_activation_rule7_table MACRO_ADDR;
 extern char g_hero[];
-extern char D_0013F4D0[];
+extern char hero_pos[];
 
 /* Camera_ActivationCheckPriority(cur, other): whether camera `cur` should
    take over from `other`. An inactive camera (priority 0) never does; the
@@ -301,7 +301,7 @@ int Camera_ActivationCheckPriority(Camera *cur, Camera *other) {
             if (other != 0 && other->transition_state == 0 && !(state[8] > other->priority)) {
                 return 0;
             }
-            if (is_point_inside_clip_volume(D_0013F4D0, info->clip_volume)) {
+            if (is_point_inside_clip_volume(hero_pos, info->clip_volume)) {
                 return 1;
             }
             break;
@@ -513,7 +513,7 @@ void restore_camera_vectors(void) {
 /* The final mode store goes through this alias: written through
    D_001872B0 itself, gcse keeps the entry's %hi alive in a saved register
    across the calls, where retail rebuilds it. */
-extern short D_001872B0 NOT_SDA;
+extern short cam_trans_state NOT_SDA;
 
 /* start_camera_blend(from): captures the blend source from the previous
    camera and starts the blend (phase 3). When the phase is 1 or 2, the
@@ -563,7 +563,7 @@ void start_camera_blend(Camera *from) {
             restore_camera_vectors();
         }
     }
-    D_001872B0 = 3; /* blend.phase */
+    cam_trans_state = 3; /* blend.phase */
     r->kind = r->next_kind;
     if (r->kind == 0) {
         CamBlendLerp *a = &r->lerp;
@@ -670,7 +670,7 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
     }
     step = 1.0f / cosine_interpolate(1.0f, (float)o->frames, (float)o->frames_left * o->inv_frames);
     if (gCamera.blend.kind == 2) {
-        qcopy(&target, D_0013F4D0);
+        qcopy(&target, hero_pos);
         qcopy(&fwd, &o->fwd);
         qcopy(&up, &o->up);
         FastVecCross(&side, &fwd, &up);

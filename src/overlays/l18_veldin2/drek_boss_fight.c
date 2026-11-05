@@ -1064,7 +1064,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 restore_saved_hero_moby_and_clear_vehicle_mode();
                 {
                     char *b = veldin2_arena_nodes + d->f2A0 * 0x80;
-                    func_L00_00217718(b + 0x30, b + 0x70, 0, 1);
+                    set_race_camera(b + 0x30, b + 0x70, 0, 1);
                 }
                 jet_clear_persistent(d->f2B0);
                 jet_reset_camera(g_hero.motion.pos.f, g_hero.motion.rot.f);
@@ -1496,7 +1496,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 if (g_hero.state.control_mode == HERO_MODE_GRIND) {
                     qcopy(v1, veldin2_arena_nodes + d->f344 * 0x80 + 0x30);
                     FastVecSub(v0, v0, v1);
-                    if (func_001F9CE8(v0) > 29.0f) {
+                    if (vector_length_xy(v0) > 29.0f) {
                         vec_set_length_xy(v0, v0, 29.0f);
                     }
                     FastVecAdd(v0, v0, v1);
@@ -1901,8 +1901,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                            g_frame_time * 4.0f, &d->f3DC, &d->f3E0);
     moby->pos.z = moby->pos.z + d->f3DC;
     d->f3D8 = 0.0f;
-    func_L00_00263950((char *)moby, d->fC0, 7, g_frame_scale_sq * fast, g_frame_scale_sq * slow);
-    func_L00_00263950((char *)moby, d->f140, 0x13, g_frame_scale_sq * fast, g_frame_scale_sq * slow);
+    update_joint_animation((char *)moby, d->fC0, 7, g_frame_scale_sq * fast, g_frame_scale_sq * slow);
+    update_joint_animation((char *)moby, d->f140, 0x13, g_frame_scale_sq * fast, g_frame_scale_sq * slow);
     d->f3B4 = FastAddRots(d->f3B4, g_frame_time * 3.4906585f);
     {
         int c = FastTweenColor(0x30C8C8C8, 0x1C393939, FastSin(d->f3B4) * 0.5f + 0.5f);
@@ -2286,7 +2286,7 @@ typedef struct {
 /* The hero block g_hero, cut down to what this function reads. */
 
 extern char g_hero_r[] __asm__("D_0013F450");
-extern char D_0013F4D0[];
+extern char hero_pos[];
 extern char *veldin2_arena_nodes_r __asm__("D_L18_0016016C") MACRO_ADDR;
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern f32 D_L18_001623E0_2F7F00 SDATA(D_L18_001623E0);
@@ -2355,7 +2355,7 @@ void func_L18_002F7F00_r(Moby *moby) {
             fast = 10.0f;
             far *= 1.5f;
         }
-        dist = vec_distance_xy(&moby->pos, D_0013F4D0);
+        dist = vec_distance_xy(&moby->pos, hero_pos);
         if (far < dist)
             dist = far;
         else if (dist < near)
@@ -2699,8 +2699,8 @@ void spawn_drek_boss_firing_effects(char *moby, void *p) {
             h = truncate_float_to_s32(randf_sym((float)drek_boss_firing_particle_increment_range_start_gp,
                                                 (float)drek_boss_firing_particle_increment_range_end_gp));
             PartType44Spawn(p, d,
-                            scale_ticks(func_L00_00258BC8(drek_boss_firing_particle_lifetime_range_start_frames_gp,
-                                                          drek_boss_firing_particle_lifetime_range_end_frames_gp)),
+                            scale_ticks(random_int_between(drek_boss_firing_particle_lifetime_range_start_frames_gp,
+                                                           drek_boss_firing_particle_lifetime_range_end_frames_gp)),
                             0x7F, 0xFFFFFF, h, drek_boss_firing_particle_initial_size_gp,
                             drek_boss_firing_particle_size_increment_gp,
                             drek_boss_firing_particle_velocity_multiplier_gp,
@@ -2715,8 +2715,8 @@ void spawn_drek_boss_firing_effects(char *moby, void *p) {
                                                      drek_boss_firing_secondary_effect_emission_length_range_end_gp));
             spawn_burst(p, d, drek_boss_firing_secondary_effect_initial_color_gp,
                         drek_boss_firing_secondary_effect_final_color_gp,
-                        scale_ticks(func_L00_00258BC8(drek_boss_firing_secondary_effect_lifetime_range_start_frames_gp,
-                                                      drek_boss_firing_secondary_effect_lifetime_range_end_frames_gp)),
+                        scale_ticks(random_int_between(drek_boss_firing_secondary_effect_lifetime_range_start_frames_gp,
+                                                       drek_boss_firing_secondary_effect_lifetime_range_end_frames_gp)),
                         1, drek_boss_firing_secondary_effect_initial_size_gp);
         }
     }

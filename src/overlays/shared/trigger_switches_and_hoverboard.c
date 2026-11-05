@@ -356,7 +356,7 @@ typedef struct HoverboardVars {
  * equiv: NEAR (all copies: retail rebuilds moby + 0x10 where this keeps it). */
 void hoverboard_update(unsigned char *moby) {
     HoverboardVars *data;
-    char *hero_pos;
+    char *hero_position;
     struct Hero *player;
     float delta[4], position[4], effect_position[4], offset[4], second_position[4];
     float delta_length;
@@ -367,11 +367,11 @@ void hoverboard_update(unsigned char *moby) {
     st = ((struct Moby *)moby)->state;
     switch (st) {
         case 0:
-            hero_pos = &((struct Hero *)g_hero)->motion.pos;
-            if (fast_vec_dist(hero_pos, &((struct Moby *)moby)->pos) < 5.5f) {
+            hero_position = &((struct Hero *)g_hero)->motion.pos;
+            if (fast_vec_dist(hero_position, &((struct Moby *)moby)->pos) < 5.5f) {
                 if (rilgar_frame_count >= 4) {
                     int grp;
-                    player = (struct Hero *)(hero_pos - 0x80);
+                    player = (struct Hero *)(hero_position - 0x80);
                     grp = player->state.control_mode;
                     if (grp != 0x15)
                         if (grp != 0x16) {
@@ -442,7 +442,7 @@ void hoverboard_update(unsigned char *moby) {
             int c;
             a = scale_ticks(10);
             b = scale_ticks(13);
-            c = func_L00_00258BC8(a, b);
+            c = random_int_between(a, b);
             spawn_effect(position, effect_position, l05_hoverboard_effect_initial_color,
                          l05_hoverboard_effect_color_endpoint, c, 15, 15, 1);
         } else {
@@ -452,7 +452,7 @@ void hoverboard_update(unsigned char *moby) {
             FastVecScale(second_position, delta, 0.92f);
             a = scale_ticks(0xF);
             b = scale_ticks(0x12);
-            c = func_L00_00258BC8(a, b);
+            c = random_int_between(a, b);
             spawn_effect(position, second_position, 0x5032F0D2, l05_hoverboard_effect_color_endpoint, c, 0x1E, 0x14, 1);
             {
                 int a2;
@@ -460,7 +460,7 @@ void hoverboard_update(unsigned char *moby) {
                 int c2;
                 a2 = scale_ticks(8);
                 b2 = scale_ticks(0x11);
-                c2 = func_L00_00258BC8(a2, b2);
+                c2 = random_int_between(a2, b2);
                 spawn_burst(position, effect_position, l05_hoverboard_effect_initial_color,
                             l05_hoverboard_effect_color_endpoint, c2, 1, 15000.0f);
             }
@@ -702,7 +702,7 @@ extern unsigned char rilgar_mission_state[] MACRO_ADDR;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int truncate_float_to_s32(float);
-extern int D_0014C290[][64];
+extern int level_moby_killed[][64];
 extern unsigned char saved_mission_state[];
 extern int Moby_PlaySound_r() __asm__("func_0022ED80");
 
@@ -726,7 +726,7 @@ void floor_button_update(struct Moby *moby) {
             moby->pos.z -= 0.35f;
             id = (short)moby->save_id;
             if (l05_mission_gated_moby_save_flags.done[id] != 0 ||
-                (D_0014C290[g_current_level_index][id >> 5] >> (moby->save_id & 31) & 1) != 0 ||
+                (level_moby_killed[g_current_level_index][id >> 5] >> (moby->save_id & 31) & 1) != 0 ||
                 (d[2] != 0 && saved_mission_state[moby->mission + (g_current_level_index << 4)] == 0xFF)) {
                 moby->command = 2;
                 moby->glow_color = 0x80208020;
@@ -793,7 +793,7 @@ typedef struct {
     char pad1[0x132];
     char *m[1];
 } G;
-extern int D_L05_0015F6A8 MACRO_ADDR;
+extern int game_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G rilgar_cutscene_state;
 
@@ -801,7 +801,7 @@ extern float big_head_manipulator_scale_gp SDATA(D_L05_00161FA8);
 
 /* Resets the marker record's scale once for every moby sharing this one's class, while the level flag is 2. */
 void attach_big_head_cheat_manipulator(char *a) {
-    if (D_L05_0015F6A8 == 2 && gCheats[0] != 0) {
+    if (game_mode == 2 && gCheats[0] != 0) {
         int i;
         for (i = 0; i < rilgar_cutscene_state.n; i++) {
             char *moby = rilgar_cutscene_state.m[i];
@@ -1219,10 +1219,10 @@ void breakable_lamp_update(struct Moby *moby) {
         spark =
             PartType23Spawn(&tip, 0.3f, 1.0f, 1.02f, random_integer_below(2) ? -turn : turn, &dir, speed, 0x407F7F7F);
         if (spark != 0) {
-            spark->life = scale_ticks(func_L00_00258BC8(0x5A, 0x78));
+            spark->life = scale_ticks(random_int_between(0x5A, 0x78));
             draw = &spark->draw;
             draw->mode = 2;
-            draw->fade = func_L00_00258BC8(0x40, 0x60);
+            draw->fade = random_int_between(0x40, 0x60);
             draw->life = spark->life;
             if (random_integer_below(2) != 0) {
                 spark->flags = 0x44;

@@ -144,9 +144,9 @@ s32 draw_hud_counter(HudElem *m) {
         draw_hud_sprite(frame, px - 0x20, y, 0x20, 0x20, alpha);
     }
     if (left) {
-        func_L00_0023BAB8(m, m->icon, x, y, 0, 0x80);
+        hud_frame(m, m->icon, x, y, 0, 0x80);
     } else {
-        func_L00_0023BAB8(m, m->icon, x - 0x16, y, 0, 0x80);
+        hud_frame(m, m->icon, x - 0x16, y, 0, 0x80);
     }
     bright = FastTweenColor((l02_hud_counter_text_fade_start_color), (l02_hud_counter_text_fade_end_color), shade);
     dark = FastTweenColor(0, 0x80000000, shade);

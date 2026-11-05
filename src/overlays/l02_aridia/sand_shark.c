@@ -40,8 +40,8 @@
 #include "overlays/shared/moby_drops_and_death.h"
 #include "core/libc/printf_rand.h"
 extern Hero g_hero;
-extern char D_0014D690[];
-extern char D_0013F4D0[];
+extern char bolt_source_stats[];
+extern char hero_pos[];
 extern char mission_death_counts[];
 extern char voice_pool[];
 
@@ -167,11 +167,11 @@ void emit_sand_shark_dust_puffs_along_segment(void *moby, void *va_, void *vb_, 
         char *p;
         FastVecScale(tmp, out, IntToFloat(i));
         FastVecAdd(tmp, va, tmp);
-        a = func_L00_00258BC8(0x40, 0x70);
-        c = func_L00_00258BC8(0x40, 0x7F);
+        a = random_int_between(0x40, 0x70);
+        c = random_int_between(0x40, 0x7F);
         col = c | ((c << 16) | (c << 8));
         sp = random_float_between(1.0f, 1.02f);
-        r = func_L00_00258BC8(-2, 2);
+        r = random_int_between(-2, 2);
         s[0] = randf_sym(0.0f, 0.0025f);
         s[1] = randf_sym(0.0f, 0.0025f);
         s[2] = random_float_between(sand_shark_dust_rise_speed * 0.1f, sand_shark_dust_rise_speed);
@@ -839,12 +839,12 @@ void sand_shark_update(unsigned char *moby) {
         }
         case 0x1B: {
             int n;
-            func_L00_00258DB0(v1, 0.0f, 0.2f);
+            random_vector(v1, 0.0f, 0.2f);
             FastVecAdd(v0, v1, moby + 0x10);
             FastVecScale(v1, v1, g_frame_time * 5.0f);
-            n = scale_ticks(func_L00_00258BC8(0x14, 0x28));
+            n = scale_ticks(random_int_between(0x14, 0x28));
             spawn_effect(moby + 0x10, v1, sand_shark_puff_start_color, sand_shark_puff_end_color, n, 0x64,
-                         func_L00_00258BC8(0x78, 0x96), 0);
+                         random_int_between(0x78, 0x96), 0);
         }
             /* fall through */
         case 0xD: {
@@ -1586,8 +1586,8 @@ void constructorbot_update(unsigned char *raw) {
                 direction[2] = 0.0f;
                 moby_point_position(moby, 0, position);
                 spawn_burst(position, direction, aridia_bot_spray_color, aridia_bot_spray_color,
-                            func_L00_00258BC8(scale_ticks(l02_constructorbot_wake_spray_frame_count_min),
-                                              scale_ticks(l02_constructorbot_wake_spray_frame_count_max)),
+                            random_int_between(scale_ticks(l02_constructorbot_wake_spray_frame_count_min),
+                                               scale_ticks(l02_constructorbot_wake_spray_frame_count_max)),
                             1, 40000.0f);
             }
             /* fall through */
@@ -2166,7 +2166,7 @@ void sand_shark_nest_update(char *m) {
         case 0: {
             unsigned short b4 = *(unsigned short *)&((struct Moby *)m)->unkB4;
             unsigned char u5 = ((struct Moby *)m)->unkB1;
-            int r = b4 - ((NestTable *)D_0014D690)->e[u5].b;
+            int r = b4 - ((NestTable *)bolt_source_stats)->e[u5].b;
             ((struct Moby *)m)->unkB4 = r;
             if ((short)r <= 0) {
                 ((struct Moby *)m)->unkB4 = 1;
@@ -2705,7 +2705,7 @@ void transport_pod_update(unsigned char *moby) {
                 }
                 ((struct Moby *)moby)->pos.z -= 6.0f;
                 FastVecAdd(b, HP, a);
-                func_L00_00217718(b, camera_position_or_stop_look, 0x72, 0);
+                set_race_camera(b, camera_position_or_stop_look, 0x72, 0);
                 transport_pod_vars->speed = -transport_pod_vars->speed;
                 moby[0x20] = 9;
                 set_active_camera_mode(2, scale_ticks(0xB4));
@@ -3266,8 +3266,8 @@ void sandshark_egg_update(char *moby) {
                 v[2] += random_float_between(0.0f, 0.5f);
                 v[0] += random_float_between(-0.15f, 0.15f);
                 v[1] += random_float_between(-0.15f, 0.15f);
-                r = scale_ticks(func_L00_00258BC8(0x14, 0x28));
-                s = func_L00_00258BC8(0x14, 0x28);
+                r = scale_ticks(random_int_between(0x14, 0x28));
+                s = random_int_between(0x14, 0x28);
                 spawn_effect(vp, u, l02_sandshark_egg_effect_initial_color, l02_sandshark_egg_effect_color_endpoint, r,
                              0x28, s, 1);
                 i--;
@@ -3354,7 +3354,7 @@ void rocks_update(unsigned char *moby) {
         k = random_float_between(1.5f, 3.5f) * g_frame_time_r;
         vec_scale_to_length(C, C, k);
         s = random_float_between(1.5f, 3.5f) * 210000.0f;
-        r = scale_ticks(func_L00_00258BC8(120, 240));
+        r = scale_ticks(random_int_between(120, 240));
         spawn_effect_particle_with_target_scalar(A, C, *(int *)&D_L02_00161D54_2E1B58, *(int *)&D_L02_00161D58_2E1B58,
                                                  s, r);
     }
@@ -3382,7 +3382,7 @@ void rocks_update(unsigned char *moby) {
         vec_scale_to_length(A, A, k);
         pc = (unsigned int *)C + random_integer_below(3);
         s = random_float_between(0.05f, 0.15f);
-        n = func_L00_00258BC8(60, 180);
+        n = random_int_between(60, 180);
         spawn_debris_moby(B, A, *pc, s, n, 1.0f, 1.0f, 0.75f, 0);
     } while (j >= 0);
     DeleteMoby(moby);

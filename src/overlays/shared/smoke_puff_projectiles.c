@@ -186,7 +186,7 @@ void blarg_trooper_projectile_update(struct Moby *m) {
             vec_scale_to_length(&push, &push, FastVecLength(&r) * 0.5f);
             FastVecAdd(&push, &r, &push);
             vec_scale_to_length(&push, &push, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-            PartType27Spawn(&m->pos, &push, 0x7F2F4F6F, func_L00_00258BC8(scale_ticks(10), scale_ticks(15)), 30000.0f);
+            PartType27Spawn(&m->pos, &push, 0x7F2F4F6F, random_int_between(scale_ticks(10), scale_ticks(15)), 30000.0f);
         }
     }
     DeleteMoby(m);

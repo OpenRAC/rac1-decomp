@@ -12,7 +12,7 @@ void robot_qwark_update(unsigned char *m) {
         m[0x7F] = 21;
     }
     if (SAVEFLAGS->collected[(short)*(unsigned short *)(m + 0xB2)] != 0 ||
-        (D_0014C290[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] >>
+        (level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] >>
          (*(unsigned short *)(m + 0xB2) & 0x1F)) &
             1) {
         if (m[0x20] != 3) {
@@ -23,7 +23,7 @@ void robot_qwark_update(unsigned char *m) {
     hit = (Hit_DD158 *)MobyGetHitMessage(m, -1, 0);
     if (hit != 0 && hit->source != 0 && (type = hit->type) == 3 &&
         SAVEFLAGS->collected[(short)*(unsigned short *)(m + 0xB2)] == 0 &&
-        (((D_0014C290[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] >>
+        (((level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] >>
            (*(unsigned short *)(m + 0xB2) & 0x1F)) ^
           1) &
          1)) {
@@ -31,7 +31,7 @@ void robot_qwark_update(unsigned char *m) {
         if (p5[5] == 0) {
             p5[5] = 1;
             allocate_voice_for_bank_entry(1, 0, 0);
-            func_L00_00264DB8(0x542D, -1);
+            queue_dialogue_message(0x542D, -1);
         }
         *(u128_DD158 *)pos = *(u128_DD158 *)(m + 0x10);
         pos[2] += 1.0f;
@@ -39,7 +39,7 @@ void robot_qwark_update(unsigned char *m) {
         spawn_explosion(m, vel, pos, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
         m[0x20] = type;
         MobySetAnimation(m, 1, 0);
-        D_0014C290[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] |=
+        level_moby_killed[g_current_level_index][(short)*(unsigned short *)(m + 0xB2) >> 5] |=
             1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
         kerwan_moby_killed_bits[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1
                                                                               << (*(unsigned short *)(m + 0xB2) & 0x1F);
@@ -61,7 +61,7 @@ void robot_qwark_update(unsigned char *m) {
         case 1:
             if (Npc_TryStartDialog(m, (unsigned char *)d)) {
                 menu_item_enabled_9[4] = 1;
-                func_L01_00279398(2.7f, m);
+                begin_dialogue_camera_transition(2.7f, m);
                 m[0x20] = 2;
             }
             break;
@@ -87,7 +87,7 @@ void robot_qwark_update(unsigned char *m) {
             add_vectors(tmp, pos, m + 0x10);
             if (random_integer_below(3) == 0) {
                 spawn_effect_particle_with_target_scalar(pos, vel, 0x20202020, 0x7F7F7F, 157500.0f,
-                                                         scale_ticks(func_L00_00258BC8(0x3C, 0x78)));
+                                                         scale_ticks(random_int_between(0x3C, 0x78)));
             }
             break;
     }
