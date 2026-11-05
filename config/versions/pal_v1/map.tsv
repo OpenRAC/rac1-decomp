@@ -1300,7 +1300,7 @@ func_00217ED8	-	asm	boot:00216B30	12	100.00
 func_00217EE8	src/game/audio/stream.c	match	boot:00216B40	128	100.00
 func_00217F68	src/versions/pal_v1/game/system/pad/func_00217F68.c	match	boot:00216BC0	500	100.00
 func_00218188	src/game/system/pad.c	match	boot:00216DB8	100	100.00
-func_002181F0	src/game/system/pad.c	differs	boot:00216E20	1768	0.00
+func_002181F0	src/versions/pal_v1/game/system/pad/func_002181F0.c	match	boot:00216E20	1768	100.00
 func_00218908	src/game/system/pad.c	match	boot:00217508	32	100.00
 func_00218928	-	asm	boot:00217528	8	100.00
 func_00218930	-	asm	boot:00217530	328	100.00
@@ -3943,7 +3943,7 @@ func_L07_00315108	src/overlays/l07_umbris/snagglebeast.c	match	07:00313658	184	1
 func_L07_003151C0	src/overlays/l07_umbris/snagglebeast.c	match	07:00313710	376	100.00
 func_L07_00315338	src/overlays/l07_umbris/snagglebeast.c	match	07:00313888	244	100.00
 func_L07_00315430	src/overlays/l07_umbris/snagglebeast.c	match	07:00313980	244	100.00
-func_L07_00315528	src/overlays/l07_umbris/snagglebeast.c	differs	07:00313A78	14268	0.00
+func_L07_00315528	src/versions/pal_v1/overlays/l07_umbris/snagglebeast/func_L07_00315528.c	match	07:00313A78	14268	100.00
 func_L07_00318CE0	src/overlays/l07_umbris/snagglebeast.c	match	07:00317238	904	100.00
 func_L07_00319080	src/overlays/l07_umbris/snagglebeast.c	match	07:003175D8	428	100.00
 func_L07_00319230	src/overlays/l07_umbris/snagglebeast.c	match	07:00317788	4044	100.00

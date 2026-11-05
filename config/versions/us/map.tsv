@@ -1300,7 +1300,7 @@ func_00217ED8	-	asm	boot:00217038	12	100.00
 func_00217EE8	src/game/audio/stream.c	match	boot:00217048	128	100.00
 func_00217F68	src/versions/us/game/system/pad/func_00217F68.c	match	boot:002170C8	500	100.00
 func_00218188	src/game/system/pad.c	match	boot:002172C0	100	100.00
-func_002181F0	src/game/system/pad.c	differs	boot:00217328	1768	0.00
+func_002181F0	src/versions/us/game/system/pad/func_002181F0.c	match	boot:00217328	1768	100.00
 func_00218908	src/game/system/pad.c	match	boot:00217A10	32	100.00
 func_00218928	-	asm	boot:00217A30	8	100.00
 func_00218930	-	asm	boot:00217A38	328	100.00
