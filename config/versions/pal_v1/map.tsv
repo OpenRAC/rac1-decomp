@@ -81,7 +81,7 @@ func_001187E0	src/core/libc/vfprintf.c	match	boot:001184E8	224	100.00
 func_001188C0	-	asm	boot:001185C8	8	100.00
 func_001188C8	src/core/libc/write_wsetup.c	match	boot:001185D0	96	100.00
 func_00118928	src/core/libc/write_wsetup.c	match	boot:00118630	268	100.00
-func_00118A40	-	differs	boot:0011873C	20	0.00
+func_00118A40	-	asm	boot:0011873C	20	100.00
 func_00118A50	-	asm	boot:00118750	16	100.00
 func_00118A60	-	asm	boot:00118760	16	100.00
 func_00118A70	-	asm	boot:00118770	16	100.00
@@ -264,7 +264,7 @@ func_0011D3C8	src/core/sif/reset_iop.c	match	boot:0011D0C8	196	100.00
 func_0011D490	-	asm	boot:0011D190	16	100.00
 func_0011D4A0	src/core/sif/reset_iop.c	match	boot:0011D1A0	64	100.00
 func_0011D4E0	-	asm	boot:0011D1E0	500	100.00
-func_0011D700	-	differs	boot:0011D3D4	652	0.00
+func_0011D700	-	asm	boot:0011D3D4	652	100.00
 func_0011D960	-	asm	boot:0011D660	72	100.00
 func_0011D9A8	-	asm	boot:0011D6A8	24	100.00
 func_0011D9C0	src/core/kernel/supplement_crt0.c	match	boot:0011D6C0	72	100.00
@@ -1695,6 +1695,7 @@ func_0023E658	src/game/movie/vobuf.c	match	boot:0023CD98	64	100.00
 func_0023E698	src/game/movie/vobuf.c	match	boot:0023CDD8	12	100.00
 func_0023E6A8	src/game/movie/vobuf.c	match	boot:0023CDE8	100	100.00
 func_0023E710	src/game/movie/vobuf.c	match	boot:0023CE50	32	100.00
+func_E1_001271D8	-	asm	boot:001271D8	96	100.00
 func_E1_00208310	src/versions/pal_v1/game/ui/menu/func_E1_00208310.c	match	boot:00208310	100	100.00
 func_E1_00208478	src/versions/pal_v1/game/ui/menu/func_E1_00208478.c	match	boot:00208478	36	100.00
 func_E1_002089F8	src/versions/pal_v1/game/ui/menu/func_E1_002089F8.c	match	boot:002089F8	120	100.00
@@ -1845,7 +1846,7 @@ func_L00_002056D8	src/overlays/shared/hero_idle_and_animation.c	match	00:00204C0
 func_L00_00205728	src/overlays/shared/hero_idle_and_animation.c	match	00:00204C58	44	100.00
 func_L00_00205754	-	joined	00:00204C84	20	100.00
 func_L00_00205768	-	joined	00:00204C98	16	100.00
-func_L00_00205778	-	differs	00:00204CA8	8	0.00
+func_L00_00205778	-	asm	00:00204CA8	8	100.00
 func_L00_00205780	src/overlays/shared/hero_idle_and_animation.c	match	00:00204CB0	892	100.00
 func_L00_00205B00	src/overlays/shared/hero_idle_and_animation.c	match	00:00205030	76	100.00
 func_L00_00205B50	src/overlays/shared/hero_idle_and_animation.c	match	00:00205080	196	100.00
@@ -3581,7 +3582,7 @@ func_L05_00237B00	src/overlays/shared/hero_gadget_use.c	match	05:00236FD0	248	10
 func_L05_0023A638	src/versions/pal_v1/overlays/l05_rilgar/hero_collision/func_L05_0023A638.c	match	05:00239B08	1336	100.00
 func_L05_0023BA18	src/overlays/shared/hero_gadget_use.c	match	05:0023AEC0	76	100.00
 func_L05_0023BA64	-	joined	05:0023AF0C	60	100.00
-func_L05_0023BAA0	-	differs	05:0023AF48	60	0.00
+func_L05_0023BAA0	-	asm	05:0023AF48	60	100.00
 func_L05_0023E348	src/overlays/shared/hero_gadget_use.c	match	05:0023D7D0	2280	100.00
 func_L05_00240968	src/overlays/l05_rilgar/hero_collision.c	match	05:0023FDF0	2160	100.00
 func_L05_00241590	src/overlays/l05_rilgar/hero_collision.c	match	05:00240A18	1080	100.00

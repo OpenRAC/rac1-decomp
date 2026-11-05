@@ -545,6 +545,8 @@ def check_one(v, table, name, src, entry, show=False):
     # (an entry can be the executable's here and a level's there)
     mine = sorted(entry["places"], key=lambda p: (-1 if p[0] == "boot" else p[0], p[1]))
     own = name.startswith(f"func_{v.tag}_")     # code only this version has: placed at its own address
+    if src.startswith("src/versions/") and not {p[0] for p in mine} & {p[0] for p in primary_places().get(name, [])}:
+        own = True      # version-specific C of a function this version has only in other programs
     theirs_sp = {p[0] for p in primary_places().get(name, [])}
     sp, xa = next((p for p in mine if p[0] in theirs_sp), mine[0])
     canon = min(primary_places().get(name, [(sp, 0)]), key=lambda p: (-1 if p[0] == "boot" else p[0], p[1]))[0]
