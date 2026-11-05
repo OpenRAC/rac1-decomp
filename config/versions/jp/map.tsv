@@ -296,10 +296,10 @@ func_0011DFC8	src/libgcc/libgcc2.c	match	boot:0011DFC8	32	100.00
 func_0011DFE8	src/libgcc/libgcc2.c	match	boot:0011DFE8	1772	100.00
 func_0011E6D8	src/libgcc/libgcc2.c	match	boot:0011E6D8	236	100.00
 func_0011E7C8	src/libgcc/libgcc2.c	match	boot:0011E7C8	152	100.00
-func_0011E860	src/libgcc/libgcc2.c	match	boot:0011E860	1640	100.00
+func_0011E860	-	asm	boot:0011E860	1640	100.00
 func_0011EEC8	src/libgcc/libgcc2.c	match	boot:0011EEC8	96	100.00
-func_0011EF28	src/libgcc/libgcc2.c	match	boot:0011EF28	1488	100.00
-func_0011F4F8	src/libgcc/libgcc2.c	match	boot:0011F4F8	1344	100.00
+func_0011EF28	-	asm	boot:0011EF28	1488	100.00
+func_0011F4F8	-	asm	boot:0011F4F8	1344	100.00
 func_0011FA38	src/libgcc/fp-bit.c	match	boot:0011FA38	300	100.00
 func_0011FB68	src/libgcc/fp-bit.c	match	boot:0011FB68	156	100.00
 func_0011FC08	src/libgcc/fp-bit.c	match	boot:0011FC08	576	100.00
@@ -450,6 +450,7 @@ func_00126FB0	-	asm	boot:00126FB0	208	100.00
 func_00127080	-	asm	boot:00127080	288	100.00
 func_001271A0	-	asm	boot:001271A0	276	100.00
 func_001272B8	-	asm	boot:001272B8	92	100.00
+func_00127318	-	asm	boot:00127318	96	100.00
 func_00127378	src/core/mpeg/motion_comp.c	match	boot:00127378	40	100.00
 func_001273A0	src/core/mpeg/motion_comp.c	match	boot:001273A0	508	100.00
 func_001275A0	src/core/mpeg/motion_comp.c	match	boot:001275A0	28	100.00
@@ -1695,7 +1696,6 @@ func_0023E658	src/game/movie/vobuf.c	match	boot:0023F138	64	100.00
 func_0023E698	src/game/movie/vobuf.c	match	boot:0023F178	12	100.00
 func_0023E6A8	src/game/movie/vobuf.c	match	boot:0023F188	100	100.00
 func_0023E710	src/game/movie/vobuf.c	match	boot:0023F1F0	32	100.00
-func_J_00127318	-	asm	boot:00127318	96	100.00
 func_J_001F6B60	src/versions/jp/game/render/draw/func_J_001F6B60.c	match	boot:001F6B60	160	100.00
 func_J_001F6EE8	src/versions/jp/game/render/draw/func_J_001F6EE8.c	match	boot:001F6EE8	712	100.00
 func_J_001F71B0	src/versions/jp/game/render/draw/func_J_001F71B0.c	match	boot:001F71B0	124	100.00

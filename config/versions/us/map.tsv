@@ -296,10 +296,10 @@ func_0011DFC8	src/libgcc/libgcc2.c	match	boot:0011DCC8	32	100.00
 func_0011DFE8	src/libgcc/libgcc2.c	match	boot:0011DCE8	1772	100.00
 func_0011E6D8	src/libgcc/libgcc2.c	match	boot:0011E3D8	236	100.00
 func_0011E7C8	src/libgcc/libgcc2.c	match	boot:0011E4C8	152	100.00
-func_0011E860	src/libgcc/libgcc2.c	match	boot:0011E560	1640	100.00
+func_0011E860	-	asm	boot:0011E560	1640	100.00
 func_0011EEC8	src/libgcc/libgcc2.c	match	boot:0011EBC8	96	100.00
-func_0011EF28	src/libgcc/libgcc2.c	match	boot:0011EC28	1488	100.00
-func_0011F4F8	src/libgcc/libgcc2.c	match	boot:0011F1F8	1344	100.00
+func_0011EF28	-	asm	boot:0011EC28	1488	100.00
+func_0011F4F8	-	asm	boot:0011F1F8	1344	100.00
 func_0011FA38	src/libgcc/fp-bit.c	match	boot:0011F738	300	100.00
 func_0011FB68	src/libgcc/fp-bit.c	match	boot:0011F868	156	100.00
 func_0011FC08	src/libgcc/fp-bit.c	match	boot:0011F908	576	100.00
@@ -450,6 +450,7 @@ func_00126FB0	-	asm	boot:00126E70	208	100.00
 func_00127080	-	asm	boot:00126F40	288	100.00
 func_001271A0	-	asm	boot:00127060	276	100.00
 func_001272B8	-	asm	boot:00127178	92	100.00
+func_00127318	-	asm	boot:001271D8	96	100.00
 func_00127378	src/core/mpeg/motion_comp.c	match	boot:00127238	40	100.00
 func_001273A0	src/core/mpeg/motion_comp.c	match	boot:00127260	508	100.00
 func_001275A0	src/core/mpeg/motion_comp.c	match	boot:00127460	28	100.00
