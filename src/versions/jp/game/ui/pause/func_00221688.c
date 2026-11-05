@@ -33,6 +33,3 @@ int advance_audio_stream_state(MenuScreen *arg0) {
     }
     return 0;
 }
-
-/* Returns the packed texture handle the draw call takes as its last
-   64-bit argument, so it is `long`: retail stores $v0 straight to the

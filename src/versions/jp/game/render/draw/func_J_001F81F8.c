@@ -87,8 +87,8 @@ void func_J_001F81F8(void *win_p, long a1, void *text_p, int len, long a4, unsig
                     fx = (dw->x_anchor - (w >> 1)) + dw->x_sub * 0.0625f;
                 else
                     fx = dw->x_anchor + dw->x_sub * 0.0625f;
-                func_J_001F75A8(font_palette_colors[colr_arr[k]], text + start[k], fx, cnt, a4,
-                                (struct Glyph *)glyphs, y + dw->y_sub * 0.0625f, 1.0f);
+                func_J_001F75A8(font_palette_colors[colr_arr[k]], text + start[k], fx, cnt, a4, (struct Glyph *)glyphs,
+                                y + dw->y_sub * 0.0625f, 1.0f);
             } else if (dw->flags & 1) {
                 func_J_001F6EE8((void *)(dw->x_anchor - (w >> 1)), (void *)y, (void *)font_palette_colors[colr_arr[k]],
                                 text + start[k], (void *)cnt, a4, glyphs);

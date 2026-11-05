@@ -34,7 +34,8 @@ void func_J_001F75A8(u64 color, u8 *str, f32 x, s32 n, s64 tex, struct Glyph *g,
                     mk += avg << 16;
                     mk += avg << 8;
                     avg += mk;
-                    emit_textured_rectangle_r(x, y + top, scale * 24.0f, scale * 16.0f, g[*s].u, g[*s].v, 24, 16, avg, tex);
+                    emit_textured_rectangle_r(x, y + top, scale * 24.0f, scale * 16.0f, g[*s].u, g[*s].v, 24, 16, avg,
+                                              tex);
                 } else if ((u8)(character + 0x43) < 2) {
                     s32 prev = s[-1];
                     struct Glyph *mark = (struct Glyph *)(((prev + 0x80) << 2) + (s32)g);

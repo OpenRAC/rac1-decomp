@@ -78,7 +78,8 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                 qcopy(d->v40, moby->pos);
                 {
                     int i = d->i104 + 0x28;
-                    *(char **)&fleet_hud_health_clut = fighter_jet_hp_bar_clut_lookup_base + (l17_fighter_jet_hp_bar_clut_entries + i)->h * 16;
+                    *(char **)&fleet_hud_health_clut =
+                        fighter_jet_hp_bar_clut_lookup_base + (l17_fighter_jet_hp_bar_clut_entries + i)->h * 16;
                 }
                 if (fleet_hud_health_clut_saved == 0) {
                     *(Blk400 *)fleet_hud_health_clut_backup = **(Blk400 **)&fleet_hud_health_clut;

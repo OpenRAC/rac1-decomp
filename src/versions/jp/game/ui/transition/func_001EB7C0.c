@@ -53,8 +53,8 @@ void Transition_DefaultDraw(s32 *arg0) {
         if (n < 0) {
             n = 0;
         }
-        DrawTexturedQuad(0xEA, 0x64, 0x100, 0x80, 0, 0, 0x100, 0x80,
-                         (long)(D_J_0015F054 << 24 | 0x808080), GetEffectTex_v(n + 4));
+        DrawTexturedQuad(0xEA, 0x64, 0x100, 0x80, 0, 0, 0x100, 0x80, (long)(D_J_0015F054 << 24 | 0x808080),
+                         GetEffectTex_v(n + 4));
     }
     if (D_J_0015F05C != 0) {
         DrawTexturedQuad(0x60, 0x134, 0x100, 0x80, 0, 0, 0x100, 0x80, (long)(D_J_0015F05C << 24 | 0x808080),

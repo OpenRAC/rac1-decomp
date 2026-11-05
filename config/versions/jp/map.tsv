@@ -1326,9 +1326,9 @@ func_0021B138	src/versions/jp/game/ui/pause/func_0021B138.c	match	boot:0021C020	
 func_0021B278	src/game/ui/pause.c	match	boot:0021C160	8	100.00
 func_0021B280	src/game/ui/pause.c	match	boot:0021C168	8	100.00
 func_0021B288	src/game/ui/pause.c	match	boot:0021C170	16	100.00
-func_0021B298	src/game/ui/pause.c	differs	boot:0021C180	2248	0.00
+func_0021B298	src/versions/jp/game/ui/pause/func_0021B298.c	match	boot:0021C180	2248	100.00
 func_0021BB90	src/versions/jp/game/ui/pause/func_0021BB90.c	match	boot:0021CA48	1564	100.00
-func_0021C1B0	src/game/ui/pause.c	differs	boot:0021D068	1208	0.00
+func_0021C1B0	src/versions/jp/game/ui/pause/func_0021C1B0.c	match	boot:0021D068	1208	100.00
 func_0021C6C0	src/game/ui/pause.c	match	boot:0021D520	208	100.00
 func_0021C790	src/game/ui/pause.c	match	boot:0021D5F0	176	100.00
 func_0021C840	src/versions/jp/game/ui/pause/func_0021C840.c	match	boot:0021D6A0	1368	100.00

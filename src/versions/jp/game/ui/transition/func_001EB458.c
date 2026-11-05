@@ -55,8 +55,7 @@ void update_gameplay_frame(void) {
         }
         if (scale_game_frame_count(0x78) < D_J_0015F058) {
             D_J_0015F054 =
-                (s32)(FastCos((D_J_0015F058 - scale_game_frame_count(0x78)) % 60 * 0.10471976f + -3.1415927f) *
-                      32.0f) +
+                (s32)(FastCos((D_J_0015F058 - scale_game_frame_count(0x78)) % 60 * 0.10471976f + -3.1415927f) * 32.0f) +
                 0x60;
         }
         if (scale_game_frame_count(0xB4) < D_J_0015F058) {

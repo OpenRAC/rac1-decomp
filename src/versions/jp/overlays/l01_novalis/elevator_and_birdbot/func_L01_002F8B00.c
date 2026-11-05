@@ -102,7 +102,7 @@ void bomber_jet_update(Moby *m) {
                 if (d->cam174 != -1) {
                     l01_hero_set_state(0x72, 0);
                     jet_mount(D_L01_0016016C + (d->cam174 << 7) + 0x30, D_L01_0016016C + (d->cam174 << 7) + 0x70, 0, 0,
-                                 0);
+                              0);
                     cutscene_active = 1;
                     m->collision = 0;
                     m->flags &= 0xEFFF;

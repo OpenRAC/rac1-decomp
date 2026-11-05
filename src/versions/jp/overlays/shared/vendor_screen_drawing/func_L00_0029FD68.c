@@ -68,8 +68,7 @@ message:
     font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
     return;
 purchase:
-    cost = gHavePersuader ? item_price_table[MENU.rows[MENU.f58].fD0].i4
-                                     : item_price_table[MENU.rows[MENU.f58].fD0].i0;
+    cost = gHavePersuader ? item_price_table[MENU.rows[MENU.f58].fD0].i4 : item_price_table[MENU.rows[MENU.f58].fD0].i0;
     if (gBolts >= cost) {
         FontPrintSmall(6, 6, 0x80f0f0f0L, msg_string(0x5290), -1);
         FontPrintSmall(2, 0x20, 0x80f0f0f0L, msg_string(0x528B), -1);

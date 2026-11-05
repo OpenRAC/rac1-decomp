@@ -53,8 +53,8 @@ void snow_plow_update(VehicleMoby *m) {
                 break;
             }
             case 1:
-                MobySpringTurn(m, &d->turn_velocity, l04_cuboids[d->selected].angle,
-                               g_frame_time_sq * 1.0471976f, g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
+                MobySpringTurn(m, &d->turn_velocity, l04_cuboids[d->selected].angle, g_frame_time_sq * 1.0471976f,
+                               g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
                 if (vec_distance_xy(&m->pos, &l04_cuboids[d->selected].pos) < 1.0f &&
                     FastDiffRots(m->rot.f[2], l04_cuboids[d->selected].angle) < 0.17453292f) {
                     d->phase = 2;

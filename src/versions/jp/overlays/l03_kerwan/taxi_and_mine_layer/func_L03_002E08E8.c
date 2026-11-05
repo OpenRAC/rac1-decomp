@@ -134,7 +134,8 @@ void TutorialHintTriggerUpdate(Moby *moby) {
             if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f38) != 0 &&
                 (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
                  ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
-                kerwan_usage_event_count < 3 && l03_help_message_playback_state[0] == 0 && l03_help_message_playback_state[9] == -1) {
+                kerwan_usage_event_count < 3 && l03_help_message_playback_state[0] == 0 &&
+                l03_help_message_playback_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x40].count == 0) {
                     help_request(0x3EC, 0x40);
@@ -145,7 +146,8 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
                  ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
                 ((Hero *)(hero_globals_base + 0xE1D))->state.current == HERO_STATE_LOOK &&
-                kerwan_usage_event_timer == -1 && l03_help_message_playback_state[0] == 0 && l03_help_message_playback_state[9] == -1) {
+                kerwan_usage_event_timer == -1 && l03_help_message_playback_state[0] == 0 &&
+                l03_help_message_playback_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x40].count != 0 && b[0x41].count == 0) {
                     help_request(0x3ED, 0x41);
@@ -162,8 +164,8 @@ void TutorialHintTriggerUpdate(Moby *moby) {
                 }
             }
 
-            if (kerwan_game_mode == 0 && (gHavePersuader + 0x11)[0] != 0 &&
-                l03_help_message_playback_state[0] == 0 && l03_help_message_playback_state[9] == -1) {
+            if (kerwan_game_mode == 0 && (gHavePersuader + 0x11)[0] != 0 && l03_help_message_playback_state[0] == 0 &&
+                l03_help_message_playback_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x19].count == 0) {
                     help_request(0xBBD, 0x19);
@@ -215,8 +217,8 @@ void TutorialHintTriggerUpdate(Moby *moby) {
             if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f2C) != 0 &&
                 usage_stats_r[0x10].count == 0 &&
                 ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 6 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->items[0].item_id == 8 && l03_help_message_playback_state[0] == 0 &&
-                l03_help_message_playback_state[9] == -1) {
+                ((Hero *)(hero_globals_base + 0xE1D))->items[0].item_id == 8 &&
+                l03_help_message_playback_state[0] == 0 && l03_help_message_playback_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x1B].count == 0) {
                     help_request(0xBBF, 0x1B);
