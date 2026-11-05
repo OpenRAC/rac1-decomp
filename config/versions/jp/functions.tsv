@@ -446,7 +446,7 @@ func_00126FB0	exe	208	6815a43aa66acd47	func_00126FB0	fingerprint	1.00	yes	boot:0
 func_00127080	exe	288	1846b1db77e34bba	func_00127080	fingerprint	1.00	yes	boot:00127080
 func_001271A0	exe	276	c774590ec97204a1	func_001271A0	fingerprint	1.00	yes	boot:001271A0
 func_001272B8	exe	92	3b0f416126628c27	func_001272B8	fingerprint	1.00	yes	boot:001272B8
-func_J_00127318	exe	96	c2c04d52772cdbad	-	-	-	no	boot:00127318
+func_00127318	exe	96	c2c04d52772cdbad	func_00127318	fingerprint	1.00	yes	boot:00127318
 func_00127378	exe	40	dede2bb906c97e5a	func_00127378	fingerprint	1.00	yes	boot:00127378
 func_001273A0	exe	508	88d070b1cf2cd9f1	func_001273A0	fingerprint	1.00	yes	boot:001273A0
 func_001275A0	exe	28	a34c218f4d24516d	func_001275A0	fingerprint	1.00	yes	boot:001275A0

@@ -34,6 +34,7 @@ Names, sizes, hashes and addresses only: no bytes.
 """
 import argparse
 import collections
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -172,6 +173,7 @@ def catalogue(v, rows):
         e["name"] = c if c is not None and claim[c][1] == id(e) else own
         if e["name"] != c:
             e["counterpart_of_name"] = c
+    out = merged(v, out)
     # Left without a name, but the same code at the primary's own address: that function, not a
     # look-alike (a 4-byte dead-strip remnant's fingerprint is not unique).
     taken = {e["name"] for e in out}
@@ -221,6 +223,27 @@ def primary_catalogue():
             continue
         out.append({"name": name, "kind": kind, "size": int(size), "fp": fp, "places": pl,
                     "counterpart": name, "method": "fingerprint", "sim": 1.0, "same": True})
+    return out
+
+
+def merged(v, out):
+    """config/versions/<K>/merge.tsv: one function the split cut in pieces (it stops at the first
+    `jr`, though a branch runs past it). name, then the pieces in address order, as named here."""
+    path = v.config / "merge.tsv"
+    if not path.exists():
+        return out
+    by_name = {e["name"]: e for e in out}
+    for line in path.read_text().splitlines():
+        if not line or line.startswith("#"):
+            continue
+        name, pieces = line.split("\t")
+        head, *tails = [by_name[p] for p in pieces.split()]
+        fp = hashlib.sha1("".join(e["fp"] for e in [head, *tails]).encode()).hexdigest()[:16]
+        head.update(name=name, counterpart=name, method="merged", sim=0.0, same=False, fp=fp,
+                    size=head["size"] + sum(e["size"] for e in tails))
+        head.pop("counterpart_of_name", None)
+        dropped = {id(e) for e in tails}
+        out = [e for e in out if id(e) not in dropped]
     return out
 
 

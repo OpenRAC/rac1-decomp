@@ -296,10 +296,10 @@ func_0011DFC8	src/libgcc/libgcc2.c	match	boot:0011DFC8	32	100.00
 func_0011DFE8	src/libgcc/libgcc2.c	match	boot:0011DFE8	1772	100.00
 func_0011E6D8	src/libgcc/libgcc2.c	match	boot:0011E6D8	236	100.00
 func_0011E7C8	src/libgcc/libgcc2.c	match	boot:0011E7C8	152	100.00
-func_0011E860	src/libgcc/libgcc2.c	match	boot:0011E860	1640	100.00
+func_0011E860	-	asm	boot:0011E860	1640	100.00
 func_0011EEC8	src/libgcc/libgcc2.c	match	boot:0011EEC8	96	100.00
-func_0011EF28	src/libgcc/libgcc2.c	match	boot:0011EF28	1488	100.00
-func_0011F4F8	src/libgcc/libgcc2.c	match	boot:0011F4F8	1344	100.00
+func_0011EF28	-	asm	boot:0011EF28	1488	100.00
+func_0011F4F8	-	asm	boot:0011F4F8	1344	100.00
 func_0011FA38	src/libgcc/fp-bit.c	match	boot:0011FA38	300	100.00
 func_0011FB68	src/libgcc/fp-bit.c	match	boot:0011FB68	156	100.00
 func_0011FC08	src/libgcc/fp-bit.c	match	boot:0011FC08	576	100.00
@@ -450,6 +450,7 @@ func_00126FB0	-	asm	boot:00126FB0	208	100.00
 func_00127080	-	asm	boot:00127080	288	100.00
 func_001271A0	-	asm	boot:001271A0	276	100.00
 func_001272B8	-	asm	boot:001272B8	92	100.00
+func_00127318	-	asm	boot:00127318	96	100.00
 func_00127378	src/core/mpeg/motion_comp.c	match	boot:00127378	40	100.00
 func_001273A0	src/core/mpeg/motion_comp.c	match	boot:001273A0	508	100.00
 func_001275A0	src/core/mpeg/motion_comp.c	match	boot:001275A0	28	100.00
@@ -681,7 +682,7 @@ func_001E97F0	src/game/system/stub.c	match	boot:001E9B70	8	100.00
 func_001E97F8	src/game/system/stub.c	match	boot:001E9B78	8	100.00
 func_001E9800	src/game/system/stub.c	match	boot:001E9B80	8	100.00
 func_001E9808	src/game/system/bmain.c	match	boot:001E9B88	464	100.00
-func_001E99D8	src/game/system/bmain.c	differs	boot:001E9D58	1476	0.00
+func_001E99D8	src/versions/jp/game/system/bmain/func_001E99D8.c	match	boot:001E9D58	1476	100.00
 func_001E9E70	src/game/ui/transition.c	match	boot:001EA320	88	100.00
 func_001E9EC8	src/game/ui/transition.c	match	boot:001EA378	3356	100.00
 func_001EABE8	src/versions/jp/game/ui/transition/func_001EABE8.c	match	boot:001EB098	1760	100.00
@@ -1351,7 +1352,7 @@ func_0021E1F8	src/game/ui/pause.c	match	boot:0021F058	8	100.00
 func_0021E200	src/game/ui/pause.c	match	boot:0021F060	204	100.00
 func_0021E2D0	src/game/ui/pause.c	match	boot:0021F130	108	100.00
 func_0021E340	src/game/ui/pause.c	match	boot:0021F1A0	364	100.00
-func_0021E4B0	src/game/ui/pause.c	differs	boot:0021F310	1112	0.00
+func_0021E4B0	src/versions/jp/game/ui/pause/func_0021E4B0.c	match	boot:0021F310	1112	100.00
 func_0021E950	src/game/ui/pause.c	match	boot:0021F768	1156	100.00
 func_0021EDD8	src/game/ui/pause.c	match	boot:0021FBF0	40	100.00
 func_0021EE00	src/game/ui/pause.c	match	boot:0021FC18	304	100.00
@@ -1695,11 +1696,11 @@ func_0023E658	src/game/movie/vobuf.c	match	boot:0023F138	64	100.00
 func_0023E698	src/game/movie/vobuf.c	match	boot:0023F178	12	100.00
 func_0023E6A8	src/game/movie/vobuf.c	match	boot:0023F188	100	100.00
 func_0023E710	src/game/movie/vobuf.c	match	boot:0023F1F0	32	100.00
-func_J_00127318	-	asm	boot:00127318	96	100.00
 func_J_001F6B60	src/versions/jp/game/render/draw/func_J_001F6B60.c	match	boot:001F6B60	160	100.00
 func_J_001F6EE8	src/versions/jp/game/render/draw/func_J_001F6EE8.c	match	boot:001F6EE8	712	100.00
 func_J_001F71B0	src/versions/jp/game/render/draw/func_J_001F71B0.c	match	boot:001F71B0	124	100.00
 func_J_001F75A8	src/versions/jp/game/render/draw/func_J_001F75A8.c	match	boot:001F75A8	840	100.00
+func_J_001F78F0	src/versions/jp/game/render/draw/func_J_001F78F0.c	match	boot:001F78F0	140	100.00
 func_J_001F7990	src/versions/jp/game/render/draw/func_J_001F7990.c	match	boot:001F7990	140	100.00
 func_J_001F7AB0	src/versions/jp/game/render/draw/func_J_001F7AB0.c	match	boot:001F7AB0	140	100.00
 func_J_001F7B40	src/versions/jp/game/render/draw/func_J_001F7B40.c	match	boot:001F7B40	148	100.00

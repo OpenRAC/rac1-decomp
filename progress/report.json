@@ -1,13 +1,13 @@
 {
  "measures": {
   "fuzzy_match_percent": 100.0,
-  "total_code": "3713488",
-  "matched_code": "3713488",
+  "total_code": "3713584",
+  "matched_code": "3713584",
   "matched_code_percent": 100.0,
-  "total_functions": 5117,
-  "matched_functions": 5117,
+  "total_functions": 5118,
+  "matched_functions": 5118,
   "matched_functions_percent": 100.0,
-  "complete_code": "3713488",
+  "complete_code": "3713584",
   "complete_code_percent": 100.0,
   "total_units": 141,
   "complete_units": 141,
@@ -5234,13 +5234,13 @@
    "name": "core/00125630",
    "measures": {
     "fuzzy_match_percent": 100.0,
-    "total_code": "19404",
-    "matched_code": "19404",
+    "total_code": "19500",
+    "matched_code": "19500",
     "matched_code_percent": 100.0,
-    "total_functions": 64,
-    "matched_functions": 64,
+    "total_functions": 65,
+    "matched_functions": 65,
     "matched_functions_percent": 100.0,
-    "complete_code": "19404",
+    "complete_code": "19500",
     "complete_code_percent": 100.0,
     "total_units": 1,
     "complete_units": 1
@@ -5433,6 +5433,15 @@
      "address": "7304",
      "metadata": {
       "virtual_address": "1209016"
+     }
+    },
+    {
+     "name": "func_00127318",
+     "size": "96",
+     "fuzzy_match_percent": 100.0,
+     "address": "7400",
+     "metadata": {
+      "virtual_address": "1209112"
      }
     },
     {
@@ -49764,13 +49773,13 @@
    "name": "Executable",
    "measures": {
     "fuzzy_match_percent": 100.0,
-    "total_code": "465644",
-    "matched_code": "465644",
+    "total_code": "465740",
+    "matched_code": "465740",
     "matched_code_percent": 100.0,
-    "total_functions": 1692,
-    "matched_functions": 1692,
+    "total_functions": 1693,
+    "matched_functions": 1693,
     "matched_functions_percent": 100.0,
-    "complete_code": "465644",
+    "complete_code": "465740",
     "complete_code_percent": 100.0,
     "total_data": "699072",
     "matched_data": "698751",
@@ -49799,13 +49808,13 @@
    "name": "Executable game code",
    "measures": {
     "fuzzy_match_percent": 100.0,
-    "total_code": "455312",
-    "matched_code": "455312",
+    "total_code": "455408",
+    "matched_code": "455408",
     "matched_code_percent": 100.0,
-    "total_functions": 1658,
-    "matched_functions": 1658,
+    "total_functions": 1659,
+    "matched_functions": 1659,
     "matched_functions_percent": 100.0,
-    "complete_code": "455312",
+    "complete_code": "455408",
     "complete_code_percent": 100.0
    }
   },

@@ -394,6 +394,9 @@ def relocate(obj, name, ctx, pal_addr, xlate, x_gp, theirs=None, x_base=None):
         if sym["st_info"]["type"] == "STT_SECTION" or (isinstance(sym["st_shndx"], int) and not conv):
             if sec == ".text":
                 return ("text", sym["st_value"])
+            if sec and sec.startswith(".rodata.jtbl_") and sec[len(".rodata."):] in version_jtbl(xlate.v):
+                # a table the translation misses: an earlier table has another length here
+                return ("direct", version_jtbl(xlate.v)[sec[len(".rodata."):]] + sym["st_value"])
             if sec and sec.startswith(".rodata.jtbl_"):
                 return ("abs", named(sec[len(".rodata."):], near) + sym["st_value"])
             raise Mask()
@@ -545,10 +548,12 @@ def check_one(v, table, name, src, entry, show=False):
     # (an entry can be the executable's here and a level's there)
     mine = sorted(entry["places"], key=lambda p: (-1 if p[0] == "boot" else p[0], p[1]))
     own = name.startswith(f"func_{v.tag}_")     # code only this version has: placed at its own address
+    if src.startswith("src/versions/") and not {p[0] for p in mine} & {p[0] for p in primary_places().get(name, [])}:
+        own = True      # version-specific C of a function this version has only in other programs
     theirs_sp = {p[0] for p in primary_places().get(name, [])}
     sp, xa = next((p for p in mine if p[0] in theirs_sp), mine[0])
     canon = min(primary_places().get(name, [(sp, 0)]), key=lambda p: (-1 if p[0] == "boot" else p[0], p[1]))[0]
-    if sp != canon and not v.primary and not own:
+    if sp != canon and not v.primary and not own and not src.startswith("src/versions/"):
         # the C names its symbols as its canonical place (the executable, or its lowest level) sees
         # them; this version has the code only elsewhere, its copy there is another function
         return "differs", 0.0, f"the code differs at the primary's canonical place ({canon})"
@@ -685,6 +690,16 @@ def version_sources(v):
     """{name: file} of the version-specific C in src/versions/<K>/ (tools/version_src.py)."""
     import version_src
     return {n: str(p.relative_to(ROOT)) for n, p in version_src.overrides(v).items()}
+
+
+@functools.lru_cache(None)
+def version_jtbl(v):
+    """{primary's jump table: its address here}, config/versions/<K>/jtbl.tsv."""
+    path = v.config / "jtbl.tsv"
+    if not path.exists():
+        return {}
+    rows = [l.split("\t") for l in path.read_text().splitlines() if l and not l.startswith("#")]
+    return {name: int(addr, 16) for name, addr in rows}
 
 
 def version_remnants(v):
