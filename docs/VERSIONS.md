@@ -194,8 +194,8 @@ decomp" (matched there, not here).
 | Version | Functions finished | Code finished |
 | --- | --- | --- |
 | `SCES_509.16` (PAL v2.00) | 5,089 of 5,120 | 98.48% (3,656,816 of 3,713,416 bytes) |
-| `SCES_509.16_v1` (PAL v1.00) | 5,078 of 5,082 | 99.11% (3,660,792 of 3,693,664 bytes) |
-| `SCPS_150.37` (NTSC-J v1.02) | 5,099 of 5,101 | 99.97% (3,705,008 of 3,706,260 bytes) |
+| `SCES_509.16_v1` (PAL v1.00) | 5,079 of 5,082 | 99.39% (3,671,196 of 3,693,664 bytes) |
+| `SCPS_150.37` (NTSC-J v1.02) | 5,101 of 5,101 | 100.00% (3,706,260 of 3,706,260 bytes) |
 | `SCUS_971.99` (NTSC-U v1.00), our count (`progress/us/report.json`) | 5,000 of 5,094 | 94.92% (3,507,044 of 3,694,820 bytes) |
 | `SCUS_971.99` (NTSC-U v1.00), the NTSC decomp's own count (on ByteMatch) | 4,244 of 4,244 | 100.00% (3,547,932 of 3,547,932 bytes) |
 

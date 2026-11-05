@@ -4434,7 +4434,7 @@ func_L13_002B5E30	src/overlays/l13_gemlik/turrets_and_fighter_jet.c	match	13:002
 func_L13_002B60D8	src/overlays/l13_gemlik/turrets_and_fighter_jet.c	match	13:002B4850	140	100.00
 func_L13_002B6168	src/overlays/l13_gemlik/turrets_and_fighter_jet.c	match	13:002B48E0	56	100.00
 func_L13_002B61A0	src/overlays/l13_gemlik/turrets_and_fighter_jet.c	match	13:002B4918	228	100.00
-func_L13_002B6288	src/overlays/l13_gemlik/turrets_and_fighter_jet.c	differs	13:002B4A00	10404	0.00
+func_L13_002B6288	src/versions/pal_v1/overlays/l13_gemlik/turrets_and_fighter_jet/func_L13_002B6288.c	match	13:002B4A00	10404	100.00
 func_L13_002B8FC0	src/overlays/shared/ship_pickup_and_rocket.c	match	13:002B7678	636	100.00
 func_L13_002B9590	src/overlays/l13_gemlik/turrets_and_fighter_jet.c	match	13:002B7C48	452	100.00
 func_L13_002B9800	src/overlays/l13_gemlik/turrets_and_fighter_jet.c	match	13:002B7EB8	1128	100.00
