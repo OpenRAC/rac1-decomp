@@ -8,14 +8,24 @@ int func_J_001F6B60(unsigned char *str, int count, signed char *table) {
         p = str;
         do {
             int c = *p;
-            int w = table[c * 4 + 3];
+            int w = table[(c << 2) + 3];
 
             if (w != 0) {
-                if (c == 0xBD || c == 0xBE) {
-                    signed char *prev = table + p[-1] * 4;
-                    int d = prev[0x203] - prev[3] + 4;
+                int is_mark = (unsigned char)c == 0xBD || (unsigned char)c == 0xBE;
+                int mark = c;
 
-                    width = (c == 0xBE) ? width + 1 + d : width + d;
+                if (is_mark) {
+                    int prev = p[-1];
+                    int sum;
+
+                    c = table[prev * 4 + 0x203] - table[prev * 4 + 3] + 4;
+                    if (mark == 0xBE) {
+                        sum = width + 1;
+                        sum += c;
+                    } else {
+                        sum = width + c;
+                    }
+                    width = sum;
                 } else {
                     width += w;
                 }
