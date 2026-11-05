@@ -60,7 +60,7 @@ src/overlays/l04_eudora/snow_plow_and_woodcut_bot.c	leaf_update	marked	volatile:
 src/overlays/l04_eudora/walker_rig_gait.c	rig_animate	marked	the later fields are read through the rig shifted by one leg stride
 src/overlays/l05_rilgar/sharkigator_and_faucet.c	extermitank_update	kept	the short declaration is for $gp, so volatile has to be in the cast
 src/overlays/l05_rilgar/sharkigator_and_faucet.c	extermitank_update	marked	volatile: a nop stays in this delay slot (8/3672 bytes differ without it)
-src/overlays/l07_umbris/scene_mobys_and_trails.c	update_moby_offset_motion	kept	retail loads 0xFF before the byte. A local does that, and it is ordinary C
+src/overlays/l07_umbris/scene_mobys_and_trails.c	MovingMobyL07_Update	kept	retail loads 0xFF before the byte. A local does that, and it is ordinary C
 src/overlays/l08_batalia/commando_deserter_and_effects.c	-	kept	short and MACRO_ADDR select how each function addresses this global
 src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	-	kept	the calls disagree on where the float goes: the argument order changes the moves
 src/overlays/l14_oltanis/wind_lightning_and_taxi.c	-	kept	short and SDATA select how each function addresses this global
@@ -85,7 +85,7 @@ src/overlays/shared/projectile_expiry_particles.c	spawn_moby_point_offset_partic
 src/overlays/shared/projectile_expiry_particles.c	spawn_moby_point_offset_particle	marked	volatile: store order unk_09, blend, unk_01, size (4/376 bytes differ without it)
 src/overlays/shared/projectile_expiry_particles.c	spawn_moby_point_offset_particle	marked	volatile: store order unk_09, blend, unk_01, size (6/376 bytes differ without it)
 src/overlays/shared/projectile_expiry_particles.c	spawn_moby_point_offset_particle	marked	volatile: store order unk_09, blend, unk_01, size (6/376 bytes differ without it)
-src/overlays/shared/trigger_switches_and_hoverboard.c	update_moby_glow_and_contact_explosion	marked	the distance passes through a second variable; assigned directly,
+src/overlays/shared/trigger_switches_and_hoverboard.c	breakable_lamp_update	marked	the distance passes through a second variable; assigned directly,
 src/overlays/shared/walloper_and_beam_effects.c	build_beam_and_arc_points	marked	a never-taken branch (cprop proves dead == 0, then jump deletes it). Retail
 src/overlays/shared/water_pool_and_sand_mouse.c	activate_smaller_amoeboid	marked	volatile: nops stay in the delay slots (28/296 bytes differ without it)
 src/overlays/shared/water_pool_and_sand_mouse.c	activate_smaller_amoeboid	marked	volatile: nops stay in the delay slots (28/296 bytes differ without it)

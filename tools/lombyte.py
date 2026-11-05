@@ -52,7 +52,7 @@ def their_report(lombyte: Path = LOMBYTE) -> dict | None:
     """Lombyte's progress report, or None. It was committed as
     progress/report.json until their #64; since then their CI publishes
     it as report.json on the `progress` branch, and their
-    scripts/gen_progress_report.py writes build/progress/report.json."""
+    scripts/progress-report.py writes build/progress/report.json."""
     for path in (lombyte / "progress/report.json", lombyte / "build/progress/report.json"):
         if path.exists():
             return json.loads(path.read_text())
@@ -69,7 +69,7 @@ def their_units() -> list[dict]:
     if report is None:
         sys.exit(f"no Lombyte progress report in {LOMBYTE} (progress/report.json, "
                  "build/progress/report.json or its progress branch): fetch it, or run its "
-                 "scripts/gen_progress_report.py")
+                 "scripts/progress-report.py")
     return report["units"]
 
 
