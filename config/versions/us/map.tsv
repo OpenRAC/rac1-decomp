@@ -161,7 +161,7 @@ func_00119088	src/core/kernel/libkernl_glue.c	match	boot:00118D88	116	100.00
 func_00119100	src/core/kernel/libkernl_glue.c	absent	-	0	0.00
 func_00119108	src/core/kernel/libkernl_glue.c	match	boot:00118E08	8	100.00
 func_00119110	-	asm	boot:00118E10	172	100.00
-func_001191C0	src/core/kernel/libkernl_glue.c	absent	-	0	0.00
+func_001191C0	src/core/kernel/libkernl_glue.c	match	boot:00118EC0	8	100.00
 func_001191C8	src/core/kernel/libkernl_glue.c	match	boot:00118EC8	20	100.00
 func_001191E0	-	asm	boot:00118EE0	164	100.00
 func_00119288	-	asm	boot:00118F88	124	100.00
@@ -173,7 +173,7 @@ func_00119460	-	asm	boot:00119160	104	100.00
 func_001194C8	src/core/kernel/threads_deci2.c	match	boot:001191C8	216	100.00
 func_001195A0	src/core/kernel/threads_deci2.c	match	boot:001192A0	212	100.00
 func_00119678	-	asm	boot:00119378	148	100.00
-func_00119710	-	absent	-	0	0.00
+func_00119710	-	asm	boot:00119410	4	100.00
 func_00119718	src/core/kernel/threads_deci2.c	match	boot:00119418	68	100.00
 func_00119760	-	asm	boot:00119460	4	100.00
 func_00119768	src/core/kernel/threads_deci2.c	match	boot:00119468	48	100.00
@@ -313,15 +313,15 @@ func_00120480	src/libgcc/fp-bit.c	match	boot:00120180	184	100.00
 func_00120538	src/libgcc/fp-bit.c	match	boot:00120238	148	100.00
 func_001205D0	src/libgcc/fp-bit.c	match	boot:001202D0	160	100.00
 func_00120670	src/libgcc/fp-bit.c	match	boot:00120370	44	100.00
-func_001206A0	src/libgcc/fp-bit.c	absent	-	0	0.00
+func_001206A0	src/libgcc/fp-bit.c	match	boot:001203A0	4	100.00
 func_001206A8	src/libgcc/fp-bit.c	absent	-	0	0.00
 func_001206B0	src/libgcc/fp-bit.c	match	boot:001203B0	144	100.00
 func_00120740	src/libgcc/fp-bit.c	match	boot:00120440	4	100.00
-func_00120748	src/libgcc/fp-bit.c	absent	-	0	0.00
+func_00120748	src/libgcc/fp-bit.c	match	boot:00120448	4	100.00
 func_00120750	src/libgcc/fp-bit.c	match	boot:00120450	4	100.00
 func_00120758	src/libgcc/fp-bit.c	absent	-	0	0.00
 func_00120760	src/libgcc/fp-bit.c	match	boot:00120460	4	100.00
-func_00120768	src/libgcc/fp-bit.c	absent	-	0	0.00
+func_00120768	src/libgcc/fp-bit.c	match	boot:00120468	4	100.00
 func_00120770	src/libgcc/fp-bit.c	match	boot:00120470	4	100.00
 func_00120778	src/libgcc/fp-bit.c	match	boot:00120478	64	100.00
 func_001207B8	src/core/gs/vif1_gif_reset.c	match	boot:001204B8	160	100.00
@@ -617,7 +617,7 @@ func_0012E688	src/core/sound/989snd.c	match	boot:0012E548	404	100.00
 func_0012E820	src/core/sound/989snd.c	match	boot:0012E6E0	704	100.00
 func_0012EAE0	src/core/sound/989snd.c	match	boot:0012E9A0	56	100.00
 func_0012EB18	src/core/sound/989snd.c	match	boot:0012E9D8	276	100.00
-func_0012EC30	src/core/sound/989snd.c	absent	-	0	0.00
+func_0012EC30	src/core/sound/989snd.c	match	boot:0012EAF0	12	100.00
 func_0012EC40	src/core/sound/989snd.c	match	boot:0012EB00	32	100.00
 func_0012EC60	src/core/sound/989snd.c	match	boot:0012EB20	172	100.00
 func_0012ED10	src/core/sound/989snd.c	match	boot:0012EBD0	44	100.00
@@ -825,7 +825,7 @@ func_001F8B6C	-	asm	boot:001F89A4	1612	100.00
 func_001F91B8	-	asm	boot:001F8FF0	700	100.00
 func_001F9478	src/game/render/drawquad.c	match	boot:001F92B0	920	100.00
 func_001F9810	-	absent	-	0	0.00
-func_001F9840	-	absent	-	0	0.00
+func_001F9840	-	asm	boot:001F9678	16	100.00
 func_001F9850	-	asm	boot:001F9688	40	100.00
 func_001F9878	-	asm	boot:001F96B0	16	100.00
 func_001F9888	-	asm	boot:001F96C0	40	100.00
@@ -1611,8 +1611,8 @@ func_0023B210	src/game/ui/vendor.c	match	boot:00239F58	756	100.00
 func_0023B510	-	asm	boot:0023A258	100	100.00
 func_0023B578	src/game/ui/vendor.c	absent	-	0	0.00
 func_0023B5D0	src/game/ui/vendor.c	match	boot:0023A318	156	100.00
-func_0023B670	src/game/movie/movie.c	differs	boot:0023A3B8	168	0.00
-func_0023B740	src/game/movie/movie.c	differs	boot:0023A460	784	0.00
+func_0023B670	src/versions/us/game/movie/movie/func_0023B670.c	match	boot:0023A3B8	168	100.00
+func_0023B740	src/versions/us/game/movie/movie/func_0023B740.c	match	boot:0023A460	784	100.00
 func_0023BB40	src/game/movie/movie.c	match	boot:0023A770	28	100.00
 func_0023BB60	src/game/movie/movie.c	match	boot:0023A790	44	100.00
 func_0023BB90	src/game/movie/movie.c	match	boot:0023A7C0	676	100.00
@@ -2180,7 +2180,7 @@ func_L00_0024B200	src/overlays/shared/map_menu_filters.c	match	00:0024A7E8	164	1
 func_L00_0024B2A4	-	joined	00:0024A88C	84	100.00
 func_L00_0024B750	src/versions/us/overlays/shared/map_menu_filters/func_L00_0024B750.c	match	00:0024ACB0	56	100.00
 func_L00_0024B788	-	joined	00:0024ACE8	36	100.00
-func_L00_0024B7AC	-	differs	00:0024AD0C	84	0.00
+func_L00_0024B7AC	-	joined	00:0024AD0C	84	100.00
 func_L00_0024B8B0	src/overlays/shared/map_menu_filters.c	absent	-	0	0.00
 func_L00_0024B8F0	-	absent	boot:00208A00	28	0.00
 func_L00_0024B908	-	absent	boot:00208A1C	24	0.00
