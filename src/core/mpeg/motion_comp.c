@@ -514,7 +514,7 @@ ASM_FUNC("asm/handwritten/core_text", func_001271A0);
 
 ASM_FUNC("asm/handwritten/core_text", func_001272B8);
 
-INCLUDE_ASM("asm/nonmatchings/core_text", func_00127318);
+ASM_FUNC("asm/handwritten/core_text", func_00127318);
 
 void ipu_set_mpeg1(int arg0) {
     unsigned int *p = (unsigned int *)0x10002010;
