@@ -15,7 +15,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/moby_ground_collision.h"
-extern int pad_held;
+extern int D_0013CBE0;
 extern Hero g_hero;
 
 typedef struct {
@@ -136,7 +136,7 @@ void update_hero_locomotion_state(void) {
         return;
     }
     stick_target_v(0, 1.0f);
-    if (*(int *)(&pad_held) & 0xA) {
+    if (*(int *)(&D_0013CBE0) & 0xA) {
         HeroEnterMoveState(HERO_STATE_CROUCH, 0);
         set_hero_animation(0xD, 2, -2.0f);
         hero_queue_sequence(3, 0x12);
@@ -195,7 +195,7 @@ int hero_handle_jump_press(void) {
     }
     n = get_hero_high_jump_input_window_frames();
     t = scale_ticks(5);
-    if ((pad_held & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
+    if ((D_0013CBE0 & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
         m = 0xB;
     found:
         HeroEnterMoveState(m, 1);
@@ -245,7 +245,7 @@ int hero_handle_jump_press(void) {
     return 0;
 }
 
-extern float coll_hit_point_z;
+extern float collision_hit_z;
 
 /* Test whether the player can reach the point in front of him. */
 int check_hero_forward_collision_height(void) {
@@ -264,7 +264,7 @@ int check_hero_forward_collision_height(void) {
     a.z += 0.47f;
     b.z -= 1.0f;
     if (coll_line(&a, &b, 2, *(int *)&g->moby, 0)) {
-        d = coll_hit_point_z - g->motion.pos.f[2];
+        d = collision_hit_z - g->motion.pos.f[2];
         if (d < 0.37f && -1.0f < d)
             return 1;
         return 0;

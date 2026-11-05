@@ -24,10 +24,10 @@ void JetFighterUpdateL13(Jet47 *m) {
                     BuildSphericalOffset(impulse, d->speed, d->angles[2], -d->angles[1]);
                     clamp_vec_length(hit->velocity, hit->velocity, g_frame_time * 3.0f);
                     FastVecAdd(m->position, m->position, hit->velocity);
-                    vec_reflect(impulse, impulse, hit->velocity);
+                    reflect_vector(impulse, impulse, hit->velocity);
                     yaw_delta = FastSubRots(fast_atan2(impulse[0], impulse[1]), d->angles[2]);
                     d->angles[2] = FastAddRots(d->angles[2], yaw_delta * (frame_scale * 0.1f) * weight);
-                    pitch_delta = FastSubRots(fast_atan2(vec_length_xy(impulse), impulse[2]), d->angles[1]);
+                    pitch_delta = FastSubRots(fast_atan2(func_001F9CE8(impulse), impulse[2]), d->angles[1]);
                     d->angles[1] = FastAddRots(d->angles[1], pitch_delta * (frame_scale * 0.1f) * weight);
                 }
             } else {
@@ -71,10 +71,10 @@ void JetFighterUpdateL13(Jet47 *m) {
             qcopy(d->spawn_rotation, m->rotation);
             qcopy(d->spawn_position, m->position);
             texture_index = d->texture_id;
-            texture_table = gemlik_texture_table;
+            texture_table = l13_texture_descriptors;
             d->blend = 0.0f;
             texture_index += 40;
-            palette_data = gemlik_palette_data_base;
+            palette_data = l13_texture_palette_data_base;
             initialized = jet_palette_ready47;
             palette = (int *)(palette_data + (texture_table[texture_index].palette << 4));
             jet_palette47 = palette;
@@ -144,7 +144,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             if (d->blend == 1.0f) {
                 if (d->entry_path != -1) {
                     JetPath47 *path = &gemlik_scene_points[d->entry_path];
-                    Hero_ResetToPosition(path->position, path->rotation, 50, 1);
+                    func_L00_00217718(path->position, path->rotation, 50, 1);
                     {
                         int index = d->entry_path;
                         JetPath47 *paths = gemlik_scene_points;
@@ -152,7 +152,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                         qcopy(m->rotation, paths[index].rotation);
                     }
                 }
-                CameraScript(m->position, m->rotation, 0, 0, 0);
+                jet_mount(m->position, m->rotation, 0, 0, 0);
                 d->missile_index = 0;
                 d->counter6C = 0;
                 d->counter70 = 0;
@@ -202,7 +202,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 gemlik_play_mode = 2;
                 PlayerFighterFlight(m, d);
                 jet_camera_mode();
-                MusicRequestTrack(2, 4);
+                request_music_track(2, 4);
                 m->state = 4;
             }
             break;
@@ -232,12 +232,12 @@ void JetFighterUpdateL13(Jet47 *m) {
             ((JetPlayer47 *)(hero_globals_base + 0xE1D))->in_craft = 0;
             *(int *)((char *)((JetPlayer47 *)(hero_globals_base + 0xE1D))->moby + 0x98) = 0;
             HeroEnterMoveState(HERO_STATE_IDLE, 1);
-            CameraScript2(0);
-            Hud_SetBarValueById(((JetPlayer47 *)(hero_globals_base + 0xE1D))->weapon, 0);
+            jet_end_mount(0);
+            set_animation_parameter(((JetPlayer47 *)(hero_globals_base + 0xE1D))->weapon, 0);
             qcopy(m->position, d->spawn_position);
             qcopy(m->rotation, d->spawn_rotation);
             m->scale = m->model->scale;
-            moby_anim_sphere_lerp(m);
+            refresh_moby_spatial_bounds_from_basis(m);
             if (d->group_a > 0)
                 jet_group_state(d->group_a, 0, 0, 0);
             if (d->group_b > 0)
@@ -247,9 +247,9 @@ void JetFighterUpdateL13(Jet47 *m) {
             jet_group_flag(0x102, 0);
             if (d->exit_path != -1) {
                 JetPath47 *path = &gemlik_scene_points[d->exit_path];
-                Hero_ResetToPosition(path->position, path->rotation, 0, 1);
+                func_L00_00217718(path->position, path->rotation, 0, 1);
             } else
-                Hero_ResetToPosition(d->spawn_position, gemlik_scene_points[d->destination_path].rotation, 0, 1);
+                func_L00_00217718(d->spawn_position, gemlik_scene_points[d->destination_path].rotation, 0, 1);
             {
                 int id = d->engine_sound;
                 unsigned char *audio;
@@ -267,7 +267,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 }
                 d->weapon_sound = -1;
             }
-            MusicRequestTrack(0, 5);
+            request_music_track(0, 5);
             d->blend = 0.99f;
             gemlik_fade_level = 0.99f;
             m->state = 1;
@@ -301,11 +301,11 @@ void JetFighterUpdateL13(Jet47 *m) {
                 if (!transition->pending) {
                     int active = transition->active;
                     if (active == -1) {
-                        Hero_OnKilled();
-                        CameraScript2(0);
+                        hero_respawn();
+                        jet_end_mount(0);
                         qcopy(m->position, d->spawn_position);
                         qcopy(m->rotation, d->spawn_rotation);
-                        moby_anim_sphere_lerp(m);
+                        refresh_moby_spatial_bounds_from_basis(m);
                         {
                             int id = d->engine_sound;
                             unsigned char *audio;
@@ -333,7 +333,7 @@ void JetFighterUpdateL13(Jet47 *m) {
             ((JetPlayer47 *)(hero_globals_base + 0xE1D))->in_craft = 0;
             *(int *)((char *)((JetPlayer47 *)(hero_globals_base + 0xE1D))->moby + 0x98) = 0;
             HeroEnterMoveState(HERO_STATE_IDLE, 1);
-            CameraScript2(0);
+            jet_end_mount(0);
             if (d->escape_path == -1) {
                 STUB_printf(jet_no_escape_path_msg);
                 qcopy(m->position, d->spawn_position);
@@ -346,7 +346,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 m->position[2] += 0.57318f;
             }
             m->scale = m->model->scale;
-            moby_anim_sphere_lerp(m);
+            refresh_moby_spatial_bounds_from_basis(m);
             if (d->destination_path == -1)
                 STUB_printf(jet_no_destination_path_msg);
             else {
@@ -359,7 +359,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 jet_group_switch(&jet_boarding_group_ids_b, 1, -1, -1);
                 jet_group_flag(0x102, 0);
                 path = &gemlik_scene_points[d->destination_path];
-                Hero_ResetToPosition(path->position, path->rotation, 0, 1);
+                func_L00_00217718(path->position, path->rotation, 0, 1);
             }
             if (m->persistent != 0xFF)
                 jet_clear_persistent(m->persistent);

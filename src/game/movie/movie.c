@@ -19,16 +19,16 @@
 extern int decoder_buffer_address MACRO_ADDR;
 extern int movie_play_step MACRO_ADDR;
 extern int movie_clear_gp SDATA(D_00161318);
-extern char *decoder_state MACRO_ADDR;
+extern char *D_0016130C MACRO_ADDR;
 extern char *movie_gp_base SDATA(D_0016130C);
 
 extern int initAll(int, int, int);
 extern int read_mpeg(char *, char *, int *);
 extern void termAll(void);
 /* No recovered name. Sets movie globals, runs initialization and playback, then clears them. */
-int Movie_Play(int a, int b, int c, char *state, int e) {
+int play_mpeg_movie(int a, int b, int c, char *state, int e) {
     decoder_buffer_address = c;
-    decoder_state = state;
+    D_0016130C = state;
     movie_play_step = 0;
     movie_clear_gp = 0;
     change_thread_priority(get_thread_id(), 1);
@@ -40,7 +40,7 @@ int Movie_Play(int a, int b, int c, char *state, int e) {
     }
     termAll();
     decoder_buffer_address = 0;
-    decoder_state = 0;
+    D_0016130C = 0;
     return 0;
 }
 extern int movie_frame_count MACRO_ADDR;
@@ -106,7 +106,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
             }
             if (hit) {
                 aborted = 1;
-                videoDecAbort(decoder_state + 0xD9048);
+                videoDecAbort(D_0016130C + 0xD9048);
             }
             movie_play_step = 8;
         }
@@ -141,12 +141,12 @@ int read_mpeg(char *vd, char *rb, int *file) {
         movie_play_step = 21;
         proceedAudio();
         movie_play_step = 22;
-        if (!started && voBufIsFull(decoder_state + 0xD9168) && isAudioOK()) {
+        if (!started && voBufIsFull(D_0016130C + 0xD9168) && isAudioOK()) {
             movie_play_step = 23;
             started = 1;
             startDisplay(1);
             movie_play_step = 24;
-            audioDecStart(decoder_state + 0xD9100);
+            audioDecStart(D_0016130C + 0xD9100);
             movie_play_step = 25;
         }
     }
@@ -160,7 +160,7 @@ int read_mpeg(char *vd, char *rb, int *file) {
         switchThread();
     }
     endDisplay();
-    audioDecReset(decoder_state + 0xD9100);
+    audioDecReset(D_0016130C + 0xD9100);
     snd_SetMasterVolume(5, voice_pool.f5C);
     snd_FlushSoundCommands();
     movie_play_step = 0;
@@ -176,7 +176,7 @@ void switchThread(void) {
 /* isAudioOK -- true when the audio decoder at offset 0xD9100 of the movie state holds 0x1000
  * bytes or more. */
 int isAudioOK(void) {
-    return is_state_field_large(decoder_state + 0xD9100);
+    return audio_dec_is_preset(D_0016130C + 0xD9100);
 }
 struct AudioDecoderState {
     char pad0[0xD90F8];
@@ -194,7 +194,7 @@ struct AudioDecoderThreadArgs {
     int gs_tag;
     char pad24[0xC];
 };
-extern int movie_decoder_thread_id MACRO_ADDR;
+extern int D_00161310 MACRO_ADDR;
 extern char movie_open_error_text[];
 extern char gp_base[] MACRO_ADDR;
 extern void sce_mpeg_init(void);
@@ -214,33 +214,33 @@ int initAll(int stream_source, int source_mode, int callback_context) {
     *((volatile int *)0x1000E010) = 4;
     readBufCreate(movie_gp_base);
     sce_mpeg_init();
-    videoDecCreate(((char *)decoder_state) + 0xD9048, decoder_buffer_address + 0x1C85C0, 0xEB768,
-                   ((char *)decoder_state) + 0x52040, decoder_buffer_address + 0x1C7180, 0x100,
-                   ((char *)decoder_state) + 0xD6040, 0x200);
-    audioDecCreate(((char *)decoder_state) + 0xD9100, ((char *)decoder_state) + 0x50040, 0x2000,
+    videoDecCreate(((char *)D_0016130C) + 0xD9048, decoder_buffer_address + 0x1C85C0, 0xEB768,
+                   ((char *)D_0016130C) + 0x52040, decoder_buffer_address + 0x1C7180, 0x100,
+                   ((char *)D_0016130C) + 0xD6040, 0x200);
+    audioDecCreate(((char *)D_0016130C) + 0xD9100, ((char *)D_0016130C) + 0x50040, 0x2000,
                    decoder_buffer_address + 0x1C8190);
-    videoDecSetStream(((char *)decoder_state) + 0xD9048, 0, 0, videoCallback, decoder_state);
-    videoDecSetStream(((char *)decoder_state) + 0xD9048, 3, callback_context, pcmCallback, decoder_state);
-    voBufCreate(((char *)decoder_state) + 0xD9168, (decoder_buffer_address & 0x0FFFFFFF) | 0x20000000,
+    videoDecSetStream(((char *)D_0016130C) + 0xD9048, 0, 0, videoCallback, D_0016130C);
+    videoDecSetStream(((char *)D_0016130C) + 0xD9048, 3, callback_context, pcmCallback, D_0016130C);
+    voBufCreate(((char *)D_0016130C) + 0xD9168, (decoder_buffer_address & 0x0FFFFFFF) | 0x20000000,
                 decoder_buffer_address + 0x1A0000, 2);
-    decoder_thread.stack = ((char *)decoder_state) + 0xD2040;
+    decoder_thread.stack = ((char *)D_0016130C) + 0xD2040;
     decoder_thread.entry = videoDecMain;
     decoder_thread.stack_size = 0x4000;
     decoder_thread.priority = 1;
     decoder_thread.gp = gp_base;
     decoder_thread.gs_tag = 0;
     thread_id = create_thread(&decoder_thread);
-    movie_decoder_thread_id = thread_id;
-    start_thread(thread_id, ((char *)decoder_state) + 0xD9048);
-    if (set_state_fields(((char *)decoder_state) + 0xD9040, stream_source, source_mode) == 0) {
+    D_00161310 = thread_id;
+    start_thread(thread_id, ((char *)D_0016130C) + 0xD9048);
+    if (mpeg_cd_stream_open(((char *)D_0016130C) + 0xD9040, stream_source, source_mode) == 0) {
         opened = 0;
         STUB_printf(movie_open_error_text);
     } else {
         opened = 1;
     }
-    ((struct AudioDecoderState *)decoder_state)->intc_handler_id = add_intc_handler(2, vblankHandler, 0);
+    ((struct AudioDecoderState *)D_0016130C)->intc_handler_id = add_intc_handler(2, vblankHandler, 0);
     enable_intc_atomic(2);
-    ((struct AudioDecoderState *)decoder_state)->dmac_handler_id = add_dmac_handler(2, handler_endimage, 0);
+    ((struct AudioDecoderState *)D_0016130C)->dmac_handler_id = add_dmac_handler(2, handler_endimage, 0);
     enable_dmac_atomic(2);
     return opened;
 }
@@ -249,17 +249,17 @@ extern int movie_thread_gp SDATA(D_00161310);
 /* termAll(void): shuts down workers and decoders, then clears the DMA enable bit. */
 void termAll(void) {
     sce_cd_sync_s(0);
-    readBufDelete(decoder_state);
-    voBufDelete(decoder_state + 0xD9168);
+    readBufDelete(D_0016130C);
+    voBufDelete(D_0016130C + 0xD9168);
     terminate_thread(movie_thread_gp);
     delete_thread(movie_thread_gp);
     disable_dmac_atomic(2);
-    remove_dmac_handler(2, *(int *)(decoder_state + 0xD90F8));
+    remove_dmac_handler(2, *(int *)(D_0016130C + 0xD90F8));
     disable_intc_atomic(2);
-    remove_intc_handler(2, *(int *)(decoder_state + 0xD90FC));
-    videoDecDelete(decoder_state + 0xD9048);
-    audioDecDelete(decoder_state + 0xD9100);
-    get_state_callback_result(decoder_state + 0xD9040);
+    remove_intc_handler(2, *(int *)(D_0016130C + 0xD90FC));
+    videoDecDelete(D_0016130C + 0xD9048);
+    audioDecDelete(D_0016130C + 0xD9100);
+    mpeg_cd_stream_close(D_0016130C + 0xD9040);
     sce_cd_sync_s(0);
     *(volatile unsigned int *)0x1000E000 &= ~2u;
 }
@@ -274,5 +274,5 @@ void ErrMessage(char *fmt) {
 
 /* proceedAudio(void) -- audioDecSend on the audio decoder at offset 0xD9100 of the movie state. */
 void proceedAudio(void) {
-    audioDecSend(decoder_state + 0xD9100);
+    audioDecSend(D_0016130C + 0xD9100);
 }

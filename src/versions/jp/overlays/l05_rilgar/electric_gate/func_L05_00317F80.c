@@ -1,4 +1,4 @@
-void update_hoverboard_girl(Moby *moby) {
+void hoverboard_girl_update(Moby *moby) {
     HGState *state = (HGState *)moby->pvars;
     HGVec target_position;
     HGVec head_position;

@@ -14,7 +14,7 @@ void jet_reset_camera(void *a0, void *a1) {
         if ((unsigned char)v != 1 && saved_mission_state[lvl][(unsigned char)v - 2] != 0xFF)
             continue;
         D_E1_L00_001BB280.f[i] = v;
-        level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
+        D_0014C290[lvl][i >> 5] |= 1 << (i & 0x1F);
         session_moby_killed[i >> 5] |= 1 << (i & 0x1F);
     }
     g = (char *)checkpoint_level_state;

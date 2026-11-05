@@ -4,14 +4,14 @@
 #include "structs/moby.h"
 #include "include_asm.h"
 
-extern char level_render_state[];
+extern char D_0013E130[];
 /* clears two moby flags and refreshes its linked value */
 void show_tracked_moby(void) {
-    char *first = *(char **)level_render_state;
+    char *first = *(char **)D_0013E130;
     if (first != 0) {
         struct Moby *moby;
         *(unsigned short *)(first + 0x34) &= 0xfffc;
-        moby = (struct Moby *)(*(char **)level_render_state);
+        moby = (struct Moby *)(*(char **)D_0013E130);
         moby->collision = *(int *)(*(char **)&moby->pclass + 0x10);
     }
 }

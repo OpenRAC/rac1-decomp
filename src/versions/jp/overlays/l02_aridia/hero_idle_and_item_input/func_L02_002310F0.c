@@ -130,7 +130,7 @@ void HeroL02_UpdateStateTransitions(void) {
                                     HeroIdleFidget *rec;
 
                                     g_hero.fidget_index = sp20;
-                                    rec = &aridia_idle_fidgets[sp20];
+                                    rec = &l02_idle_fidget_records[sp20];
                                     g_hero.fidget_cooldown = scale_ticks(0x78);
                                     rec->f60 = multiply_global_factor(rec->f5C) * 60.0f;
                                     if (rec->f44 != 0) {
@@ -163,7 +163,7 @@ void HeroL02_UpdateStateTransitions(void) {
                                 if (fast_dec_timer(&g_hero.slot3_anim_timer)) {
                                     if (0.55850536f > aridia_lean_state.f258 && aridia_lean_state.f254 < 0.34906584f &&
                                         g_hero.items[3].state == 2) {
-                                        g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
+                                        g_hero.slot3_anim_timer = func_L00_00258BC8(scale_ticks(0x6E), scale_ticks(0x10E));
                                         blend_hero_slot3_animation_pair();
                                     }
                                 }
@@ -316,13 +316,13 @@ void HeroL02_UpdateStateTransitions(void) {
                     case HERO_STATE_DYING_SPEED_LIMITED:
                     case HERO_STATE_DYING_ZERO_HEALTH:
                         if (g_hero.anim_flags & 2) {
-                            Hero_OnKilled();
+                            hero_respawn();
                             return;
                         }
                         break;
                     case HERO_STATE_SINK:
                         if (g_hero.state_timer > scale_ticks(0xDC)) {
-                            Hero_OnKilled();
+                            hero_respawn();
                             return;
                         }
                         break;
@@ -606,14 +606,14 @@ void HeroL02_UpdateStateTransitions(void) {
                         }
                         if (g_hero.sink_surface_z - 1.2f > g_hero.motion.pos.f[2] ||
                             g_hero.state_timer > scale_ticks(0xAA)) {
-                            Hero_OnKilled();
+                            hero_respawn();
                             return;
                         }
                         break;
                     case HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT:
                         if (g_hero.sink_surface_z - 1.2f > g_hero.motion.pos.f[2] ||
                             g_hero.state_timer > scale_ticks(0x96)) {
-                            Hero_OnKilled();
+                            hero_respawn();
                             return;
                         }
                         break;
@@ -635,13 +635,13 @@ void HeroL02_UpdateStateTransitions(void) {
                             break;
                         }
                         g_hero.unk1F8 = scale_ticks(0x28);
-                        if (FastAbsF(g_hero.motion.rot.f[1]) > 0.7853982f ||
-                            FastAbsF(g_hero.motion.rot.f[0]) > 0.7853982f) {
+                        if (absolute_float(g_hero.motion.rot.f[1]) > 0.7853982f ||
+                            absolute_float(g_hero.motion.rot.f[0]) > 0.7853982f) {
                             g_hero.ledge_probe_cooldown = scale_ticks(0x28);
                         }
                         if (g_hero.grounded_frames != 0 && g_hero.on_magnet_ground == 0 &&
-                            FastAbsF(g_hero.motion.rot.f[1]) < 0.7853982f &&
-                            FastAbsF(g_hero.motion.rot.f[0]) < 0.7853982f) {
+                            absolute_float(g_hero.motion.rot.f[1]) < 0.7853982f &&
+                            absolute_float(g_hero.motion.rot.f[0]) < 0.7853982f) {
                             HeroL02_SetMoveState(HERO_STATE_RUN, 1);
                             break;
                         }
@@ -930,7 +930,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         break;
                     case HERO_STATE_SLIP:
                         if (scale_ticks(0x12C) < g_hero.state_timer) {
-                            Hero_OnKilled();
+                            hero_respawn();
                         }
                         if (g_hero.on_slip_ground != 0) {
                             break;
@@ -1057,7 +1057,7 @@ void HeroL02_UpdateStateTransitions(void) {
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {
-                            Hero_OnKilled();
+                            hero_respawn();
                             return;
                         }
                         break;
@@ -1168,7 +1168,7 @@ void HeroL02_UpdateStateTransitions(void) {
                             HeroL02_SetMoveState(HERO_STATE_RUN, 0);
                             if (g_hero.state.current == HERO_STATE_RUN) {
                                 g_hero.state.step = 1;
-                                set_hero_animation(4, aridia_hero_run_step1_start_frame, scale_ticks(0xC));
+                                set_hero_animation(4, l02_hero_run_start_frame, scale_ticks(0xC));
                             }
                             configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 1, 0);
                             break;
@@ -1493,7 +1493,7 @@ void HeroL02_UpdateStateTransitions(void) {
                                         g_hero.can_double_jump != 0 && scale_ticks(0xE) < g_hero.state_timer &&
                                         (g_hero.past_jump_apex == 0 ||
                                          (g_hero.ground_distance > 0.7f &&
-                                          FastAbsF(gravity_z(g_hero.motion.velocity.f)) < g_frame_time * 5.8f))) {
+                                          absolute_float(gravity_z(g_hero.motion.velocity.f)) < g_frame_time * 5.8f))) {
                                         HeroL02_SetMoveState(HERO_STATE_DOUBLE_JUMP, 1);
                                     } else if (item_available[2] != 0 && hero_slot_item_id(3) != 4 &&
                                                g_hero.pack_disabled == 0 && (g_controller_state.held & PAD_CROSS) &&
@@ -1574,7 +1574,7 @@ void HeroL02_UpdateStateTransitions(void) {
                         break;
                     case HERO_STATE_VEHICLE_MODE_3_SLIP:
                         if (scale_ticks(0x12C) < g_hero.state_timer) {
-                            Hero_OnKilled();
+                            hero_respawn();
                         }
                         if (g_hero.on_slip_ground != 0) {
                             break;

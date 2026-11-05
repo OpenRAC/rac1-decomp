@@ -53,7 +53,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                     scratch.vector = *(unsigned long long *)(hit + 0x10);
                     scratch.angle = heading;
                 }
-                HeadingFromVector(&scratch.vector, &scratch.angle, &d->forward_impulse, &d->lateral_impulse);
+                trooper_knockback_arc(&scratch.vector, &scratch.angle, &d->forward_impulse, &d->lateral_impulse);
                 InitKnockback_v(scratch.angle, m, d->knockback, 6, 1, 0);
                 m[0x20] = 8;
                 d->animation = 0x78;
@@ -67,8 +67,8 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                     if (elite_commando_reward_hit_count >= 10) {
                         if (((L16DamageReward *)gSkillPoints)->awarded == 0) {
                             ((L16DamageReward *)gSkillPoints)->awarded = 1;
-                            PlayBankSound(1, 0, 0);
-                            ShowBanner(0x53D6, -1);
+                            allocate_voice_for_bank_entry(1, 0, 0);
+                            func_L00_00264DB8(0x53D6, -1);
                         }
                     }
                 }
@@ -94,7 +94,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                     scratch.vector = *(unsigned long long *)(hit + 0x10);
                     scratch.fatal_angle = heading;
                 }
-                HeadingFromVector(&scratch.vector, &scratch.fatal_angle, &d->forward_impulse, &d->lateral_impulse);
+                trooper_knockback_arc(&scratch.vector, &scratch.fatal_angle, &d->forward_impulse, &d->lateral_impulse);
                 InitKnockback_v(scratch.fatal_angle, m, d->knockback, 7, 1, 0);
                 m[0x20] = 9;
                 d->animation = 0xF0;

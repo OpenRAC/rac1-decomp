@@ -10,7 +10,7 @@ void TetheredMineUpdate(char *m) {
         *(float *)(d + 0x174) = *(float *)(d + 0xFC);
     }
     {
-        float dist = FastVecDist(m + 0x10, camera_pos);
+        float dist = fast_vec_dist(m + 0x10, camera_pos);
         float lo = *(float *)&novalis_tethered_mine_min_scale;
         float x0 = *(float *)&novalis_tethered_mine_near_distance;
         float k = -((1.0f - lo) / (*(float *)&novalis_tethered_mine_far_distance - x0));
@@ -29,8 +29,8 @@ void TetheredMineUpdate(char *m) {
             return;
         if ((&menu_item_enabled_115_k)[1] == 0) {
             (&menu_item_enabled_115_k)[1] = 1;
-            PlayBankSound(1, 0, 0);
-            ShowBanner(0x542D, -1);
+            allocate_voice_for_bank_entry(1, 0, 0);
+            func_L00_00264DB8(0x542D, -1);
         }
         FastVecSub(tmp, d + 0xD0, d + 0xE0);
         m[0x20] = 0x65;
@@ -48,7 +48,7 @@ void TetheredMineUpdate(char *m) {
     }
     if (((unsigned char *)m)[0x20] == 0x65)
         return;
-    gunship_follow_path(m);
+    func_L01_002F6540(m);
     *(unsigned short *)(m + 0x34) |= 0x1000;
     d[0x2B] = 1;
     d[0x2C] = 0x64;
