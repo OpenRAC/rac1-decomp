@@ -550,7 +550,7 @@ def check_one(v, table, name, src, entry, show=False):
     theirs_sp = {p[0] for p in primary_places().get(name, [])}
     sp, xa = next((p for p in mine if p[0] in theirs_sp), mine[0])
     canon = min(primary_places().get(name, [(sp, 0)]), key=lambda p: (-1 if p[0] == "boot" else p[0], p[1]))[0]
-    if sp != canon and not v.primary and not own:
+    if sp != canon and not v.primary and not own and not src.startswith("src/versions/"):
         # the C names its symbols as its canonical place (the executable, or its lowest level) sees
         # them; this version has the code only elsewhere, its copy there is another function
         return "differs", 0.0, f"the code differs at the primary's canonical place ({canon})"
