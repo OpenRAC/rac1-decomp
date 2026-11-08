@@ -18,7 +18,7 @@ the other RaC1 projects checked out (paths from the environment, defaults
 in parentheses):
 
   NTSC       the NTSC decompilation (~/Projects/NTSC)
-  LOMBYTE   Lombyte, the US decompilation (~/Projects/Lombyte)
+  LOMBYTE   Lombyte, the US decompilation (games/rac1/ntsc inside OpenRAC, else ~/Projects/Lombyte)
   RERAC     ReRAC, the PC port, for its Ghidra name tables (~/Projects/rerac)
 
 Missing sources are skipped with a warning; the rows they gave are then
@@ -58,7 +58,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from lombyte import their_report  # noqa: E402
+from lombyte import LOMBYTE as LOMBYTE_TREE, their_report  # noqa: E402
 import names_header  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -70,7 +70,7 @@ CATALOGUE = ROOT / "config/overlays/functions.tsv"
 REPORT = ROOT / "progress/report.json"
 HOME = Path.home() / "Projects"
 NTSC = Path(os.environ.get("NTSC", HOME / "NTSC"))
-LOMBYTE = Path(os.environ.get("LOMBYTE", HOME / "Lombyte"))
+LOMBYTE = LOMBYTE_TREE        # $LOMBYTE, games/rac1/ntsc inside OpenRAC, or ~/Projects/Lombyte
 RERAC = Path(os.environ.get("RERAC", HOME / "rerac"))
 
 TIERS = ("recovered", "descriptive", "candidate")

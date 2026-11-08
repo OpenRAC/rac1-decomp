@@ -1622,7 +1622,7 @@ extern int umbris_frame_count MACRO_ADDR;
 // Bombomatic update: runs its fuse near the hero, bursts and drifts toward its target, with a state machine on m[0x20].
 void bombomatic_update(char *m) {
     char *d;
-    struct HitMessage *s16;
+    struct HitMessage *hit_message;
     char *t;
     int ia;
     int r;
@@ -1651,9 +1651,9 @@ void bombomatic_update(char *m) {
     if (d == 0) {
         return;
     }
-    s16 = (struct HitMessage *)MobyGetHitMessage(m, 0x230000, 0);
+    hit_message = (struct HitMessage *)MobyGetHitMessage(m, 0x230000, 0);
     t = (char *)&((struct BombomaticVars *)d)->health;
-    r = ComputeHitResponse(m, s16, t, 0, &ia, 0, 0, 4);
+    r = ComputeHitResponse(m, hit_message, t, 0, &ia, 0, 0, 4);
     switch (r) {
         case 0:
             break;
@@ -1685,17 +1685,17 @@ void bombomatic_update(char *m) {
 
     if (ia >= 2) {
         char *o;
-        if (s16 == 0) {
-            lim = s16->damage;
+        if (hit_message == 0) {
+            lim = hit_message->damage;
         } else {
-            o = s16->source;
+            o = hit_message->source;
             if (o == 0) {
-                lim = s16->damage;
+                lim = hit_message->damage;
             } else {
                 if (*(short *)(o + 0xA6) == 0x372) {
                     goto eb20;
                 }
-                lim = s16->damage;
+                lim = hit_message->damage;
             }
         }
         tv = *(float *)t;

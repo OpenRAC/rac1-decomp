@@ -1,5 +1,15 @@
 # Third-party notices
 
+## Functions ported from the NTSC decomp
+
+Three functions were ported from the [NTSC decomp](https://github.com/lombyte-project/Lombyte)
+(GPL-3.0) at `c6ba2e9c2a95e69615540aa8ff04c197b8948a8c`, in commit
+[9bf26d6227af](https://github.com/OpenRAC/rac1-decomp/commit/9bf26d6227afeadb6dca904d3114534dc1339834):
+
+- `src/overlays/shared/hero_animation_slots.c`: `update_hero_item_mobys` (`func_L00_0020FC18`).
+- `src/overlays/shared/visibomb_and_pyrocitor.c`: `pyrocitor_update` (`func_L00_002B8AE8`).
+- `src/overlays/shared/nanotech_ball_and_suck_cannon.c`: `suck_beam_update` (`func_L00_002DF410`).
+
 ## Lombyte
 
 The following functions adapt source from
@@ -871,7 +881,7 @@ names and paths are taken, no code (docs/NAMES.md).
 
 Data taken from Lombyte:
 
-- `tools/extract/moby_classes.tsv`: the moby class names the level editor
+- `tools/extract/moby_classes.tsv` (`editor/moby_classes.tsv` inside OpenRAC): the moby class names the level editor
   shows, from its `config/overlays/us/names/level-NN.json` ("moby-class-record"
   evidence), which joins each level's class dispatch table with the class
   names of [Wrench](https://github.com/chaoticgd/wrench)'s moby class unpack.
@@ -978,17 +988,17 @@ is preserved.
 documents the game's formats and systems. The following adapt its format
 code and notes, or quote it:
 
-- `tools/extract/mobys.py`: the moby instance record and what the level
+- `tools/extract/mobys.py` (`editor/mobys.py` inside OpenRAC): the moby instance record and what the level
   loader does with each field, from `crates/rc-formats/src/gameplay.rs` and
   `docs/plan/moby_render_notes.md`; described in `docs/reference/ASSETS.md` ("Mobys").
-- `tools/extract/moby_class.py`: the moby class header and model format
+- `tools/extract/moby_class.py` (`editor/moby_class.py` inside OpenRAC): the moby class header and model format
   (packets, vertex cache, skinning slots, normals, untextured faces), from
   `docs/formats/moby_rac1.md` §1-§2 and `crates/rc-formats/src/moby.rs`;
   described in `docs/reference/ASSETS.md` ("Moby classes").
-- `tools/extract/moby_anim.py`: moby skeletons and animation sequences,
+- `tools/extract/moby_anim.py` (`editor/moby_anim.py` inside OpenRAC): moby skeletons and animation sequences,
   from `docs/formats/moby_rac1.md` §3-§4, `docs/plan/moby_animation.md` and
   `crates/rc-formats/src/moby_anim.rs`.
-- `tools/extract/collision.py`: the collision block (cell tree, packed
+- `tools/extract/collision.py` (`editor/collision.py` inside OpenRAC): the collision block (cell tree, packed
   vertices, faces and surface bytes), from `docs/formats/collision_rac1.md`,
   `docs/plan/collision_queries.md` and `crates/rc-formats/src/collision.rs`;
   described in `docs/reference/ASSETS.md` ("Collision").

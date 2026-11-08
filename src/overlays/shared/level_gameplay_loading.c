@@ -537,6 +537,22 @@ extern int level_moby_killed[][64];
 extern int g_current_level_index MACRO_ADDR;
 extern int level_moby_groups[];
 extern int moby_group_count MACRO_ADDR;
+
+/* The port may give an edited level a larger guest RAM arena. Check its aggregate
+ * level-heap allocations before touching them; the retail build has no such hook. */
+#ifdef OPENRAC_HAS_DISC
+extern void rac1_check_level_heap(u32 cursor, u64 bytes);
+#define EXPANDED_LEVEL_RAM expanded_ram
+#define CHECK_LEVEL_HEAP(cursor, bytes)                         \
+    do {                                                        \
+        if (EXPANDED_LEVEL_RAM) {                               \
+            rac1_check_level_heap((u32)(cursor), (u64)(bytes)); \
+        }                                                       \
+    } while (0)
+#else
+#define EXPANDED_LEVEL_RAM 0 /* the console's 32 MiB: the retail code, unchanged */
+#define CHECK_LEVEL_HEAP(cursor, bytes) ((void)0)
+#endif
 extern int level_path_count MACRO_ADDR;
 extern char *level_path_data MACRO_ADDR;
 extern char *toad_paths[];
@@ -586,16 +602,24 @@ char *load_level_gameplay(int arg0) {
     Hdr_422D8 *hdr;
     char *mem;
     float *ship;
+#ifdef OPENRAC_HAS_DISC
+    int expanded_ram;
+#endif
     short *idx =
         gameplay_moby_index_remap; /* moby index by file order; a pointer local, so its address is formed at each use */
     int tmp; /* scratch int: the level number in the moby loop, a group's offset and end flag in the group loop */
 
     hdr = lvl_resource_buffers.f4;
     mem = lvl_resource_buffers.f18;
+#ifdef OPENRAC_HAS_DISC
+    expanded_ram = get_memory_size() > 0x02000000;
+#endif
     if (arg0 == 0) {
         if (pal_mode != 0) {
+            CHECK_LEVEL_HEAP(mem, disc_table_r2.sound_archive_alt.size);
             Load_r(mem, disc_table_r2.sound_archive_alt.sector, disc_table_r2.sound_archive_alt.size);
         } else {
+            CHECK_LEVEL_HEAP(mem, disc_table_r2.sound_archive.size);
             Load_r(mem, disc_table_r2.sound_archive.sector, disc_table_r2.sound_archive.size);
         }
         level_root[1] = mem; /* sound_archive_base */
@@ -730,6 +754,7 @@ char *load_level_gameplay(int arg0) {
         size += 3;
         size &= ~3;
         size -= 8;
+        CHECK_LEVEL_HEAP(mem, size);
         copy_memory_by_alignment_v(mem, p, size);
         for (i = 0; i < help_popup_state.f2C; i++) {
             int delta = (int)help_text_entries - 8;
@@ -747,12 +772,14 @@ char *load_level_gameplay(int arg0) {
         level_tie_instances = (TieInst *)mem;
         p += 0x10;
         tie_instance_count = n;
+        CHECK_LEVEL_HEAP(mem, (u64)n << 5);
         mem += n << 5;
         if (n != 0) {
             FastMemSet(level_tie_instances, 0, n << 5);
         }
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         level_tie_matrices = (TieMtx *)mem;
+        CHECK_LEVEL_HEAP(mem, (u64)tie_instance_count * 0x1C0);
         mem += tie_instance_count * 0x1C0;
         if (tie_instance_count != 0) {
             FastMemSet(level_tie_matrices, 0, tie_instance_count * 0x1C0);
@@ -819,17 +846,20 @@ char *load_level_gameplay(int arg0) {
         level_shrub_instances = (ShrubInst *)mem;
         p += 0x10;
         level_shrub_count = n;
+        CHECK_LEVEL_HEAP(mem, (u64)n << 5);
         mem += n << 5;
         if (n != 0) {
             FastMemSet(level_shrub_instances, 0, n << 5);
         }
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         shrub_matrices = (ShrubMtx *)mem;
+        CHECK_LEVEL_HEAP(mem, (u64)level_shrub_count << 6);
         mem += level_shrub_count << 6;
         if (level_shrub_count != 0) {
             FastMemSet(shrub_matrices, 0, level_shrub_count << 6);
         }
         shrub_vertex_colors = (unsigned char *)mem;
+        CHECK_LEVEL_HEAP(mem, (u64)level_shrub_count * 0x60);
         mem += level_shrub_count * 0x60;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (level_shrub_count != 0) {
@@ -952,6 +982,7 @@ char *load_level_gameplay(int arg0) {
         camera_descriptors = (Cuboid *)mem;
         p += 0x10;
         gCameraDefCountLvl = n;
+        CHECK_LEVEL_HEAP(mem, (u64)n << 5);
         mem += n << 5;
         if (n != 0) {
             FastMemSet(camera_descriptors, 0, n << 5);
@@ -983,6 +1014,7 @@ char *load_level_gameplay(int arg0) {
             int i;
 
             voice_pool.fD94 = (SndInst *)mem;
+            CHECK_LEVEL_HEAP(mem, size);
             mem += size;
             mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
             FastMemSet(voice_pool.fD94, 0, size);
@@ -1009,7 +1041,15 @@ char *load_level_gameplay(int arg0) {
         p += 4;
         n2 = *(int *)p;
         p += 0xC;
+        /* Keep the retail overlay buffer in use for the vanilla arena. Expanded
+         * mod streams can give larger file-order maps their own level memory. */
+        if (EXPANDED_LEVEL_RAM && n > 64) {
+            idx = (short *)mem;
+            mem += n * sizeof(*idx);
+            mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
+        }
         moby_array_start = (Moby *)mem;
+        CHECK_LEVEL_HEAP(mem, (((u64)n + (u64)n2) << 8) + ((u64)n2 << 7));
         FastMemSet(mem, 0, (n + n2) << 8);
         for (i = 0; i < n; i++) {
             int mission;
@@ -1163,8 +1203,10 @@ char *load_level_gameplay(int arg0) {
         }
         level_mobys_end = moby_array_start + count;
         level_mobys_end->state = 0xFF;
+        CHECK_LEVEL_HEAP(mem, ((u64)count + (u64)n2) << 8);
         mem += (count + n2) << 8;
         l00_active_moby_pool_end = mem;
+        CHECK_LEVEL_HEAP(mem, (u64)n2 << 7);
         mem += n2 << 7;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         moby_array_last = (Moby *)((int)moby_array_start + ((count + n2) << 8) - 0x100);
@@ -1185,8 +1227,10 @@ char *load_level_gameplay(int arg0) {
                 char *src = pv + tbl[k].f0;
 
                 camera_descriptors[i].f1C = (int)mem;
+                CHECK_LEVEL_HEAP(mem, size);
                 FastMemCopy(mem, src, size);
                 tbl[k].f0 = (int)mem;
+                CHECK_LEVEL_HEAP(mem, size);
                 mem += size;
             }
         }
@@ -1200,8 +1244,10 @@ char *load_level_gameplay(int arg0) {
                 char *src = pv + tbl[k].f0;
 
                 voice_pool.fD94[i].f8 = (int)mem;
+                CHECK_LEVEL_HEAP(mem, size);
                 FastMemCopy(mem, src, size);
                 tbl[k].f0 = (int)mem;
+                CHECK_LEVEL_HEAP(mem, size);
                 mem += size;
             }
         }
@@ -1215,8 +1261,10 @@ char *load_level_gameplay(int arg0) {
                 char *src = pv + tbl[k].f0;
 
                 (*(int *)&m->pvars) = (int)mem;
+                CHECK_LEVEL_HEAP(mem, size);
                 FastMemCopy(mem, src, size);
                 tbl[k].f0 = (int)mem;
+                CHECK_LEVEL_HEAP(mem, size);
                 mem += size;
             }
         }
@@ -1268,6 +1316,7 @@ char *load_level_gameplay(int arg0) {
         q += 4;
         size = *(int *)q;
         offs = (int *)(q + 0xC);
+        CHECK_LEVEL_HEAP(mem, size);
         mem += size;
         q = (char *)offs + (n << 2);
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
@@ -1323,6 +1372,7 @@ char *load_level_gameplay(int arg0) {
         q += 4;
         n = *(int *)q;
         q += 0xC;
+        CHECK_LEVEL_HEAP(mem, size);
         mem += size;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (size != 0) {
@@ -1351,6 +1401,7 @@ char *load_level_gameplay(int arg0) {
         src = q + *(int *)(q + 4);
         size = *(int *)(q + 8);
         level_path_data = mem;
+        CHECK_LEVEL_HEAP(mem, size);
         mem += size;
         q += 0x10;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
@@ -1375,6 +1426,7 @@ char *load_level_gameplay(int arg0) {
         src = q + *(int *)(q + 4);
         size = *(int *)(q + 8);
         level_rails = (Spline *)mem;
+        CHECK_LEVEL_HEAP(mem, (u64)n << 5);
         mem += n << 5;
         q += 0x10;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
@@ -1391,6 +1443,7 @@ char *load_level_gameplay(int arg0) {
             } while (--i != 0);
         }
         base = mem;
+        CHECK_LEVEL_HEAP(mem, size);
         mem += size;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (size != 0) {
@@ -1409,6 +1462,7 @@ char *load_level_gameplay(int arg0) {
         level_clip_volumes = mem;
         level_clip_volume_count = n;
         q += 0x10;
+        CHECK_LEVEL_HEAP(mem, (u64)n * 0x90);
         mem += n * 0x90;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
@@ -1427,6 +1481,7 @@ char *load_level_gameplay(int arg0) {
         level_cuboids = mem;
         q += 0x10;
         level_cuboid_count = n;
+        CHECK_LEVEL_HEAP(mem, (u64)n << 7);
         mem += n << 7;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
@@ -1445,6 +1500,7 @@ char *load_level_gameplay(int arg0) {
         level_spheres = mem;
         q += 0x10;
         level_sphere_count = n;
+        CHECK_LEVEL_HEAP(mem, (u64)n << 7);
         mem += n << 7;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
@@ -1463,6 +1519,7 @@ char *load_level_gameplay(int arg0) {
         level_cylinders = mem;
         q += 0x10;
         level_cylinder_count = n;
+        CHECK_LEVEL_HEAP(mem, (u64)n << 7);
         mem += n << 7;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
@@ -1480,6 +1537,7 @@ char *load_level_gameplay(int arg0) {
         camera_collision_grid = mem;
         q += 0x10;
         size += 0x4000;
+        CHECK_LEVEL_HEAP(mem, size);
         mem += size;
         copy_memory_by_alignment_v(camera_collision_grid, q, size);
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
@@ -1491,6 +1549,7 @@ char *load_level_gameplay(int arg0) {
         level_circle_zone_grid = mem;
         q += 0x10;
         size += 0x4000;
+        CHECK_LEVEL_HEAP(mem, size);
         mem += size;
         copy_memory_by_alignment_v(level_circle_zone_grid, q, size);
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
@@ -1502,6 +1561,7 @@ char *load_level_gameplay(int arg0) {
         level_circle_zones = mem;
         q += 0x10;
         level_circle_zone_count = n;
+        CHECK_LEVEL_HEAP(mem, (u64)n << 5);
         mem += n << 5;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
@@ -1515,6 +1575,7 @@ char *load_level_gameplay(int arg0) {
         environment_samples = mem;
         environment_sample_count = n;
         q += 0x10;
+        CHECK_LEVEL_HEAP(mem, (u64)n * 0x30);
         mem += n * 0x30;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n != 0) {
@@ -1522,6 +1583,7 @@ char *load_level_gameplay(int arg0) {
         }
     }
     particle_pool = mem;
+    CHECK_LEVEL_HEAP(mem, 0x20000);
     mem += 0x20000;
     particle_pool_field_8 = -1;
     particle_pool_field_4 = 0;
@@ -1746,6 +1808,7 @@ char *load_level_gameplay(int arg0) {
             break;
     }
     level_render_setup_packet_copy = level_render_setup_packet;
+    CHECK_LEVEL_HEAP(mem, 0);
     return mem;
 }
 typedef struct {
