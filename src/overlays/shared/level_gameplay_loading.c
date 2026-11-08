@@ -543,11 +543,11 @@ extern int moby_group_count MACRO_ADDR;
 #ifdef OPENRAC_HAS_DISC
 extern void rac1_check_level_heap(u32 cursor, u64 bytes);
 #define EXPANDED_LEVEL_RAM expanded_ram
-#define CHECK_LEVEL_HEAP(cursor, bytes)                                                            \
-    do {                                                                                           \
-        if (EXPANDED_LEVEL_RAM) {                                                                  \
-            rac1_check_level_heap((u32)(cursor), (u64)(bytes));                                    \
-        }                                                                                          \
+#define CHECK_LEVEL_HEAP(cursor, bytes)                         \
+    do {                                                        \
+        if (EXPANDED_LEVEL_RAM) {                               \
+            rac1_check_level_heap((u32)(cursor), (u64)(bytes)); \
+        }                                                       \
     } while (0)
 #else
 #define EXPANDED_LEVEL_RAM 0 /* the console's 32 MiB: the retail code, unchanged */
