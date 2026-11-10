@@ -5,7 +5,7 @@ Set up a decomp-permuter directory for one function. decomp-permuter
 C function -- reorders statements, adds temporaries, retypes things, swaps
 branches -- and keeps whatever compiles closer to retail. It is the tool for
 a register-allocation or scheduling tie that no hand rewrite moves (a
-WORKFLOW.md "known wall"): hundreds or thousands of automatic rewrites of
+workflow.md "known wall"): hundreds or thousands of automatic rewrites of
 the same statements where a permute.py enumeration or a manual reordering
 already stopped short.
 

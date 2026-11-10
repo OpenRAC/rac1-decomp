@@ -14,7 +14,7 @@
 /*
  * skyfunc.cpp in the original source; text 0x22BEB0-0x22CEB8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/history/decomp-progress.md. Compiled as C for now.
  */
 
 LINKER_REMNANT("asm/remnants/text", func_0022BEB0);

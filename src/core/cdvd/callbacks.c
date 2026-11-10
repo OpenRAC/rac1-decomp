@@ -8,7 +8,7 @@
 
 /*
  * core_text object 0x1208E8-0x121750. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony's libcdvd, cdvd000.o (the RPC core: sceCdDelayThread,
  * sceCdCallback, the N/S command pre-checks, sceCdSync/SyncS, sceCdInit,

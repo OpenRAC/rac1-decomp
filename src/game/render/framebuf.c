@@ -13,7 +13,7 @@
 /*
  * framebuf.cpp in the original source; text 0x1FAA28-0x1FBC80.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/history/decomp-progress.md. Compiled as C for now.
  */
 
 extern void append_gif_transfer_packet(void);

@@ -1,4 +1,4 @@
-# PAL v2.00 (SCES_509.16): every distinct function and its PAL v2.00 counterpart (tools/version_map.py; docs/VERSIONS.md).
+# PAL v2.00 (SCES_509.16): every distinct function and its PAL v2.00 counterpart (tools/version_map.py; docs/build/versions.md).
 # name	kind	size	fingerprint	counterpart	method	similarity	same	places
 func_00112380	exe	40	2fc036e21c52aa6e	func_00112380	fingerprint	1.00	yes	boot:00112380
 func_001123A8	exe	188	9139bbb5c5b22eda	func_001123A8	fingerprint	1.00	yes	boot:001123A8

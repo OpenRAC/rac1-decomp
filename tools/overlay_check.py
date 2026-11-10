@@ -4,7 +4,7 @@ Strict verdict for a level overlay function (func_LNN_XXXXXXXX): unlike
 try_func's masked compare for executable functions, EXACT here means every
 relocation in the candidate's compiled object reaches the exact retail
 address, not just that the instruction words match with link-dependent
-fields masked out (docs/OVERLAYS.md, "Plan" step 2).
+fields masked out (docs/build/overlays.md, "Plan" step 2).
 
   python tools/overlay_check.py OBJ.o func_LNN_XXXXXXXX [--diff]
 
@@ -17,7 +17,7 @@ check(obj_path, name, show=False) is the entry point tools/try_func.py
 calls; the __main__ block below is only a thin CLI over it for standalone
 use.
 
-Placement and resolution (docs/OVERLAYS.md, "Names" and "Layout"):
+Placement and resolution (docs/build/overlays.md, "Names" and "Layout"):
 
   - The object's .text is placed so NAME's symbol lands at its canonical
     address (level NN, address XXXXXXXX -- read straight out of the name).
@@ -131,7 +131,7 @@ def load_joined() -> dict[str, list[str]]:
 
 
 def joined_size(name: str, csize: int, catalogue) -> int:
-    """CSIZE plus the pieces joined to NAME (docs/OVERLAYS.md, joined functions), measured from
+    """CSIZE plus the pieces joined to NAME (docs/build/overlays.md, joined functions), measured from
     their places in NAME's level. A piece of kind exe is a shared fragment such as the delay slot
     that the catalogue split off the preceding jr (func_001EC030); it still counts as part of this
     function's bytes. A piece may start up to four nops after the previous one ends (the compiler
@@ -213,7 +213,7 @@ def same_function(level: int, a: int, b: int) -> bool:
 
 
 def resolve_symbol(name: str, level: int, near: int) -> int:
-    """A symbol's address in LEVEL, by name (docs/OVERLAYS.md, "Names").
+    """A symbol's address in LEVEL, by name (docs/build/overlays.md, "Names").
     NEAR is the address of the relocation being resolved, used only to
     disambiguate a name with more than one place in this level (see
     place_in_level). Raises Unresolved if NAME can't be placed."""
@@ -467,7 +467,7 @@ class Placer:
         defined within this object (not SHN_UNDEF) is placed by where its
         own section landed; a section symbol IS that placement. Anything
         else -- including a defined symbol that happens to carry one of
-        our naming conventions -- is placed by name (docs/OVERLAYS.md,
+        our naming conventions -- is placed by name (docs/build/overlays.md,
         "Names"), since that is how retail's own addressing works
         regardless of how this one candidate's object happens to be laid
         out (e.g. a stub's neighbour, included only to satisfy a branch).

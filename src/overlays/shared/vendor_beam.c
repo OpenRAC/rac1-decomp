@@ -2,7 +2,7 @@
 /* Level 14 code: draw_electric_beam in a file of its own, built with -fno-sched-spec
  * (config/file_cflags.txt). The functions of vendor_002B2A28.c do not build
  * with it (emit_moby_offset_particles changes), so it was another object in retail
- * (docs/reference/BUILD_FIDELITY.md, rule 2). */
+ * (docs/build/build-fidelity.md, rule 2). */
 #include "common.h"
 #include "structs/moby.h"
 #include "data/level_14.h"

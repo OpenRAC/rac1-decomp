@@ -1,17 +1,65 @@
 # Docs
 
-## Start here
+Every doc of this repository, by folder. New here? Read [building.md](build/building.md), then
+[workflow.md](contributing/workflow.md).
+
+## build/: build and check the match
 
 | Doc | What it covers |
 |---|---|
-| [BUILD.md](BUILD.md) | Build the game and check the match |
-| [WORKFLOW.md](WORKFLOW.md) | Match a function, from start to finish |
-| [STYLE.md](STYLE.md) | How the C should look |
-| [REVIEWING.md](REVIEWING.md) | What to check in a PR |
-| [INCLUDES.md](INCLUDES.md) | Include order and function headers |
-| [NAMES.md](NAMES.md) | How symbols get readable names |
-| [OVERLAYS.md](OVERLAYS.md) | Level code |
-| [VERSIONS.md](VERSIONS.md) | US, PAL and JP |
+| [building.md](build/building.md) | Setup, build, checks, data in C, moving files, format |
+| [versions.md](build/versions.md) | PAL v2.00, PAL v1.00, NTSC-J and NTSC-U |
+| [overlays.md](build/overlays.md) | Level code |
+| [toolchain.md](build/toolchain.md) | Compilers and assemblers, and why each is used |
+| [build-fidelity.md](build/build-fidelity.md) | Every step between the compiler and the image |
+| [containers.md](build/containers.md) | The build and Ghidra containers |
+
+## contributing/: write and review code
+
+| Doc | What it covers |
+|---|---|
+| [workflow.md](contributing/workflow.md) | Match a function, from start to finish |
+| [style.md](contributing/style.md) | How the C should look |
+| [reviewing.md](contributing/reviewing.md) | What to check in a PR |
+| [includes.md](contributing/includes.md) | Include order and function headers |
+| [names.md](contributing/names.md) | How symbols get readable names |
+| [nonmatching.md](contributing/nonmatching.md) | Near-misses and how they are kept |
+| [gdscript.md](contributing/gdscript.md) | Rules for `.gd` scripts |
+
+## game/: how the game works
+
+| Doc | What it covers |
+|---|---|
+| [README.md](game/README.md) | Start here: the one rule, pages and known inconsistencies |
+| [architecture.md](game/architecture.md) | Main loop, levels and systems |
+| [data-structures.md](game/data-structures.md) | The main records |
+| [mobys.md](game/mobys.md) | Mobys (game objects) |
+| [pvars.md](game/pvars.md) | Moby private variables |
+| [camera.md](game/camera.md) | The camera code |
+| [conventions.md](game/conventions.md) | Conventions in the code |
+| [movie.md](game/movie.md) | Movie player code |
+| [assets.md](game/assets.md) | Level data and the Godot export |
+| [asm-classification.md](game/asm-classification.md) | Which code was assembly in the original |
+| [datamining.md](game/datamining.md), [datamined-reverse-engineering.md](game/datamined-reverse-engineering.md) | Findings from data mining |
+
+## agents/: AI agents
+
+| Doc | What it covers |
+|---|---|
+| [agent-workflow.md](agents/agent-workflow.md) | How agent waves run |
+| [worker.md](agents/worker.md), [queue.md](agents/queue.md) | Worker instructions |
+| [llm-decomp-instructions.md](agents/llm-decomp-instructions.md) | Decompiling with an LLM |
+| [levers.md](agents/levers.md) | What closes a near-miss |
+| [long-functions.md](agents/long-functions.md) | Working on long functions |
+| [permuter.md](agents/permuter.md) | The permuter (not in use for now) |
+| [sibling-decomps.md](agents/sibling-decomps.md) | Related projects and porting |
+
+## history/: how we got here
+
+| Doc | What it covers |
+|---|---|
+| [decomp-progress.md](history/decomp-progress.md) | Progress log and solved problems |
+| [notes/](history/notes/) | Old investigations: one file per hard function, plus compiler studies |
 
 ## Where things are
 
@@ -57,37 +105,3 @@ The match is finished. This is what could still read better:
 - **Sound and animation IDs.** No name data exists for them.
 - **Data shapes.** All of `.data` is in C, but many blocks are still plain words of an unknown record. See
   `config/data_in_c.tsv`, and give a block a real type with `tools/data_in_c.py set-type`.
-
-## Game knowledge
-
-[kb/README.md](kb/README.md) covers how the game works: architecture, data structures and mobys.
-
-## Reference
-
-Long and detailed. Read these when you need them.
-
-| Doc | What it covers |
-|---|---|
-| [TOOLCHAIN.md](reference/TOOLCHAIN.md) | Compilers and assemblers, and why each is used |
-| [BUILD_FIDELITY.md](reference/BUILD_FIDELITY.md) | Every step between the compiler and the image |
-| [CONTAINERS.md](reference/CONTAINERS.md) | The build and Ghidra containers |
-| [DECOMP_PROGRESS.md](reference/DECOMP_PROGRESS.md) | History log and solved problems |
-| [ASM_CLASSIFICATION.md](reference/ASM_CLASSIFICATION.md) | Which code was assembly in the original |
-| [NONMATCHING.md](reference/NONMATCHING.md) | Near-misses and how they are kept |
-| [PVARS.md](reference/PVARS.md) | Moby private variables |
-| [ASSETS.md](reference/ASSETS.md) | Level data and the Godot export |
-| [MOVIE.md](reference/MOVIE.md) | Movie player code |
-| [DATAMINED_REVERSE_ENGINEERING.md](reference/DATAMINED_REVERSE_ENGINEERING.md) | Findings from data mining |
-| [GDSCRIPT_CONVENTIONS.md](reference/GDSCRIPT_CONVENTIONS.md) | Rules for `.gd` scripts |
-
-## For agents
-
-| Doc | What it covers |
-|---|---|
-| [AGENT_WORKFLOW.md](agents/AGENT_WORKFLOW.md) | How agent waves run |
-| [WORKER.md](agents/WORKER.md), [QUEUE.md](agents/QUEUE.md) | Worker instructions |
-| [LLM_DECOMP_INSTRUCTIONS.md](agents/LLM_DECOMP_INSTRUCTIONS.md) | Decompiling with an LLM |
-| [LEVERS.md](agents/LEVERS.md) | What closes a near-miss |
-| [LONG_FUNCTIONS.md](agents/LONG_FUNCTIONS.md) | Working on long functions |
-| [PERMUTER.md](agents/PERMUTER.md) | The permuter (not in use for now) |
-| [SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md) | Related projects and porting |

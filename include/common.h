@@ -2,7 +2,7 @@
 #define COMMON_H
 
 #include "include_asm.h"
-#include "names.h"   /* readable names for func_/D_ symbols (docs/NAMES.md) */
+#include "names.h"   /* readable names for func_/D_ symbols (docs/contributing/names.md) */
 
 #include "types.h"
 #include "macros.h"

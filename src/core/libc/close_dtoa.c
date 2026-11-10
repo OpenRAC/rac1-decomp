@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x112468-0x1138A8. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * newlib (the SDK's libc.a): closer.o (_close_r) and dtoa.o (quorem,
  * _dtoa_r), back to back. Built with Sony's 2.9-ee (Makefile.sn,

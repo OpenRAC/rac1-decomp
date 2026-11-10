@@ -8,7 +8,7 @@
  * and bodies use the readable name; declarations, __asm__ labels and
  * _r definitions keep the address name (tools read definitions
  * through tools/srcnames.py).
- * Tiers and sources: docs/NAMES.md.
+ * Tiers and sources: docs/contributing/names.md.
  */
 #ifndef NAMES_H
 #define NAMES_H

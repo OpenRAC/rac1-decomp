@@ -14,7 +14,7 @@
 /*
  * map.cpp in the original source; text 0x205520-0x2071A8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/history/decomp-progress.md. Compiled as C for now.
  */
 
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;

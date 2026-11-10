@@ -52,7 +52,7 @@ def jump_tables(text):
 def main():
     name = sys.argv[1]
     hits = list(pathlib.Path("asm/nonmatchings").rglob(name + ".s")) \
-        or list(pathlib.Path("asm/overlays").glob(name + ".s"))      # level code (docs/OVERLAYS.md)
+        or list(pathlib.Path("asm/overlays").glob(name + ".s"))      # level code (docs/build/overlays.md)
     if len(hits) != 1:
         sys.exit(f"expected one .s for {name}, found {len(hits)}")
     text = hits[0].read_text()

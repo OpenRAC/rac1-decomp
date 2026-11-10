@@ -2,7 +2,7 @@
 /* Shared level code: setup_level_cameras in a file of its own, built with -fno-force-mem
  * (config/file_cflags.txt). GCC 2.95 takes options per translation unit,
  * and the functions of the file it came from do not build with this one
- * (docs/reference/BUILD_FIDELITY.md, "Flags"). */
+ * (docs/build/build-fidelity.md, "Flags"). */
 #include "common.h"
 #include "include_asm.h"
 #include "structs/camera.h"

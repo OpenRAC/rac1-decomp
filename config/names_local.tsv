@@ -3314,7 +3314,7 @@ func_L18_002F8B00	FinalBoss_SpawnBurstParticles	called by FinalBossUpdate; spawn
 func_L18_002F8CE0	FinalBoss_DrawGlowBillboards	draw callback registered by FinalBossUpdate; billboards at joints with sine colour tween	
 func_L18_002FB080	Moby1563_DrawQuad	draw callback registered in Moby1563Update; textured billboard quad with colour fade	
 func_L18_002FB318	Moby1563_DrawQuadAlt	sibling draw callback of Moby1563_DrawQuad with a different basis; same pk setup	
-func_001EDE08	Camera_UpdateFade	body: takes gCamera.follow.fade_rate (+0x258) off gFade each frame and stops both at 0 (docs/kb/refactor-camera.md)	
+func_001EDE08	Camera_UpdateFade	body: takes gCamera.follow.fade_rate (+0x258) off gFade each frame and stops both at 0 (docs/game/camera.md)	
 func_L00_001ED2C0	Camera_PickCollisionMasksLvl	body: level copy of Camera_PickCollisionMasks (func_001EDCE8); Lvl = level copy of the executable function	
 func_L00_001EBDA0	UpdateAllCamerasLvl	body: level copy of UpdateAllCameras (func_001EC7C8) over the level's 48 slots; Lvl = level copy of the executable function	
 func_L00_001EB7C8	Camera_ReleaseCurrent	body: sets the current camera's transition_state to 1 and handoff_state to 0, so any eligible camera may take over (Camera_ActivationCheckPriority)	

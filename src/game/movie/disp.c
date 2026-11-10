@@ -6,7 +6,7 @@
 /*
  * movie/disp.cpp in the original source; text 0x23C5E0-0x23C9C0.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/history/decomp-progress.md. Compiled as C for now.
  */
 
 /* setImageTag (recovered name), written from the retail assembly: writes a DMA/GIF tag chain into p.

@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x113A70-0x113B70. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  */
 
 void findfp_std(void *arg0, int arg1, int arg2, int arg3) {

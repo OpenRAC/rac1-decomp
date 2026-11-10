@@ -70,7 +70,7 @@ rm -rf asm
 "$PYTHON" tools/organize_asm.py
 echo "asm/ ready ($(find asm -type f -name '*.s' | wc -l) files)"
 
-# Level code overlays (docs/OVERLAYS.md): asm/overlays/<name>.s for every
+# Level code overlays (docs/build/overlays.md): asm/overlays/<name>.s for every
 # distinct shared/level function, from baserom/overlays/ (assumes
 # `python3 tools/overlays.py dump` has already populated it -- that needs
 # baserom/SCES_509.16.iso, so it is not repeated here).

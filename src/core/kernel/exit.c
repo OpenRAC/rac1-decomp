@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x11DD68-0x11DDD0. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony's EE kernel library (libkernl), exit.o: kCopy (the byte
  * version), a TLB re-init stub and Exit. Built with Sony's 2.9-ee

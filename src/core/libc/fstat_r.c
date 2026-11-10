@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x114000-0x114060. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * newlib's fstatr.o (_fstat_r; the SDK's libc.a). Built with Sony's
  * 2.9-ee (Makefile.sn, EE29_CORE), like libc.a.

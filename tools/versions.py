@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-The releases of the game this repository builds, and their programs (docs/VERSIONS.md).
+The releases of the game this repository builds, and their programs (docs/build/versions.md).
 
   python3 tools/versions.py                         # the table of versions
   python3 tools/versions.py dump [--version K]      # programs from the disc image into baserom/
@@ -10,7 +10,7 @@ The releases of the game this repository builds, and their programs (docs/VERSIO
 Every version is one disc image in baserom/ (named as in VERSIONS; hard-link it from wherever
 your discs live, never commit it). Its programs are the boot executable and the 19 level
 programs, the code overlays each level loads over the executable's `main` segment
-(docs/OVERLAYS.md):
+(docs/build/overlays.md):
 
   baserom/<K>/<EXE>                          the boot executable as the disc stores it
   baserom/<K>/overlays/level_NN/<record>.bin  each record of level NN's program (lit, bss, data,
@@ -116,7 +116,7 @@ def read_disc(v: Version) -> tuple[bytes, dict[int, dict]]:
     from level import decoded
     iso = ROOT / "baserom" / v.iso
     if not iso.exists():
-        sys.exit(f"missing baserom/{v.iso} (link your own disc image there; see docs/VERSIONS.md)")
+        sys.exit(f"missing baserom/{v.iso} (link your own disc image there; see docs/build/versions.md)")
     with Disc(iso) as disc:
         exe = next((f for f in disc.files() if f["name"] == v.exe), None)
         if exe is None:

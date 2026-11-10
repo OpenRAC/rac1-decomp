@@ -13,7 +13,7 @@ shallow fetch of that one commit. Nothing of it is committed here and nothing is
 RAC1_NTSC_DECOMP_DIR names an existing checkout to use as it is instead (someone working in the
 NTSC decomp's own repository); the pin is then not checked.
 
-Its readers: tools/names.py ntsc (its names, docs/NAMES.md), tools/version_sync.py ntsc
+Its readers: tools/names.py ntsc (its names, docs/contributing/names.md), tools/version_sync.py ntsc
 (config/versions/us/carry.tsv), tools/build_ntsc.sh (its own build and verification), CI (its own
 progress report, uploaded as SCUS_971.99_report) and tools/lombyte.py.
 

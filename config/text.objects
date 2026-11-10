@@ -6,7 +6,7 @@
 # text has no linker fill between objects. The file names and boundaries
 # come from the NTSC split of this game, mapped to this PAL build by matching
 # function sizes, and each checked against the PAL code (a return right
-# before, a function start right at it); see docs/reference/DECOMP_PROGRESS.md.
+# before, a function start right at it); see docs/history/decomp-progress.md.
 
 build-sn/game/gameplay/actuator.o 0x001E9080
 build-sn/game/system/bloaders.o 0x001E94E8

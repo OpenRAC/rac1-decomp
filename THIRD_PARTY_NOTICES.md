@@ -877,7 +877,7 @@ file for each function, from the commit pinned in `config/versions/us/ntsc_decom
 `tools/ntsc_source.py`, never copied into this repository) at every `tools/ntsc_source.py follow`, and places them on
 this project's PAL symbols. They are listed in `config/names_ntsc.tsv` (first imported at 4e1f255e:
 1,458 names adopted in `config/names.tsv` and `include/names.h`) and `config/modules.tsv`. Only the
-names and paths are taken, no code (docs/NAMES.md).
+names and paths are taken, no code (docs/contributing/names.md).
 
 Data taken from Lombyte:
 
@@ -990,18 +990,18 @@ code and notes, or quote it:
 
 - `tools/extract/mobys.py` (`editor/mobys.py` inside OpenRAC): the moby instance record and what the level
   loader does with each field, from `crates/rc-formats/src/gameplay.rs` and
-  `docs/plan/moby_render_notes.md`; described in `docs/reference/ASSETS.md` ("Mobys").
+  `docs/plan/moby_render_notes.md`; described in `docs/game/assets.md` ("Mobys").
 - `tools/extract/moby_class.py` (`editor/moby_class.py` inside OpenRAC): the moby class header and model format
   (packets, vertex cache, skinning slots, normals, untextured faces), from
   `docs/formats/moby_rac1.md` §1-§2 and `crates/rc-formats/src/moby.rs`;
-  described in `docs/reference/ASSETS.md` ("Moby classes").
+  described in `docs/game/assets.md` ("Moby classes").
 - `tools/extract/moby_anim.py` (`editor/moby_anim.py` inside OpenRAC): moby skeletons and animation sequences,
   from `docs/formats/moby_rac1.md` §3-§4, `docs/plan/moby_animation.md` and
   `crates/rc-formats/src/moby_anim.rs`.
 - `tools/extract/collision.py` (`editor/collision.py` inside OpenRAC): the collision block (cell tree, packed
   vertices, faces and surface bytes), from `docs/formats/collision_rac1.md`,
   `docs/plan/collision_queries.md` and `crates/rc-formats/src/collision.rs`;
-  described in `docs/reference/ASSETS.md` ("Collision").
+  described in `docs/game/assets.md` ("Collision").
 - `config/overlays/rerac_notes.tsv`: names and notes quoted from its
   `tools/ghidra/names/doc_names.csv` (the commit is in the file's header),
   shown in worker packets.
@@ -1034,12 +1034,12 @@ its source code and reverse-engineering findings:
   structures (`Manipulator`, `Tweaker`), adapted from
   `data/overlay/src/game_common/` and `data/overlay/src/game_rac/` for C
   compilation with SN ProDG.
-- `docs/reference/PVARS.md`: documentation of moby pvar layouts and subsystem
+- `docs/game/pvars.md`: documentation of moby pvar layouts and subsystem
   architecture synthesized from Wrench's overlay definitions.
 - `tools/extract/`: asset extraction logic (disc layout, table of contents
   groups, level data header sections, core block bounds, WAD compression,
   terrain, ties, shrubs, sky, gameplay block boundaries), as described in
-  `docs/reference/ASSETS.md`.
+  `docs/game/assets.md`.
 - `tools/extract/moby_classes.tsv`: moby class names and categories joined with
   Wrench's `data/underlay/rac_moby_classes.asset`.
 

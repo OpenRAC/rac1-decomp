@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x12A2F0-0x12AC80. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  */
 
 extern void _Error(void *, void *);
@@ -178,7 +178,7 @@ extern long sysbit_flush(void *, int);
 
 /* _sysbitInit: points the bit stream at arg0 at the arg3-byte ring buffer
    at arg2, reading from arg1, and resets it. The store order is
-   load-bearing (LEVERS.md lever 3): arg1's +0x8 store has to come before
+   load-bearing (levers.md lever 3): arg1's +0x8 store has to come before
    its +0xC store, after the other fields in retail's order. */
 void sysbit_init(void *arg0, int arg1, int arg2, int arg3) {
     char *p = (char *)arg0;

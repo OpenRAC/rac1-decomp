@@ -3,7 +3,7 @@
 
 /*
  * core_text object 0x1144D0-0x114518. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * newlib's locale.o (the SDK's libc.a): _localeconv_r and localeconv.
  * The linker dead-stripped the unreferenced _setlocale_r and setlocale

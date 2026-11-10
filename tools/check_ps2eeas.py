@@ -6,7 +6,7 @@ Checks the build's assembler steps against SN's real assembler (in the container
 
 Retail's game code was assembled by SN's ps2eeas. This build assembles with
 GNU as and adds what ps2eeas does differently with tools/ps2eeas_nops.py,
-tools/ps2eeas_dli.py and tools/check_macro_slots.py (docs/reference/BUILD_FIDELITY.md).
+tools/ps2eeas_dli.py and tools/check_macro_slots.py (docs/build/build-fidelity.md).
 This tool takes every C file of the game code (src/game/, src/overlays/;
 or the files given), builds it as the build does (tools/try_func.py's
 pipeline), and assembles the same compiler output a second time with

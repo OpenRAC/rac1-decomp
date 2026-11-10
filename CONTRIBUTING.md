@@ -4,7 +4,7 @@ All 5116 functions match, so most work now makes the code easier to read. Start 
 [`docs/README.md`](docs/README.md) to see where things are and what is left. Any change must keep the match:
 run `bash tools/check_all.sh` before a PR.
 
-To match a function, the full procedure is in [`docs/WORKFLOW.md`](docs/WORKFLOW.md). In short:
+To match a function, the full procedure is in [`docs/contributing/workflow.md`](docs/contributing/workflow.md). In short:
 
 1. Pick a function. `python tools/rank_candidates.py` lists promising ones;
    `python tools/triage.py` sorts everything not yet exact into work queues
@@ -17,7 +17,7 @@ To match a function, the full procedure is in [`docs/WORKFLOW.md`](docs/WORKFLOW
 3. Iterate. `python tools/try_func.py func_XXXXXXXX c1.c c2.c ...`
    compiles each candidate through the real pipeline and says `EXACT` or
    how many bytes are off, in seconds, without touching `src/`.
-   [`docs/agents/LEVERS.md`](docs/agents/LEVERS.md) is the one-page list of what makes
+   [`docs/agents/levers.md`](docs/agents/levers.md) is the one-page list of what makes
    a function match. For a side-by-side view, `sh tools/diff.sh
    func_XXXXXXXX` (or `tools\diff.bat` on Windows) runs
    [asm-differ](https://github.com/simonlindholm/asm-differ).
@@ -36,7 +36,7 @@ git clone https://github.com/simonlindholm/asm-differ tools/ext/asm-differ
 
 The build uses retail's own compilers and assembles what they emit as it is,
 apart from a short, documented list of assembler and linker behaviours.
-[docs/reference/BUILD_FIDELITY.md](docs/reference/BUILD_FIDELITY.md) has the list, the evidence
+[docs/build/build-fidelity.md](docs/build/build-fidelity.md) has the list, the evidence
 for each entry and how many matches depend on it. So:
 
 - never add a step that changes the compiler's output to make a function
@@ -59,11 +59,11 @@ as references:
   anything else whose license permits it, credited in
   `THIRD_PARTY_NOTICES.md`;
 - other public decompilations and ports of this game (Lombyte, the NTSC decomp,
-  ReRAC: docs/agents/SIBLING_DECOMPS.md), credited, and public hardware
+  ReRAC: docs/agents/sibling-decomps.md), credited, and public hardware
   documentation. The NTSC decomp is never vendored: tools read it at the
   commit pinned in `config/versions/us/ntsc_decomp.txt`, from a cache
   outside the checkout (`python3 tools/ntsc_source.py path`), and
-  `python3 tools/ntsc_source.py follow` moves the pin (docs/VERSIONS.md).
+  `python3 tools/ntsc_source.py follow` moves the pin (docs/build/versions.md).
 
 **Never** use Sony's SDK source, sample code or headers, or any leaked or
 NDA material, even when copies circulate inside leaked source releases
@@ -72,12 +72,12 @@ to check a match against. On 2026-09-30 the movie code (`movie/*`, Sony's
 ezmpeg sample in retail) and one libmpeg helper were reverted to
 assembly for exactly this: they had been compiled from that sample's
 source. They are to be redone from the assembly alone.
-The rules for doing that are in [`docs/reference/MOVIE.md`](docs/reference/MOVIE.md).
+The rules for doing that are in [`docs/game/movie.md`](docs/game/movie.md).
 
 Known compiler behaviour, useful levers and measured dead ends are collected
-in [`docs/reference/DECOMP_PROGRESS.md`](docs/reference/DECOMP_PROGRESS.md).
+in [`docs/history/decomp-progress.md`](docs/history/decomp-progress.md).
 
-For LLM agents, [`docs/reference/CONTAINERS.md`](docs/reference/CONTAINERS.md) describes a
+For LLM agents, [`docs/build/containers.md`](docs/build/containers.md) describes a
 Ghidra container that serves decompilation and disassembly over MCP, and
 `tools/export_dataset.py` exports every exact match with its retail
 assembly as training pairs.

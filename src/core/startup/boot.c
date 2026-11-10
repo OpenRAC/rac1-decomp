@@ -7,7 +7,7 @@
 /*
  * boot.cpp (0x12DA38-0x12DB68): ParseBin and main. crt0 calls func_0012DB18
  * as main. From 0x12DB18 on, retail's game compiler spills s-registers with
- * sq, as v1.14 does (docs/reference/TOOLCHAIN.md). Name from the NTSC split.
+ * sq, as v1.14 does (docs/build/toolchain.md). Name from the NTSC split.
  */
 
 extern int *level_root MACRO_ADDR;

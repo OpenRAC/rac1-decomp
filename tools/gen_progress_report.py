@@ -67,7 +67,7 @@ UNIT_ALIASES = move_src.load_aliases(Path("."))
 BASEROM = "baserom/SCES_509.16"
 LINKED_ELF = "build-sn/rac1.elf"
 
-# Level code overlays (docs/OVERLAYS.md, "Plan" step 3): each file of
+# Level code overlays (docs/build/overlays.md, "Plan" step 3): each file of
 # src/overlays/shared/ is a unit, and each src/overlays/lNN_<planet>/ is one
 # unit named after its level, alongside the executable's own units. The level directories and their labels come from
 # tools/levels.py.
@@ -82,11 +82,11 @@ WORK_ROOT = Path("build-sn/overlays/report")
 # pyelftools at module scope for the toolchain-driven build/compare path,
 # which CI (no toolchain, no baserom) never runs.
 OVERLAY_STUB = re.compile(r'^\s*(?:INCLUDE_ASM|LINKER_REMNANT|ASM_FUNC)\([^)]*\b(func_L\d{2}_[0-9A-Fa-f]{8})\)')
-# Level-code linker remnants (docs/reference/ASM_CLASSIFICATION.md): what the linker left of stripped functions
+# Level-code linker remnants (docs/game/asm-classification.md): what the linker left of stripped functions
 # (each one's last delay slot), kept as assembly and counted as finished, as the executable's are.
 OVERLAY_REMNANT = re.compile(r'^\s*LINKER_REMNANT\("asm/overlays",\s*(func_L\d{2}_[0-9A-Fa-f]{8})\);', re.M)
 OVERLAY_REMNANTS = Path("config/overlays/linker_remnants.txt")
-# Level-code hand-written functions (docs/reference/ASM_CLASSIFICATION.md): original assembly, kept as it is
+# Level-code hand-written functions (docs/game/asm-classification.md): original assembly, kept as it is
 # and counted as finished, as the executable's ASM_FUNC functions are.
 OVERLAY_HANDWRITTEN = re.compile(r'^\s*ASM_FUNC\("asm/overlays",\s*(func_L\d{2}_[0-9A-Fa-f]{8})\);', re.M)
 OVERLAY_HANDWRITTEN_LIST = Path("config/overlays/handwritten_asm.txt")
@@ -190,7 +190,7 @@ def unit_of(name: str, seg: str, vram: int) -> tuple[str, str, str]:
 
 def overlay_catalogue() -> dict[str, tuple[str, int]]:
     """name -> (kind, size) for every row of config/overlays/functions.tsv
-    (tools/overlays.py catalogue; docs/OVERLAYS.md, "Names"). A tiny local
+    (tools/overlays.py catalogue; docs/build/overlays.md, "Names"). A tiny local
     parser (pure stdlib, like tools/overlay_src.py's own copy) instead of
     tools/overlay_check.py's load_catalogue(), since importing that module
     pulls in rabbitizer/pyelftools that --check must not need."""
@@ -280,7 +280,7 @@ def overlay_remnants() -> set[str]:
 
 def overlay_handwritten() -> set[str]:
     """The level-code hand-written functions: config/overlays/handwritten_asm.txt and the
-    ASM_FUNC lines of src/overlays/ (docs/reference/ASM_CLASSIFICATION.md, "Level code"). A joined
+    ASM_FUNC lines of src/overlays/ (docs/game/asm-classification.md, "Level code"). A joined
     function is listed under its first name; its later pieces are finished with it."""
     return overlay_listed(OVERLAY_HANDWRITTEN_LIST, OVERLAY_HANDWRITTEN)
 
@@ -329,7 +329,7 @@ def _score_staged(name: str, path: str) -> tuple[str, float]:
 
 def overlay_match_results(file_map: dict) -> dict[str, float]:
     """name -> 100.0 or 0.0 for every overlay function in FILE_MAP
-    (docs/OVERLAYS.md, "Plan" step 3): only a C-defined function can score
+    (docs/build/overlays.md, "Plan" step 3): only a C-defined function can score
     100, and only when tools/overlay_check.py says EXACT for it, built
     exactly the way tools/try_func.py builds an overlay function (its
     build() for the "text" segment pipeline). Needs the toolchain, so this
@@ -362,7 +362,7 @@ def overlay_match_results(file_map: dict) -> dict[str, float]:
     for owner, pieces in overlay_joined().items():
         if out.get(owner) == 100.0:
             out.update({piece: 100.0 for piece in pieces if piece in out})
-    # Near misses staged in nonmatching/ (docs/reference/NONMATCHING.md): their share
+    # Near misses staged in nonmatching/ (docs/contributing/nonmatching.md): their share
     # of matching bytes as fuzzy_match_percent. They are never finished:
     # only an EXACT C definition in src/overlays/ counts as matched code.
     import nonmatching
@@ -378,7 +378,7 @@ def overlay_units(file_map: dict, fuzzy: dict) -> tuple[list[dict], list, dict, 
     """(out_units, all_items, cat_items, cat_complete, complete_units,
     complete_code) for src/overlays/shared/ (one unit, "Shared level code") and
     src/overlays/lNN_<planet>/ (one unit per level, named after it): a unit's functions are its files' INCLUDE_ASM'd or defined
-    func_LNN_XXXXXXXX names in address order (docs/OVERLAYS.md, "Plan" step 3).
+    func_LNN_XXXXXXXX names in address order (docs/build/overlays.md, "Plan" step 3).
     cat_items/cat_complete cover "level_code", "common", "levels" and "level_NN" -- a
     level file's items count under both "levels" and its own "level_NN"."""
     catalogue = overlay_catalogue()
@@ -454,7 +454,7 @@ def overlay_c_functions() -> tuple[dict, set[str]]:
     against config/overlays/functions.tsv (every name must be catalogued: a
     file can hold a function of the other kind too, when a branch into the
     next place forced a shared/level pair together across that boundary --
-    docs/OVERLAYS.md, "Plan" step 2 -- so only catalogue membership is
+    docs/build/overlays.md, "Plan" step 2 -- so only catalogue membership is
     checked here, not which kind). Pure stdlib: used by --check, which has
     neither the toolchain nor the baserom."""
     catalogue = overlay_catalogue()
@@ -709,7 +709,7 @@ def generate() -> dict:
             },
         })
 
-    # Level code overlays (docs/OVERLAYS.md, "Plan" step 3): same report,
+    # Level code overlays (docs/build/overlays.md, "Plan" step 3): same report,
     # covering src/overlays/ too, so the totals below are of the whole
     # game's code. The executable's own units/categories above are
     # untouched by any of this.
@@ -759,7 +759,7 @@ def generate() -> dict:
 
 
 def check() -> None:
-    # The build runs only documented assembler/linker steps, with flags per file (docs/reference/BUILD_FIDELITY.md).
+    # The build runs only documented assembler/linker steps, with flags per file (docs/build/build-fidelity.md).
     import check_build_fidelity
     check_build_fidelity.main()
     if not REPORT.exists():
@@ -787,7 +787,7 @@ def check() -> None:
     if unfinished_asm:
         sys.exit(f"*** classified original assembly is not finished in the report: {unfinished_asm}")
 
-    # Level code overlays (docs/OVERLAYS.md, "Plan" step 3): re-derive which
+    # Level code overlays (docs/build/overlays.md, "Plan" step 3): re-derive which
     # func_LNN_XXXXXXXX are C (not INCLUDE_ASM) from src/overlays/ and
     # config/overlays/functions.tsv alone -- no toolchain, no baserom -- and
     # compare that against the overlay functions the committed report counts
@@ -816,7 +816,7 @@ def check() -> None:
     m = report["measures"]
     print(f"report is current: {m['matched_functions']}/{m['total_functions']} functions, "
           f"{m['matched_code_percent']:.2f}% code finished")
-    # The other versions (docs/VERSIONS.md): their maps and reports current with src/, shared C
+    # The other versions (docs/build/versions.md): their maps and reports current with src/, shared C
     # only, the same code matched in all of them or in none.
     import version_sync
     version_sync.check()

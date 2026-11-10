@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Plans, tracks and integrates waves of worker agents (docs/agents/WORKER.md).
+Plans, tracks and integrates waves of worker agents (docs/agents/worker.md).
 
   python3 tools/wave.py plan NAME [--role match|compile] [--count N]
                          [--budget N] [--near | --fresh | --overlay] [func_X ...]
@@ -8,7 +8,7 @@ Plans, tracks and integrates waves of worker agents (docs/agents/WORKER.md).
       one's CONTEXT.md and m2c sketch, starts a fresh BUDGET of try_func
       runs, and prints each worker's one-line prompt.
   python3 tools/wave.py plan NAME --queue [--min-size N] [--max-size N] ...
-      A queue wave (docs/agents/QUEUE.md): workers take several functions each.
+      A queue wave (docs/agents/queue.md): workers take several functions each.
   python3 tools/wave.py claim NAME ID [--count N]
       For a queue worker: claims the next N functions and prints each
       one's packet (dossier, assembly, matched C to start from).
@@ -29,12 +29,12 @@ Plans, tracks and integrates waves of worker agents (docs/agents/WORKER.md).
       source file and moves on. Needs src/ and progress/ clean.
 
   python3 tools/wave.py long NAME func_X ... [--arm opus] [--budget 30]
-      Sets up long-function workers (docs/agents/LONG_FUNCTIONS.md): each
+      Sets up long-function workers (docs/agents/long-functions.md): each
       function's dossier, m2c sketch and PACKET.md, and a BUDGET in its
       build-sn/try/<func>/<arm>/ folder; prints one prompt per function.
       Refuses a function rank_candidates blocks.
   python3 tools/wave.py stage [--level NN] [--max F] [func_X ...]
-      Shares near misses (docs/reference/NONMATCHING.md): each overlay stub's closest
+      Shares near misses (docs/contributing/nonmatching.md): each overlay stub's closest
       attempt within --max (a fraction of the bytes; default 0.15) goes to
       nonmatching/<dir>/<func>.c through tools/nonmatching.py, unless the
       staged one is already as close. Packets start from it; landing the
@@ -55,7 +55,7 @@ within 8 bytes, or a near-miss in src/); --fresh, the default, picks
 functions nobody has tried, smallest first. Waves are recorded in
 build-sn/waves/NAME.json.
 
---overlay --near is a near wave (docs/agents/QUEUE.md, "Near misses"): overlay
+--overlay --near is a near wave (docs/agents/queue.md, "Near misses"): overlay
 stubs whose best attempt came within --near-max of retail (a fraction of
 the bytes; default 0.10) or within 8 bytes of its size, closest first.
 Each one's best candidate is kept as build-sn/try/<func>/best.c, and
@@ -66,10 +66,10 @@ A run's chance of an EXACT falls with every run spent on the same function
 (waves q6-q26: about 12% for runs 1-5, 8% for 6-10, 3-4% after), so the
 default budget is 6: what's left of a function is a near wave's job.
 
-Overlay functions (func_LNN_XXXXXXXX, docs/OVERLAYS.md) are a separate
+Overlay functions (func_LNN_XXXXXXXX, docs/build/overlays.md) are a separate
 pool: named explicitly (func_L00_... on the command line, same as any
 other function) or picked with --overlay, which orders the catalogue's
-shared-and-level functions the way docs/OVERLAYS.md's "Relatives" section
+shared-and-level functions the way docs/build/overlays.md's "Relatives" section
 recommends -- shared code present in all 19 levels first, smaller first --
 after screening asm/overlays/<name>.s through rank_candidates' blocked
 patterns and skipping anything already matched. A wave is either all
@@ -105,7 +105,7 @@ CLOSE_BYTES, CLOSE_SIZE = 40, 8
 FAR = 0.15          # a best attempt further off than this is a starting point, not a near miss
 NEAR_MAX = 0.10     # --overlay --near: the furthest a best attempt may be, as a fraction of the bytes
 CREDIT = "Adapted from Lombyte"
-ALL_LEVELS = 19  # docs/OVERLAYS.md: how many levels there are in total
+ALL_LEVELS = 19  # docs/build/overlays.md: how many levels there are in total
 
 OVERLAY_NAME = re.compile(r"^func_L\d{2}_[0-9A-Fa-f]{8}$")
 OVERLAY_STUB_LINE = re.compile(r"^\s*INCLUDE_ASM\([^)]*\bfunc_L\d{2}_[0-9A-Fa-f]{8}\)")
@@ -119,7 +119,7 @@ OVERLAY_NAME_COMMENT = re.compile(
 
 def is_overlay_wave(names: list[str]) -> bool:
     """True if NAMES are all overlay functions, False if all executable;
-    exits if it's a mix (docs/OVERLAYS.md functions and exe functions are
+    exits if it's a mix (docs/build/overlays.md functions and exe functions are
     matched, integrated and landed differently)."""
     overlay = [bool(OVERLAY_NAME.match(n)) for n in names]
     if any(overlay) and not all(overlay):
@@ -144,7 +144,7 @@ def closeness(row: dict) -> int | None:
 def logged_runs(name: str) -> list[tuple[str, str]]:
     """(candidate file, verdict) of every run ever logged for NAME, oldest
     log first (runs.<stamp>.log, then runs.log), then each trial arm's
-    (try_func --arm, docs/agents/LONG_FUNCTIONS.md) with its folder in the path."""
+    (try_func --arm, docs/agents/long-functions.md) with its folder in the path."""
     work = TRY / name
     logs = sorted(work.glob("runs.*.log")) + [work / "runs.log"] + sorted(work.glob("*/runs.log"))
     return [(str(log.parent.relative_to(work) / c), v.strip()) for log in logs if log.exists()
@@ -251,13 +251,13 @@ def choose(args) -> list[str]:
 
 
 def choose_overlay(args) -> list[str]:
-    """The default overlay pool (docs/OVERLAYS.md, "Relatives"): shared
+    """The default overlay pool (docs/build/overlays.md, "Relatives"): shared
     functions present in every level first, smaller first within that,
     after screening each one's asm/overlays/<name>.s through
     rank_candidates' blocked-pattern triage and skipping anything already
     matched (kind "exe" is executable code under another name -- it has no
     src/overlays file of its own to land into) or without an asm file yet
-    (docs/OVERLAYS.md's jump-table functions, or asm/overlays regenerating)."""
+    (docs/build/overlays.md's jump-table functions, or asm/overlays regenerating)."""
     catalogue = dossier.load_overlay_catalogue()
     findex = dossier.overlay_file_index()
     rows = []
@@ -355,7 +355,7 @@ def fragments() -> set[str]:
 
 
 def family_order(rows: list, findex: dict) -> list:
-    """ROWS reordered for reuse (docs/OVERLAYS.md, "Relatives"): first the
+    """ROWS reordered for reuse (docs/build/overlays.md, "Relatives"): first the
     functions with a matched relative or variant parent (their packet
     carries that C: a port), most similar first; then one function, the
     smallest, of each family nobody has matched, largest family first, so
@@ -407,7 +407,7 @@ def plan(args, quiet: bool = False) -> None:
     overlay = is_overlay_wave(names)
     if overlay and args.role == "compile":
         sys.exit("no m2c sketch exists for overlay functions yet, so there is nothing for a "
-                  "compile worker to start from (docs/OVERLAYS.md); use --role match")
+                  "compile worker to start from (docs/build/overlays.md); use --role match")
     near = overlay and args.near
     held = [f"{n} ({shared.holder(n)})" for n in names if shared.holder(n)]
     if held:            # a claimed function never reaches this wave's workers: claim() skips it
@@ -445,7 +445,7 @@ def plan(args, quiet: bool = False) -> None:
     if args.queue:
         print(f"\nwave {args.name}: a queue of {len(names)} functions, budget {args.budget} runs each. "
               f"One prompt per worker (ID unique, N functions each, COUNT claimed at a time):\n\n"
-              f"Read docs/agents/QUEUE.md and follow it exactly. WAVE={args.name} ID=s01 N=6 COUNT=2")
+              f"Read docs/agents/queue.md and follow it exactly. WAVE={args.name} ID=s01 N=6 COUNT=2")
         return
     print(f"\nwave {args.name}: {len(names)} {args.role} workers, budget {args.budget} runs each\n")
     for name in names:
@@ -454,7 +454,7 @@ def plan(args, quiet: bool = False) -> None:
 
 def prompt(name: str, role: str, budget: int) -> str:
     return (f"You are a {role} worker on {name} in the repository /Users/flavy/Projects/rac1-decomp "
-            f"(run every command from there). Follow docs/agents/WORKER.md, the rules and the "
+            f"(run every command from there). Follow docs/agents/worker.md, the rules and the "
             f"\"{SECTION[role]}\" section; your context is build-sn/try/{name}/CONTEXT.md and "
             f"your budget is {budget} try_func runs. Work alone: never use the Agent, "
             f"WebSearch or WebFetch tools.")
@@ -557,7 +557,7 @@ def all_joined_pieces() -> set[str]:
 
 def joined_pieces(name: str) -> list[str]:
     """The catalogue entries after NAME that are pieces of the same function
-    (config/overlays/joined.tsv; docs/OVERLAYS.md, "Joined functions")."""
+    (config/overlays/joined.tsv; docs/build/overlays.md, "Joined functions")."""
     table = ROOT / "config/overlays/joined.tsv"
     if not table.exists():
         return []
@@ -601,7 +601,7 @@ def packet(name: str, budget: int, near: bool = False) -> str:
         far = (d := miss(shown[0])) is None or d > FAR
         how = ("An earlier attempt, still far off: start from it, keep what already matches (declarations, "
                "control flow, the blocks the diff below doesn't list) and rework the rest freely."
-               if far else "A near miss (QUEUE.md, \"Near misses\"): start from this candidate and change as "
+               if far else "A near miss (queue.md, \"Near misses\"): start from this candidate and change as "
                "little as you can.")
         out += ["", f"## Best earlier attempt: {shown[0]} (build-sn/try/{name}/best.c)",
                 f"{how} Your {budget} runs are a fresh budget: a \"budget spent\" in NOTES.md is the "
@@ -611,7 +611,7 @@ def packet(name: str, budget: int, near: bool = False) -> str:
     if port:
         path, ntsc, text, caveat = port
         out += ["", f"## Lombyte's matched C for this function: {ntsc} in {path}",
-                "Port it (QUEUE.md, \"Lombyte ports\"): it matched the US build, so start from it and keep its "
+                "Port it (queue.md, \"Lombyte ports\"): it matched the US build, so start from it and keep its "
                 "control flow; your candidate's comment must credit it." + caveat, text]
     for label, other in start_from(name):
         out += ["", f"## Matched C to start from: {label}", other]
@@ -621,7 +621,7 @@ def packet(name: str, budget: int, near: bool = False) -> str:
 def lombyte_port(name: str) -> tuple[str, str, str, str] | None:
     """(Lombyte file, its name, its C, a caveat when its function's size
     differs from ours) when Lombyte matched NAME's US counterpart
-    (tools/lombyte.py; docs/agents/SIBLING_DECOMPS.md)."""
+    (tools/lombyte.py; docs/agents/sibling-decomps.md)."""
     import lombyte
     if not lombyte.MAP.exists() or not lombyte.LOMBYTE.is_dir():
         return None
@@ -911,14 +911,14 @@ def extract_definition(source: Path, name: str) -> str:
 
 
 def land_overlay(args, wave: dict) -> None:
-    """Lands overlay EXACTs (docs/OVERLAYS.md). Differs from land_exe():
+    """Lands overlay EXACTs (docs/build/overlays.md). Differs from land_exe():
 
     - No full build: the executable does not link src/overlays/, so
       tools/build_sn.sh cannot see these functions either way.
     - The re-check after applying is tools/try_func.py itself, run again
       against the function's own definition as it now sits in the landed
       file (overlay_check.check() already does the strict, unmasked
-      relocation compare -- see docs/OVERLAYS.md's "Plan" step 2).
+      relocation compare -- see docs/build/overlays.md's "Plan" step 2).
     - progress/report.json has no overlay units yet (another agent is
       adding them to tools/gen_progress_report.py); see the TODO below.
     """
@@ -996,7 +996,7 @@ def long_setup(args) -> None:
         (work / "PACKET.md").write_text(packet(name, args.budget))
         (work / args.arm).mkdir(exist_ok=True)
         (work / args.arm / "BUDGET").write_text(f"{args.budget}\n")
-        print(f"Read docs/agents/LONG_FUNCTIONS.md and follow it exactly. FUNC={name} ARM={args.arm}.")
+        print(f"Read docs/agents/long-functions.md and follow it exactly. FUNC={name} ARM={args.arm}.")
 
 
 def stage(args) -> None:
@@ -1233,7 +1233,7 @@ def land_one(args, name: str, candidate: str, source: Path, owner: str) -> str:
     # The file's declaration can have other types than the ones the
     # candidate matched with. Then keep the candidate's own: rename its
     # typedefs and declare each clashing symbol under an alias naming that
-    # one symbol (QUEUE.md, "Rules"), until nothing clashes.
+    # one symbol (queue.md, "Rules"), until nothing clashes.
     if "1/1 exact" not in applied.stdout and seen - {name}:
         text = (ROOT / original).read_text()
         for attempt in range(1, 5):
@@ -1272,7 +1272,7 @@ def land_one(args, name: str, candidate: str, source: Path, owner: str) -> str:
     message = (f"feat(overlays): {title} exact match\n\n"
                f"Matched by a Sonnet worker in wave {args.name}; checked strictly against "
                f"{name}'s real address in its level with tools/overlay_check.py "
-               f"(docs/OVERLAYS.md).\n\n{TRAILER}")
+               f"(docs/build/overlays.md).\n\n{TRAILER}")
     add = [str(source.relative_to(ROOT))] + (["progress/report.json"] if elf.exists() else [])
     subprocess.run(["git", "add", *add], cwd=ROOT, check=True)
     subprocess.run(["git", "commit", "-q", "-m", message], cwd=ROOT, check=True)

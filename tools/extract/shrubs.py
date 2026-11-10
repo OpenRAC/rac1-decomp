@@ -1,6 +1,6 @@
 """Shrubs (small static meshes): class meshes and PAL placements.
 
-Layouts follow Wrench's shrub reader and recovery (docs/reference/ASSETS.md).
+Layouts follow Wrench's shrub reader and recovery (docs/game/assets.md).
 """
 
 import math

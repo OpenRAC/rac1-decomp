@@ -24,7 +24,7 @@
 /*
  * freeze.cpp in the original source; text 0x1FBC80-0x1FDF10.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/history/decomp-progress.md. Compiled as C for now.
  */
 
 extern int space_load_in_progress MACRO_ADDR;

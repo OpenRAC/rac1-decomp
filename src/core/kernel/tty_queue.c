@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x119868-0x119D88. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony's EE kernel library (libkernl), tty.o: the deci2 TTY queue and
  * protocol handler (sceTtyHandler, sceTtyWrite, sceTtyRead, sceTtyInit).

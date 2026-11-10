@@ -5,7 +5,7 @@
 
 /*
  * core_text object 0x12CC70-0x12CC90. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Two libmpeg forwarders into the IPU DMA code of 0012CC90.c, each a bare
  * tail jump. Built with Sony's 2.9-ee (Makefile.sn, EE29_CORE), which
