@@ -10,7 +10,7 @@
 
 /*
  * core_text object 0x114518-0x1154C0. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * newlib (the SDK's libc.a), nine members back to back: lseekr.o
  * (_lseek_r), makebuf.o (__smakebuf), mallocr.o (malloc_extend_top,

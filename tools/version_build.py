@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Build a version's programs from their assembly and check each against the disc (docs/VERSIONS.md).
+Build a version's programs from their assembly and check each against the disc (docs/build/versions.md).
 
   python3 tools/version_build.py --version us [-P 8] [--rounds 3] [boot level_00 ...]   # all 20 without names
   python3 tools/version_build.py --version us --layout     # config/versions/us/boot_layout.json from the dump

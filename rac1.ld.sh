@@ -7,7 +7,7 @@
 # counter correctly after a NOLOAD section (verified: an explicit
 # `. = X;` right after one is silently ignored, next section lands back
 # at the NOLOAD section's own start address instead). See
-# docs/reference/TOOLCHAIN.md. build-sn/{core_bss_pad_1,core_bss_pad_2,bss_pad}.o must exist first --
+# docs/build/toolchain.md. build-sn/{core_bss_pad_1,core_bss_pad_2,bss_pad}.o must exist first --
 # tools/build_sn_data.sh generates them.
 cat > build-sn/rac1.ld <<'EOF'
 OUTPUT_FORMAT("elf32-littlemips")

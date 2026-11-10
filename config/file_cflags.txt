@@ -1,7 +1,7 @@
 # Extra compiler flags for whole source files: one file per line, its path
 # from the repository root, then the flags. GCC 2.95 takes options per
 # translation unit, so this is the only granularity a flag has
-# (docs/reference/BUILD_FIDELITY.md, "Flags"). Makefile.sn and tools/try_func.py read it
+# (docs/build/build-fidelity.md, "Flags"). Makefile.sn and tools/try_func.py read it
 # through tools/file_cflags.py.
 #
 #   src/path/file.c  -flag ...

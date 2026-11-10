@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 asm/overlays/<name>.s for every "shared" or "level" function in
-config/overlays/functions.tsv (docs/OVERLAYS.md, "Plan" step 1).
+config/overlays/functions.tsv (docs/build/overlays.md, "Plan" step 1).
 
   python3 tools/overlays.py dump      # if not already done
   python3 tools/overlay_asm.py
@@ -38,7 +38,7 @@ e.g. a bss variable with no `asm/data` entry) or `D_LNN_XXXXXXXX` if it is
 the level's own data (0x15F000 up to the level's text).
 
 Only the file for each function's *canonical* (level, address) -- see
-docs/OVERLAYS.md, "Names" -- is kept, under asm/overlays/<name>.s. Any
+docs/build/overlays.md, "Names" -- is kept, under asm/overlays/<name>.s. Any
 name spimdisasm invented on its own (never declared in a symbol_addrs
 file) is left as the executable's own func_/D_ addressing when its address
 is below 0x15F000 (the resident core, shared unchanged by every level), or
@@ -68,7 +68,7 @@ outside this function is only safe to leave as a symbolic reference when
 that target is *this level's* canonical place for its function -- i.e.
 its own asm/overlays file will sit at the same address when linked here,
 same as the ordinary "branches into the next function" case
-(docs/OVERLAYS.md, "Plan" step 1's caveats). A branch to an executable
+(docs/build/overlays.md, "Plan" step 1's caveats). A branch to an executable
 function (always a different build, src/game/) or to another level's
 canonical place for a shared/level function (a *repeat* here, at a
 different address than its own file expects) cannot be resolved that way;
@@ -342,7 +342,7 @@ _JTBL_ADDR_RE = re.compile(r"jtbl_(?:L\d{2}_)?([0-9A-Fa-f]{8})")
 
 def read_jump_table_entries(lv, jtbl_addr, func_start, func_end):
     """The jump table's entries (as absolute addresses), read from the
-    level's data record (docs/OVERLAYS.md, "Layout"), or its lit record if
+    level's data record (docs/build/overlays.md, "Layout"), or its lit record if
     the address isn't in data's range. Reading stops at the first entry
     that doesn't point inside this level's text at all -- almost always
     the function itself, but a few tables' entries land in the very next
@@ -695,7 +695,7 @@ def name_paired_addresses(content: str, level: int) -> str:
 
 def qualify(content: str, level: int) -> str:
     """Peel the autogen suffix off, requalifying anything spimdisasm named
-    on its own that falls in this level's own range (docs/OVERLAYS.md,
+    on its own that falls in this level's own range (docs/build/overlays.md,
     "Names")."""
     def repl(m: re.Match) -> str:
         prefix, addr_hex = m.group(1), m.group(2)

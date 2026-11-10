@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Version-specific C: where another version's bytes differ from what the shared C builds
-(docs/VERSIONS.md, "Shared and version-specific C").
+(docs/build/versions.md, "Shared and version-specific C").
 
   python3 tools/version_src.py build --version jp              # build-sn/versions/jp/src/**/obj.o
   python3 tools/version_src.py try --version jp FUNC cand.c     # one candidate: its verdict on jp

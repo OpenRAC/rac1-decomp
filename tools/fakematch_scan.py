@@ -49,7 +49,7 @@ LEFT_OUT = ("src/core/", "src/libgcc/", "src/game/movie/")
 HARDWARE = re.compile(r"\b0x1[0-9A-Fa-f]{7}\b")
 VOLATILE = re.compile(r"\bvolatile\b")
 REGISTER = re.compile(r"\bregister\b")
-# Inline asm is left alone (docs/STYLE.md): `__asm__ volatile` and a register pinned for it are not hacks to remove.
+# Inline asm is left alone (docs/contributing/style.md): `__asm__ volatile` and a register pinned for it are not hacks to remove.
 ASM_STATEMENT = re.compile(r"\b__asm__\b|\basm\b")
 IF_ZERO = re.compile(r"\bif\s*\(\s*0\s*\)")
 MARKED = re.compile(r"/\*\s*Fakematch:", re.I)

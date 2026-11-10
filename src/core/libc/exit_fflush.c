@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x1138B8-0x113A70. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * newlib (the SDK's libc.a): exit.o (exit) and fflush.o (fflush), back
  * to back. Built with Sony's 2.9-ee (Makefile.sn, EE29_CORE), like

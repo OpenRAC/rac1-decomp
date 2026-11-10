@@ -204,7 +204,7 @@ int UpdateAllCamerasLvl(void) {
     float *p;
     float *q;
 
-    /* jal lands on the exit-hook wrapper: catalogue fold, docs/kb/refactor-camera.md section 1 */
+    /* jal lands on the exit-hook wrapper: catalogue fold, docs/game/camera.md section 1 */
     Camera_runSetupToNewCam(best);
     for (i = 0; i < 0x30; i++) {
         if (level_camera_present_flags[i] != 0) {

@@ -4,7 +4,7 @@
 #   bash tools/setup_compilers.sh
 #
 # Both come from the decompme/compilers release, and each archive's SHA-256 is pinned. toolchain/ is gitignored, so nothing
-# here is committed. See docs/reference/TOOLCHAIN.md.
+# here is committed. See docs/build/toolchain.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

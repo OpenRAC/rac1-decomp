@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 src/overlays/...: C sources for every "shared" and "level" function in
-config/overlays/functions.tsv, as INCLUDE_ASM stubs (docs/OVERLAYS.md,
+config/overlays/functions.tsv, as INCLUDE_ASM stubs (docs/build/overlays.md,
 "Plan" step 2).
 
   python3 tools/overlay_src.py
@@ -15,7 +15,7 @@ exist yet -- a stub is written regardless (tools/overlay_asm.py fills in
 the .s files separately, including for the 317 functions with a jump
 table that it currently skips).
 
-Directory and grouping rules, from docs/OVERLAYS.md:
+Directory and grouping rules, from docs/build/overlays.md:
 
 - A function's home directory is decided by its kind alone: "shared" goes
   to src/overlays/shared/, "level" to src/overlays/lNN_<planet>/ (its canonical

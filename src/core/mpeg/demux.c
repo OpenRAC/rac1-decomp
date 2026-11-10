@@ -10,7 +10,7 @@
 
 /*
  * core_text object 0x12AC80-0x12CC70. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony's MPEG library (libmpeg): sceMpegInit/Create/Delete-style setup,
  * the callback table (sceMpegAddCallback, sce_mpeg_add_callback) and its

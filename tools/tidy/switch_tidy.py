@@ -7,7 +7,7 @@ Make switch statements easier to read, without touching what they compile to.
   python3 tools/tidy/switch_tidy.py --list     # show each fall-through
 
 A case that runs into the next one gets `/* fall through */`, so it does not look like a bug. Case numbers in one switch
-use one base. The order of the cases stays: it is what gives retail's jump table. Empty cases stay too: see docs/STYLE.md.
+use one base. The order of the cases stays: it is what gives retail's jump table. Empty cases stay too: see docs/contributing/style.md.
 """
 import re
 import subprocess

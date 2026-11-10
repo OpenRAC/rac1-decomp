@@ -8,7 +8,7 @@
 
 /*
  * core_text object 0x119D88-0x11CCE0. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony's EE kernel library (libkernl), several of its modules back to
  * back: the kernel printf (scePrintf, scePrintf, over the print core
@@ -646,7 +646,7 @@ ASM_FUNC("asm/handwritten/core_text", func_0011AD70);
  * `jr $31` whose delay slot is the next object's first instruction. The SDK's
  * libkernl.a gives the function 176 bytes in sifcmd.o (0x11AD70..0x11AE20),
  * this word included, after its own `last:` label's `jr $31; nop`
- * (docs/reference/ASM_CLASSIFICATION.md).
+ * (docs/game/asm-classification.md).
  */
 ASM_FUNC("asm/handwritten/core_text", func_0011AE1C);
 
@@ -2024,7 +2024,7 @@ extern int iop_heap_bind_state;
    0x80000003, busy-waiting until the server answers; -1 if binding fails.
    Built with -fno-schedule-insns (config/func_cflags.txt), the flag
 /* sce_sif_init_iop_heap: matched only with -fno-schedule-insns, which the rest of its object does not build with
-   (docs/reference/BUILD_FIDELITY.md, "Removed"). */
+   (docs/build/build-fidelity.md, "Removed"). */
 int sce_sif_init_iop_heap(void) {
     int k;
     int r;

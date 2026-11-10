@@ -1,5 +1,5 @@
 # NTSC-J v1.02 (SCPS_150.37): every C function of src/ (and the primary's original assembly) checked against this
-# version (tools/version_check.py; docs/VERSIONS.md). status: match (EXACT), differs (the code here is not the
+# version (tools/version_check.py; docs/build/versions.md). status: match (EXACT), differs (the code here is not the
 # same: needs version-specific C), nomatch (the same code, but the C does not build to it), asm (original
 # assembly with the same bytes here), absent (no counterpart). place: boot:ADDR or NN:ADDR.
 # name	source	status	place	size	closeness

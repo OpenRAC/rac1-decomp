@@ -4,7 +4,7 @@
 /*
  * The camera system: the 48 camera slots, the camera-type table and the
  * 0x3A0-byte camera block the renderer reads. Map, callers and evidence:
- * docs/kb/refactor-camera.md.
+ * docs/game/camera.md.
  *
  * Types only, like the other shared headers: a file declares the globals
  * it uses itself (`extern CameraSystem D_00187040;`, readable name gCamera).

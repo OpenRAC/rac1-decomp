@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Check the C in src/ against another version, function by function (docs/VERSIONS.md).
+Check the C in src/ against another version, function by function (docs/build/versions.md).
 
   python3 tools/version_check.py --version us            # config/versions/us/map.tsv
   python3 tools/version_check.py --version us --func func_0012ABCD --diff
@@ -64,7 +64,7 @@ PAL_MAIN = 0x15F000          # where the primary's main segment (the part a leve
 FUNC = re.compile(r"^func_([0-9A-F]{8})$")
 FUNC_L = re.compile(r"^func_L(\d\d)_([0-9A-F]{8})$")
 MAP_HEAD = """# {label} ({id}): every C function of src/ (and the primary's original assembly) checked against this
-# version (tools/version_check.py; docs/VERSIONS.md). status: match (EXACT), differs (the code here is not the
+# version (tools/version_check.py; docs/build/versions.md). status: match (EXACT), differs (the code here is not the
 # same: needs version-specific C), nomatch (the same code, but the C does not build to it), asm (original
 # assembly with the same bytes here), absent (no counterpart). place: boot:ADDR or NN:ADDR.
 # name\tsource\tstatus\tplace\tsize\tcloseness

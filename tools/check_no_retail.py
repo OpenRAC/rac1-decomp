@@ -5,7 +5,7 @@ Fail if git tracks a file that looks like retail or build data.
   python3 tools/check_no_retail.py
 
 It looks for disc and binary file types, and for any file holding NUL bytes. It cannot spot retail data
-pasted as text, so reviewers still check for that (docs/REVIEWING.md).
+pasted as text, so reviewers still check for that (docs/contributing/reviewing.md).
 """
 import subprocess
 import sys

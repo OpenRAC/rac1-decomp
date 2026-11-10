@@ -2,7 +2,7 @@
 /* Level 14 code: animate_ribbon_effect_paths in a file of its own, built with -fno-gcse
  * (config/file_cflags.txt). The functions of vendor_002E0538.c do not build
  * with it (18 of 36 change), so it was another object in retail
- * (docs/reference/BUILD_FIDELITY.md, rule 2). */
+ * (docs/build/build-fidelity.md, rule 2). */
 #include "common.h"
 #include "structs/records.h"
 #include "structs/vector.h"

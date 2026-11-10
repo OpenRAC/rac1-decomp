@@ -5,7 +5,7 @@
 /*
  * collproc.cpp in the original source; text 0x1EFD70-0x1F0F30.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/history/decomp-progress.md. Compiled as C for now.
  */
 
 

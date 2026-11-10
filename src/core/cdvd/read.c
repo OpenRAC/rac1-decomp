@@ -7,7 +7,7 @@
 
 /*
  * core_text object 0x121750-0x121D18. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Six Sony SDK archive members back to back (each ends 8-byte aligned, so
  * no fill separates them): libcdvd's cdvd005.o (sceCdRead), cdvd015.o

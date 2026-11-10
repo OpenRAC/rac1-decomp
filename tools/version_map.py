@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Every function of another version, and its counterpart in the primary one (docs/VERSIONS.md).
+Every function of another version, and its counterpart in the primary one (docs/build/versions.md).
 
   python3 tools/version_map.py --version us        # config/versions/us/functions.tsv
   python3 tools/version_map.py                     # every version other than the primary
 
 The version's programs are cut and paired the way `tools/overlays.py us-map` does it
-(docs/OVERLAYS.md, "US map"), from the dump (tools/versions.py dump) instead of a ReRAC
+(docs/build/overlays.md, "US map"), from the dump (tools/versions.py dump) instead of a ReRAC
 extraction: each code section (the executable's core.text and .text, each level's text record) is
 cut by split() and at the primary version's functions found in it, so its functions are cut as
 their counterparts are; then each function is paired with the primary's by identity (identical
@@ -264,7 +264,7 @@ def path(v):
 
 def write(v, entries):
     head = (f"# {v.label} ({v.id}): every distinct function and its {versions.PRIMARY.label} counterpart"
-            " (tools/version_map.py; docs/VERSIONS.md).\n"
+            " (tools/version_map.py; docs/build/versions.md).\n"
             "# name\tkind\tsize\tfingerprint\tcounterpart\tmethod\tsimilarity\tsame\tplaces\n")
     lines = []
     for e in entries:

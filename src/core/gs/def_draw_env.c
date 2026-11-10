@@ -5,7 +5,7 @@
 
 /*
  * core_text object 0x122200-0x1224B0. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony's libgraph: graph005.o (sceGszbufaddr, sceGszbufaddr) and
  * graph006.o (sceGsSetDefDrawEnv, sce_gs_set_def_draw_env), back to back. Built with

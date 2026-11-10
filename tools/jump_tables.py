@@ -35,7 +35,7 @@ def retail_tables(func: str) -> list[str]:
         p = Path(f"asm/nonmatchings/{segment}/{func}.s")
         if p.exists():
             return list(dict.fromkeys(JTBL.findall(p.read_text())))
-    # level code (docs/OVERLAYS.md): a joined function's pieces may hold its tables
+    # level code (docs/build/overlays.md): a joined function's pieces may hold its tables
     found = []
     for part in [func] + joined_pieces(func):
         p = Path(f"asm/overlays/{part}.s")

@@ -8,7 +8,7 @@
 
 /*
  * core_text object 0x116070-0x116248. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  */
 
 extern void *_impure_ptr NOT_SDA;

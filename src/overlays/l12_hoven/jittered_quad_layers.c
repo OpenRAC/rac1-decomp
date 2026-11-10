@@ -1,7 +1,7 @@
 /* Starts at 0x00309730 (was vendor_00309730.c). */
 /* Level 12 code: draw_hoven_jittered_quad_layers in a file of its own, built with no extra flag.
  * vendor_002EDAA0.c needs -fno-sched-interblock (config/file_cflags.txt), and
- * this function only matches without it (docs/reference/BUILD_FIDELITY.md, rule 2). */
+ * this function only matches without it (docs/build/build-fidelity.md, rule 2). */
 #include "common.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"

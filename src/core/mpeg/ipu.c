@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x12CC90-0x12D868. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony SDK code, built with Sony's 2.9-ee (Makefile.sn, EE29_CORE). Up to
  * 0x12D068: IPU DMA helpers for libmpeg (the CHCR writes of channels 3/4

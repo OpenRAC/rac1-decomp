@@ -15,7 +15,7 @@ build-sn/try/<func>/CONTEXT.md, so it doesn't have to search for it:
   python3 tools/dossier.py func_X [func_Y ...]          # CONTEXT.md only
   python3 tools/dossier.py --m2c func_X [func_Y ...]    # + m2c.c sketch (Docker)
 
-func_LNN_XXXXXXXX names (docs/OVERLAYS.md) are overlay functions: their
+func_LNN_XXXXXXXX names (docs/build/overlays.md) are overlay functions: their
 CONTEXT.md is written by overlay_write() instead, since they have no
 progress-report row yet, and adds what an overlay worker needs instead of
 a triage reason: which levels it's in, the src/overlays file it lands in
@@ -53,7 +53,7 @@ OVERLAY_NAME = re.compile(r"^func_L\d{2}_[0-9A-Fa-f]{8}$")
 OVERLAY_DATA_L = re.compile(r"^D_L\d{2}_[0-9A-Fa-f]{8}$")
 OVERLAY_STUB = re.compile(r"INCLUDE_ASM\([^)]*\b(func_L\d{2}_[0-9A-Fa-f]{8})\)")
 OVERLAY_DEF = re.compile(r"^(?!extern\b)[A-Za-z_].*?\b(func_L\d{2}_[0-9A-Fa-f]{8})(?:_r)?\s*\(")
-ALL_LEVELS = 19  # docs/OVERLAYS.md: every level; a "shared" function may be in fewer.
+ALL_LEVELS = 19  # docs/build/overlays.md: every level; a "shared" function may be in fewer.
 
 
 def asm_path(name: str) -> Path | None:
@@ -78,7 +78,7 @@ def references(name: str) -> tuple[list[str], list[str]]:
     level = re.match(r"func_L(\d\d)_", name)
     for off in GP.findall(text):
         addr = (GP_BASE + int(off, 16)) & 0xFFFFFFFF
-        # In level code, 0x15F000 and up is the level's own data (docs/OVERLAYS.md).
+        # In level code, 0x15F000 and up is the level's own data (docs/build/overlays.md).
         data.append(f"D_L{level.group(1)}_{addr:08X}" if level and addr >= 0x15F000 else f"D_{addr:08X}")
     return calls, list(dict.fromkeys(data))
 
@@ -245,7 +245,7 @@ def write(names: list[str]) -> None:
 
 def load_overlay_catalogue() -> dict[str, tuple[str, int, int, list[tuple[int, int]]]]:
     """name -> (kind, size, levels count, [(level, address), ...]),
-    from config/overlays/functions.tsv (docs/OVERLAYS.md, "Names")."""
+    from config/overlays/functions.tsv (docs/build/overlays.md, "Names")."""
     rows = {}
     path = ROOT / "config/overlays/functions.tsv"
     for line in path.read_text().splitlines():
@@ -259,7 +259,7 @@ def load_overlay_catalogue() -> dict[str, tuple[str, int, int, list[tuple[int, i
 
 def load_overlay_families() -> dict[str, tuple[str, str, int, float]]:
     """name -> (relative, relative kind, relative size, similarity),
-    from config/overlays/families.tsv (docs/OVERLAYS.md, "Relatives")."""
+    from config/overlays/families.tsv (docs/build/overlays.md, "Relatives")."""
     rows = {}
     path = ROOT / "config/overlays/families.tsv"
     if not path.exists():
@@ -274,7 +274,7 @@ def load_overlay_families() -> dict[str, tuple[str, str, int, float]]:
 
 def load_overlay_roles() -> dict[str, list[str]]:
     """name -> ["UpdateMoby_809:00/01/14", ...], from config/overlays/names.tsv
-    (docs/OVERLAYS.md, "Roles"): what the levels' dispatch records use it for."""
+    (docs/build/overlays.md, "Roles"): what the levels' dispatch records use it for."""
     path = ROOT / "config/overlays/names.tsv"
     if not path.exists():
         return {}
@@ -287,7 +287,7 @@ def load_overlay_roles() -> dict[str, list[str]]:
 
 
 def load_names() -> dict[str, dict]:
-    """symbol -> its row in config/names.tsv (docs/NAMES.md)."""
+    """symbol -> its row in config/names.tsv (docs/contributing/names.md)."""
     path = ROOT / "config/names.tsv"
     if not path.exists():
         return {}
@@ -354,7 +354,7 @@ def role_lines(roles: list[str], classes: dict[int, str] | None = None) -> list[
 
 def load_rerac_notes() -> dict[str, list[tuple[str, str, str, str]]]:
     """name -> [(ReRAC's name, confidence, note, source doc)], from
-    config/overlays/rerac_notes.tsv (docs/OVERLAYS.md, "ReRAC notes")."""
+    config/overlays/rerac_notes.tsv (docs/build/overlays.md, "ReRAC notes")."""
     path = ROOT / "config/overlays/rerac_notes.tsv"
     if not path.exists():
         return {}
@@ -449,7 +449,7 @@ def overlay_file_index() -> dict[str, tuple[Path, list[tuple[str, bool]]]]:
 
 
 def overlay_write(names: list[str], out_dir: Path | None = None) -> None:
-    """CONTEXT.md for overlay functions (docs/OVERLAYS.md): no progress-report
+    """CONTEXT.md for overlay functions (docs/build/overlays.md): no progress-report
     row or triage reason exists for these yet, so this covers what an
     overlay worker needs instead -- which levels it's in, the file it lands
     in and its neighbours there, and its family relative. OUT_DIR replaces
@@ -483,7 +483,7 @@ def overlay_write(names: list[str], out_dir: Path | None = None) -> None:
                "relative below, a matched neighbour in this file, or the assembly directly.",
                "- The executable does not build src/overlays/: no full build to verify "
                "against here, only tools/try_func.py's stricter overlay check "
-               "(docs/OVERLAYS.md's per-function EXACT, not the executable's masked one)."]
+               "(docs/build/overlays.md's per-function EXACT, not the executable's masked one)."]
         entry = findex.get(name)
         source = str(entry[0].relative_to(ROOT)) if entry else ""
         if entry:
@@ -515,7 +515,7 @@ def overlay_write(names: list[str], out_dir: Path | None = None) -> None:
                 rel_is_c = next((c for n, c in rel_fns if n == relative), False)
                 status = (f", already matched in {rel_path.relative_to(ROOT)}" if rel_is_c
                           else f", still a stub in {rel_path.relative_to(ROOT)}")
-            out += ["", "## Relative (docs/OVERLAYS.md, \"Relatives\")",
+            out += ["", "## Relative (docs/build/overlays.md, \"Relatives\")",
                     f"- `{relative}` ({rel_kind}, {rel_size} bytes, {similarity:.0%} similar){status}",
                     "  Start from its C if matched C is available; either way it's a same-shape "
                     "sibling to check against, not a finished answer -- masking hides constants, "

@@ -17,7 +17,7 @@
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/history/decomp-progress.md. Compiled as C for now.
  */
 
 extern char memory_card_state[];

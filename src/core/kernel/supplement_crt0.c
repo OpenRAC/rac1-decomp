@@ -9,7 +9,7 @@
 
 /*
  * core_text object 0x11D960-0x11DBE8. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony's EE kernel library (libkernl): diei.o (DIntr, EIntr) and
  * initsys.o (supplement_crt0, kCopy, kFindAddress, FindAddress,

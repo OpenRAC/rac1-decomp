@@ -10,7 +10,7 @@
 #   similar      elsewhere in the same program, the most similar unpaired function (at least 0.8,
 #                size within 15%)
 # similarity: difflib's ratio over masked instructions (mask()); 1.00 when only constants differ.
-# Addresses and names only; regenerate with the ReRAC extraction (docs/OVERLAYS.md, "US map").
+# Addresses and names only; regenerate with the ReRAC extraction (docs/build/overlays.md, "US map").
 # program	us address	us size	pal	method	similarity
 boot	00112380	40	func_00112380	fingerprint	1.00
 boot	001123A8	188	func_001123A8	fingerprint	1.00

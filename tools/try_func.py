@@ -73,7 +73,7 @@ SIZE = re.compile(r"nonmatching\s+(func_[0-9A-Fa-f]{8}),\s*(0x[0-9A-Fa-f]+)")
 
 DEF = re.compile(r"^(?!extern\b)[A-Za-z_].*?\b(func_[0-9A-Fa-f]{8})(?:_r)?\s*\(")
 
-# Overlay functions (docs/OVERLAYS.md): func_LNN_XXXXXXXX, checked through
+# Overlay functions (docs/build/overlays.md): func_LNN_XXXXXXXX, checked through
 # overlay_check instead of the masked compare() below. Their sources live
 # under src/overlays/ (any subdirectory), not in SEGMENT_SOURCES.
 OVERLAY_NAME = re.compile(r"^func_L\d{2}_[0-9A-Fa-f]{8}$")
@@ -142,7 +142,7 @@ def build(name, seg, src, first, last, candidate, work):
     obj.unlink(missing_ok=True)
     # The source file's own extra flags (config/file_cflags.txt), as Makefile.sn passes them.
     # No step between the compiler and the assembler changes what the compiler wrote, apart
-    # from the assembler behaviours listed in docs/reference/BUILD_FIDELITY.md.
+    # from the assembler behaviours listed in docs/build/build-fidelity.md.
     extra = file_cflags.flags_for(src.as_posix())
     with open(work / "log.txt", "w") as log:
         s = [work / f"{n}.s" for n in "abcd"]

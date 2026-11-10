@@ -30,7 +30,7 @@ Usage:
   python tools/rank_candidates.py --check func_00218928 func_001F84AC
   grep -rl 'dsll32' asm/nonmatchings | ... | python tools/rank_candidates.py --check -
 
---check also takes overlay names (func_LNN_XXXXXXXX, docs/OVERLAYS.md): it
+--check also takes overlay names (func_LNN_XXXXXXXX, docs/build/overlays.md): it
 screens asm/overlays/<name>.s through the same classify() rules. The bulk
 ranking above (no --check) only covers the executable's two segments;
 tools/wave.py's overlay pool calls classify() itself over the whole
@@ -62,7 +62,7 @@ from libgcc_units import SEGMENT_SOURCES as SEGMENTS, ee29_sources, object_of
 
 EE29 = ee29_sources()
 
-# Overlay functions (docs/OVERLAYS.md): func_LNN_XXXXXXXX, whose asm lives in
+# Overlay functions (docs/build/overlays.md): func_LNN_XXXXXXXX, whose asm lives in
 # the flat asm/overlays/ directory rather than under asm/nonmatchings/<seg>.
 # They are never ee29 (that only applies to Sony SDK objects in core_text),
 # so classify() below only needs their address, not a segment lookup.
@@ -71,7 +71,7 @@ OVERLAY_ASM = Path("asm/overlays")
 
 
 def vram_of(name: str) -> int:
-    """The function's address, from either naming form (docs/OVERLAYS.md,
+    """The function's address, from either naming form (docs/build/overlays.md,
     "Names")."""
     m = OVERLAY_NAME.match(name)
     return int(m.group(1), 16) if m else int(name.split("_")[1], 16)
@@ -86,7 +86,7 @@ FUNCNAME = re.compile(r"\b(func_(?:L\d{2}_)?[0-9A-Fa-f]{8})\b")
 
 def already_attempted() -> set[str]:
     """
-    Functions named anywhere in docs/ or notes/. A stub discussed in
+    Functions named anywhere in docs/ or docs/history/notes/. A stub discussed in
     prose has almost always been attempted and reverted with its reason
     recorded, so it should not resurface at the top of a "fresh
     candidates" list. Re-attempting one is fine, but that should be a
@@ -100,7 +100,7 @@ def already_attempted() -> set[str]:
 
     # Also: a stub in src/ with a block comment immediately above it is a
     # documented revert -- someone decoded it, failed, and wrote down why.
-    # Those live in source comments rather than in docs/notes, so scanning
+    # Those live in source comments rather than in docs/history/notes, so scanning
     # only the markdown missed them and handed them straight back as top
     # candidates. (Caught when func_0012AAA8, reverted minutes earlier for
     # a delay-slot difference, reappeared at rank 25.)
@@ -204,14 +204,14 @@ def classify(name: str, body: str, seg: str, size: int) -> tuple[str, str, str]:
     # core_text's sd/ld saves are Sony SDK code built with 2.9-ee (the `ee29`
     # objects), which emits them natively; the game compiler's core objects
     # save with sq like retail does there. No spill rewriting
-    # (docs/reference/BUILD_FIDELITY.md).
+    # (docs/build/build-fidelity.md).
     if "Handwritten function" in body:
         return "blocked", "handwritten asm", "spimdisasm marker"
     # A bare tail jump (`j func_X`). Sony's 2.9-ee emits one for a void
     # function that ends in a call, so in its `ee29` objects it is ordinary
     # C. SN's 2.95.3 has no sibling-call optimisation (no flag turns one on),
     # and the build no longer rewrites its call-and-return into a jump
-    # (docs/reference/BUILD_FIDELITY.md, "Removed"), so outside those objects a tail
+    # (docs/build/build-fidelity.md, "Removed"), so outside those objects a tail
     # jump means another compiler or handwritten assembly: a wall.
     tail = bool(re.search(r"(?m)^j\s+func_[0-9A-Fa-f]{8}", text))
     if tail and not ee29:
@@ -424,7 +424,7 @@ def check_names(names: list[str]) -> None:
             verdict, cat, detail = classify(name, body, "text", size)
             if verdict == "candidate" and name in attempted:
                 verdict, cat = "risky", "already attempted"
-                detail = "discussed in docs/notes -- see reason there"
+                detail = "discussed in docs/history/notes -- see reason there"
             # Whether it's still a stub isn't checked here (that needs a
             # scan of src/overlays/, which tools/wave.py's overlay pool
             # already does); this only screens the assembly's shape.
@@ -447,7 +447,7 @@ def check_names(names: list[str]) -> None:
         verdict, cat, detail = classify(name, body, seg, size)
         if verdict == "candidate" and name in attempted:
             verdict, cat = "risky", "already attempted"
-            detail = "discussed in docs/notes -- see reason there"
+            detail = "discussed in docs/history/notes -- see reason there"
         stub = re.search(
             r"INCLUDE_ASM\([^)]*\b" + name + r"\)",
             segment_text(seg),
@@ -496,7 +496,7 @@ def main() -> None:
             verdict, cat, detail = classify(name, body, seg, size)
             if verdict == "candidate" and name in attempted:
                 verdict, cat = "risky", "already attempted"
-                detail = "discussed in docs/notes -- see reason there"
+                detail = "discussed in docs/history/notes -- see reason there"
             rows.append((verdict, cat, name, seg, size, detail))
 
     counts: dict[tuple[str, str], int] = {}

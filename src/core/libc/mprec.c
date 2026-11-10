@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x1154C0-0x116070. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * newlib (the SDK's libc.a): mlock.o (__malloc_lock/__malloc_unlock, both
  * empty) and mprec.o (_Balloc ... _d2b). The linker dead-stripped mprec's
@@ -72,7 +72,7 @@ void *_Balloc(void *arg0, int k) {
  * func_001160D8 above (see its comment) -- identical operations, order,
  * and count as retail, just a different scratch-register assignment
  * among $v0/$v1/$a0 for the three live temporaries (idx, table/bucket,
- * old head). See "Open toolchain questions" in docs/reference/DECOMP_PROGRESS.md.
+ * old head). See "Open toolchain questions" in docs/history/decomp-progress.md.
  *
  * Hash-bucket linked-list insertion: pushes arg1 onto the head of the
  * bucket at table[idx], where idx is read from arg1 itself and table is

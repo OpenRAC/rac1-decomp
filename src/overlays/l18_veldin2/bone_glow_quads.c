@@ -2,7 +2,7 @@
 /* Level 18 (Veldin (return)): draw_moby_color_cycling_bone_glows in a file of its own, built with -mno-split-addresses
  * (config/file_cflags.txt). GCC 2.95 takes options per translation unit,
  * and the functions of the file it came from do not build with this one
- * (docs/reference/BUILD_FIDELITY.md, "Flags"). */
+ * (docs/build/build-fidelity.md, "Flags"). */
 #include "common.h"
 #include "include_asm.h"
 #include "overlays/shared/moby_path_and_manipulators.h"

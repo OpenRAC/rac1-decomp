@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x11CCE0-0x11D0D0. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * Sony's EE kernel library (libkernl), eeloadfile.o: _lf_bind,
  * _lf_version, _sceSifLoadModuleBuffer and sceSifLoadModuleBuffer. The

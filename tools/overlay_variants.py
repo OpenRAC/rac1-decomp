@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Variants (config/overlays/variants.tsv, docs/OVERLAYS.md "Variants"): level
+Variants (config/overlays/variants.tsv, docs/build/overlays.md "Variants"): level
 functions with the same instructions as another function except for a
 constant, a float or a struct offset.
 

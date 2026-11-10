@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Keep the versions in step (docs/VERSIONS.md, "Keeping the versions in step").
+Keep the versions in step (docs/build/versions.md, "Keeping the versions in step").
 
   python3 tools/version_sync.py check     # CI and gen_progress_report.py --check: tables only, no disc
   python3 tools/version_sync.py run       # before each push: rebuild, recheck and report every version
@@ -120,7 +120,7 @@ def check():
     rc = subprocess.run([sys.executable, str(ROOT / "tools/version_report.py"), "--check"]).returncode
     if problems or rc:
         sys.exit(f"*** {len(problems)} version sync problem(s){' and stale reports' if rc else ''}: "
-                 "run python3 tools/version_sync.py run (docs/VERSIONS.md)")
+                 "run python3 tools/version_sync.py run (docs/build/versions.md)")
     print("versions in step: " + ", ".join(f"{v.key}" for v in versions.INTEGRATED))
 
 

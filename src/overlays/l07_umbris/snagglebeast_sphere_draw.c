@@ -2,7 +2,7 @@
 /* Level 07 code: draw_snagglebeast_sphere_quad_strips in a file of its own, built with
  * -mno-split-addresses (config/file_cflags.txt). The functions of
  * vendor_00313D28.c do not build with it (11 change), so it was another
- * object in retail (docs/reference/BUILD_FIDELITY.md, rule 2). */
+ * object in retail (docs/build/build-fidelity.md, rule 2). */
 #include "common.h"
 #include "callees.h"
 #include "structs/vector.h"

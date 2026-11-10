@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Level code overlays: each level's program, which replaces the executable's
-`main` segment when the level loads (docs/OVERLAYS.md).
+`main` segment when the level loads (docs/build/overlays.md).
 
   python3 tools/overlays.py dump        # baserom/overlays/level_NN/ (local)
   python3 tools/overlays.py catalogue   # config/overlays/functions.tsv
@@ -37,7 +37,7 @@ other. Relatives at 75% or more are written to config/overlays/families.tsv.
 and each level's overlay, as ReRAC extracts them to $RERAC/extracted,
 default ~/Projects/rerac) with its PAL counterpart, from the code alone:
 identical masked instructions first, then the functions left between
-those anchors by similarity (docs/OVERLAYS.md, "US map"). `rerac-notes`
+those anchors by similarity (docs/build/overlays.md, "US map"). `rerac-notes`
 puts ReRAC's documented names and notes on our functions through it.
 """
 import bisect
@@ -422,7 +422,7 @@ def vtbl_roles(level: int) -> list[tuple[int, str]]:
 
 def names() -> None:
     """config/overlays/names.tsv: the role each dispatch record gives a
-    catalogued function (docs/OVERLAYS.md, "Roles")."""
+    catalogued function (docs/build/overlays.md, "Roles")."""
     at = {(level, addr): name for name, _, _, places in read_catalogue()
           for level, addr in places}
     roles: dict[str, dict[str, set[int]]] = {}
@@ -616,7 +616,7 @@ def read_us_map() -> dict[tuple[str, int], tuple[str, int, str, str, float]]:
 
 def us_map() -> None:
     """config/overlays/us_map.tsv: each US function's PAL counterpart
-    (docs/OVERLAYS.md, "US map")."""
+    (docs/build/overlays.md, "US map")."""
     if not US_ELF.exists() or not US_LEVELS.is_dir():
         sys.exit(f"no ReRAC extraction at {RERAC}/extracted (set $RERAC)")
     from formats import overlay_sections
@@ -685,7 +685,7 @@ def us_map() -> None:
         f"#   similar      elsewhere in the same program, the most similar unpaired function (at least {SIMILAR},\n"
         "#                size within 15%)\n"
         "# similarity: difflib's ratio over masked instructions (mask()); 1.00 when only constants differ.\n"
-        "# Addresses and names only; regenerate with the ReRAC extraction (docs/OVERLAYS.md, \"US map\").\n"
+        "# Addresses and names only; regenerate with the ReRAC extraction (docs/build/overlays.md, \"US map\").\n"
         "# program\tus address\tus size\tpal\tmethod\tsimilarity\n" + "\n".join(rows) + "\n")
     print(f"{'program':<10} {'functions mapped':>20} {'bytes mapped':>24}  fingerprint/aligned/similar")
     whole = {}
@@ -706,7 +706,7 @@ NOTE_LENGTH = 160
 def rerac_notes() -> None:
     """config/overlays/rerac_notes.tsv: ReRAC's names and notes for the
     functions its docs discuss, on our names through us_map.tsv
-    (docs/OVERLAYS.md, "ReRAC notes")."""
+    (docs/build/overlays.md, "ReRAC notes")."""
     doc = RERAC / "tools/ghidra/names/doc_names.csv"
     if not doc.exists():
         sys.exit(f"no ReRAC checkout at {RERAC} (set $RERAC)")

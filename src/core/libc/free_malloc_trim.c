@@ -6,7 +6,7 @@
 
 /*
  * core_text object 0x113B70-0x114000. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  *
  * newlib's freer.o (mallocr.c built with DEFINE_FREE: _free_r and
  * _malloc_trim_r; the SDK's libc.a). Built with Sony's 2.9-ee

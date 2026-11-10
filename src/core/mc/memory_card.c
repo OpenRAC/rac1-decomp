@@ -7,7 +7,7 @@
 
 /*
  * core_text object 0x1236F0-0x125218. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/history/decomp-progress.md.
  */
 
 extern void libc_memset(void *, int, int);

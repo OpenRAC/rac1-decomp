@@ -7,7 +7,7 @@
 /*
  * fastfunc.cpp in the original source; text 0x1F9810-0x1FAA28.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/history/decomp-progress.md. Compiled as C for now.
  */
 
 LINKER_REMNANT("asm/remnants/text", func_001F9810);
@@ -228,7 +228,7 @@ ASM_FUNC("asm/handwritten/text", func_001FA6C0);
  * choice open question as elsewhere, now confirmed to apply to FP
  * registers too, not just integer. Tried forcing a fresh local via a
  * separate assignment+accumulate instead of one combined expression;
- * no change. See docs/reference/DECOMP_PROGRESS.md.
+ * no change. See docs/history/decomp-progress.md.
  */
 ASM_FUNC("asm/handwritten/text", func_001FA748);
 
