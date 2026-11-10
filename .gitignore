@@ -49,6 +49,7 @@ ctx.c.m2c
 asm/
 # Assets splat extracts from the executable.
 assets/
+!docs/assets/
 .aider*
 
 # One-off scratch / helper scripts created during a session.
