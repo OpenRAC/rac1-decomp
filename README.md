@@ -18,7 +18,7 @@
 
 <p align="center">
   A matching decompilation of <i>Ratchet &amp; Clank</i> (2002) for PlayStation 2.<br>
-  The original game code, rebuilt as readable C that compiles back to the same bytes as retail.
+  The game code, rebuilt as readable C that matches retail byte for byte.
 </p>
 
 > [!WARNING]
