@@ -32,12 +32,12 @@ names, types and structs. Live numbers are on [ByteMatch](https://bytematch.dev/
 
 ## Supported versions
 
-| Release | Region | Boot executable | Notes |
-| --- | --- | --- | --- |
-| v2.00 | PAL (Europe) | `SCES_509.16` | Primary version |
-| v1.00 | PAL (Europe) | `SCES_509.16` | Report id `SCES_509.16_v1` |
-| v1.02 | NTSC-J | `SCPS_150.37` | |
-| v1.00 | NTSC-U | `SCUS_971.99` | Names come from [Lombyte](https://github.com/lombyte-project/Lombyte), the NTSC-U decompilation |
+| Release | Region | Boot executable | Code | Notes |
+| --- | --- | --- | --- | --- |
+| v2.00 | PAL (Europe) | `SCES_509.16` | [![Code](https://bytematch.dev/OpenRAC/rac1-decomp.svg?mode=shield&label=Code&measure=matched_code_percent)](https://bytematch.dev/OpenRAC/rac1-decomp) | Primary version |
+| v1.00 | PAL (Europe) | `SCES_509.16` | [![Code](https://bytematch.dev/OpenRAC/rac1-decomp.svg?mode=shield&label=Code&measure=matched_code_percent&version=SCES_509.16_v1)](https://bytematch.dev/OpenRAC/rac1-decomp/SCES_509.16_v1) | Report id `SCES_509.16_v1` |
+| v1.02 | NTSC-J | `SCPS_150.37` | [![Code](https://bytematch.dev/OpenRAC/rac1-decomp.svg?mode=shield&label=Code&measure=matched_code_percent&version=SCPS_150.37)](https://bytematch.dev/OpenRAC/rac1-decomp/SCPS_150.37) | |
+| v1.00 | NTSC-U | `SCUS_971.99` | [![Code](https://bytematch.dev/OpenRAC/rac1-decomp.svg?mode=shield&label=Code&measure=matched_code_percent&version=SCUS_971.99)](https://bytematch.dev/OpenRAC/rac1-decomp/SCUS_971.99) | ByteMatch shows [Lombyte](https://github.com/lombyte-project/Lombyte)'s count, the NTSC-U decompilation |
 
 All versions share one C source. Expected SHA-1 of the primary executable:
 
