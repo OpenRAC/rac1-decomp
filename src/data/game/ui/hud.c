@@ -36,6 +36,11 @@ u32 message_text_buffer[] DATA_SECTION(D_0019A540) = {
 #include "data_inc/D_0019A540.inc"
 };
 
+/* Clock format and its trailing alignment after the draw_help jump table. */
+u32 D_001E7DC0[] DATA_SECTION(D_001E7DC0) = {
+#include "data_inc/D_001E7DC0.inc"
+};
+
 u32 message_too_long_label[] DATA_SECTION(D_001E7DD8) = {
 #include "data_inc/D_001E7DD8.inc"
 };
