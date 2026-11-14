@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
 The core_rdata pieces that compiled objects provide (config/core_rodata.txt).
+tools/data_layout.py uses sections() for the PAL link.
 
+Legacy data fragment tools:
   python tools/core_rodata.py labels   # labels to cut, for split_data_s.py
   python tools/core_rodata.py ld       # the .core_rdata section's contents
 

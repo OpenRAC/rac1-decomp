@@ -8,52 +8,55 @@ cd "$(dirname "$0")/.."
 AS="$TC/ee-as.exe"
 mkdir -p build-sn
 
-for f in asm/data/*.s; do
-  name=$(basename "$f")
-  out="build-sn/${name%.s}.o"
-  sn "$AS" -I include-sn -I include -o "$out" "$f"
-  echo "assembled $out"
-done
+# Legacy helper callers can still generate the dumped data fragments.
+if [ "${1:-}" != --bss-only ]; then
+  for f in asm/data/*.s; do
+    name=$(basename "$f")
+    out="build-sn/${name%.s}.o"
+    sn "$AS" -I include-sn -I include -o "$out" "$f"
+    echo "assembled $out"
+  done
 
-# core_rdata minus the read-only data compiled objects now provide
-# themselves (config/core_rodata.txt: __divdi3's static __clz_tab, the
-# literals of compiled SDK functions). rac1.ld.sh links the pieces with
-# each object's .rodata in its hole. See tools/split_data_s.py.
-rm -f build-sn/core_rdata_*.s build-sn/core_rdata_*.o
-python tools/split_data_s.py asm/data/core_rdata.rodata.s build-sn/core_rdata $(python tools/core_rodata.py labels)
-for s in build-sn/core_rdata_*.s; do
-  sn "$AS" -I include-sn -I include -o "${s%.s}.o" "$s"
-  echo "assembled ${s%.s}.o"
-done
-
-# data minus the jump tables that compiled game functions now bring
-# themselves (tools/jump_tables.py). rac1.ld.sh links the pieces with each
-# table in its hole.
-rm -f build-sn/data_*.s build-sn/data_*.o
-python tools/split_data_s.py asm/data/data.data.s build-sn/data $(python tools/jump_tables.py labels)
-for s in build-sn/data_*.s; do
-  sn "$AS" -I include-sn -I include -o "${s%.s}.o" "$s"
-  echo "assembled ${s%.s}.o"
-done
-
-# core_data minus the blocks that files in src/data/ now provide (tools/data_in_c.py).
-rm -f build-sn/core_data_*.s build-sn/core_data_*.o
-python tools/split_data_s.py asm/data/core_data.data.s build-sn/core_data $(python tools/data_in_c.py labels core)
-for s in build-sn/core_data_*.s; do
-  sn "$AS" -I include-sn -I include -o "${s%.s}.o" "$s"
-  echo "assembled ${s%.s}.o"
-done
-
-# The literal and level table blobs, the same way.
-for blob in core_lit:rodata lit:rodata lvl_vtbl:data lvl_camvtbl:data lvl_sndvtbl:data; do
-  name=${blob%:*}
-  rm -f build-sn/${name}_*.s build-sn/${name}_*.o
-  python tools/split_data_s.py asm/data/$name.${blob#*:}.s build-sn/$name $(python tools/data_in_c.py labels $name)
-  for s in build-sn/${name}_*.s; do
+  # core_rdata minus the read-only data compiled objects now provide
+  # themselves (config/core_rodata.txt: __divdi3's static __clz_tab, the
+  # literals of compiled SDK functions). rac1.ld.sh links the pieces with
+  # each object's .rodata in its hole. See tools/split_data_s.py.
+  rm -f build-sn/core_rdata_*.s build-sn/core_rdata_*.o
+  python tools/split_data_s.py asm/data/core_rdata.rodata.s build-sn/core_rdata $(python tools/core_rodata.py labels)
+  for s in build-sn/core_rdata_*.s; do
     sn "$AS" -I include-sn -I include -o "${s%.s}.o" "$s"
     echo "assembled ${s%.s}.o"
   done
-done
+
+  # data minus the jump tables that compiled game functions now bring
+  # themselves (tools/jump_tables.py). rac1.ld.sh links the pieces with each
+  # table in its hole.
+  rm -f build-sn/data_*.s build-sn/data_*.o
+  python tools/split_data_s.py asm/data/data.data.s build-sn/data $(python tools/jump_tables.py labels)
+  for s in build-sn/data_*.s; do
+    sn "$AS" -I include-sn -I include -o "${s%.s}.o" "$s"
+    echo "assembled ${s%.s}.o"
+  done
+
+  # core_data minus the blocks that files in src/data/ now provide (tools/data_in_c.py).
+  rm -f build-sn/core_data_*.s build-sn/core_data_*.o
+  python tools/split_data_s.py asm/data/core_data.data.s build-sn/core_data $(python tools/data_in_c.py labels core)
+  for s in build-sn/core_data_*.s; do
+    sn "$AS" -I include-sn -I include -o "${s%.s}.o" "$s"
+    echo "assembled ${s%.s}.o"
+  done
+
+  # The literal and level table blobs, the same way.
+  for blob in core_lit:rodata lit:rodata lvl_vtbl:data lvl_camvtbl:data lvl_sndvtbl:data; do
+    name=${blob%:*}
+    rm -f build-sn/${name}_*.s build-sn/${name}_*.o
+    python tools/split_data_s.py asm/data/$name.${blob#*:}.s build-sn/$name $(python tools/data_in_c.py labels $name)
+    for s in build-sn/${name}_*.s; do
+      sn "$AS" -I include-sn -I include -o "${s%.s}.o" "$s"
+      echo "assembled ${s%.s}.o"
+    done
+  done
+fi
 
 # bss padding objects -- see rac1.ld.sh for why these are real loaded
 # sections rather than NOLOAD.

@@ -264,8 +264,7 @@ any compiled function but failed the full-image audit.
 
 `fix_jump_tables.py --core` now gives only the two explicitly configured
 core tables named input sections. `config/core_rodata.txt` places them
-independently, and leaves `D_001529D4` in the original data fragment. Core
-constants and all other core tables keep their existing sections. The
+independently. Core constants and all other core tables use their ordinary sections. The
 configuration accepts `object.o(SECTION)`; an ordinary object row still
 means `.rodata`. The report measures the selected input section.
 
@@ -276,6 +275,21 @@ executable rebuild retains all 1,209 exact C functions, preserves every
 function address, and has zero differing bytes across all linked image
 sections compared by `check_image.py`. Unimplemented functions remain
 retail assembly; this validation adds no completed C functions.
+
+### PAL executable data alignment
+
+`tools/data_layout.py` places compiled input sections in retail address
+order. The SN linker generates the ordinary alignment gaps as zeros. Two
+boundaries carry explicit rules from the original executable. The first
+`kprintf` table ends at `0x1529D4` and uses `FILL(0xCDCD)` with
+`ALIGN(16)` up to the second table at `0x1529E0`. The
+`init_once` table ends at `0x1E7E74` and uses `ALIGN(16)` with
+default zero fill up to `0x1E7E80`.
+
+The native link map attributes all 83 measured padding spans to the
+linker. They total 285 zero bytes and 12 bytes of `0xCD` fill. The
+reconstructed PAL image compares byte for byte with retail, and the
+report verifies all 5,118 functions and 699,072 initialized data bytes.
 
 ### CD/DVD read: verified assembler profile (2026-10-18)
 

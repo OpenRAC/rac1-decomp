@@ -18,18 +18,18 @@ cd "$(dirname "$0")/.."
 [ -f "$TC/make.exe" ] || { echo "toolchain/sn-prodg-3.01 missing (see README.md)"; exit 1; }
 [ -d toolchain/sn-prodg-24 ] || { echo "toolchain/sn-prodg-24 missing (see README.md)"; exit 1; }
 
-bash tools/build_sn_data.sh >/dev/null || { echo "*** data objects failed"; exit 1; }
+bash tools/build_sn_data.sh --bss-only >/dev/null || { echo "*** bss padding objects failed"; exit 1; }
 
 # Always from scratch: a failed compile leaves the previous .o behind, whose
 # INCLUDE_ASM stubs still hold retail's bytes -- a fictional match.
 rm -rf build-sn/core build-sn/libgcc
 rm -rf build-sn/game build-sn/data
-python tools/data_in_c.py generate >/dev/null
+python tools/data_in_c.py generate >/dev/null || { echo "*** data include generation failed"; exit 1; }
 make_sn >build-sn/make.log 2>&1
 rc=$?
 if [ $rc -ne 0 ]; then tail -20 build-sn/make.log; echo "*** make failed (exit $rc)"; exit 1; fi
 
-bash rac1.ld.sh >/dev/null
+bash rac1.ld.sh >/dev/null || { echo "*** linker script generation failed"; exit 1; }
 
 # bss symbols have no definitions anywhere; their names are their
 # addresses. Collect them from the objects' own symbol tables
@@ -66,5 +66,5 @@ for pass in 1 2 3 4 5 6; do
 done
 
 python tools/sweep_matches.py | sed -n '/=== .* audited ===/,/byte mismatch/p'
-python tools/check_layout.py | tail -1
+python tools/check_layout.py || exit 1
 python tools/check_image.py

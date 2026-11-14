@@ -27,31 +27,17 @@ with the committed report, so forgetting to regenerate fails the PR.
 import os
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
-
-GIT_PATHS = [
-    r"C:\Program Files\Git\usr\bin",
-    r"C:\Program Files\Git\bin",
-    r"C:\Program Files (x86)\Git\usr\bin",
-    r"C:\Program Files (x86)\Git\bin",
-]
-
-def ensure_env():
-    env = os.environ.copy()
-    current_path = env.get("PATH", "")
-    additions = [p for p in GIT_PATHS if os.path.isdir(p) and p not in current_path]
-    if additions:
-        env["PATH"] = ";".join(additions) + ";" + current_path
-    return env
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from libgcc_units import (MODULES, FUNCTIONS as LIBGCC_FUNCTIONS, SEGMENT_SOURCES,
                           object_of)
 from organize_asm import LISTS, entries
-from toolchain import TC, make_sn, sn, start_wineserver
+from toolchain import start_wineserver
 from levels import NUM_LEVELS, dirname as level_dirname, level_of_dir, title as level_title
+from build_sn import run_build
+from data_layout import LAYOUT_SYMBOL, LAYOUT_VERSION, compiled_data, padding_ranges
 import move_src
 import srcnames
 
@@ -471,25 +457,10 @@ def overlay_c_functions() -> tuple[dict, set[str]]:
 
 
 def build() -> None:
-    """From-scratch build + link. Refuses on failure: a failed make leaves
-    the previous .o behind, whose INCLUDE_ASM stubs still hold retail's
-    bytes, and a report built on that would publish fictional matches."""
-    for d in ("build-sn/core", "build-sn/libgcc", "build-sn/game"):
-        for f in Path(d).rglob("*.o") if Path(d).is_dir() else []:
-            f.unlink()
-    for f in Path("build-sn/libgcc").glob("*.o") if Path("build-sn/libgcc").is_dir() else []:
-        f.unlink()
-    start_wineserver()
-    steps = [
-        [f"{TC}/make.exe", "-f", "Makefile.sn"],
-        [sys.executable, "tools/gen_ld.py"],
-        [f"{TC}/ee-ld.exe", "-T", "build-sn/rac1.ld", "build-sn/bss_equs.o", "-o", LINKED_ELF],
-    ]
-    for cmd in steps:
-        r = subprocess.run(cmd, capture_output=True, text=True, env=ensure_env())
-        if r.returncode != 0:
-            sys.stdout.write(r.stdout[-3000:] + r.stderr[-3000:])
-            sys.exit(f"*** {' '.join(cmd[:1])} failed (exit {r.returncode}) -- NOT writing a report")
+    """Use the same clean build and linker layout as the standalone PAL build."""
+    status = run_build()
+    if status:
+        sys.exit(f"*** PAL build failed (exit {status}) -- NOT writing a report")
 
 
 def match_results(funcs: dict, decompiled: set[str]) -> dict[str, float]:
@@ -547,28 +518,6 @@ def match_results(funcs: dict, decompiled: set[str]) -> dict[str, float]:
 # executable's data only.
 RETAIL_DATA_SECTIONS = ("core.data", "core.rdata", "core.lit", ".lit", ".data",
                         "lvl.vtbl", "lvl.camvtbl", "lvl.sndvtbl")
-EXE_LABEL = re.compile(r"^(?:D|jtbl)_([0-9A-F]{8})$")
-
-
-def compiled_data() -> list[tuple[str, str, int]]:
-    """(object, input section, retail address) for every piece of retail's data that a compiled
-    object provides itself instead of the retail blobs in asm/data/: core_rdata's literals
-    (config/core_rodata.txt) and the switch jump tables of decompiled game functions
-    (tools/jump_tables.py). The link puts each in the hole cut for it at its first label, whose
-    name is its retail address."""
-    import core_rodata
-    import data_in_c
-    import jump_tables
-    out = []
-    for obj, section, labels in core_rodata.sections():
-        out.append((obj, section, int(EXE_LABEL.match(labels[0]).group(1), 16)))
-    for label, _func, obj in jump_tables.provided():
-        m = EXE_LABEL.match(label)
-        if m:                                      # level code's tables live in the levels
-            out.append((obj, f".rodata.{label}", int(m.group(1), 16)))
-    for label, obj, section in [row for segment in data_in_c.SEGMENTS for row in data_in_c.provided(segment)]:
-        out.append((obj, section, int(EXE_LABEL.match(label).group(1), 16)))
-    return out
 
 
 def unit_of_object(obj: str) -> str:
@@ -579,10 +528,8 @@ def unit_of_object(obj: str) -> str:
     return report_unit(obj[len("build-sn/"):-2])
 
 
-def data_results() -> tuple[int, list[tuple[str, int, bool]]]:
-    """(retail's initialised data in bytes, [(unit, size, exact), ...] for each piece compiled
-    objects provide). A piece is exact when the linked image holds retail's bytes at its retail
-    address; the blobs leave a hole exactly there, so those bytes are the object's."""
+def data_results() -> tuple[int, list[tuple[str | None, int, bool]]]:
+    """Audit compiled data and linker fill against the retail addresses and bytes."""
     from elftools.elf.elffile import ELFFile
 
     with open(BASEROM, "rb") as f:
@@ -594,8 +541,13 @@ def data_results() -> tuple[int, list[tuple[str, int, bool]]]:
         delta = seg["p_vaddr"] - seg["p_offset"]
     raw = Path(BASEROM).read_bytes()
     with open(LINKED_ELF, "rb") as f:
-        linked = [(s["sh_addr"], s.data()) for s in ELFFile(f).iter_sections()
+        image = ELFFile(f)
+        linked = [(s["sh_addr"], s.data()) for s in image.iter_sections()
                   if s["sh_addr"] and s["sh_type"] == "SHT_PROGBITS"]
+        marker = image.get_section_by_name(".symtab").get_symbol_by_name(LAYOUT_SYMBOL)
+        if marker and (len(marker) != 1 or marker[0]["st_shndx"] != "SHN_ABS"
+                       or marker[0]["st_value"] != LAYOUT_VERSION):
+            sys.exit("*** invalid compiled data layout marker -- rebuild with tools/build_sn.sh")
 
     def ours(addr: int, size: int) -> bytes:
         for base, data in linked:
@@ -603,23 +555,33 @@ def data_results() -> tuple[int, list[tuple[str, int, bool]]]:
                 return data[addr - base: addr - base + size]
         sys.exit(f"*** no linked section holds {addr:#x}+{size:#x}")
 
-    pieces = []
-    for obj, section, addr in compiled_data():
-        with open(obj, "rb") as f:
-            sec = ELFFile(f).get_section_by_name(section)
-            if sec is None:
-                sys.exit(f"*** {obj} has no {section} section")
-            size = sec["sh_size"]
-        exact = ours(addr, size) == raw[addr - delta: addr - delta + size]
+    def counted_bytes(addr: int, size: int) -> int:
         # A block can end in the padding between two retail sections: those bytes are not in the total.
-        counted = sum(max(0, min(addr + size, base + length) - max(addr, base)) for base, length in ranges)
-        pieces.append((unit_of_object(obj), counted, exact))
+        return sum(max(0, min(addr + size, base + length) - max(addr, base)) for base, length in ranges)
+
+    pieces: list[tuple[str | None, int, bool]] = []
+    inputs = []
+    objects = {}
+    for obj, section, addr in compiled_data():
+        if obj not in objects:
+            with open(obj, "rb") as f:
+                objects[obj] = {s.name: (s["sh_size"], s["sh_addralign"]) for s in ELFFile(f).iter_sections()}
+        if section not in objects[obj]:
+            sys.exit(f"*** {obj} has no {section} section")
+        size, alignment = objects[obj][section]
+        inputs.append((addr, size, alignment))
+        exact = ours(addr, size) == raw[addr - delta: addr - delta + size]
+        pieces.append((unit_of_object(obj), counted_bytes(addr, size), exact))
+    if marker:  # An older ELF may still obtain data from the retail assembly blobs.
+        for addr, size, value in padding_ranges(inputs):
+            expect = bytes([value]) * size
+            exact = ours(addr, size) == expect == raw[addr - delta: addr - delta + size]
+            pieces.append((None, counted_bytes(addr, size), exact))
     return total, pieces
 
 
-def data_measures(total: int, pieces: list[tuple[str, int, bool]], complete: set[str]) -> dict:
-    """total_data, matched_data and complete_data for the report's measures (uint64s as strings).
-    Data still assembled from retail's dumps is not matched: only what compiled objects bring."""
+def data_measures(total: int, pieces: list[tuple[str | None, int, bool]], complete: set[str]) -> dict:
+    """Count exact compiled data and linker fill. Fill has no owning unit."""
     matched = sum(size for _u, size, exact in pieces if exact)
     done = sum(size for u, size, exact in pieces if exact and u in complete)
     return {
