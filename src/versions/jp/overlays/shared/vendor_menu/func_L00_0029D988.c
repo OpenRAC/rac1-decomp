@@ -193,7 +193,7 @@ void func_L00_0029D988_r(void) {
                                     0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
                                     &((*(s32 *)((char *)&weapon_ammo_counts +
                                                 ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
-                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
+                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].max_ammo);
                             }
                         }
                     }
@@ -213,7 +213,7 @@ void func_L00_0029D988_r(void) {
                                     0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
                                     &((*(s32 *)((char *)&weapon_ammo_counts +
                                                 ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
-                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
+                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].max_ammo);
                             }
                         }
                     }
@@ -239,7 +239,7 @@ void func_L00_0029D988_r(void) {
                                     0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
                                     &((*(s32 *)((char *)&weapon_ammo_counts +
                                                 ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
-                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
+                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].max_ammo);
                             }
                         }
                     }
@@ -264,7 +264,7 @@ void func_L00_0029D988_r(void) {
                                     0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
                                     &((*(s32 *)((char *)&weapon_ammo_counts +
                                                 ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
-                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
+                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].max_ammo);
                             }
                         }
                     }

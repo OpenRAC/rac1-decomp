@@ -53,7 +53,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
 
         VP.item_text = queue_animation_update(0x30, item + 0xEA60, initialize_numeric_hud_timer_and_base_dimensions,
                                               Hud_UpdateCounter, draw_weapon_ammo_hud_panel, &weapon_ammo_counts[item],
-                                              item_price_table[item].hE);
+                                              item_price_table[item].max_ammo);
     }
     skip_frame = 1;
     VP.f0 = 0;
