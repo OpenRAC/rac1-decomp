@@ -23,16 +23,16 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     box.x = (short)x;
 
     if (MENU.rows[MENU.f58].fD4 == 1 &&
-        weapon_ammo_counts[MENU.rows[MENU.f58].fD0] >= item_price_table[MENU.rows[MENU.f58].fD0].hE) {
+        weapon_ammo_counts[MENU.rows[MENU.f58].fD0] >= item_price_table[MENU.rows[MENU.f58].fD0].max_ammo) {
         message_id = 0x528D;
         goto message;
     }
     if (MENU.rows[MENU.f58].fD4 != 1)
         goto purchase;
     if (MENU.f40)
-        ammo_cost = item_price_table[MENU.rows[MENU.f58].fD0].hA;
+        ammo_cost = item_price_table[MENU.rows[MENU.f58].fD0].ammo_price_alt;
     else
-        ammo_cost = item_price_table[MENU.rows[MENU.f58].fD0].h8;
+        ammo_cost = item_price_table[MENU.rows[MENU.f58].fD0].ammo_price;
     if (gBolts < ammo_cost)
         goto no_money;
     DrawMobyList(MENU.f20 + 0x500, 1);
@@ -56,9 +56,9 @@ quantity_done:
     FontPrintSmall(0x40, 0x32, 0x80f0f0f0L, vendor_quantity_right_label, -1);
     fmt = vendor_purchase_decimal_format;
     if (MENU.f40)
-        total = vendor_buy_quantity * item_price_table[MENU.rows[MENU.f58].fD0].hA;
+        total = vendor_buy_quantity * item_price_table[MENU.rows[MENU.f58].fD0].ammo_price_alt;
     else
-        total = vendor_buy_quantity * item_price_table[MENU.rows[MENU.f58].fD0].h8;
+        total = vendor_buy_quantity * item_price_table[MENU.rows[MENU.f58].fD0].ammo_price;
     sprintf(text, fmt, total);
     font_print_right_small(0x40, 0x4c, 0x80f0f0f0L, text, -1);
     return;
@@ -68,7 +68,8 @@ message:
     font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
     return;
 purchase:
-    cost = gHavePersuader ? item_price_table[MENU.rows[MENU.f58].fD0].i4 : item_price_table[MENU.rows[MENU.f58].fD0].i0;
+    cost = gHavePersuader ? item_price_table[MENU.rows[MENU.f58].fD0].discount_price
+                          : item_price_table[MENU.rows[MENU.f58].fD0].price;
     if (gBolts >= cost) {
         FontPrintSmall(6, 6, 0x80f0f0f0L, msg_string(0x5290), -1);
         FontPrintSmall(2, 0x20, 0x80f0f0f0L, msg_string(0x528B), -1);

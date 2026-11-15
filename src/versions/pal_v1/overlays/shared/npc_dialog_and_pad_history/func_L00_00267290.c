@@ -54,7 +54,7 @@ int Npc_TryStartDialog(char *p, char *q) {
         e = (char *)*(int *)(q + 0x3C) + *(short *)(q + 0x36) * 0x1C;
         if (*(unsigned short *)(e + 0x10) & 8) {
             if (*(short *)(e + 8) == 1)
-                gBolts = gBolts - *(int *)(item_price_table + *(short *)(e + 0xA) * 0x18);
+                gBolts = gBolts - item_price_table[*(short *)(e + 0xA)].price;
             else if (*(short *)(e + 8) == 4) {
                 tb2 = gSpecialItems;
                 tb2[*(short *)(e + 0xA)] = 0;

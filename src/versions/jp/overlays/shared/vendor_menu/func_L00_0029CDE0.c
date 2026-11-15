@@ -26,19 +26,19 @@ void update_vendor_purchase(void) {
         vendor_quantity_adjustable = 0;
         if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1 &&
             weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >=
-                item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
+                item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].max_ammo) {
             Moby_PlaySound(2, 0, vendor_menu_r4.cam);
         } else if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1) {
-            pr1 = vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                     : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8;
+            pr1 = vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price_alt
+                                     : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price;
             if (gBolts < pr1) {
                 Moby_PlaySound(2, 0, vendor_menu_r4.cam);
             } else {
                 vendor_quantity_adjustable = 1;
             }
         } else {
-            pr1 = gHavePersuader[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                                    : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+            pr1 = gHavePersuader[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].discount_price
+                                    : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].price;
             if (gBolts < pr1) {
                 Moby_PlaySound(2, 0, vendor_menu_r4.cam);
             }
@@ -68,11 +68,12 @@ void update_vendor_purchase(void) {
             if ((D_0013CA40_9CDE0.pressed & 0x2000) ||
                 (vendor_quantity_increase_hold_frames >= 16 && !(vendor_quantity_increase_hold_frames & 7)) ||
                 vendor_quantity_increase_hold_frames >= 48) {
-                if ((vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                        : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) > 0) {
-                    n2 = vendor_menu_r4.f40 ? gBolts / item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                            : gBolts / item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8;
-                    room = item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE -
+                if ((vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price_alt
+                                        : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price) > 0) {
+                    n2 = vendor_menu_r4.f40
+                             ? gBolts / item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price_alt
+                             : gBolts / item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price;
+                    room = item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].max_ammo -
                            weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item];
                     if (room < n2)
                         n2 = room;
@@ -119,33 +120,37 @@ void update_vendor_purchase(void) {
             if (vendor_purchase_confirmed == 1) {
                 if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1) {
                     cost = vendor_menu_r4.f40
-                               ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA * vendor_buy_quantity
-                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8 * vendor_buy_quantity;
+                               ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price_alt *
+                                     vendor_buy_quantity
+                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price *
+                                     vendor_buy_quantity;
                 } else {
-                    cost = gHavePersuader[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                                             : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+                    cost = gHavePersuader[0]
+                               ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].discount_price
+                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].price;
                 }
                 if (gBolts < cost && weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >=
-                                         item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
+                                         item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].max_ammo) {
                     Moby_PlaySound(0, 0, vendor_menu_r4.cam);
                 } else if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1) {
                     if (weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] <
-                        item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
-                        price = (vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                                    : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) *
+                        item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].max_ammo) {
+                        price = (vendor_menu_r4.f40
+                                     ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price_alt
+                                     : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price) *
                                 vendor_buy_quantity;
                         if (gBolts >= price) {
                             if (weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >
-                                item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
+                                item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].max_ammo) {
                                 weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] =
-                                    item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE;
+                                    item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].max_ammo;
                             }
                             n = vendor_buy_quantity;
                             n -= add_ammo(vendor_menu_r4.e[vendor_menu_r4.idx].item, n);
-                            price =
-                                (vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                                    : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) *
-                                n;
+                            price = (vendor_menu_r4.f40
+                                         ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price_alt
+                                         : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].ammo_price) *
+                                    n;
                             ((int *)(level_render_state_base + 0xA))[vendor_menu_r4.e[vendor_menu_r4.idx].item] += n;
                             handle_vendor_auxiliary_moby_event(3);
                             gBolts = gBolts - price;
@@ -160,8 +165,9 @@ void update_vendor_purchase(void) {
                         Moby_PlaySound(0, 0, vendor_menu_r4.cam);
                     }
                 } else {
-                    price = gHavePersuader[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                                              : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+                    price = gHavePersuader[0]
+                                ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].discount_price
+                                : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].price;
                     if (gBolts >= price) {
                         handle_vendor_auxiliary_moby_event(2);
                         grant_inventory_item(vendor_menu_r4.e[vendor_menu_r4.idx].item, 1);
@@ -175,12 +181,12 @@ void update_vendor_purchase(void) {
                             set_animation_parameter(vendor_menu_r4.f50, 0);
                         vendor_menu_r4.f50 = -1;
                         if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1) {
-                            vendor_menu_r4.f50 =
-                                queue_animation_update(0x30, vendor_menu_r4.e[vendor_menu_r4.idx].item + 0xEA60,
-                                                       initialize_numeric_hud_timer_and_base_dimensions,
-                                                       Hud_UpdateCounter, draw_weapon_ammo_hud_panel,
-                                                       &weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item],
-                                                       item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE);
+                            vendor_menu_r4.f50 = queue_animation_update(
+                                0x30, vendor_menu_r4.e[vendor_menu_r4.idx].item + 0xEA60,
+                                initialize_numeric_hud_timer_and_base_dimensions, Hud_UpdateCounter,
+                                draw_weapon_ammo_hud_panel,
+                                &weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item],
+                                item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].max_ammo);
                         } else {
                             if (vendor_menu_r4.count - 1 < vendor_menu_r4.idx) {
                                 vendor_menu_r4.idx = vendor_menu_r4.count - 1;

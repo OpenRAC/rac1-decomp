@@ -48,15 +48,17 @@ typedef struct ObjectRenderClass {
     f32 scale;                  /* 0x48 */
 } ObjectRenderClass;
 
-/* Vendor item pricing and ammo capacity records (D_001E02B0). */
+/* 0x18 bytes per item, in both the executable and the level overlay. */
 typedef struct VendorItemPrice {
     s32 price;            /* 0x00: item purchase price */
     s32 discount_price;   /* 0x04: discount price (Persuader) */
     u16 ammo_price;       /* 0x08: price per ammo round */
-    u16 ammo_price_alt;   /* 0x0A */
-    u8 pad_0C[2];         /* 0x0C */
+    u16 ammo_price_alt;   /* 0x0A: price per ammo round through the PDA */
+    u16 pickup_ammo;      /* 0x0C: default rounds in an ammo pickup */
     u16 max_ammo;         /* 0x0E: maximum ammo capacity */
-    u8 pad_10[8];         /* 0x10 */
+    u8 unk_10[2];         /* 0x10 */
+    u16 initial_ammo;     /* 0x12: minimum rounds when the item is first granted */
+    u8 unk_14[4];         /* 0x14 */
 } VendorItemPrice;
 
 /* Level collectible/save state (gold bolts, level-specific items). */
