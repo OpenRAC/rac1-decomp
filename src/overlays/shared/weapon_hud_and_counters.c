@@ -1026,11 +1026,18 @@ typedef struct {
     int x74;
     int x78;
 } Obj238478;
+/* Both HUD selectors use this overlay record. An icon bank of zero marks
+ * an empty slot. The directional fields give the neighboring slot indices.
+ * The selection ID is an item ID or a Gadgebot command, depending on the selector. */
 typedef struct {
-    int x0;
-    char pad_04[0x18 - 0x04];
-    int x18;
-} DestElem;
+    int icon_bank;
+    int icon_frame;
+    int left_slot;
+    int right_slot;
+    int up_slot;
+    int down_slot;
+    int selection_id;
+} HudSelectorSlot;
 typedef struct {
     char pad_00[0x38];
     unsigned short x38;
@@ -1039,7 +1046,7 @@ typedef struct {
 
 extern int quick_select_slot_count MACRO_ADDR;
 extern void *hud_selector_slot_tables MACRO_ADDR;
-extern DestElem l00_eight_slot_hud_selector_entries[8];
+extern HudSelectorSlot l00_eight_slot_hud_selector_entries[8];
 extern SrcElem item_defs[];
 extern short quick_select_width;
 extern short quick_select_height;
@@ -1050,7 +1057,7 @@ extern int help_stats_base_i[] __asm__("D_0014171B");
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_text_002377b8.c, FUN_L00_00237ae8.
 void initialize_eight_slot_hud_selector(Obj238478 *o) {
     int i, a, b;
-    DestElem *d;
+    HudSelectorSlot *d;
     int *s;
     SrcElem *tab;
     quick_select_slot_count = 8;
@@ -1069,16 +1076,13 @@ void initialize_eight_slot_hud_selector(Obj238478 *o) {
     tab = item_defs;
     s = (int *)((char *)help_stats_base_i + 0x885);
     for (i = 7; i >= 0; i--) {
-        d->x18 = *s;
-        d->x0 = tab[*s].x38;
+        d->selection_id = *s;
+        d->icon_bank = tab[*s].x38;
         s++;
         d++;
     }
 }
 
-typedef struct {
-    int f0, f4, f8, fC, f10, f14, f18;
-} Ent_38530;
 typedef struct {
     u8 p0[0x64];
     int w64;
@@ -1087,14 +1091,14 @@ typedef struct {
     u8 b70;
     u8 b71;
     u8 p72[2];
-    int w74;
+    int selected_slot;
     int w78;
     int w7C;
 } Obj_38530;
 extern PadState g_controller_state_r __asm__("D_0013CA40");
 extern short l00_hud_selector_fade_counter_limit_gp;
 extern int D_L00_0015FB54_38530 SDATA(D_L00_0015FB54);
-extern Ent_38530 **hud_selector_slot_tables_r __asm__("D_L00_0015FB78") MACRO_ADDR;
+extern HudSelectorSlot **hud_selector_slot_tables_r __asm__("D_L00_0015FB78") MACRO_ADDR;
 extern int quick_select_last_state MACRO_ADDR;
 extern int quick_select_close_frame MACRO_ADDR;
 
@@ -1117,8 +1121,10 @@ extern int quick_select_default_up_slot;
 extern int quick_select_default_down_slot;
 extern int gameplay_event_frame_count MACRO_ADDR;
 
-/* Picks slot w74 from the stick angle (or steps it with the 0x1000-0x8000 pad bits), counts hold frames in b71/b70,
-   records the slot's entry when released, and closes when b70 runs out.
+/* While Triangle is held, the stick or directional buttons move
+   the focus. During the closing fade after release, a populated slot queues
+   its item in pending_item[0]. The Drone Device queues drone replenishment
+   through a separate hero flag.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/002377b8.c, FUN_L00_00237ba0. */
 void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     float x, y, mag, ang, a, f, r;
@@ -1139,12 +1145,12 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     ang = fast_atan2(x, y);
     if ((p->w78 >> 24) == 0) {
         if ((((int)g_controller_state_r.pressed_unmasked) & 0xF000) || mag < 0.5f || --p->w78 == -1) {
-            p->w74 = -1;
+            p->selected_slot = -1;
             p->w78 = 0x10000FF;
         }
     }
     n = 0;
-    old = p->w74;
+    old = p->selected_slot;
     if ((p->w78 >> 24) == 1 && (((int)g_controller_state_r.held_unmasked) & 0x10)) {
         if (mag > 0.9f) {
             a = ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)quick_select_slot_count;
@@ -1160,7 +1166,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                         s--;
                     s = (s + quick_select_slot_count) % quick_select_slot_count;
                 }
-                p->w74 = s;
+                p->selected_slot = s;
                 n = -1;
                 (quick_select_slot_angle_offset) = FastNormalizeAngle(a - ((float)s * 0.7853982f + 0.39269909f));
                 if ((quick_select_slot_angle_offset) > 0.0f)
@@ -1174,7 +1180,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                 if (w == -1)
                     t = quick_select_default_up_slot;
                 else
-                    t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f10;
+                    t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].up_slot;
                 w = t;
             }
             if (((int)g_controller_state_r.pressed_unmasked) & 0x4000) {
@@ -1182,7 +1188,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                 if (w == -1)
                     t = quick_select_default_down_slot;
                 else
-                    t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f14;
+                    t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].down_slot;
                 w = t;
             }
             if (((int)g_controller_state_r.pressed_unmasked) & 0x8000) {
@@ -1190,7 +1196,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                 if (w == -1)
                     t = quick_select_default_left_slot;
                 else
-                    t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f8;
+                    t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].left_slot;
                 w = t;
             }
             if (((int)g_controller_state_r.pressed_unmasked) & 0x2000) {
@@ -1198,28 +1204,28 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                 if (w == -1)
                     t = quick_select_default_right_slot;
                 else
-                    t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].fC;
+                    t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].right_slot;
                 w = t;
             }
-            p->w74 = w;
+            p->selected_slot = w;
         }
         {
-            Ent_38530 *t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)];
-            int cur = p->w74;
-            if (t[cur].f0 == 0 && n != 0) {
+            HudSelectorSlot *t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)];
+            int cur = p->selected_slot;
+            if (t[cur].icon_bank == 0 && n != 0) {
                 k = (cur + n) % quick_select_slot_count;
-                if (t[k].f0 != 0)
-                    p->w74 = k;
+                if (t[k].icon_bank != 0)
+                    p->selected_slot = k;
             }
         }
     }
-    if (p->w74 != old)
+    if (p->selected_slot != old)
         c[1] = 0;
     else if (c[1] < (*(int *)&l00_hud_selector_fade_counter_limit_gp))
         c[1]++;
     if (!(((int)g_controller_state_r.held_unmasked) & 0x10)) {
-        int sel = p->w74;
-        if (sel >= 0 && (id = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][sel].f18) != 0) {
+        int sel = p->selected_slot;
+        if (sel >= 0 && (id = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][sel].selection_id) != 0) {
             Route *rr;
             int ri = id;
             if (g_hero_r.items[0].item_id != id) {
@@ -1244,7 +1250,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     if (c[0] == 0) {
         {
             int a = p->w78;
-            int b = p->w74;
+            int b = p->selected_slot;
             D_L00_0015FB54_38530 = b;
             quick_select_last_state = a;
         }
@@ -1262,11 +1268,6 @@ typedef struct {
 } WeaponRec;
 extern WeaponRec item_price_table[];
 
-typedef struct {
-    int id;
-    char pad[0x14];
-    int item;
-} E_238C30;
 typedef struct {
     char pad[0x46];
     short h46, h48;
@@ -1351,20 +1352,21 @@ int draw_hud_item_selector_panel(HudElem *rec) {
         icon_x = x + GI(quick_select_center_x) +
                  (int)(GF(quick_select_ring_radius) * FastCos(angle) * GF(quick_select_ring_aspect));
         icon_y = y + GI(quick_select_center_y) + (int)(GF(quick_select_ring_radius) * FastSin(angle));
-        if (rec->unk74 == i && ((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id != 0)
+        if (rec->unk74 == i && ((HudSelectorSlot **)hud_selector_slot_tables)[GI(quick_select_page)][i].icon_bank != 0)
             draw_hud_sprite(GetIconFrame(0xe99c, 0), icon_x - 0x13, icon_y - 0x13, 0x26, 0x26, marker_alpha);
-        if (((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id != 0) {
+        if (((HudSelectorSlot **)hud_selector_slot_tables)[GI(quick_select_page)][i].icon_bank != 0) {
             int icon_alpha;
             if (i != rec->unk74)
                 icon_alpha = truncate_float_to_s32((float)alpha * GF(quick_select_unselected_alpha_scale));
             else
                 icon_alpha = alpha;
             hud_frame((char *)rec,
-                      GetIconFrame(((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].id,
-                                   ((unsigned char *)screen_globals_base +
-                                    0x4C6)[((E_238C30 **)hud_selector_slot_tables)[GI(quick_select_page)][i].item]
-                                       ? 4
-                                       : 0),
+                      GetIconFrame(
+                          ((HudSelectorSlot **)hud_selector_slot_tables)[GI(quick_select_page)][i].icon_bank,
+                          ((unsigned char *)screen_globals_base +
+                           0x4C6)[((HudSelectorSlot **)hud_selector_slot_tables)[GI(quick_select_page)][i].selection_id]
+                              ? 4
+                              : 0),
                       icon_x, icon_y, 1, icon_alpha);
         }
     }
@@ -1472,9 +1474,6 @@ void initialize_four_slot_hud_selector(HudElem *a) {
 }
 extern short quick_select_page_r __asm__("D_L00_0015F80C");
 typedef struct {
-    int f0, f4, f8, fC, f10, f14, f18;
-} Ent;
-typedef struct {
     u8 p0[0x64];
     int w64;
     u8 p68[4];
@@ -1482,7 +1481,7 @@ typedef struct {
     u8 b70;
     u8 b71;
     u8 p72[2];
-    int w74;
+    int selected_slot;
     int w78;
     int w7C;
 } Obj;
@@ -1490,7 +1489,7 @@ extern PadState g_controller_state;
 extern int radial_select_auto_close_flag;
 extern short quick_select_slot_count_r __asm__("D_L00_0015FB48");
 extern int quick_select_last_slot_export __asm__("D_L00_0015FB54") MACRO_ADDR;
-extern Ent **hud_selector_slot_tables_r2 __asm__("D_L00_0015FB78") MACRO_ADDR;
+extern HudSelectorSlot **hud_selector_slot_tables_r2 __asm__("D_L00_0015FB78") MACRO_ADDR;
 extern int radial_select_default_left_slot;
 extern int radial_select_default_right_slot;
 extern int radial_select_default_up_slot;
@@ -1515,61 +1514,62 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
     ang = fast_atan2(x, y);
     if ((o->w78 >> 24) == 0 && radial_select_auto_close_flag != 0) {
         if ((((int)g_controller_state.pressed_unmasked) & 0xF000) || len < 0.5f || --o->w78 == -1) {
-            o->w74 = -1;
+            o->selected_slot = -1;
             o->w78 = 0x10000FF;
         }
     }
-    old = o->w74;
+    old = o->selected_slot;
     if (*((s8 *)o + 0x7B) == 1) {
         if (0.9f < len) {
             n = (*(int *)&quick_select_slot_count_r);
-            o->w74 =
+            o->selected_slot =
                 (int)((ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)n) * ((float)n / 6.2831855f)) %
                 n;
         }
         if (((int)g_controller_state.pressed_unmasked) & 0xF000) {
-            cur = o->w74;
+            cur = o->selected_slot;
             if (((int)g_controller_state.pressed_unmasked) & 0x1000) {
                 if (cur == -1)
                     t = radial_select_default_up_slot;
                 else
-                    t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f10;
+                    t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].up_slot;
                 cur = t;
             }
             if (((int)g_controller_state.pressed_unmasked) & 0x4000) {
                 if (cur == -1)
                     t = radial_select_default_down_slot;
                 else
-                    t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f14;
+                    t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].down_slot;
                 cur = t;
             }
             if (((int)g_controller_state.pressed_unmasked) & 0x8000) {
                 if (cur == -1)
                     t = radial_select_default_left_slot;
                 else
-                    t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f8;
+                    t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].left_slot;
                 cur = t;
             }
             if (((int)g_controller_state.pressed_unmasked) & 0x2000) {
                 if (cur == -1)
                     t = radial_select_default_right_slot;
                 else
-                    t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].fC;
+                    t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].right_slot;
                 cur = t;
             }
-            o->w74 = cur;
+            o->selected_slot = cur;
         }
     }
-    if (o->w74 != old) {
+    if (o->selected_slot != old) {
         c[1] = 0;
     } else if (c[1] < (*(int *)&l00_hud_selector_fade_counter_limit_gp)) {
         c[1]++;
     }
     if (!(((int)g_controller_state.held_unmasked) & 0x10)) {
-        if (o->w74 == -1)
+        if (o->selected_slot == -1)
             radial_select_choice[0] = 0;
         else
-            radial_select_choice[0] = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][o->w74].f18;
+            radial_select_choice[0] =
+                hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][o->selected_slot].selection_id;
         if (c[0] != 0)
             c[0]--;
     } else if (c[0] < (*(int *)&l00_hud_selector_fade_counter_limit_gp)) {
@@ -1578,7 +1578,7 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
     if (c[0] == 0) {
         {
             int a = o->w78;
-            int b = o->w74;
+            int b = o->selected_slot;
             quick_select_last_slot_export = b;
             quick_select_last_state = a;
         }
@@ -1587,9 +1587,6 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
         quick_select_close_frame = rendered_frame_count;
     }
 }
-typedef struct {
-    int f0, f4, f8, fC, f10, f14, f18;
-} Ent_239918;
 typedef struct {
     int v[4];
 } Ids;
@@ -1609,7 +1606,7 @@ typedef struct {
 
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 extern int quick_select_slot_count_r2 __asm__("D_L00_0015FB48") MACRO_ADDR;
-extern Ent_239918 **hud_selector_slot_tables_r3 __asm__("D_L00_0015FB78") MACRO_ADDR;
+extern HudSelectorSlot **hud_selector_slot_tables_r3 __asm__("D_L00_0015FB78") MACRO_ADDR;
 extern int D_L00_0015F860_239918 SDATA(D_L00_0015F860);
 extern int D_L00_0015F890_239918 SDATA(D_L00_0015F890);
 extern int D_L00_0015F7F8_239918 SDATA(D_L00_0015F7F8);
@@ -1691,10 +1688,10 @@ int draw_hud_radial_selector_panel(Elem *e) {
             FastAddRots((float)i * 2.0f * 3.1415927f / (float)quick_select_slot_count_r2 - 3.1415927f, 1.5707964f);
         X = x + D_L00_0015F800_239918 + (int)(D_L00_0015F86C_239918 * FastCos(f20) * D_L00_0015F8A4_239918);
         Y = y + D_L00_0015F804_239918 + (int)(D_L00_0015F86C_239918 * FastSin(f20));
-        if (e->sel == i && hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0 != 0) {
+        if (e->sel == i && hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].icon_bank != 0) {
             draw_hud_sprite(GetIconFrame(0xE99C, 0), X - 0x13, Y - 0x13, 0x26, 0x26, b);
         }
-        if (hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0 != 0) {
+        if (hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].icon_bank != 0) {
             if (i != e->sel) {
                 alpha = truncate_float_to_s32_r((float)a * D_L00_0015F8A0_239918);
             } else {
@@ -1702,21 +1699,21 @@ int draw_hud_radial_selector_panel(Elem *e) {
             }
             if (((Arena *)texture_group_header_r3)->f2C != 0) {
                 HudFrame_r(e,
-                           GetIconFrame(hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0,
-                                        hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f4),
+                           GetIconFrame(hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].icon_bank,
+                                        hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].icon_frame),
                            X, Y, 1, alpha);
             } else {
                 HudFrame_r(e,
-                           GetIconFrame(hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0,
-                                        hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f4 + 4),
+                           GetIconFrame(hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].icon_bank,
+                                        hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].icon_frame + 4),
                            X, Y, 1, a);
             }
         }
     }
     k = e->sel;
-    if (k >= 0 && hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].f0 != 0) {
+    if (k >= 0 && hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].icon_bank != 0) {
         tmp = quick_select_label_msg_ids;
-        if (hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].f0 != 0) {
+        if (hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].icon_bank != 0) {
             str = msg_string_r(tmp.v[k]);
             if (str != 0 && libc_strlen_r(str) != 0) {
                 float f20 = f23 * f22;
