@@ -16,7 +16,7 @@
 
 extern char g_controller_state[];
 
-extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
+void ClearPadInput(PadState *p);
 
 /* UpdatePad(PAD &): latches a few per-frame fields, then asks
    sce_pad2_get_state for the port's state. Not 1: the input is cleared and
@@ -95,39 +95,25 @@ void poll_pad_device_state(void *arg0) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-/* ClearPadInput(PAD &) */
-typedef struct {
-    char unk_000[0x100];
-    int a[16];      /* 0x100 */
-    int b[16];      /* 0x140 */
-    char unk_180[0x20];
-    int f1A0, f1A4, f1A8, f1AC;
-    int f1B0, f1B4, f1B8, f1BC;
-    int f1C0, f1C4, f1C8, f1CC;
-    int f1D0, f1D4, f1D8;
-} PadClr;
-
-/* ClearPadInput(PAD &). The stores are in the source order that gives
-   retail's schedule. a and b are separate members, so each is its own
-   loop giv; the second one (b) becomes the loop's base. */
-void ClearPadInput(PadClr *p) {
+/* ClearPadInput(PAD &). Keep the store order for the retail schedule. */
+void ClearPadInput(PadState *p) {
     int i;
 
-    p->f1B0 = 0;
-    p->f1A0 = 0;
-    p->f1A4 = 0;
-    p->f1A8 = 0;
-    p->f1D0 = 1;
-    p->f1B4 = 0;
-    p->f1B8 = 0;
-    p->f1C0 = 0;
-    p->f1C4 = 0;
-    p->f1C8 = 0;
-    p->f1D4 = 1;
-    p->f1D8 = 0;
+    p->raw_held = 0;
+    p->held = 0;
+    p->pressed = 0;
+    p->released = 0;
+    p->no_buttons = 1;
+    p->raw_pressed = 0;
+    p->raw_released = 0;
+    p->held_unmasked = 0;
+    p->pressed_unmasked = 0;
+    p->released_unmasked = 0;
+    p->no_direction = 1;
+    p->stick_moved = 0;
     for (i = 0; i < 16; i++) {
-        p->a[i] = 0;
-        p->b[i] = 0;
+        p->analog[i] = 0.0f;
+        p->analog_prev[i] = 0.0f;
     }
 }
 
