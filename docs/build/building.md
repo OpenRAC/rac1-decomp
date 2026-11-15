@@ -112,6 +112,12 @@ A file in `src/data/` names a block of retail's data and says which source file 
 are generated from your own baserom into `build-sn/data_inc/`, and are never committed. A table of only symbols and
 zeros, or a block of only zeros, is written out in the file, since it holds none of retail's numbers.
 
+The PAL v2.00 linker lays out those compiled input sections and fills the gaps between them. Input section alignment
+generates the ordinary zero fill. [`tools/data_layout.py`](../../tools/data_layout.py) records two exceptions based on
+the original ELF. The first `kprintf` jump table ends at `001529D4` and fills with `CD` up to `001529E0`.
+The table in `init_once` ends at `001E7E74` and aligns to `001E7E80` with zeros. The report compares each of
+the linker's generated spans with the original bytes. The whole-image check covers the complete reconstructed image.
+
 To give a block a struct type, record the layout, then set it. A block that does not fit stays as it is, and says why:
 
 ```sh

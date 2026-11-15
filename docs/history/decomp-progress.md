@@ -72,13 +72,12 @@ The report also measures the executable's **data** (`total_data`,
 `executable` category). The total is retail's initialised data:
 `core.data`, `core.rdata`, `core.lit`, `.lit`, `.data` and the three
 `lvl.*vtbl` sections (`.bss` has no bytes to compare, and the level
-programs' data is not measured yet). Data still assembled from retail's
-dumps in `asm/data/` is not matched. Matched data is what compiled objects
-bring themselves (`config/core_rodata.txt`, and the jump tables of
-decompiled game functions, `tools/jump_tables.py`), counted when the linked
-image holds retail's bytes at its retail address; complete data is the part
-of it in complete units. Units carry no data measures, because the retail
-dumps can't be split by unit.
+programs' data is not measured yet). Matched data includes compiled input
+sections and linker-generated alignment padding that match retail at their
+original addresses. The report derives the expected padding from each
+input section's alignment and the two explicit alignments in
+`tools/data_layout.py`. Complete data is the part owned by complete units.
+Linker padding has no owning unit.
 
 Totals written in prose go stale, so this file no
 longer keeps a running count. Snapshot as of 2026-09-24 (`5c1d28b`):

@@ -6,12 +6,10 @@ Retail keeps the text objects' read-only data (strings and switch jump
 tables) at the end of the data segment. A decompiled function with a
 switch brings its own table, which has to land exactly where retail's
 was. tools/fix_jump_tables.py puts each compiled table in a section of
-its own, named after the retail table (`.rodata.jtbl_001E8C90`);
-tools/build_sn_data.sh cuts those tables out of asm/data/data.data.s;
-rac1.ld.sh links the pieces and the tables in address order. The tables
-are 16-byte aligned and the pieces keep their own alignment, so each one
-lands at its retail address and the gaps are zero-filled, as in retail.
+its own, named after the retail table (`.rodata.jtbl_001E8C90`).
+tools/data_layout.py uses this list to link the tables in retail order.
 
+Legacy data fragment tools:
   python tools/jump_tables.py labels   # the jtbl_ labels to cut out
   python tools/jump_tables.py ld       # the .data section's contents
 """

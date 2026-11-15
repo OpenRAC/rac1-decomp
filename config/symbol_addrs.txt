@@ -89,3 +89,6 @@ func_00120A88 = 0x00120A88; // type:func
 
 // String literals after libgcc __umoddi3 __clz_tab
 D_00152F18 = 0x00152F18;
+
+// Clock format stored after draw_help's jump table in the PAL executable.
+D_001E7DC0 = 0x001E7DC0;

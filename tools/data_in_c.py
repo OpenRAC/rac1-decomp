@@ -19,8 +19,8 @@ an include file generated locally from your baserom, so they are never committed
     };
 
 The file is compiled on its own, and code keeps its extern. So moving data here cannot change how code addresses it.
-The block's own section goes in the hole cut for it in the data blob (tools/jump_tables.py, tools/split_data_s.py), and
-tools/check_image.py proves the bytes are retail's.
+tools/data_layout.py places each block's input section in retail order, and tools/check_image.py verifies the linked
+bytes against the original executable.
 
 A table of only symbols and zeros is written out in its file, because symbol names are not retail's bytes.
 A block of only zeros needs no values at all, so it is plain C too.

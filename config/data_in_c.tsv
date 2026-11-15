@@ -1727,6 +1727,7 @@ D_001E7BA0	u32	src/data/game/render/draw.c
 D_001E7BB8	u32	src/data/game/render/draw.c
 D_001E7BF8	struct TextRegionP	src/data/game/gameplay/freeze.c
 D_001E7C10	u32	src/data/game/gameplay/freeze.c
+D_001E7DC0	u32	src/data/game/ui/hud.c
 D_001E7DD8	u32	src/data/game/ui/hud.c
 D_001E7E10	char	src/data/game/system/initonce.c
 D_001E7E28	u32	src/data/game/system/initonce.c

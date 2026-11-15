@@ -9,12 +9,16 @@
 # at the NOLOAD section's own start address instead). See
 # docs/build/toolchain.md. build-sn/{core_bss_pad_1,core_bss_pad_2,bss_pad}.o must exist first --
 # tools/build_sn_data.sh generates them.
+set -e
 cat > build-sn/rac1.ld <<'EOF'
 OUTPUT_FORMAT("elf32-littlemips")
 OUTPUT_ARCH(mips)
 
 SECTIONS
 {
+EOF
+python tools/data_layout.py >> build-sn/rac1.ld
+cat >> build-sn/rac1.ld <<'EOF'
   /* Retail's gp base, read straight out of its own .reginfo section
      (Elf32_RegInfo.ri_gp_value). The 0x7f80-byte window below it is the
      small-data area: core.lit, .lit, .bss and the bottom of .data. All
@@ -77,17 +81,15 @@ cat >> build-sn/rac1.ld <<'EOF'
   . = 0x12f580;
   .core_data : {
 EOF
-python tools/data_in_c.py ld core >> build-sn/rac1.ld
+cat build-sn/data-link/core.ld >> build-sn/rac1.ld
 cat >> build-sn/rac1.ld <<'EOF'
   }
 
   . = 0x152300;
-  /* Split around the read-only data compiled objects now bring themselves
-     (__divdi3's static __clz_tab, SDK functions' literals), each in its
-     retail hole: config/core_rodata.txt, tools/core_rodata.py. */
+  /* Compiled literals, tables and variables in their retail order. */
   .core_rdata : {
 EOF
-python tools/core_rodata.py ld >> build-sn/rac1.ld
+cat build-sn/data-link/core_rdata.ld >> build-sn/rac1.ld
 cat >> build-sn/rac1.ld <<'EOF'
   }
 
@@ -109,14 +111,14 @@ cat >> build-sn/rac1.ld <<'EOF'
   . = 0x15ed80;
   .core_lit : {
 EOF
-python tools/data_in_c.py ld core_lit >> build-sn/rac1.ld
+cat build-sn/data-link/core_lit.ld >> build-sn/rac1.ld
 cat >> build-sn/rac1.ld <<'EOF'
   }
 
   . = 0x15f000;
   .lit : {
 EOF
-python tools/data_in_c.py ld lit >> build-sn/rac1.ld
+cat build-sn/data-link/lit.ld >> build-sn/rac1.ld
 cat >> build-sn/rac1.ld <<'EOF'
   }
 
@@ -124,32 +126,31 @@ cat >> build-sn/rac1.ld <<'EOF'
   .bss : { build-sn/bss_pad.o(.bss_pad) }
 
   . = 0x165580;
-  /* The retail data, cut around the jump tables compiled functions now
-     bring, with each table in its hole (tools/jump_tables.py). */
+  /* Compiled data and switch tables, with the linker filling alignment gaps. */
   .data : {
 EOF
-python tools/jump_tables.py ld >> build-sn/rac1.ld
+cat build-sn/data-link/data.ld >> build-sn/rac1.ld
 cat >> build-sn/rac1.ld <<'EOF'
   }
 
   . = 0x1e8f00;
   .lvl_vtbl : {
 EOF
-python tools/data_in_c.py ld lvl_vtbl >> build-sn/rac1.ld
+cat build-sn/data-link/lvl_vtbl.ld >> build-sn/rac1.ld
 cat >> build-sn/rac1.ld <<'EOF'
   }
 
   . = 0x1e8f80;
   .lvl_camvtbl : {
 EOF
-python tools/data_in_c.py ld lvl_camvtbl >> build-sn/rac1.ld
+cat build-sn/data-link/lvl_camvtbl.ld >> build-sn/rac1.ld
 cat >> build-sn/rac1.ld <<'EOF'
   }
 
   . = 0x1e9000;
   .lvl_sndvtbl : {
 EOF
-python tools/data_in_c.py ld lvl_sndvtbl >> build-sn/rac1.ld
+cat build-sn/data-link/lvl_sndvtbl.ld >> build-sn/rac1.ld
 cat >> build-sn/rac1.ld <<'EOF'
   }
 
