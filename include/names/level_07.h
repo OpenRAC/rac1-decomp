@@ -60,7 +60,7 @@
 #define select_sharkigator_navigation_heading             func_L07_003102C8
 #define test_sharkigator_target_sphere_collision          func_L07_003108B0
 #define configure_timed_point_light                       func_L07_00313298
-#define rumble_by_distance                                func_L07_003134B8
+#define camera_shake_by_distance                          func_L07_003134B8
 #define update_timed_point_light_color                    func_L07_00313530
 #define draw_collision_clipped_moby_beam                  func_L07_00313800
 #define draw_snagglebeast_sphere_effect                   func_L07_003141A8

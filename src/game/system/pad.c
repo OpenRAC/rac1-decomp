@@ -26,7 +26,9 @@ extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
    as none) and moves to state 1, or 2 when the first block was too
    long; state 1 reads the buttons into process_pad_input and counts +0x18C
    down; state 2 clears the input and sets +0x18C to 2. The two copy
-   loops per block are as retail has them (0..n, then n..3). */
+   loops per block are as retail has them (0..n, then n..3). The motor
+   levels are cleared at the end and never sent: retail has no
+   sceVibSetActParam. */
 void poll_pad_device_state(void *arg0) {
     PadState *p = arg0;
     unsigned char buf[0x40];
@@ -88,8 +90,8 @@ void poll_pad_device_state(void *arg0) {
         ClearPadInput(p);
         p->profile_state = 0;
     }
-    p->unk188 = 0;
-    p->unk189 = 0;
+    p->small_motor = 0;
+    p->large_motor = 0;
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */

@@ -369,8 +369,8 @@ Per frame, in `src/game/system/pad.c`: `func_00218908` (UpdatePad) ->
 | 0x140 | `f32 [16]` | `analog_prev` | copy of analog |
 | 0x180 | `u8 [4]` | `profile` | button profile block UpdatePad reads (func_00124DF0) |
 | 0x184 | `u8 [4]` | `act` | actuator block UpdatePad reads (func_00125218) |
-| 0x188 | `u8` | `unk188` |  |
-| 0x189 | `u8` | `unk189` | copied by FUN_L00_002d2ee8 on spawn |
+| 0x188 | `u8` | `small_motor` | vibration level, cleared by every poll and never sent |
+| 0x189 | `u8` | `large_motor` | vibration level, cleared by every poll and never sent; copied by FUN_L00_002d2ee8 on spawn |
 | 0x18C | `s16` | `unk18C` | counted down by UpdatePad; on pad 0, nonzero suppresses pressed/released (PAL) |
 | 0x18E | `s16` | `hist_idx` | next slot of the 30-poll history; cleared with hist_count by ResetGlobalStateFields |
 | 0x190 | `s32` | `hist_count` | history entries filled, up to 30 |

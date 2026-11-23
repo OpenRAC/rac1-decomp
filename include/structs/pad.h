@@ -48,8 +48,11 @@ struct PadState {
     f32 analog_prev[16];                /* 0x140: copy of analog */
     u8 profile[4];                      /* 0x180: button profile block UpdatePad reads (func_00124DF0) */
     u8 act[4];                          /* 0x184: actuator block UpdatePad reads (func_00125218) */
-    u8 unk188;                          /* 0x188 */
-    u8 unk189;                          /* 0x189: copied by metal_detector_update on spawn */
+    /* 0x188, 0x189: vibration levels, cleared by every poll. Going Commando's poll sends them with sceVibSetActParam
+       (small motor on or off, large motor 0..255); this game never sends them: sceVibSetActParam was dead-stripped
+       (src/core/input/vib_profile.c). */
+    u8 small_motor; /* 0x188 */
+    u8 large_motor; /* 0x189: copied by metal_detector_update on spawn */
     u8 pad_18A[0x2];
     s16 unk18C; /* 0x18C: counted down by UpdatePad; on pad 0, nonzero suppresses pressed/released (PAL) */
     s16 hist_idx; /* 0x18E: next slot of the 30-poll history; cleared with hist_count by ResetGlobalStateFields */

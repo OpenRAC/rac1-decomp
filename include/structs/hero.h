@@ -630,7 +630,7 @@ struct Hero {
     s32 heading_locked; /* 0xA58 */
     f32 attack_target_yaw; /* 0xA5C */
     s32 attack_record; /* 0xA60 */
-    s32 unkA64; /* 0xA64 */
+    s32 wrench_hit_latch; /* 0xA64: a swing has hit a moby and played its sound; each melee state clears it */
     f32 pushback_yaw; /* 0xA68 */
     f32 speed_scale; /* 0xA6C: multiplier on the run target in some states (target = frame_time * 5.7 * speed_scale); 1.0 normally */
     f32 slam_descending; /* 0xA70 */

@@ -7,4 +7,4 @@ int texture_alloc_counter[] DATA_SECTION(D_0015F020) = {
 #include "data_inc/D_0015F020.inc"
 };
 
-L00Entry actuator_wave[8] DATA_SECTION(D_00165580) = {0};
+ActuatorWave actuator_wave[8] DATA_SECTION(D_00165580) = {0};

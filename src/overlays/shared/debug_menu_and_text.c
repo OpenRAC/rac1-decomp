@@ -422,7 +422,8 @@ typedef struct {
     char padA0[4];
     s32 buffer_mode;
     char padA8[0x48];
-    s32 fF0, fF4;
+    s32 fF0;
+    s32 actuator_enabled; /* the Actuator row; run_level_main_loop turns it on */
     u8 saved_timer, point_timer;
 } DebugMenu;
 typedef struct {
@@ -847,7 +848,7 @@ void update_debug_menu(void) {
             if (((DebugMenu *)gDebugFreeCamLvl)->item == 0 && (g_controller_state.keys.word.pressed & 0x50))
                 ((DebugMenu *)gDebugFreeCamLvl)->fF0 = !((DebugMenu *)gDebugFreeCamLvl)->fF0;
             if (((DebugMenu *)gDebugFreeCamLvl)->item == 1 && (g_controller_state.keys.word.pressed & 0x50))
-                ((DebugMenu *)gDebugFreeCamLvl)->fF4 = !((DebugMenu *)gDebugFreeCamLvl)->fF4;
+                ((DebugMenu *)gDebugFreeCamLvl)->actuator_enabled = !((DebugMenu *)gDebugFreeCamLvl)->actuator_enabled;
             if (((DebugMenu *)gDebugFreeCamLvl)->item == 2 && (g_controller_state.keys.word.pressed & 0xF0)) {
                 extern char level_file_path_format;
                 char *fmt = level_directory;
@@ -933,7 +934,8 @@ typedef struct {
     s32 mode, bits, draw_bits, group, item, camera_mode, display_mode, occl_mode;
     s32 f20, f24, f28, f2C, f30, f34, selection, mission;
     char pad40[0xB0];
-    s32 fF0, fF4;
+    s32 fF0;
+    s32 actuator_enabled; /* the Actuator row; run_level_main_loop turns it on */
     u8 saved_timer, point_timer;
 } DebugMenu60;
 extern DebugMenu60 debug_menu60 __asm__("D_L00_0016C158");
@@ -1234,7 +1236,7 @@ void draw_debug_menu(void) {
         print_debug_text(0x168, 0x114, 0x8000C0C0, debug_menu_battle_camera_label);
         print_debug_text(0x1CA, 0x114, 0x80F0F0F0, debug_menu_toggle_value_texts[(debug_menu60.fF0 != 0) ? 0 : 1]);
         print_debug_text(0x168, 0x123, 0x8000C0C0, debug_menu_actuator_label);
-        print_debug_text(0x1CA, 0x123, 0x80F0F0F0, debug_menu_toggle_value_texts[debug_menu60.fF4]);
+        print_debug_text(0x1CA, 0x123, 0x80F0F0F0, debug_menu_toggle_value_texts[debug_menu60.actuator_enabled]);
         print_debug_text(0x168, 0x132, 0x8000C0C0, debug_menu_sample_capture_label);
         buf[1] = 0;
         buf[0] = debug_menu60.point_timer;

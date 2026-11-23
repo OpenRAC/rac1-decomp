@@ -149,7 +149,7 @@ void HeroL11_UpdateStateTransitions(void) {
                         clear_hero_queued_animation();
                         if (g_hero.unk22CA != 0) {
                             if (g_hero.unk308 == 0 || item_available[0x1C] == 0) {
-                                Hero_TrySetMoveStateL11(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
+                                Hero_TrySetMoveStateL11(HERO_STATE_THRUSTER_HOVER, 1);
                                 break;
                             }
                         }
@@ -254,7 +254,7 @@ void HeroL11_UpdateStateTransitions(void) {
                         }
                         if (g_hero.air_frames.s > scale_ticks(4)) {
                             if (g_hero.ground_distance > 0.4f) {
-                                if (g_hero.state.prev != HERO_STATE_LAND) {
+                                if (g_hero.state.prev != HERO_STATE_PACK_GLIDE) {
                                     Hero_TrySetMoveStateL11(HERO_STATE_FALL, 1);
                                     break;
                                 }
@@ -896,7 +896,7 @@ void HeroL11_UpdateStateTransitions(void) {
                             }
                         }
                         if (g_hero.air_frames.s > scale_ticks(8)) {
-                            if (g_hero.state.prev != HERO_STATE_LAND) {
+                            if (g_hero.state.prev != HERO_STATE_PACK_GLIDE) {
                                 Hero_TrySetMoveStateL11(HERO_STATE_FALL, 1);
                                 break;
                             }
@@ -982,7 +982,7 @@ void HeroL11_UpdateStateTransitions(void) {
                     case HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY:
                         if (g_hero.state_timer < scale_ticks(0xC) &&
                             (g_hero.state.prev2 != HERO_STATE_PACK_LONG_JUMP ||
-                             (g_hero.state.prev != HERO_STATE_LAND && g_hero.state.prev != HERO_STATE_FALL)) &&
+                             (g_hero.state.prev != HERO_STATE_PACK_GLIDE && g_hero.state.prev != HERO_STATE_FALL)) &&
                             g_hero.state.prev != 0xF && g_hero.state.prev != HERO_STATE_PACK_JUMP &&
                             g_hero.state.prev != HERO_STATE_PACK_LONG_JUMP && g_hero.state.prev != 0x12 &&
                             g_hero.state.prev != 0x3C && (g_controller_state.pressed & PAD_CROSS)) {
@@ -1186,7 +1186,7 @@ void HeroL11_UpdateStateTransitions(void) {
                         if ((g_controller_state.held & PAD_CROSS) && item_available[2] != 0 &&
                             hero_slot_item_id(3) != 4 && g_hero.pack_disabled == 0 && g_hero.move_lock_timer == 0 &&
                             g_hero.ground_distance > 0.6f) {
-                            Hero_TrySetMoveStateL11(HERO_STATE_LAND, 1);
+                            Hero_TrySetMoveStateL11(HERO_STATE_PACK_GLIDE, 1);
                             break;
                         }
                         if (g_hero.still_frames > scale_ticks(0x14)) {
@@ -1224,7 +1224,7 @@ void HeroL11_UpdateStateTransitions(void) {
                             return;
                         }
                         break;
-                    case HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT:
+                    case HERO_STATE_THRUSTER_HOVER:
                         if (g_hero.on_slip_ground != 0 && g_hero.ground_distance < 0.5f) {
                             Hero_TrySetMoveStateL11(HERO_STATE_SLIP, 1);
                             break;
@@ -1265,7 +1265,7 @@ void HeroL11_UpdateStateTransitions(void) {
                         set_hero_animation(get_hero_idle_animation_index(0), 0, -2.0f);
                         configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 0, 1);
                         break;
-                    case HERO_STATE_LAND:
+                    case HERO_STATE_PACK_GLIDE:
                         if (g_hero.wall_jump_window != 0) {
                             if (scale_ticks(9) > g_hero.state_timer) {
                                 int hit = 0;
@@ -1670,7 +1670,7 @@ void HeroL11_UpdateStateTransitions(void) {
                                             lim = 1.5f;
                                         }
                                         if (lim < g_hero.ground_distance) {
-                                            Hero_TrySetMoveStateL11(HERO_STATE_LAND, 1);
+                                            Hero_TrySetMoveStateL11(HERO_STATE_PACK_GLIDE, 1);
                                         }
                                     }
                                 }
@@ -1690,8 +1690,8 @@ void HeroL11_UpdateStateTransitions(void) {
                                 Hero_TrySetMoveStateL11(HERO_STATE_DYING, 1);
                                 break;
                             }
-                            if (g_hero.state.prev == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
-                                Hero_TrySetMoveStateL11(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
+                            if (g_hero.state.prev == HERO_STATE_THRUSTER_HOVER) {
+                                Hero_TrySetMoveStateL11(HERO_STATE_THRUSTER_HOVER, 1);
                                 break;
                             }
                             Hero_TrySetMoveStateL11(HERO_STATE_IDLE, 0);

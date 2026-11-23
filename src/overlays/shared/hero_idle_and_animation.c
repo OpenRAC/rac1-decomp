@@ -1254,7 +1254,7 @@ void scan_hero_input_sequences(void) {
     } else if (g->state_timer == scale_ticks(0x3C)) {
         if (g->state.current == HERO_STATE_CROUCH) {
             s = 7;
-        } else if (g->state.current == HERO_STATE_LAND) {
+        } else if (g->state.current == HERO_STATE_PACK_GLIDE) {
             s = 8;
         }
     }
@@ -2609,7 +2609,7 @@ void update_hero_collision_ease_target(void) {
         return;
     if (hero_slot_item_id(0) == 0x1A)
         return;
-    if (g->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+    if (g->state.current == HERO_STATE_THRUSTER_HOVER) {
         p = D_L00_0017A780;
         s = g_frame_scale_sq;
         *(float *)(p + 0x694) = -0.349065840f;
@@ -3344,7 +3344,7 @@ void check_ledge_grab(void) {
              (((Hero *)D_0013F450_20C568)->past_jump_apex != 0 ||
               ((Hero *)D_0013F450_20C568)->motion.velocity.f[2] < g_frame_time_r3 * 3.5f)) ||
             ((Hero *)D_0013F450_20C568)->state.control_mode == HERO_MODE_FALL ||
-            ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_LAND ||
+            ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_PACK_GLIDE ||
             ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_LEDGE_SHIMMY_POSITIVE_YAW ||
             ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_LEDGE_SHIMMY_NEGATIVE_YAW)
             go = 1;

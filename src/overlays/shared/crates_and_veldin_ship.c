@@ -1743,7 +1743,7 @@ extern char hero_globals_base[] NOT_SDA;
 
 /* Starts animation 6 if the hero state is 8 and the moby is not already playing it. */
 void helipack_update(Moby *a) {
-    if (((struct Hero *)g_hero)->state.current == HERO_STATE_LAND) {
+    if (((struct Hero *)g_hero)->state.current == HERO_STATE_PACK_GLIDE) {
         if (a->prev_seq != 6) {
             MobyBlendAnimation(a, 6, 0, scale_ticks(10));
         }

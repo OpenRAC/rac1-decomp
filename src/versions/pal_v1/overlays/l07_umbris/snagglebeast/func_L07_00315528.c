@@ -342,7 +342,7 @@ void snagglebeast_update(unsigned char *m) {
                     *(int *)&vb.f[3] = 0;
                     spawn_white_particle_with_payload(&vc, &vb);
                 }
-                rumble_by_distance((char *)m);
+                camera_shake_by_distance((char *)m);
             }
             if (d->phase >= 3 && is_value_within_interpolated_window(m, 51.0f)) {
                 if (t19A) {
@@ -571,9 +571,9 @@ void snagglebeast_update(unsigned char *m) {
             }
             if (((Moby *)m)->seq == 0xA || ((Moby *)m)->seq == 0xC) {
                 if (is_value_within_interpolated_window(m, 27.5f))
-                    rumble_by_distance((char *)m);
+                    camera_shake_by_distance((char *)m);
                 if (is_value_within_interpolated_window(m, 73.0f))
-                    rumble_by_distance((char *)m);
+                    camera_shake_by_distance((char *)m);
             }
             break;
         }
@@ -621,14 +621,14 @@ void snagglebeast_update(unsigned char *m) {
             }
             if (((Moby *)m)->seq == 3 || ((Moby *)m)->seq == 0xE) {
                 if (is_value_within_interpolated_window(m, 16.0f))
-                    rumble_by_distance((char *)m);
+                    camera_shake_by_distance((char *)m);
                 if (is_value_within_interpolated_window(m, 37.0f))
-                    rumble_by_distance((char *)m);
+                    camera_shake_by_distance((char *)m);
             } else if (((Moby *)m)->seq == 0xD) {
                 if (is_value_within_interpolated_window(m, 13.0f))
-                    rumble_by_distance((char *)m);
+                    camera_shake_by_distance((char *)m);
                 if (is_value_within_interpolated_window(m, 34.0f))
-                    rumble_by_distance((char *)m);
+                    camera_shake_by_distance((char *)m);
             }
             break;
         }
@@ -718,7 +718,7 @@ void snagglebeast_update(unsigned char *m) {
             if (is_value_within_interpolated_window(m, 168.5f)) {
                 moby_point_position(m, 6, &va);
                 spawn_fading_ring_effect((int)m, &va, 0x3A, 1.0f, 25.0f, 2.0f, g_frame_time * 8.0f, 1.0f);
-                rumble_by_distance((char *)m);
+                camera_shake_by_distance((char *)m);
             }
             if (d->phase > 0) {
                 if (fast_dec_timer(&d->phase_timer)) {

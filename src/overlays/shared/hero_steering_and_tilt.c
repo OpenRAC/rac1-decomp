@@ -343,8 +343,8 @@ void adjust_hero_pose_targets_from_motion(void) {
             (lean_state_r.f[(0xAB8) / 4]) = nw * 0.3f;
             (lean_state_r.f[(0xB68) / 4]) = nw * 0.3f;
         }
-    } else if (g_hero_r2.state.current == HERO_STATE_LAND ||
-               g_hero_r2.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+    } else if (g_hero_r2.state.current == HERO_STATE_PACK_GLIDE ||
+               g_hero_r2.state.current == HERO_STATE_THRUSTER_HOVER) {
         Hero_SetTiltSpringParams(0.008f, 0.08f);
         Hero_SetTiltSpringParams(0.015f, 0.08f);
         Hero_SetTiltSpringParams(0.015f, 0.08f);
@@ -354,7 +354,7 @@ void adjust_hero_pose_targets_from_motion(void) {
             b = 1.25f;
         else if (b < -1.25f)
             b = -1.25f;
-        if (g_hero_r2.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+        if (g_hero_r2.state.current == HERO_STATE_THRUSTER_HOVER) {
             b = g_hero_r2.motion.yaw_error * 0.8f;
             if (1.1f < b)
                 b = 1.1f;
@@ -382,7 +382,7 @@ void adjust_hero_pose_targets_from_motion(void) {
         else if (c3 < -0.2f)
             (lean_state_r.f[(0x274) / 4]) = -0.2f;
         (lean_state_r.f[(0x270) / 4]) = absolute_float(b) * 0.16f;
-        if (g_hero_r2.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+        if (g_hero_r2.state.current == HERO_STATE_THRUSTER_HOVER) {
             if (g_frame_time * 0.5f < g_hero_r2.motion.flat_speed) {
                 ang = FastSubRots(fast_atan2(g_hero_r2.motion.displacement.f[0], g_hero_r2.motion.displacement.f[1]),
                                   g_hero_r2.motion.rot.f[2]);
@@ -1093,9 +1093,9 @@ void emit_filtered_entry_sparkles(int a, int n) {
     if (n != 0) {
         struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         int i;
-        if (d->unkA64 == 0) {
+        if (d->wrench_hit_latch == 0) {
             Moby_PlaySound(1, 0, a);
-            d->unkA64 = 1;
+            d->wrench_hit_latch = 1;
         }
         for (i = 0; i < n; i++) {
             int *m = coll_sphere_moby_hits[i];

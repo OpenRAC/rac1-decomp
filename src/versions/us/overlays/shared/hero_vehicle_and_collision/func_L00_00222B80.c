@@ -1487,7 +1487,7 @@ int HeroEnterMoveState(int a, int b) {
             p->unk2284 = 0;
             p->heading_locked = 0;
             *(int *)&p->melee_target = 0;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             switch (p->state.current) {
                 case 0x14: {
                     char *h = usage_stats;
@@ -1662,7 +1662,7 @@ int HeroEnterMoveState(int a, int b) {
         case 0x70: {
             struct Hero *p = (struct Hero *)g_hero;
             p->state.control_mode = HERO_MODE_ATTACK;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             if (p->state.prev == HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT) {
                 int v = 5;
                 if (attack_records[p->attack_record].b == 0)
@@ -1689,7 +1689,7 @@ int HeroEnterMoveState(int a, int b) {
         case 0x2B: {
             struct Hero *p = (struct Hero *)g_hero;
             p->state.control_mode = HERO_MODE_GRIND;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             if (p->state.prev == HERO_STATE_GRIND_ATTACK) {
                 p->attack_record = p->attack_record == 0;
             } else {

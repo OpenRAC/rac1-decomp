@@ -1136,7 +1136,7 @@ int l01_hero_set_state(int a, int b) {
             p->unk2284 = 0;
             p->heading_locked = 0;
             *(int *)&p->melee_target = 0;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             switch (p->state.current) {
                 case HERO_STATE_WRENCH_SLAM: {
                     char *h = usage_stats;
@@ -1655,7 +1655,7 @@ int handle_hero_gadget_button(void) {
                 break;
             }
             if (g_hero.state.current == HERO_STATE_JUMP || g_hero.state.current == HERO_STATE_RUN_JUMP ||
-                g_hero.state.current == HERO_STATE_LAND || g_hero.state.current == HERO_STATE_FALL ||
+                g_hero.state.current == HERO_STATE_PACK_GLIDE || g_hero.state.current == HERO_STATE_FALL ||
                 (g_hero.state.current == HERO_STATE_DOUBLE_JUMP && g_hero.anim_frame > 32.0f) ||
                 (g_hero.state.current == HERO_STATE_HIGH_JUMP && g_hero.unk450 != 3 && g_hero.anim_frame > 18.0f) ||
                 (g_hero.state.current == HERO_STATE_HIGH_JUMP && g_hero.unk450 == 3 && g_hero.anim_frame > 20.0f) ||
@@ -1672,7 +1672,7 @@ int handle_hero_gadget_button(void) {
                     }
                     if ((g_hero.past_jump_apex == 0 && g_hero.ground_distance > 0.1f) ||
                         (g_hero.past_jump_apex != 0 && g_hero.ground_distance > 0.57f) ||
-                        (g_hero.state.current == HERO_STATE_LAND && g_hero.ground_distance > 0.57f)) {
+                        (g_hero.state.current == HERO_STATE_PACK_GLIDE && g_hero.ground_distance > 0.57f)) {
                         l01_hero_set_state(HERO_STATE_WRENCH_SLAM, 1);
                         break;
                     }
@@ -1852,7 +1852,7 @@ int handle_hero_gadget_button(void) {
             break;
     }
     if (g_hero.state_timer == start) {
-        if (hero_slot_item_id(3) == 3 && g_hero.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT &&
+        if (hero_slot_item_id(3) == 3 && g_hero.state.current != HERO_STATE_THRUSTER_HOVER &&
             (g_hero.unk308 == 0 || item_available[0x1C] == 0) && g_hero.pack_disabled == 0) {
             fast_dec_timer(&r1_double_tap_timer);
             if (r1_double_tap_timer != 0) {
@@ -1860,16 +1860,15 @@ int handle_hero_gadget_button(void) {
                     ((g_hero.state.control_mode == HERO_MODE_FALL || g_hero.state.control_mode == HERO_MODE_JUMP) &&
                      g_hero.grounded_frames != 0)) {
                     if ((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1)) {
-                        l01_hero_set_state(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
+                        l01_hero_set_state(HERO_STATE_THRUSTER_HOVER, 1);
                     }
                 }
             }
-            if ((g_controller_state.pressed & PAD_R1) &&
-                g_hero.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+            if ((g_controller_state.pressed & PAD_R1) && g_hero.state.current != HERO_STATE_THRUSTER_HOVER) {
                 r1_double_tap_timer = scale_ticks(0x1E);
             }
         } else if (g_hero.state.current != HERO_STATE_WRENCH_COMBO &&
-                   g_hero.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT &&
+                   g_hero.state.current != HERO_STATE_THRUSTER_HOVER &&
                    g_hero.state.current != HERO_STATE_CROUCH_SWING && g_hero.state.current != HERO_STATE_HURT) {
             g_hero.unk22CA = 0;
         }

@@ -12,119 +12,124 @@
 
 LINKER_REMNANT("asm/remnants/text", func_001E9080);
 
-extern L00Entry actuator_wave[8];
+extern ActuatorWave actuator_wave[8];
 
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/start_001eaa08.c, FUN_L00_001eaa08. */
-s32 actuator_CalcPower(s32 *p1) {
-    s32 aa[3][4];
-    s32 *q2;
-    s32 *q1;
+/* Mixes the active vibration slots into out[0] and out[1], one level (0..255) per output: the adding slots of an output
+ * are averaged, then scaled by the average of its multiplying slots / 255. Returns how many slots are active. The
+ * locals are named after Going Commando's identical function, LevelActuatorCalcPower. */
+s32 actuator_CalcPower(s32 *out) {
+    s32 scratch[3][4];
+    s32 *output_count;
+    s32 *multiply_count;
     s32 i;
-    s32 count;
+    s32 active;
 
-    count = 0;
-    q1 = aa[1];
-    q2 = aa[2];
+    active = 0;
+    multiply_count = scratch[1];
+    output_count = scratch[2];
     for (i = 0; i < 2; i++) {
-        p1[i] = 0;
-        aa[0][i] = 0;
-        aa[1][i] = 0;
-        aa[2][i] = 0;
+        out[i] = 0;
+        scratch[0][i] = 0;
+        scratch[1][i] = 0;
+        scratch[2][i] = 0;
     }
     for (i = 0; i < 8; i++) {
-        L00Entry *e;
-        s32 rem;
-        s32 res;
-        u16 v;
+        ActuatorWave *channel;
+        s32 phase;
+        s32 value;
+        u16 duration;
 
-        if (actuator_wave[i].f00 == 0) {
+        if (actuator_wave[i].kind == ACTUATOR_WAVE_INACTIVE) {
             continue;
         }
-        e = &actuator_wave[i];
-        count++;
-        v = actuator_wave[i].f06;
-        actuator_wave[i].f06 = v - 1;
-        if ((s16)v <= 0) {
-            e->f00 = 0;
+        channel = &actuator_wave[i];
+        active++;
+        /* Going Commando skips this countdown for a permanent channel. */
+        duration = actuator_wave[i].duration;
+        actuator_wave[i].duration = duration - 1;
+        if ((s16)duration <= 0) {
+            channel->kind = ACTUATOR_WAVE_INACTIVE;
         }
-        if (actuator_wave[i].f04 != 0) {
-            actuator_wave[i].f04 = actuator_wave[i].f04 - 1;
+        if (actuator_wave[i].delay != 0) {
+            actuator_wave[i].delay = actuator_wave[i].delay - 1;
             continue;
         }
-        res = 0;
-        actuator_wave[i].f08++;
-        rem = e->f08 % (e->f0a + e->f0c);
-        switch (e->f00) {
-            case 0:
+        value = 0;
+        actuator_wave[i].frame++;
+        phase = channel->frame % (channel->rise + channel->fall);
+        switch (channel->kind) {
+            case ACTUATOR_WAVE_INACTIVE:
                 break;
-            case 1:
-                if (rem < e->f0a) {
-                    res = e->f0e + e->f0f;
+            case ACTUATOR_WAVE_RECTANGULAR:
+                if (phase < channel->rise) {
+                    value = channel->amplitude + channel->bias;
                 } else {
-                    res = e->f0f;
+                    value = channel->bias;
                 }
                 break;
-            case 2:
-                if (rem < e->f0a) {
-                    res = (e->f0e * rem) / e->f0a;
+            case ACTUATOR_WAVE_TRIANGULAR:
+                if (phase < channel->rise) {
+                    value = (channel->amplitude * phase) / channel->rise;
                 } else {
-                    res = (e->f0e * (e->f0c + e->f0a - rem)) / e->f0c;
+                    value = (channel->amplitude * (channel->fall + channel->rise - phase)) / channel->fall;
                 }
-                res = res + e->f0f;
+                value = value + channel->bias;
                 break;
-            case 3:
-                if (rem < e->f0a) {
-                    res = (e->f0e * rem) / e->f0a + e->f0f;
-                }
-                break;
-            case 4:
-                if (rem >= e->f0a) {
-                    res = (e->f0e * (e->f0c + e->f0a - rem)) / e->f0c + e->f0f;
+            case ACTUATOR_WAVE_RISING_RAMP:
+                if (phase < channel->rise) {
+                    value = (channel->amplitude * phase) / channel->rise + channel->bias;
                 }
                 break;
-            case 5: {
-                f32 f;
-                f32 g;
-                if (rem < e->f0c) {
-                    f = IntToFloat(rem) * 3.1415927f / IntToFloat(e->f0c);
+            case ACTUATOR_WAVE_FALLING_RAMP:
+                if (phase >= channel->rise) {
+                    value =
+                        (channel->amplitude * (channel->fall + channel->rise - phase)) / channel->fall + channel->bias;
+                }
+                break;
+            case ACTUATOR_WAVE_COSINE: {
+                f32 angle;
+                f32 amplitude;
+                if (phase < channel->fall) {
+                    angle = IntToFloat(phase) * 3.1415927f / IntToFloat(channel->fall);
                 } else {
-                    f = 3.1415927f - IntToFloat(rem - e->f0c) * 3.1415927f / IntToFloat(e->f0a);
+                    angle = 3.1415927f - IntToFloat(phase - channel->fall) * 3.1415927f / IntToFloat(channel->rise);
                 }
-                f = FastCos(f);
-                g = IntToFloat(e->f0e);
-                res = truncate_float_to_s32((f * g + g) * 0.5f) + e->f0f;
-                if (res >= 256) {
-                    res = 255;
+                angle = FastCos(angle);
+                amplitude = IntToFloat(channel->amplitude);
+                value = truncate_float_to_s32((angle * amplitude + amplitude) * 0.5f) + channel->bias;
+                if (value >= 256) {
+                    value = 255;
                 }
                 break;
             }
         }
-        if (e->f03 != 0) {
-            aa[0][e->f02] = aa[0][e->f02] + res;
+        if (channel->multiply != 0) {
+            scratch[0][channel->output] = scratch[0][channel->output] + value;
             {
-                s32 *t = q1 + e->f02;
+                s32 *t = multiply_count + channel->output;
                 *t = *t + 1;
             }
         } else {
-            p1[e->f02] = p1[e->f02] + res;
+            out[channel->output] = out[channel->output] + value;
             {
-                s32 *t = q2 + e->f02;
+                s32 *t = output_count + channel->output;
                 *t = *t + 1;
             }
         }
     }
     for (i = 0; i < 2; i++) {
-        if (q2[i] != 0) {
-            p1[i] = p1[i] / q2[i];
+        if (output_count[i] != 0) {
+            out[i] = out[i] / output_count[i];
         }
-        if (q1[i] != 0) {
-            aa[0][i] = aa[0][i] / q1[i];
-            p1[i] = (p1[i] * aa[0][i]) / 255;
+        if (multiply_count[i] != 0) {
+            scratch[0][i] = scratch[0][i] / multiply_count[i];
+            out[i] = (out[i] * scratch[0][i]) / 255;
         }
     }
-    return count;
+    return active;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001E94A0);
