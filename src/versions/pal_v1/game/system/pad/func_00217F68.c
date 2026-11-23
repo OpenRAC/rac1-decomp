@@ -54,6 +54,6 @@ void poll_pad_device_state(void *arg0) {
         ClearPadInput(p);
         p->profile_state = 0;
     }
-    p->unk188 = 0;
-    p->unk189 = 0;
+    p->small_motor = 0;
+    p->large_motor = 0;
 }

@@ -55,7 +55,7 @@ typedef struct {
     char pad34[4];
     int f38;
     char pad3C[0xB8];
-    int fF4;
+    int actuator_enabled; /* the debug menu's Actuator row */
 } Cam;
 typedef struct {
     char pad0[0x38];
@@ -138,7 +138,7 @@ void run_level_main_loop(void) {
     ((Cam *)g_debug_menu_r)->f30 = pal_mode_r;
     ((Cam *)g_debug_menu_r)->f38 = -1;
     ((Cam *)g_debug_menu_r)->fC = one;
-    ((Cam *)g_debug_menu_r)->fF4 = one;
+    ((Cam *)g_debug_menu_r)->actuator_enabled = one;
     reset_draw_config();
     initialize_level_map_archive_r();
     init_hud();

@@ -1013,7 +1013,7 @@ D_00161314	int	src/data/game/movie/movie.c
 D_00161318	int	src/data/game/movie/movie.c
 D_00161320	u32	src/data/game/movie/videodec.c
 D_00161328	u32	src/data/game/movie/videodec.c
-D_00165580	L00Entry	src/data/game/gameplay/actuator.c
+D_00165580	ActuatorWave	src/data/game/gameplay/actuator.c
 D_00165600	u32	src/data/game/moby/mobyfunc.c
 D_00165E00	u32	src/data/shared/data.c
 D_00166D00	u32	src/data/shared/data.c
