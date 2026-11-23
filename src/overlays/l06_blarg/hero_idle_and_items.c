@@ -1155,7 +1155,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
             p->unk2284 = 0;
             p->heading_locked = 0;
             *(int *)&p->melee_target = 0;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             switch (p->state.current) {
                 case HERO_STATE_WRENCH_SLAM: {
                     char *h = usage_stats;
@@ -1330,7 +1330,7 @@ int HeroL06_TrySetMoveState(int a, int b) {
         case 0x2B: {
             struct Hero *p = &g_hero;
             p->state.control_mode = HERO_MODE_GRIND;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             if (p->state.prev == HERO_STATE_GRIND_ATTACK) {
                 p->attack_record = p->attack_record == 0;
             } else {

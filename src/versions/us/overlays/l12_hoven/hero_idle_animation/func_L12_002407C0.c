@@ -1238,7 +1238,7 @@ int HeroL12_SetMoveState(int a, int b) {
             p->unk2284 = 0;
             p->heading_locked = 0;
             *(int *)&p->melee_target = 0;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             switch (p->state.current) {
                 case HERO_STATE_WRENCH_SLAM: {
                     struct MoveUsageTable *h = (struct MoveUsageTable *)usage_stats;
@@ -1385,7 +1385,7 @@ int HeroL12_SetMoveState(int a, int b) {
         case 0x70: {
             struct Hero *p = &g_hero;
             p->state.control_mode = HERO_MODE_ATTACK;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             if (p->state.prev == HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT) {
                 int v = 5;
                 if (hoven_attack_records[p->attack_record].b == 0)

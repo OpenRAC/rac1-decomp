@@ -1203,7 +1203,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             p->unk2284 = 0;
             p->heading_locked = 0;
             *(int *)&p->melee_target = 0;
-            p->unkA64 = 0;
+            p->wrench_hit_latch = 0;
             switch (p->state.current) {
                 case HERO_STATE_WRENCH_SLAM: {
                     char *h = usage_stats;

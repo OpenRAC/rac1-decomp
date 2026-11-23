@@ -1093,9 +1093,9 @@ void emit_filtered_entry_sparkles(int a, int n) {
     if (n != 0) {
         struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
         int i;
-        if (d->unkA64 == 0) {
+        if (d->wrench_hit_latch == 0) {
             Moby_PlaySound(1, 0, a);
-            d->unkA64 = 1;
+            d->wrench_hit_latch = 1;
         }
         for (i = 0; i < n; i++) {
             int *m = coll_sphere_moby_hits[i];
