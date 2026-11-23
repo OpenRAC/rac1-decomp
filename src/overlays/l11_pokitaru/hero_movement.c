@@ -1708,7 +1708,7 @@ void HeroL11_UpdateMovement(void) {
                 gravity_set_z(g_hero.motion.velocity.f, g_hero.motion.velocity.f, -(g_frame_time * 50.0f));
             }
             break;
-        case HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT: {
+        case HERO_STATE_THRUSTER_HOVER: {
             float a;
             float b;
             float v;
@@ -1752,7 +1752,7 @@ void HeroL11_UpdateMovement(void) {
                        g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.35f, g_frame_time * 2.5f);
             }
         } break;
-        case HERO_STATE_LAND: {
+        case HERO_STATE_PACK_GLIDE: {
             float v;
 
             if (hero_slot_item_id(3) == 2) {

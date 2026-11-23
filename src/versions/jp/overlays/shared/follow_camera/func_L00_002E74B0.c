@@ -102,7 +102,7 @@ void follow_camera_apply_overrides(O_y *o) {
             }
         }
     }
-    if (hero74.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT && (D_0013CAE0_y[0] & 3)) {
+    if (hero74.state.current == HERO_STATE_THRUSTER_HOVER && (D_0013CAE0_y[0] & 3)) {
         set_follow_camera_orbit_clamp_mode(0);
         follow_camera_start_slide();
         follow_camera_set_lateral_spring(0.04f, 0.2f);

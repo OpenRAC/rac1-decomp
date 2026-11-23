@@ -453,7 +453,7 @@ void update_hero_ledge_probe(void) {
              (((Hero *)g_hero_r2)->past_jump_apex != 0 ||
               ((Hero *)g_hero_r2)->motion.velocity.f[2] < g_frame_time_r * 3.5f)) ||
             ((Hero *)g_hero_r2)->state.control_mode == HERO_MODE_FALL ||
-            ((Hero *)g_hero_r2)->state.current == HERO_STATE_LAND ||
+            ((Hero *)g_hero_r2)->state.current == HERO_STATE_PACK_GLIDE ||
             ((Hero *)g_hero_r2)->state.current == HERO_STATE_LEDGE_SHIMMY_POSITIVE_YAW ||
             ((Hero *)g_hero_r2)->state.current == HERO_STATE_LEDGE_SHIMMY_NEGATIVE_YAW)
             go = 1;
@@ -1398,7 +1398,7 @@ void air_accel(float step) {
                 struct Hero *g4 = &g_hero;
                 d += 1.0f;
                 d *= 1.5f;
-                if (g4->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+                if (g4->state.current == HERO_STATE_THRUSTER_HOVER) {
                     if (1.7f < d)
                         d = 1.7f;
                     if (d < 1.0f)

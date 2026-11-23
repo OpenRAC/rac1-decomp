@@ -3733,7 +3733,7 @@ void steer_hero_planar_velocity(float step) {
                 struct Hero *h4 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
                 t = t + 1.0f;
                 t *= 1.5f;
-                if (h4->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+                if (h4->state.current == HERO_STATE_THRUSTER_HOVER) {
                     if (1.7f < t)
                         t = 1.7f;
                     if (t < 1.0f)

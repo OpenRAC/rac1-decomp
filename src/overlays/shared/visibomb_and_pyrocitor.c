@@ -779,7 +779,7 @@ void emit_beam_trail_particles(X *x) {
     l0.f[2] = -random_float_between(0.01f, 0.03f);
     transform_vector_by_basis(&l0, &l0, &x->vC0);
     qcopy(&a, &x->v10);
-    if (g_hero.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+    if (g_hero.state.current == HERO_STATE_THRUSTER_HOVER) {
         if ((*(s32 *)&D_L00_0015F6B0_B4F40b) % 3 == 0) {
             spawn_burst(&a, &l0, 0x4F007FFF, 0x1FFFFFFF, scale_ticks(10), 1, 10000.0f);
         }
@@ -810,12 +810,12 @@ void emit_beam_trail_particles(X *x) {
     l0.f[1] = 0.0f;
     transform_vector_by_basis(&l0, &l0, &x->vC0);
     l0.f[2] = 0.025f;
-    if (g_hero.state.current == HERO_STATE_LAND) {
+    if (g_hero.state.current == HERO_STATE_PACK_GLIDE) {
         col = 0xA0A0A0;
         q = 1.0165f;
         l0.f[2] -= g_frame_time * 5.0f;
     }
-    if (g_hero.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+    if (g_hero.state.current == HERO_STATE_THRUSTER_HOVER) {
         col = 0xA0A0A0;
         q = 1.037f;
         l0.f[2] -= g_frame_time * 3.0f;
@@ -921,8 +921,8 @@ void thruster_pack_flame_update(void *p) {
                     flag = 1;
                 }
             }
-            if ((&g_hero_r)->state.current == HERO_STATE_LAND ||
-                (&g_hero_r)->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+            if ((&g_hero_r)->state.current == HERO_STATE_PACK_GLIDE ||
+                (&g_hero_r)->state.current == HERO_STATE_THRUSTER_HOVER) {
                 flag = 1;
             }
         }

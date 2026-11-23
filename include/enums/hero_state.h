@@ -11,7 +11,9 @@
 /* Hero state IDs and the separate mode selectors used by hero code.
  * Each state ID has one canonical member shared by its consumers.
  * Entry, movement and transition handlers may implement different parts of it.
- * Fields and function parameters keep their original integer types. */
+ * Fields and function parameters keep their original integer types.
+ * 0x08, 0x11, 0x35 and 0x81 are named here from the code that enters them; the NTSC decomp calls them LAND,
+ * REPEATABLE_JUMP, SWIM_WITH_CROUCH_INPUT and DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT. */
 
 enum HeroStateId {
     HERO_STATE_IDLE = 0x0,
@@ -21,12 +23,13 @@ enum HeroStateId {
     HERO_STATE_CROUCH = 0x4,
     HERO_STATE_FALL = 0x6,
     HERO_STATE_JUMP = 0x7,
-    HERO_STATE_LAND = 0x8,
+    HERO_STATE_PACK_GLIDE = 0x8, /* Cross held in the air with the Heli-Pack or Thruster-Pack: a slow fall */
     HERO_STATE_RUN_JUMP = 0x9,
     HERO_STATE_PACK_JUMP = 0xA,
     HERO_STATE_HIGH_JUMP = 0xB,
     HERO_STATE_DOUBLE_JUMP = 0xE,
     HERO_STATE_PACK_LONG_JUMP = 0x10,
+    HERO_STATE_WALL_JUMP = 0x11, /* Cross while wall_jump_window is open, from a jump, a glide or another wall jump */
     HERO_STATE_WRENCH_COMBO = 0x13,
     HERO_STATE_WRENCH_SLAM = 0x14,
     HERO_STATE_CROUCH_SWING = 0x15,
@@ -57,6 +60,7 @@ enum HeroStateId {
     HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT = 0x31,
     HERO_STATE_SWIM = 0x33,
     HERO_STATE_SWIM_IDLE = 0x34,
+    HERO_STATE_HYDRO_PACK_DASH = 0x35, /* R1 or R2 held while swimming, once the Hydro-Pack is owned */
     HERO_STATE_WATER_SURFACE_MOVE = 0x36,
     HERO_STATE_WATER_SURFACE_ENTRY = 0x37,
     HERO_STATE_ANIMATION_WAIT_TO_IDLE = 0x3A,
@@ -101,7 +105,7 @@ enum HeroStateId {
     HERO_STATE_DEATH_DESCENT = 0x7C,
     HERO_STATE_SINK = 0x7F,
     HERO_STATE_DYING_SPEED_LIMITED = 0x80,
-    HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT = 0x81,
+    HERO_STATE_THRUSTER_HOVER = 0x81, /* R1 double tap with the Thruster-Pack: floats 0.17 above the ground */
     HERO_STATE_DYING_ZERO_HEALTH = 0x82
 };
 

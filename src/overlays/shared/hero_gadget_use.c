@@ -732,7 +732,8 @@ int process_hero_primary_item_input(void) {
             }
             if (g_hero_h2523C8.state.current == HERO_STATE_JUMP ||
                 g_hero_h2523C8.state.current == HERO_STATE_RUN_JUMP ||
-                g_hero_h2523C8.state.current == HERO_STATE_LAND || g_hero_h2523C8.state.current == HERO_STATE_FALL ||
+                g_hero_h2523C8.state.current == HERO_STATE_PACK_GLIDE ||
+                g_hero_h2523C8.state.current == HERO_STATE_FALL ||
                 (g_hero_h2523C8.state.current == HERO_STATE_DOUBLE_JUMP && g_hero_h2523C8.anim_frame > 32.0f) ||
                 (g_hero_h2523C8.state.current == HERO_STATE_HIGH_JUMP && g_hero_h2523C8.unk450 != 3 &&
                  g_hero_h2523C8.anim_frame > 18.0f) ||
@@ -751,7 +752,8 @@ int process_hero_primary_item_input(void) {
                     }
                     if ((g_hero_h2523C8.past_jump_apex == 0 && g_hero_h2523C8.ground_distance > 0.1f) ||
                         (g_hero_h2523C8.past_jump_apex != 0 && g_hero_h2523C8.ground_distance > 0.57f) ||
-                        (g_hero_h2523C8.state.current == HERO_STATE_LAND && g_hero_h2523C8.ground_distance > 0.57f)) {
+                        (g_hero_h2523C8.state.current == HERO_STATE_PACK_GLIDE &&
+                         g_hero_h2523C8.ground_distance > 0.57f)) {
                         Hero_TryMoveStateL05(HERO_STATE_WRENCH_SLAM, 1);
                         break;
                     }
@@ -1059,8 +1061,7 @@ int process_hero_primary_item_input(void) {
         } break;
     }
     if (g_hero_h2523C8.state_timer == start) {
-        if (hero_slot_item_id(3) == 3 &&
-            g_hero_h2523C8.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT &&
+        if (hero_slot_item_id(3) == 3 && g_hero_h2523C8.state.current != HERO_STATE_THRUSTER_HOVER &&
             (g_hero_h2523C8.unk308 == 0 || item_available[0x1C] == 0) && g_hero_h2523C8.pack_disabled == 0) {
             fast_dec_timer(&hero_item_input_r1_double_press_timer_gp);
             if (hero_item_input_r1_double_press_timer_gp != 0) {
@@ -1069,16 +1070,15 @@ int process_hero_primary_item_input(void) {
                       g_hero_h2523C8.state.control_mode == HERO_MODE_JUMP) &&
                      g_hero_h2523C8.grounded_frames != 0)) {
                     if ((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1)) {
-                        Hero_TryMoveStateL05(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_THRUSTER_HOVER, 1);
                     }
                 }
             }
-            if ((g_controller_state.pressed & PAD_R1) &&
-                g_hero_h2523C8.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
+            if ((g_controller_state.pressed & PAD_R1) && g_hero_h2523C8.state.current != HERO_STATE_THRUSTER_HOVER) {
                 hero_item_input_r1_double_press_timer_gp = scale_ticks(0x1E);
             }
         } else if (g_hero_h2523C8.state.current != HERO_STATE_WRENCH_COMBO &&
-                   g_hero_h2523C8.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT &&
+                   g_hero_h2523C8.state.current != HERO_STATE_THRUSTER_HOVER &&
                    g_hero_h2523C8.state.current != HERO_STATE_CROUCH_SWING &&
                    g_hero_h2523C8.state.current != HERO_STATE_HURT) {
             g_hero_h2523C8.unk22CA = 0;
