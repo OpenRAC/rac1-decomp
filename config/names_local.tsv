@@ -2206,7 +2206,7 @@ func_L07_00310110	WalkerInit	validates path/moby indices from data, computes pat
 func_L07_003102C8	Walker_ChooseHeading	probes ahead for free path-bounded spot, turns by turnStep, else heads for goal	
 func_L07_003108B0	IsTouchingMoby	coll_sphere at moby joint 0 hits and last hit moby equals id	
 func_L07_00313298	Moby_SetPointLight	allocates or updates a point light with radius, colour and fade frames	
-func_L07_003134B8	RumbleByDistance	sets intensity (80-dist)/80*0.1 and 20 frame duration in hero-side struct	
+func_L07_003134B8	camera_shake_by_distance	src/overlays/l07_umbris/taxi_platform.c: starts camera shake channel 0 (CameraSystem.shake[0]: amplitude +0x160, frames +0x168, from debris_far_point, the camera position at +0x140), weaker with distance; the NTSC name rumble_by_distance does not fit the body: it never touches the pad	clash
 func_L07_00313530	PointLight_UpdateFade	counts down fade timer, tweens light colour, frees the light at zero	
 func_L07_00313800	SwayingBeamDraw	sways endpoint, raycasts, spawns hit effects, emits GS quad packet for the beam	
 func_L07_003141A8	RingEffectStart	body: ramps angle from moby timer (data+0x1C8) capped at pi and calls effect starter	

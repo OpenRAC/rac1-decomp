@@ -3463,8 +3463,10 @@ void configure_timed_point_light(float radius, void *moby_, void *obj_, short pa
     }
 }
 
-/* Sets a controller rumble whose strength falls off with distance up to 80 units. */
-void rumble_by_distance(char *moby) {
+/* Shakes the camera for 20 frames (shake channel 0), up to 0.1 when the moby is at the camera and none from 80 units
+ * away. debris_far_point is the level camera's position (CameraSystem.pos), so state is the camera block and the
+ * two stores are shake[0].frames and shake[0].amplitude. The pad is not touched. */
+void camera_shake_by_distance(char *moby) {
     float distance = fast_vec_dist(moby + 0x10, debris_far_point);
     char *state;
     if (distance > 80.0f)
